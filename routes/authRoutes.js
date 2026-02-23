@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const db = require('../db');
+const { db } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 const authLimiter = rateLimit({
@@ -24,6 +24,10 @@ router.post('/register', authLimiter, async (req, res) => {
         const hash = await bcrypt.hash(password, 10);
         console.log('[Auth] Password hashed successfully. Saving to DB...');
 
+        if (typeof db.run !== 'function') {
+            console.error('[Auth] db.run is not a function! db keys:', Object.keys(db));
+            throw new Error('db.run is not a function');
+        }
         const result = await db.run('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', [username, email, hash]);
         const userId = result.lastID;
         console.log(`[Auth] User saved with ID: ${userId}. Updating initial stats...`);

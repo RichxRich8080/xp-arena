@@ -33,7 +33,7 @@ pool.getConnection()
     });
 
 // Helper for single queries (compatibility with sqlite3-like interface where possible)
-const db = {
+const databaseHelper = {
     async query(sql, params) {
         const [results] = await pool.execute(sql, params);
         return results;
@@ -55,5 +55,11 @@ const db = {
     }
 };
 
+// Verification log
+console.log('📦 Database helper initialized with methods:', Object.keys(databaseHelper));
+
 // Export both the pool and the helper
-module.exports = { pool, db };
+module.exports = {
+    pool,
+    db: databaseHelper
+};

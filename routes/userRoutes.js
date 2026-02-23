@@ -2,12 +2,13 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const db = require('../db');
+const { db } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 router.post('/password', authenticateToken, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     try {
+        if (typeof db.get !== 'function') throw new Error('db.get is not a function');
         const user = await db.get('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
         if (!user) return res.status(404).json({ error: 'User not found' });
 

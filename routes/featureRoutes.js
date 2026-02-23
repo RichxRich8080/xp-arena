@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../db');
+const { db } = require('../db');
 
 let leaderboardCache = { data: null, lastFetch: 0 };
 router.get('/leaderboard', async (req, res) => {
@@ -11,6 +11,7 @@ router.get('/leaderboard', async (req, res) => {
     }
 
     try {
+        if (typeof db.all !== 'function') throw new Error('db.all is not a function');
         const rows = await db.all('SELECT id, username, axp, level, avatar, socials FROM users ORDER BY axp DESC LIMIT 100');
         leaderboardCache.data = rows;
         leaderboardCache.lastFetch = now;
