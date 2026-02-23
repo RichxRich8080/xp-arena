@@ -15,25 +15,32 @@ const authLimiter = rateLimit({
 // Register
 router.post('/register', authLimiter, async (req, res) => {
     const { username, email, password } = req.body;
+    console.log(`[Auth] Attempting to register user: ${username} (${email})`);
+
     if (!username || !email || !password) return res.status(400).json({ error: 'Username, email, and password required' });
 
     try {
+        console.log('[Auth] Hashing password...');
         const hash = await bcrypt.hash(password, 10);
+        console.log('[Auth] Password hashed successfully. Saving to DB...');
+
         const result = await db.run('INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)', [username, email, hash]);
         const userId = result.lastID;
+        console.log(`[Auth] User saved with ID: ${userId}. Updating initial stats...`);
 
         // Initial Activity and AXP
         await db.run('UPDATE users SET axp = 100 WHERE id = ?', [userId]);
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [userId, 'Account created! Welcome bonus awarded.']);
 
+        console.log('[Auth] Registration complete. Generating token...');
         const token = jwt.sign({ id: userId, username }, JWT_SECRET);
         res.json({ success: true, token, user: { id: userId, username, email } });
     } catch (err) {
+        console.error('[Auth] Registration Error:', err);
         if (err.code === 'ER_DUP_ENTRY' || err.message.includes('UNIQUE')) {
             return res.status(400).json({ error: 'Username or email already taken' });
         }
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        res.status(500).json({ error: 'Server error: ' + (err.message || 'Unknown error') });
     }
 });
 
