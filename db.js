@@ -10,8 +10,22 @@ const pool = mysql.createPool({
     port: process.env.DB_PORT || 3306,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: {
+        rejectUnauthorized: false // Required for many cloud providers like Aiven/TiDB
+    }
 });
+
+// Test connection and log errors
+pool.getConnection()
+    .then(conn => {
+        console.log('Successfully connected to MySQL database');
+        conn.release();
+    })
+    .catch(err => {
+        console.error('Critical Database Connection Error:', err.message);
+        console.error('Check your DB_HOST, DB_USER, DB_PASSWORD, and IP Whitelist!');
+    });
 
 // Helper for single queries (compatibility with sqlite3-like interface where possible)
 const db = {

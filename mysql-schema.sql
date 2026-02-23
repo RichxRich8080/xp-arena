@@ -1,5 +1,6 @@
 -- XP Arena MySQL Schema
-
+-- TIP: If you get "Unknown database", look at the top-right of TiDB 
+-- and select the "test" database instead of "xp_arena".
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -10,11 +11,11 @@ CREATE TABLE IF NOT EXISTS users (
     avatar VARCHAR(50) DEFAULT '👤',
     streak INT DEFAULT 0,
     last_login DATETIME,
-    socials TEXT, -- JSON string
+    socials TEXT,
+    -- JSON string
     name_changes INT DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-
 CREATE TABLE IF NOT EXISTS activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -22,7 +23,6 @@ CREATE TABLE IF NOT EXISTS activity (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -32,24 +32,23 @@ CREATE TABLE IF NOT EXISTS history (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS presets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     name VARCHAR(255),
-    settings_json TEXT, -- JSON string
+    settings_json TEXT,
+    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS vault (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    settings_json TEXT, -- JSON string
+    settings_json TEXT,
+    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS clips (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -59,7 +58,6 @@ CREATE TABLE IF NOT EXISTS clips (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS user_achievements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
