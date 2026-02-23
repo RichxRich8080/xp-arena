@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compare Devices • XP ARENA</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .compare-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .compare-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Reuse search styles from tool.html but scoped */
+        .search-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--card-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        .suggestions {
+            position: absolute;
+            max-height: 200px;
+            overflow-y: auto;
+            background: var(--card-dark);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            color: #fff;
+            width: 100%;
+            z-index: 100;
+            display: none;
+        }
+
+        .sugg-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sugg-item:hover {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
+        }
+
+        .device-card {
+            background: rgba(0, 229, 255, 0.05);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .vs-badge {
+            background: var(--accent);
+            color: #000;
+            font-weight: 900;
+            padding: 5px 15px;
+            border-radius: 20px;
+            text-align: center;
+            display: inline-block;
+            margin: -10px auto 10px;
+            z-index: 10;
+            font-size: 1.2rem;
+        }
+    </style>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+    <nav class="navbar"></nav>
+
+    <div class="container" style="max-width: 900px;">
+        <div class="page-header" style="text-align: center; margin-bottom: 2rem;">
+            <h1>Compare Devices</h1>
+            <p>See which device has the natural sensitivity advantage.</p>
+        </div>
+
+        <div class="form-card compare-grid">
+            <!-- DEVICE A -->
+            <div class="form-group" style="margin: 0;">
+                <label style="color: #ff4d4d; font-weight: 800;">🔴 DEVICE A</label>
+                <div class="search-wrap">
+                    <input type="text" id="searchA" class="search-input" placeholder="Search device A..."
+                        autocomplete="off">
+                    <div id="suggA" class="suggestions"></div>
+                </div>
+            </div>
+
+            <!-- DEVICE B -->
+            <div class="form-group" style="margin: 0;">
+                <label style="color: #00e5ff; font-weight: 800;">🔵 DEVICE B</label>
+                <div class="search-wrap">
+                    <input type="text" id="searchB" class="search-input" placeholder="Search device B..."
+                        autocomplete="off">
+                    <div id="suggB" class="suggestions"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 1.5rem 0;">
+            <button id="compareBtn" class="btn-primary" style="width: auto; padding: 0.8rem 3rem;" disabled>VS
+                COMPUTE</button>
+        </div>
+
+        <div id="resultSection" class="hidden fade-in-up">
+            <div style="text-align: center;">
+                <div class="vs-badge">VERSUS RESULT</div>
+            </div>
+            <div class="compare-grid" id="compareCards">
+                <!-- Injected via JS -->
+            </div>
+
+            <div id="winnerBanner"
+                style="margin-top: 1.5rem; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--accent);">
+            </div>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/phones.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/compare.js"></script>
+</body>
+
+</html>

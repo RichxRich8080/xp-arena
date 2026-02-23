@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login • XP ARENA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+    <nav class="navbar"></nav>
+    <div class="auth-container">
+        <h1>Welcome Back</h1>
+        <div id="error-msg" class="error-msg"></div>
+        <form id="loginForm">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Enter username" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="password" placeholder="••••••••" required>
+            </div>
+            <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="remember" style="width: auto;">
+                    <label for="remember" style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Remember
+                        me</label>
+                </div>
+                <a href="#" onclick="showForgotPasswordModal(); return false;" class="text-neon"
+                    style="font-size: 0.85rem; text-decoration: underline;">Forgot
+                    Password?</a>
+            </div>
+            <button type="submit" class="btn-auth glow-neon">Login</button>
+        </form>
+        <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
+            Don't have an account? <a href="signup.html" class="text-neon">Sign Up</a>
+        </div>
+    </div>
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const btn = document.querySelector('.btn-auth');
+            btn.textContent = 'Logging in...';
+            btn.disabled = true;
+
+            const result = await Auth.login(user, pass);
+            if (result.success) {
+                window.location.href = 'profile.html';
+            } else {
+                const err = document.getElementById('error-msg');
+                err.textContent = result.message;
+                err.style.display = 'block';
+                btn.textContent = 'Login';
+                btn.disabled = false;
+            }
+        });
+
+        function showForgotPasswordModal() {
+            const existing = document.getElementById('forgot-modal');
+            if (existing) existing.remove();
+
+            const modal = document.createElement('div');
+            modal.id = 'forgot-modal';
+            modal.style.cssText = `
+                position: fixed; inset: 0; z-index: 100000;
+                display: flex; align-items: center; justify-content: center;
+                background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+                animation: fadeIn 0.3s ease;
+            `;
+            modal.innerHTML = `
+                <div style="background: var(--bg-dark); border: 1px solid var(--border); border-radius: 20px; width: 90%; max-width: 400px; padding: 2rem; position: relative;">
+                    <button onclick="document.getElementById('forgot-modal').remove()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;"><i class="fas fa-times"></i></button>
+                    <h2 style="margin-top: 0; color: #fff;">Reset Password</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Enter your username and a new password. (Prototype Bypass)</p>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="reset-user" class="glass-input" placeholder="Your username" style="width: 100%;">
+                    </div>
+                    <div class="form-group">
+                        <label>New Password</label>
+                        <input type="password" id="reset-pass" class="glass-input" placeholder="New password" style="width: 100%;">
+                    </div>
+                    <button id="reset-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;">Reset Password</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('reset-btn').addEventListener('click', async () => {
+                const username = document.getElementById('reset-user').value;
+                const newPassword = document.getElementById('reset-pass').value;
+                if (!username || !newPassword) return;
+
+                const btn = document.getElementById('reset-btn');
+                btn.textContent = 'Resetting...';
+
+                try {
+                    const res = await fetch('http://localhost:3000/api/auth/reset', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, newPassword })
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        btn.style.background = 'var(--success)';
+                        btn.textContent = 'Success!';
+                        setTimeout(() => modal.remove(), 1000);
+                    } else {
+                        btn.style.background = 'var(--danger)';
+                        btn.textContent = data.error || 'Failed';
+                        setTimeout(() => { btn.style.background = ''; btn.textContent = 'Reset Password'; }, 2000);
+                    }
+                } catch (e) {
+                    btn.textContent = 'Network Error';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

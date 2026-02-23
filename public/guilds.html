@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild Wars • XP ARENA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .coming-soon-container {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coming-soon-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, rgba(0, 255, 0, 0.05) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        .glitch-title {
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            position: relative;
+            text-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .glitch-title::after {
+            content: 'GUILD WARS';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #0f0;
+            opacity: 0.3;
+            transform: translate(2px, 2px);
+            z-index: -1;
+        }
+
+        .status-badge {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #0f0;
+            color: #0f0;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
+            animation: pulse 2s infinite;
+        }
+
+        .description {
+            max-width: 600px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .features-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: left;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            border-color: #0f0;
+            background: rgba(0, 255, 0, 0.02);
+            transform: translateY(-5px);
+        }
+
+        .feature-item i {
+            font-size: 1.5rem;
+            color: #0f0;
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h3 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .feature-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .glitch-title {
+                font-size: 2.5rem;
+            }
+
+            .description {
+                font-size: 1rem;
+            }
+
+            .status-badge {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body class="theme-cyber">
+    <nav class="navbar"></nav>
+
+    <main class="coming-soon-container">
+        <div class="status-badge">ENCRYPTED SIGNAL: TRANSMISSION INCOMPLETE</div>
+        <h1 class="glitch-title">GUILD WARS</h1>
+        <p class="description">
+            We're building the ultimate competitive infrastructure for XP Arena. Prepare to form alliances, pool your
+            AXP, and dominate the global rankings together.
+        </p>
+
+        <div class="features-preview">
+            <div class="feature-item">
+                <i class="fas fa-users"></i>
+                <h3>Roster Management</h3>
+                <p>Build your squad up to 100 members with custom roles and permissions.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-vault"></i>
+                <h3>Guild Vault</h3>
+                <p>Share premium sensitivity presets and exclusive hardware configurations.</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-medal"></i>
+                <h3>War Records</h3>
+                <p>Track your guild's history in weekly wars and earn exclusive trophies.</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 4rem;">
+            <button class="btn-primary" onclick="window.location.href='index.html'" style="padding: 1rem 3rem;">
+                <i class="fas fa-arrow-left"></i> Return to Base
+            </button>
+        </div>
+    </main>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments • XP ARENA</title>
+    <meta name="description"
+        content="View active and upcoming tournaments at XP ARENA. Compete for cash prizes and global recognition.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+    <nav class="navbar">
+        <!-- Injected by layout.js -->
+    </nav>
+
+    <div class="container" style="max-width: 1000px;">
+        <div class="page-header">
+            <h1>Active Tournaments</h1>
+            <p>Compete for cash prizes and recognition.</p>
+        </div>
+
+        <div class="tournament-grid">
+            <!-- Active Tournament -->
+            <div class="tournament-card">
+                <div class="card-image-placeholder">WEEKLY CUP</div>
+                <div class="card-content">
+                    <span
+                        style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem;">SUNDAY,
+                        8:00 PM EST</span>
+                    <h3>Weekly Community Cup #1</h3>
+                    <span class="prize-pool">TBD Prize Pool</span>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Free entry for top leaderboard players. Squads mode.
+                    </p>
+                    <button class="btn-primary" style="margin-top: 1.5rem;"
+                        onclick="if(typeof Auth !== 'undefined' && Auth.isLoggedIn()) { if(window.Toast) Toast.show('Successfully registered for Community Cup!', 'success'); if(typeof User !== 'undefined') User.addAXP(100, 'Tournament Registration'); this.innerHTML = 'Registered ✅'; this.disabled = true; this.style.opacity = '0.7'; } else { window.location.href='login.html'; }">Register
+                        Now</button>
+                </div>
+            </div>
+
+            <!-- Upcoming -->
+            <div class="tournament-card">
+                <div class="card-image-placeholder">PRO LEAGUE</div>
+                <div class="card-content">
+                    <span
+                        style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem;">2026</span>
+                    <h3>Spring Season Qualifier</h3>
+                    <span class="prize-pool">TBD Prize Pool</span>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+                        Open qualifiers for all regions.
+                    </p>
+                    <button class="btn-primary"
+                        style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted); cursor: not-allowed; margin-top: 1.5rem;">Registration
+                        Opens Soon</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <!-- Injected by layout.js -->
+    </nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

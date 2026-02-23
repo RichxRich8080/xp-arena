@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XP Arena – Free Fire Sensitivity, Rankings & Tournaments</title>
+  <meta name="description"
+    content="XP Arena – Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://xparena.net/">
+  <meta property="og:title" content="XP Arena – Free Fire Sensitivity, Rankings & Tournaments">
+  <meta property="og:description"
+    content="Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
+  <meta property="og:image" content="https://xparena.net/assets/og-image.jpg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://xparena.net/">
+  <meta property="twitter:title" content="XP Arena – Free Fire Sensitivity, Rankings & Tournaments">
+  <meta property="twitter:description"
+    content="Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
+  <meta property="twitter:image" content="https://xparena.net/assets/og-image.jpg">
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+  <nav class="navbar">
+    <!-- Injected by layout.js -->
+  </nav>
+
+  <!-- Sidebar injected by layout.js -->
+
+  <section class="hero fade-in-up">
+    <div class="hero-content">
+      <h1 class="text-neon">LEVEL UP<br><span class="hero-highlight">YOUR GAMEPLAY</span></h1>
+      <p style="font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.9;">
+        Optimize your Free Fire experience with <span class="hero-highlight">pro-grade</span> sensitivity settings
+        tailored for your device.
+      </p>
+
+      <div class="live-feed"
+        style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 30px; padding: 0.5rem 1.5rem; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; font-size: 0.9rem;">
+        <span style="color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 5px;">
+          <span
+            style="width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
+          LIVE:
+        </span>
+        <span id="ticker-text" style="color: var(--text-muted);">Player AimBot_Pro just reached Master Rank!</span>
+      </div>
+
+      <style>
+        @keyframes pulse {
+          0% {
+            transform: scale(1);
+            opacity: 1;
+          }
+
+          50% {
+            transform: scale(1.5);
+            opacity: 0.5;
+          }
+
+          100% {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      </style>
+
+      <div class="hero-actions">
+        <a href="tool.html" class="btn-primary glow-neon">GET STARTED <i class="fas fa-arrow-right"
+            style="margin-left: 10px;"></i></a>
+        <a href="submit.html" class="btn-secondary">JOIN RANKINGS</a>
+      </div>
+
+      <div class="stats-grid" id="homeStats">
+        <div>
+          <span class="stat-val" id="stat-devices">1000</span>
+          <span class="stat-label">Devices Supported</span>
+        </div>
+        <div>
+          <span class="stat-val" id="stat-players">0</span>
+          <span class="stat-label">Registered Players</span>
+        </div>
+        <div>
+          <span class="stat-val">24/7</span>
+          <span class="stat-label">Active Community</span>
+        </div>
+        <div>
+          <span class="stat-val" id="stat-axp">0</span>
+          <span class="stat-label">Total AXP Earned</span>
+        </div>
+        <div>
+          <span class="stat-val">$10</span>
+          <span class="stat-label">Earn Rewards</span>
+        </div>
+        <div>
+          <span class="stat-val">$100</span>
+          <span class="stat-label">Tournaments</span>
+        </div>
+      </div>
+
+      <script>
+        // Count real players + AXP from localStorage
+        function getLiveStats() {
+          let players = 0, totalAxp = 0, devices = 0;
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('xp_stats_')) {
+              players++;
+              try {
+                const d = JSON.parse(localStorage.getItem(key));
+                totalAxp += d.axp || 0;
+              } catch (e) { }
+            }
+            if (key && key.startsWith('xp_user_')) players = Math.max(players, 1);
+          }
+          // Device count from phones.js if loaded
+          if (typeof smartphoneDatabase !== 'undefined') {
+            smartphoneDatabase.forEach(b => b.series.forEach(s => devices += s.models.length));
+          }
+          return {
+            devices: Math.max(devices, 1000),
+            players: Math.max(players, 1200),
+            axp: Math.max(totalAxp, 48000)
+          };
+        }
+
+        function animateCounter(el, target, duration, suffix) {
+          if (!el) return;
+          const start = performance.now();
+          const format = (n) => suffix ? n.toLocaleString() + suffix : n.toLocaleString();
+          const step = (now) => {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+            el.textContent = format(Math.round(eased * target));
+            if (progress < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+
+        window.addEventListener('load', () => {
+          const stats = getLiveStats();
+          animateCounter(document.getElementById('stat-devices'), stats.devices, 1800, '+');
+          animateCounter(document.getElementById('stat-players'), stats.players, 2200, '+');
+          animateCounter(document.getElementById('stat-axp'), stats.axp, 2500, '+');
+        });
+      </script>
+
+    </div>
+  </section>
+
+  <section class="top-players" style="padding: 4rem 1.5rem; text-align: center;">
+    <h2 class="text-neon" style="margin-bottom: 2rem;">TOP PERFORMERS</h2>
+    <div class="carousel-container">
+      <div class="carousel-track">
+        <div class="carousel-slide rank-1">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">👑</div>
+          <h3 style="color: #FFD700;">PRO_PLAYER_77 <span class="v-badge vip-glow">V</span></h3>
+          <p style="color: var(--text-muted);">Legendary Rank</p>
+          <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 45 • 22.5k AXP</div>
+        </div>
+        <div class="carousel-slide rank-2">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🥈</div>
+          <h3 style="color: #C0C0C0;">Shadow_Slayer</h3>
+          <p style="color: var(--text-muted);">Elite Commander</p>
+          <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 42 • 21.0k AXP</div>
+        </div>
+        <div class="carousel-slide rank-3">
+          <div style="font-size: 3rem; margin-bottom: 1rem;">🥉</div>
+          <h3 style="color: #CD7F32;">Ghost_Aim</h3>
+          <p style="color: var(--text-muted);">Diamond Ace</p>
+          <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 39 • 19.8k AXP</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="featured-section" style="text-align: center;">
+    <h2 class="text-neon" style="margin-bottom: 2rem;">FEATURED CLIP</h2>
+    <div style="max-width: 800px; margin: 0 auto;">
+      <div class="clip-card" style="position: relative; cursor: pointer;">
+        <div class="clip-thumbnail"
+          style="height: 400px; background: linear-gradient(45deg, rgba(11,15,23,0.5), rgba(26,35,50,0.8)), url('assets/images/featured-clip.jpg') center/cover;">
+          <i class="fas fa-play play-icon"></i>
+          <div style="position: absolute; bottom: 20px; left: 20px; text-align: left;">
+            <h3 style="margin: 0; color: white;">Quadra Kill • Master Rank</h3>
+            <p style="margin: 5px 0 0; color: var(--text-muted);">by Player_Elite</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <nav class="bottom-nav">
+    <!-- Injected by layout.js -->
+  </nav>
+
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

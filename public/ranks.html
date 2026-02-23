@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranks & Tiers • XP ARENA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        .rank-card {
+            background: var(--card-dark);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            transition: var(--transition);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .rank-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--border);
+            transition: var(--transition);
+        }
+
+        .rank-card.active {
+            border-color: var(--accent);
+            background: rgba(0, 229, 255, 0.05);
+        }
+
+        .rank-card.active::before {
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .rank-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+        }
+
+        .rank-info {
+            flex: 1;
+        }
+
+        .rank-info h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+
+        .rank-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .rank-requirement {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.9rem;
+        }
+
+        .v-badge-info {
+            background: rgba(0, 229, 255, 0.1);
+            border: 1px dashed var(--accent);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .player-status {
+            background: var(--secondary);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            text-align: center;
+            border: 1px solid var(--accent-glow);
+        }
+    </style>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+    <nav class="navbar"></nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Rank Tiers</h1>
+            <p>Climb the ranks by earning AXP through activities</p>
+        </div>
+
+        <div class="player-status" id="playerStatus">
+            <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">YOUR CURRENT RANK</div>
+            <div id="currentRankDisplay"
+                style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">Starter</div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                <div id="axpSummary" style="font-weight: 600;">0 AXP Total</div>
+                <div class="progress-bar-container" style="width: 100%; max-width: 300px;">
+                    <div id="axp-progress-fill" class="progress-bar-fill"></div>
+                </div>
+                <div id="nextRankStatus" style="font-size: 0.85rem; color: var(--text-muted);">---</div>
+            </div>
+        </div>
+
+        <div id="ranksList">
+            <!-- Tiers will be injected here -->
+        </div>
+
+        <div class="v-badge-info">
+            <div style="font-size: 2rem;">🛡️</div>
+            <div>
+                <h4 style="color: var(--accent); margin-bottom: 0.2rem;">The Champion's Proof</h4>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Reach the Champion rank (100,000 AXP) to unlock
+                    your exclusive Verified Badge and special profile effects.</p>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            renderRanksList();
+            updateRanksUI();
+            window.addEventListener('statsChange', updateRanksUI);
+        });
+
+        function renderRanksList() {
+            const list = document.getElementById('ranksList');
+            list.innerHTML = RANKS.map(rank => `
+                <div class="rank-card" id="rank-${rank.name.toLowerCase()}">
+                    <div class="rank-icon">${rank.icon}</div>
+                    <div class="rank-info">
+                        <h3>${rank.name}</h3>
+                        <p>${rank.verified ? 'The ultimate proof of dedication.' : 'Advance to higher tiers by earning AXP.'}</p>
+                    </div>
+                    <div class="rank-requirement">${rank.minAXP.toLocaleString()} AXP</div>
+                </div>
+            `).join('');
+        }
+
+        function updateRanksUI() {
+            const stats = User.getStats();
+            if (!stats) return;
+
+            const currentRank = stats.rank;
+            const nextRank = RANKS[RANKS.indexOf(currentRank) + 1];
+
+            document.getElementById('currentRankDisplay').textContent = currentRank.name;
+            document.getElementById('axpSummary').textContent = `${stats.axp.toLocaleString()} AXP Total`;
+
+            // Highlight current rank
+            document.querySelectorAll('.rank-card').forEach(card => card.classList.remove('active'));
+            const currentCard = document.getElementById(`rank-${currentRank.name.toLowerCase()}`);
+            if (currentCard) currentCard.classList.add('active');
+
+            // Progress bar logic
+            if (nextRank) {
+                const totalNeeded = nextRank.minAXP - currentRank.minAXP;
+                const earned = stats.axp - currentRank.minAXP;
+                const percent = Math.min((earned / totalNeeded) * 100, 100);
+
+                document.getElementById('axp-progress-fill').style.width = `${percent}%`;
+                document.getElementById('nextRankStatus').textContent = `${(nextRank.minAXP - stats.axp).toLocaleString()} AXP until ${nextRank.name}`;
+            } else {
+                document.getElementById('axp-progress-fill').style.width = `100%`;
+                document.getElementById('nextRankStatus').textContent = `Maximum Rank Achieved!`;
+            }
+        }
+    </script>
+</body>
+
+</html>

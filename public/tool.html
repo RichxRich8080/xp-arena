@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensitivity Tool • XP ARENA</title>
+    <meta name="description"
+        content="Calculate your perfect pro sensitivity settings for any mobile device in seconds with the XP ARENA sensitivity tool.">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Device Search */
+        .device-search-wrap {
+            position: relative;
+        }
+
+        #deviceSearch {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--card-dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-white);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        #deviceSearch:focus {
+            border-color: var(--accent);
+        }
+
+        #deviceSuggestions {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0;
+            right: 0;
+            background: var(--card-dark);
+            border: 1px solid var(--accent);
+            border-radius: 12px;
+            overflow: hidden;
+            z-index: 100;
+            max-height: 260px;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border);
+            transition: background 0.15s;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active {
+            background: rgba(0, 229, 255, 0.12);
+            color: var(--accent);
+        }
+
+        .suggestion-item span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 2px;
+        }
+
+        #selectedDeviceDisplay {
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 700;
+            min-height: 1.2rem;
+        }
+
+        /* Share Image btn */
+        .btn-share {
+            background: linear-gradient(135deg, #bf00ff, #00e5ff);
+            color: #000;
+            font-weight: 800;
+            padding: 0.85rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            margin-top: 0.75rem;
+            transition: opacity 0.2s, transform 0.15s;
+        }
+
+        .btn-share:hover {
+            opacity: 0.85;
+            transform: translateY(-2px);
+        }
+
+        /* Save Preset */
+        .btn-preset {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            font-weight: 700;
+            padding: 0.75rem;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.9rem;
+            margin-top: 0.75rem;
+            transition: all 0.2s;
+        }
+
+        .btn-preset:hover {
+            background: rgba(0, 229, 255, 0.2);
+        }
+    </style>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <!-- Injected by layout.js -->
+    </nav>
+
+    <!-- TOOL SECTION -->
+    <section class="tool-section">
+        <div class="container">
+
+            <div class="page-header">
+                <h1>Sensitivity Calculator</h1>
+                <p>Find your perfect pro settings in seconds with zero cost.</p>
+            </div>
+
+            <div class="form-card">
+                <!-- DEVICE SEARCH -->
+                <div class="form-group">
+                    <label>📱 Search Your Device</label>
+                    <div class="device-search-wrap">
+                        <input type="text" id="deviceSearch" autocomplete="off"
+                            placeholder="Type brand or model name (e.g. Samsung S24)..." />
+                        <div id="deviceSuggestions"></div>
+                    </div>
+                    <div id="selectedDeviceDisplay"></div>
+                    <!-- Hidden values used by app.js calculation -->
+                    <input type="hidden" id="selectedBrand">
+                    <input type="hidden" id="selectedSeries">
+                    <input type="hidden" id="selectedModel">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                    <div class="form-group">
+                        <label>RAM (GB): <span id="ramVal" class="text-neon">8</span> GB</label>
+                        <div style="padding: 10px 0;">
+                            <input type="range" id="ramSlider" min="2" max="16" step="2" value="8"
+                                style="-webkit-appearance: none; appearance: none; width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 5px; outline: none; transition: opacity 0.2s;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Hand/Grip</label>
+                        <select id="handSelect">
+                            <option value="hard">Hard Touch</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="fast">Fast Hands</option>
+                            <option value="gloves">Gloves</option>
+                            <option value="sweaty">Sweaty Hands</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Sensitivity Speed</label>
+                    <select id="speedSelect">
+                        <option value="slow">Slow (Steady Aim)</option>
+                        <option value="medium" selected>Medium (Balanced)</option>
+                        <option value="fast">Fast (Flick Shots)</option>
+                    </select>
+                </div>
+
+                <div id="loader" class="loader hidden"></div>
+                <button id="calculateBtn" class="btn-primary" style="margin-top: 1rem;">CALCULATE SENSITIVITY</button>
+
+                <!-- PRO PRESETS -->
+                <div style="margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1rem; color: #ffcc00; font-size: 1.1rem;"><i class="fas fa-crown"></i>
+                        Verified Pro Presets</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Instantly load exact
+                        settings used by legends.</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <button class="btn-secondary" onclick="loadProPreset('white444')"
+                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">White444</button>
+                        <button class="btn-secondary" onclick="loadProPreset('nobru')"
+                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Nobru</button>
+                        <button class="btn-secondary" onclick="loadProPreset('ruok')"
+                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Ruok
+                            FF</button>
+                        <button class="btn-secondary" onclick="loadProPreset('vincenzo')"
+                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Vincenzo</button>
+                    </div>
+                </div>
+
+                <!-- VIDEO GUIDE -->
+                <div
+                    style="margin-top: 2rem; background: rgba(0,0,0,0.4); border-radius: 16px; border: 1px solid var(--border); padding: 1.5rem; text-align: center;">
+                    <h4 style="margin-bottom: 0.5rem; color: #fff;"><i class="fab fa-youtube"
+                            style="color: #ff0000; font-size: 1.2rem; margin-right: 5px;"></i> How to apply settings
+                    </h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Watch this quick guide
+                        to apply your new sensitivity perfectly in the game menu.</p>
+                    <div
+                        style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 12px; background: #000; border: 1px solid rgba(255,255,255,0.1);">
+                        <!-- Generic placeholder thumbnail to act as a video for the mock -->
+                        <div style="position: absolute; top:0; left:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; background: url('assets/images/video-guide.jpg') center/cover; cursor: pointer;"
+                            onclick="if(window.Toast) Toast.show('Playing tutorial video...', 'info')">
+                            <div
+                                style="background: rgba(0,0,0,0.6); padding: 15px 20px; border-radius: 50%; color: #fff; font-size: 2rem; border: 2px solid rgba(255,255,255,0.5);">
+                                <i class="fas fa-play"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RESULTS -->
+                <div id="resultSection" class="hidden" style="margin-top: 2.5rem; animation: fadeIn 0.4s ease;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                        <span style="font-weight: 800; letter-spacing: 1px;">OPTIMIZED SETTINGS</span>
+                        <span
+                            style="background: var(--accent); color: #0b0f17; font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 800;">PRO</span>
+                    </div>
+
+                    <div
+                        style="background: rgba(0, 229, 255, 0.05); padding: 2rem; border-radius: 16px; text-align: center; border: 1px solid rgba(0, 229, 255, 0.2);">
+                        <div class="result-grid">
+                            <div class="result-card">
+                                <span class="res-label">GENERAL</span>
+                                <span id="resGeneral" class="res-val">--</span>
+                            </div>
+                            <div class="result-card">
+                                <span class="res-label">RED DOT</span>
+                                <span id="resRedDot" class="res-val">--</span>
+                            </div>
+                            <div class="result-card">
+                                <span class="res-label">2X SCOPE</span>
+                                <span id="res2x" class="res-val">--</span>
+                            </div>
+                            <div class="result-card">
+                                <span class="res-label">4X SCOPE</span>
+                                <span id="res4x" class="res-val">--</span>
+                            </div>
+                            <div class="result-card">
+                                <span class="res-label">8X SCOPE</span>
+                                <span id="res8x" class="res-val">--</span>
+                            </div>
+                        </div>
+
+                        <div id="proVerdict"
+                            style="margin-top: 1.5rem; font-size: 0.85rem; color: var(--accent); font-weight: 600; font-style: italic; background: rgba(0,229,255,0.05); padding: 0.8rem; border-radius: 8px; border-left: 3px solid var(--accent);">
+                            --</div>
+
+                        <button id="copyBtn" class="btn-secondary" style="margin-top: 1.5rem; width: 100%;">COPY ALL
+                            SETTINGS</button>
+                        <button id="shareImageBtn" class="btn-share">📸 SHARE AS IMAGE</button>
+                        <button id="savePresetBtn" class="btn-preset">⭐ SAVE AS PRESET</button>
+
+                        <div
+                            style="margin-top: 1.5rem; text-align: center; display: flex; gap: 1rem; justify-content: center;">
+                            <button id="saveVaultBtn" class="btn-secondary"
+                                style="width: auto; padding: 0.5rem 1.2rem; font-size: 0.85rem;">💾 Save to
+                                Vault</button>
+                            <a href="leaderboard.html"
+                                style="color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center;">See
+                                Top Players →</a>
+                        </div>
+
+                        <!-- COMMUNITY RATING -->
+                        <div id="communityRating"
+                            style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px solid var(--border);">
+                            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Was this
+                                sensitivity accurate for your gameplay?</div>
+                            <div style="display: flex; justify-content: center; gap: 15px;">
+                                <button id="rateUpBtn" class="btn-secondary"
+                                    style="width: auto; padding: 0.6rem 1.2rem; color: #00e5ff; border-color: rgba(0,229,255,0.3);"><i
+                                        class="fas fa-thumbs-up"></i> Spot On</button>
+                                <button id="rateDownBtn" class="btn-secondary"
+                                    style="width: auto; padding: 0.6rem 1.2rem; color: #ff4d4d; border-color: rgba(255,77,77,0.3);"><i
+                                        class="fas fa-thumbs-down"></i> Needs Tweak</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <!-- Injected by layout.js -->
+    </nav>
+
+    <script src="js/phones.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>

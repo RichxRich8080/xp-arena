@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quests • XP ARENA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .quest-section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .weekly-badge {
+            background: linear-gradient(135deg, #bf00ff, #00e5ff);
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 900;
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            letter-spacing: 1px;
+        }
+
+        .reset-timer {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .reset-timer span {
+            color: var(--accent);
+            font-weight: 800;
+        }
+
+        /* Premium Quest Card Styling */
+        .quest-card {
+            background: linear-gradient(145deg, var(--card-dark), #111822);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .quest-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+        }
+
+        .quest-card:not(.completed):hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent);
+        }
+
+        .quest-card:not(.completed):hover::before {
+            left: 200%;
+        }
+
+        .quest-card.completed {
+            opacity: 0.6;
+            filter: grayscale(80%);
+            border-color: var(--border) !important;
+        }
+    </style>
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+    <nav class="navbar"></nav>
+
+    <div class="page-header"
+        style="padding: 4rem 1rem; background: radial-gradient(circle at top, rgba(191, 0, 255, 0.1), transparent 70%);">
+        <h1 style="color: var(--accent);">Hero's Journey</h1>
+        <p>Complete daily and weekly missions to earn massive AXP and level up.</p>
+    </div>
+
+    <div class="main-container" style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
+
+        <!-- DAILY QUESTS -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
+            <div class="quest-section-title" style="margin-bottom: 0;">
+                <i class="fas fa-sun"></i> Daily Quests
+            </div>
+            <div class="reset-timer"
+                style="margin-bottom: 0; background: rgba(0,229,255,0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(0,229,255,0.2);">
+                <i class="far fa-clock" style="color: var(--accent); margin-right: 5px;"></i> Ends in <span
+                    id="dailyCountdown">00:00:00</span>
+            </div>
+        </div>
+        <div id="questList" style="display: grid; gap: 1.5rem; margin-bottom: 3rem; margin-top: 1rem;"></div>
+
+        <!-- WEEKLY CHALLENGES -->
+        <div class="quest-section-title">
+            <i class="fas fa-calendar-week"></i> Weekly Challenges
+            <span class="weekly-badge">WEEKLY</span>
+        </div>
+        <div class="reset-timer">Resets in <span id="weeklyResetCountdown">7 days</span></div>
+        <div id="weeklyQuestList" style="display: grid; gap: 1.5rem;"></div>
+
+        <div style="margin-top: 4rem; text-align: center; border-top: 1px solid var(--border); padding-top: 2rem;">
+            <p style="color: var(--text-muted);">Complete quests daily to maintain your streak and boost your rank
+                faster!</p>
+        </div>
+    </div>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/confetti.js"></script>
+    <script>
+        const QUESTS = [
+            { id: 'explorer', name: 'Platform Explorer', desc: 'Visit 5 different pages today', reward: 100, goal: 5, type: 'visit' },
+            { id: 'social_star', name: 'Social Star', desc: 'Link at least one social handle', reward: 150, goal: 1, type: 'social' },
+            { id: 'vault_keeper', name: 'Vault Keeper', desc: 'Save a calculation to your vault', reward: 80, goal: 1, type: 'vault' },
+            { id: 'steady_hand', name: 'Steady Hand', desc: 'Maintain a 2-day streak', reward: 200, goal: 2, type: 'streak' }
+        ];
+
+        const WEEKLY_QUESTS = [
+            {
+                id: 'weekly_social_update',
+                name: 'Connect Your Socials',
+                desc: 'Update at least one social handle on your profile (TikTok, Instagram or YouTube).',
+                reward: 500,
+                icon: '📲',
+                type: 'weekly_social'
+            },
+            {
+                id: 'weekly_streak_3',
+                name: '3-Day Streak Warrior',
+                desc: 'Log in for 3 consecutive days this week.',
+                reward: 400,
+                icon: '🔥',
+                type: 'weekly_streak',
+                goal: 3
+            },
+            {
+                id: 'weekly_explorer',
+                name: 'Arena Explorer',
+                desc: 'Visit the Tool, Leaderboard, and Ranks pages this week.',
+                reward: 350,
+                icon: '🗺️',
+                type: 'weekly_pages',
+                pages: ['tool.html', 'leaderboard.html', 'ranks.html']
+            }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            checkWeeklyReset();
+            renderQuests();
+            renderWeeklyQuests();
+            startCountdowns();
+        });
+
+        // --- WEEKLY RESET LOGIC ---
+        function getWeekStart() {
+            const d = new Date();
+            const day = d.getDay();
+            const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Monday
+            const mon = new Date(d.setDate(diff));
+            mon.setHours(0, 0, 0, 0);
+            return mon.getTime();
+        }
+
+        function checkWeeklyReset() {
+            const weekStart = getWeekStart();
+            User.updateStats(stats => {
+                if (!stats.weeklyQuests || stats.weeklyQuests.weekStart !== weekStart) {
+                    // New week — reset weekly quests
+                    stats.weeklyQuests = {
+                        weekStart,
+                        completed: []
+                    };
+                }
+            });
+        }
+
+        function startCountdowns() {
+            function update() {
+                const now = new Date();
+
+                // Weekly
+                const nextMonday = new Date();
+                nextMonday.setDate(now.getDate() + (7 - now.getDay() + 1) % 7 || 7);
+                nextMonday.setHours(0, 0, 0, 0);
+                const wDiff = nextMonday - now;
+                const wDays = Math.floor(wDiff / 86400000);
+                const wHours = Math.floor((wDiff % 86400000) / 3600000);
+                document.getElementById('weeklyResetCountdown').textContent = `${wDays}d ${wHours}h`;
+
+                // Daily
+                const midnight = new Date(now);
+                midnight.setHours(24, 0, 0, 0);
+                const dDiff = midnight - now;
+                const dHours = String(Math.floor(dDiff / 3600000)).padStart(2, '0');
+                const dMins = String(Math.floor((dDiff % 3600000) / 60000)).padStart(2, '0');
+                const dSecs = String(Math.floor((dDiff % 60000) / 1000)).padStart(2, '0');
+
+                const dEl = document.getElementById('dailyCountdown');
+                if (dEl) dEl.textContent = `${dHours}:${dMins}:${dSecs}`;
+            }
+
+            update();
+            setInterval(update, 1000);
+        }
+
+        // --- DAILY QUESTS RENDER ---
+        function renderQuests() {
+            const stats = User.getStats();
+            const questList = document.getElementById('questList');
+            if (!questList) return;
+
+            questList.innerHTML = QUESTS.map(q => {
+                const isCompleted = stats.quests.completed.includes(q.id);
+                let progress = 0;
+
+                if (q.type === 'visit') progress = (stats.visitedPages || []).length;
+                if (q.type === 'social') progress = (stats.socials.tiktok || stats.socials.instagram || stats.socials.youtube) ? 1 : 0;
+                if (q.type === 'vault') progress = (stats.vault || []).length > 0 ? 1 : 0;
+                if (q.type === 'streak') progress = stats.streak || 0;
+
+                const percent = Math.min((progress / q.goal) * 100, 100);
+                const canClaim = progress >= q.goal && !isCompleted;
+
+                return questCard(q, isCompleted, canClaim, progress, percent, 'claimQuest');
+            }).join('');
+        }
+
+        // --- WEEKLY QUESTS RENDER ---
+        function renderWeeklyQuests() {
+            const stats = User.getStats();
+            const weeklyCompleted = (stats.weeklyQuests && stats.weeklyQuests.completed) ? stats.weeklyQuests.completed : [];
+            const el = document.getElementById('weeklyQuestList');
+            if (!el) return;
+
+            el.innerHTML = WEEKLY_QUESTS.map(q => {
+                const isCompleted = weeklyCompleted.includes(q.id);
+                let progress = 0;
+                let goal = q.goal || 1;
+
+                if (q.type === 'weekly_social') {
+                    progress = (stats.socials.tiktok || stats.socials.instagram || stats.socials.youtube) ? 1 : 0;
+                }
+                if (q.type === 'weekly_streak') {
+                    progress = Math.min(stats.streak || 0, q.goal);
+                }
+                if (q.type === 'weekly_pages') {
+                    const visited = stats.visitedPages || [];
+                    progress = q.pages.filter(p => visited.includes(p)).length;
+                    goal = q.pages.length;
+                }
+
+                const percent = Math.min((progress / goal) * 100, 100);
+                const canClaim = progress >= goal && !isCompleted;
+
+                return questCard({ ...q, goal }, isCompleted, canClaim, progress, percent, 'claimWeeklyQuest', '#bf00ff');
+            }).join('');
+        }
+
+        function questCard(q, isCompleted, canClaim, progress, percent, claimFn, accentColor) {
+            const color = accentColor || 'var(--accent)';
+            return `
+                <div class="quest-card ${isCompleted ? 'completed' : ''}" style="border-color: ${canClaim ? color : 'var(--border)'};">
+                    ${isCompleted ? '<div style="position: absolute; top: -15px; right: -30px; background: rgba(255,255,255,0.1); color: #fff; padding: 25px 30px 5px; transform: rotate(45deg); font-size: 0.7rem; font-weight: 900; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">DONE</div>' : ''}
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                        <div style="flex: 1;">
+                            <h3 style="margin: 0; color: ${isCompleted ? 'var(--text-muted)' : '#fff'}; font-size: 1.2rem; text-shadow: ${canClaim ? '0 0 10px ' + color : 'none'};">${q.icon || '🎯'} ${q.name}</h3>
+                            <p style="margin: 0.4rem 0 0; font-size: 0.85rem; color: var(--text-muted);">${q.desc}</p>
+                        </div>
+                        <div style="color: ${color}; font-weight: 900; font-size: 1.1rem; text-align: right; min-width: 70px; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">+${q.reward} AXP</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="flex: 1; height: 8px; background: rgba(0,0,0,0.5); border-radius: 4px; overflow: hidden; position: relative;">
+                            <div style="width: ${percent}%; height: 100%; background: ${canClaim ? 'linear-gradient(90deg, #fff, ' + color + ')' : color}; transition: width 0.5s cubic-bezier(0.25, 0.8, 0.25, 1); box-shadow: ${canClaim ? '0 0 10px ' + color : 'none'};"></div>
+                        </div>
+                        <span style="font-size: 0.85rem; font-weight: 800; color: ${canClaim ? color : 'var(--text-muted)'};">${Math.min(progress, q.goal)}/${q.goal}</span>
+                    </div>
+                    ${isCompleted ?
+                    '<button disabled class="btn-secondary" style="margin-top: 1.2rem; width: auto; opacity: 0; pointer-events: none;">COMPLETED</button>' :
+                    canClaim ?
+                        `<button onclick="${claimFn}('${q.id}', ${q.reward})" class="btn-primary" style="margin-top: 1.2rem; width: auto; animation: pulse-border 2s infinite; background: ${color}; color: #000; font-weight: 900;">🎁 CLAIM REWARD</button>` :
+                        '<button disabled class="btn-secondary" style="margin-top: 1.2rem; width: auto; cursor: not-allowed; opacity: 0.5; background: transparent; border-color: rgba(255,255,255,0.1);">IN PROGRESS...</button>'
+                }
+                </div>
+            `;
+        }
+
+        function claimQuest(id, reward) {
+            User.updateStats(stats => {
+                if (!stats.quests.completed) stats.quests.completed = [];
+                stats.quests.completed.push(id);
+            });
+            User.addAXP(reward, `Daily Quest: ${id}`);
+            if (window.Toast) Toast.show(`Quest complete! +${reward} AXP earned!`, 'success', 4000);
+            if (window.Celebration) Celebration.fire();
+            renderQuests();
+        }
+
+        function claimWeeklyQuest(id, reward) {
+            User.updateStats(stats => {
+                if (!stats.weeklyQuests) stats.weeklyQuests = { weekStart: getWeekStart(), completed: [] };
+                if (!stats.weeklyQuests.completed) stats.weeklyQuests.completed = [];
+                stats.weeklyQuests.completed.push(id);
+            });
+            User.addAXP(reward, `Weekly Quest: ${id}`);
+            if (window.Toast) Toast.show(`Weekly Quest complete! +${reward} AXP earned! 🏆`, 'success', 5000);
+            if (window.Celebration) Celebration.fire();
+            renderWeeklyQuests();
+        }
+    </script>
+</body>
+
+</html>

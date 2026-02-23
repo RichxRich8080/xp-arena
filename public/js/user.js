@@ -1,0 +1,527 @@
+/**
+ * User & AXP System for XP Arena (SQL Backend Sync)
+ */
+
+const RANKS = [
+    { name: 'Starter', minAXP: 0, icon: '🆕' },
+    { name: 'Bronze', minAXP: 1000, icon: '🥉' },
+    { name: 'Silver', minAXP: 5000, icon: '🥈' },
+    { name: 'Gold', minAXP: 15000, icon: '🥇' },
+    { name: 'Platinum', minAXP: 30000, icon: '💎' },
+    { name: 'Diamond', minAXP: 50000, icon: '☄️' },
+    { name: 'Elite', minAXP: 75000, icon: '🔥' },
+    { name: 'Master', minAXP: 90000, icon: '👑' },
+    { name: 'Champion', minAXP: 100000, icon: '🛡️', verified: true }
+];
+
+const ACHIEVEMENTS = [
+    { id: 'early_bird', name: 'Early Bird', desc: 'Log in for the first time', icon: '☀️', goal: 1 },
+    { id: 'optimizer', name: 'The Optimizer', desc: 'Calculate sensitivity 5 times', icon: '⚙️', goal: 5 },
+    { id: 'content_creator', name: 'Content Creator', desc: 'Submit 3 gameplay clips', icon: '🎬', goal: 3 },
+    { id: 'supporter', name: 'Community Supporter', desc: 'Visit the support page', icon: '🤝', goal: 1 },
+    { id: 'grinder', name: 'Daily Grinder', desc: 'Maintain a 7 day streak', icon: '📅', goal: 7 },
+    { id: 'rising_star', name: 'Rising Star', desc: 'Reach Level 10', icon: '🌟', goal: 10 },
+    { id: 'verified_player', name: 'Verified Hero', desc: 'Reach special rank Master or Champion', icon: '✅', goal: 1 },
+    { id: 'legendary', name: 'Arena Legend', desc: 'Reach Champion rank', icon: '🏆', goal: 1 }
+];
+
+const User = {
+    async loadStats() {
+        if (!Auth.isLoggedIn()) return;
+        try {
+            const res = await fetch(`${window.API_URL}/api/user/profile`, {
+                headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                const user = Auth.getCurrentUser();
+                if (!user || !data.user) return;
+
+                // Construct the stats object
+                const stats = {
+                    userId: user.id,
+                    axp: data.user.axp || 0,
+                    level: Math.floor((data.user.axp || 0) / 500) + 1,
+                    avatar: data.user.avatar || '👤',
+                    streak: data.user.streak || 0,
+                    lastLogin: data.user.last_login,
+                    socials: typeof data.user.socials === 'string' ? JSON.parse(data.user.socials) : (data.user.socials || { tiktok: '', instagram: '', youtube: '' }),
+                    activities: data.activities || [],
+                    vault: data.vault || [],
+                    presets: data.presets || [],
+                    sensitivityHistory: data.history || [],
+                    clips: data.clips || [],
+                    achievements: data.achievements || [],
+                    badges: [],
+                    submissions: (data.clips || []).length,
+                    calculations: (data.history || []).length,
+                    referralCode: this.generateReferralCode(user.id),
+                    referralCount: 0,
+                    weeklyQuests: {},
+                    axpLog: [],
+                    quests: { completed: [], progress: {} }
+                };
+
+                localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+                this.updateUI();
+
+                // Dispatch event so dependents know stats are fresh
+                window.dispatchEvent(new Event('statsLoaded'));
+            }
+        } catch (e) {
+            console.error('Error loading stats from server', e);
+            window.dispatchEvent(new Event('statsLoaded')); // Still notify so UI can show "error" or "retry"
+        }
+    },
+
+    initStats(userId) {
+        // Obsolete; initialization handled by backend upon registration
+    },
+
+    generateReferralCode(userId) {
+        return 'XPA-' + (userId || '').toString().slice(0, 6).toUpperCase();
+    },
+
+    getStats() {
+        const user = Auth.getCurrentUser();
+        if (!user) return null;
+        let stats = JSON.parse(localStorage.getItem(`xp_stats_${user.id}`));
+        if (stats) {
+            stats.rank = this.getCurrentRank(stats.axp);
+            if (!stats.clips) stats.clips = [];
+            if (!stats.vault) stats.vault = [];
+            if (!stats.presets) stats.presets = [];
+            if (!stats.sensitivityHistory) stats.sensitivityHistory = [];
+            if (!stats.weeklyQuests) stats.weeklyQuests = {};
+            if (!stats.axpLog) stats.axpLog = [];
+            if (!stats.quests) stats.quests = { completed: [], progress: {} };
+            if (!stats.visitedPages) stats.visitedPages = [];
+            if (!stats.socials) stats.socials = { tiktok: '', instagram: '', youtube: '' };
+        }
+        return stats;
+    },
+
+    async updateUsername(newUsername) {
+        if (newUsername.length < 3) return { success: false, message: 'Username too short' };
+        try {
+            const res = await fetch(`${window.API_URL}/api/user/nickname`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({ newUsername })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                // Update local storage token and user object
+                localStorage.setItem('xp_token', data.token);
+                localStorage.setItem('xp_current_user', JSON.stringify(data.user));
+
+                // Update stats AXP locally if it costed AXP
+                if (data.cost > 0) {
+                    this.updateStatsLocally(s => s.axp -= data.cost);
+                }
+
+                window.dispatchEvent(new Event('authChange'));
+                return { success: true };
+            } else {
+                return { success: false, message: data.error };
+            }
+        } catch (e) {
+            return { success: false, message: 'Network Error' };
+        }
+    },
+
+    async updatePassword(currentPassword, newPassword) {
+        if (newPassword.length < 6) return { success: false, message: 'Password must be at least 6 characters' };
+        try {
+            const res = await fetch(`${window.API_URL}/api/user/password`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({ currentPassword, newPassword })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                return { success: true };
+            } else {
+                return { success: false, message: data.error };
+            }
+        } catch (e) {
+            return { success: false, message: 'Network Error' };
+        }
+    },
+
+    async updateSocials(socials) {
+        this.updateStatsLocally(stats => {
+            stats.socials = { ...stats.socials, ...socials };
+        });
+        await fetch(`${window.API_URL}/api/user/socials`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ socials })
+        });
+        return true;
+    },
+
+    async addClip(clipData) {
+        this.updateStatsLocally(stats => {
+            if (!stats.clips) stats.clips = [];
+            stats.clips.unshift({
+                id: Date.now(),
+                ...clipData,
+                timestamp: new Date().toISOString()
+            });
+            stats.submissions++;
+            this.addAXPLocally(50, 'Clip Submission');
+            this.logActivityLocally(`Submitted a gameplay clip on ${clipData.device}`);
+        });
+
+        await fetch(`${window.API_URL}/api/user/clip`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify(clipData)
+        });
+    },
+
+    async saveToVault(result) {
+        this.updateStatsLocally(stats => {
+            if (!stats.vault) stats.vault = [];
+            stats.vault.unshift({
+                id: Date.now(),
+                ...result,
+                timestamp: new Date().toISOString()
+            });
+            if (stats.vault.length > 10) stats.vault.pop();
+            this.addAXPLocally(20, 'Saved to Vault');
+            this.logActivityLocally(`Saved ${result.device} settings to Vault`);
+        });
+
+        await fetch(`${window.API_URL}/api/user/vault`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ settings: result })
+        });
+
+        if (window.Toast) Toast.show('Saved to Vault!', 'success');
+    },
+
+    async savePreset(name, result) {
+        this.updateStatsLocally(stats => {
+            if (!stats.presets) stats.presets = [];
+            stats.presets = stats.presets.filter(p => p.name !== name);
+            stats.presets.unshift({
+                id: Date.now(),
+                name,
+                ...result,
+                timestamp: new Date().toISOString()
+            });
+            if (stats.presets.length > 10) stats.presets.pop();
+        });
+
+        await fetch(`${window.API_URL}/api/user/preset`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ name, settings: result })
+        });
+
+        if (window.Toast) Toast.show(`Preset "${name}" saved!`, 'success');
+    },
+
+    async addSensitivityHistory(entry) {
+        this.updateStatsLocally(stats => {
+            if (!stats.sensitivityHistory) stats.sensitivityHistory = [];
+            stats.sensitivityHistory.unshift({ ...entry, timestamp: new Date().toISOString() });
+            if (stats.sensitivityHistory.length > 20) stats.sensitivityHistory.pop();
+            stats.calculations++;
+        });
+
+        await fetch(`${window.API_URL}/api/user/history`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ device: entry.device, general_mid: entry.general_mid, general_range: entry.general_range })
+        });
+    },
+
+    getCurrentRank(axp) {
+        return [...RANKS].reverse().find(r => axp >= r.minAXP) || RANKS[0];
+    },
+
+    async updateAvatar(icon) {
+        const stats = this.getStats();
+        if (!stats.avatar || stats.avatar === '👤') {
+            this.addAXPLocally(20, 'First Avatar Selected');
+            this.showAXPIncrement(20);
+
+            // Sync AXP
+            fetch(`${window.API_URL}/api/user/axp`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+                body: JSON.stringify({ amount: 20, reason: 'First Avatar Selected' })
+            });
+        }
+
+        this.updateStatsLocally(s => s.avatar = icon);
+        this.updateUI();
+
+        await fetch(`${window.API_URL}/api/user/avatar`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ avatar: icon })
+        });
+    },
+
+    openAvatarModal() {
+        const avatars = ['👤', '🎮', '🔥', '⚡️', '🏆', '🎯', '⚔️', '🛡️', '👑', '🥇'];
+        const icon = prompt(`Select your avatar:\n${avatars.join(' ')}`);
+        if (icon && avatars.includes(icon)) {
+            this.updateAvatar(icon);
+        }
+    },
+
+    updateUI() {
+        if (!Auth.isLoggedIn()) return;
+        const stats = this.getStats();
+        const user = Auth.getCurrentUser();
+        if (!stats || !user) return;
+
+        const rank = stats.rank;
+
+        const elAvatar = document.getElementById('avatarImage');
+        if (elAvatar && stats.avatar) elAvatar.textContent = stats.avatar;
+
+        const level = Math.floor(stats.axp / 500) + 1;
+        const currentLevelAXP = stats.axp % 500;
+        const progressPercent = (currentLevelAXP / 500) * 100;
+
+        const elLevel = document.getElementById('display-level');
+        const elAXPLabel = document.getElementById('display-axp-label');
+        const elAXPFill = document.getElementById('axp-progress-fill');
+
+        if (elLevel) elLevel.textContent = `Level ${level}`;
+        if (elAXPLabel) elAXPLabel.textContent = `${currentLevelAXP} / 500 AXP (Total: ${stats.axp})`;
+
+        if (elAXPFill) {
+            setTimeout(() => {
+                elAXPFill.style.width = `${progressPercent}%`;
+            }, 100);
+        }
+
+        const fields = {
+            'profile-username': user.username,
+            'profile-email': user.email || 'No email provided',
+            'profile-axp': stats.axp,
+            'profile-rank': rank.name,
+            'usernameDisplay': user.username,
+            'levelDisplay': `Level ${stats.level}`,
+            'axpDisplay': stats.axp,
+            'submissionsDisplay': stats.submissions || 0,
+            'currentRankName': rank.name
+        };
+
+        Object.keys(fields).forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = fields[id];
+        });
+
+        const vBadges = ['v-badge', 'v-badge-top'];
+        vBadges.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = rank.verified ? 'inline-block' : 'none';
+        });
+
+        this.renderBadges(stats.badges);
+    },
+
+    renderBadges(badges) {
+        // Simple mock
+    },
+
+    showLevelUpCinematic(level, rank) {
+        const existing = document.getElementById('xpa-levelup-overlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'xpa-levelup-overlay';
+        overlay.style.cssText = `
+            position: fixed; inset: 0; z-index: 99999;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(12px);
+            animation: lvlup-in 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+        `;
+        overlay.innerHTML = `
+            <style>
+                @keyframes lvlup-in   { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
+                @keyframes lvlup-ring { 0%,100% { box-shadow: 0 0 30px 10px var(--accent), 0 0 80px 30px rgba(0,229,255,0.3); } 50% { box-shadow: 0 0 60px 20px #bf00ff, 0 0 120px 60px rgba(191,0,255,0.4); } }
+                @keyframes lvlup-badge { 0% { transform:scale(0) rotate(-15deg); opacity:0; } 70% { transform:scale(1.15) rotate(3deg); } 100% { transform:scale(1) rotate(0); opacity:1; } }
+            </style>
+            <div style="text-align:center; padding: 2.5rem; max-width: 380px; width: 90%;
+                background: linear-gradient(135deg, #0b0f17, #111827);
+                border: 2px solid var(--accent);
+                border-radius: 28px;
+                animation: lvlup-ring 2s infinite;">
+                <div style="font-size: 0.75rem; letter-spacing: 4px; color: rgba(0,229,255,0.7); text-transform: uppercase; margin-bottom: 0.8rem;">⬆ LEVEL UP</div>
+                <div style="font-size: 5rem; line-height:1; animation: lvlup-badge 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;">${rank.icon}</div>
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0.6rem 0 0.2rem; letter-spacing: -0.5px;">LEVEL ${level}</h2>
+                <div style="font-size: 1.1rem; color: var(--accent); font-weight: 800; margin-bottom: 1.5rem;">${rank.name}</div>
+                <div style="height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 1.5rem;"></div>
+                <button onclick="document.getElementById('xpa-levelup-overlay').remove()" style="
+                    background: var(--accent); color: #000; border: none;
+                    border-radius: 50px; padding: 0.75rem 2.5rem;
+                    font-size: 1rem; font-weight: 900; cursor: pointer;
+                    letter-spacing: 1px;">KEEP GOING →</button>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+        setTimeout(() => { if (overlay.parentNode) overlay.remove(); }, 5000);
+    },
+
+    showAXPIncrement(amount) {
+        const popup = document.createElement('div');
+        popup.className = 'axp-increment-popup';
+        popup.textContent = `+${amount} AXP`;
+        popup.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+        popup.style.top = `${50 + (Math.random() * 20 - 10)}%`;
+        document.body.appendChild(popup);
+        setTimeout(() => popup.remove(), 1500);
+    },
+
+    updateStatsLocally(updater) {
+        const user = Auth.getCurrentUser();
+        if (!user) return;
+
+        let stats = this.getStats();
+        if (!stats) return;
+
+        const oldLevel = Math.floor(stats.axp / 500) + 1;
+        updater(stats);
+
+        const newLevel = Math.floor(stats.axp / 500) + 1;
+        if (newLevel > oldLevel) {
+            stats.level = newLevel;
+            const rank = this.getCurrentRank(stats.axp);
+            setTimeout(() => this.showLevelUpCinematic(newLevel, rank), 300);
+            if (window.Celebration) Celebration.fire();
+        }
+
+        localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+        this.checkAchievements(stats);
+        window.dispatchEvent(new Event('statsChange'));
+    },
+
+    logActivityLocally(text) {
+        this.updateStatsLocally(stats => {
+            if (!stats.activities) stats.activities = [];
+            stats.activities.unshift({ text, timestamp: new Date().toISOString() });
+            if (stats.activities.length > 20) stats.activities.pop();
+        });
+    },
+
+    checkAchievements(stats) {
+        let unlockedNew = false;
+        ACHIEVEMENTS.forEach(ach => {
+            if (stats.achievements.includes(ach.id)) return;
+
+            let reached = false;
+            if (ach.id === 'early_bird') reached = true;
+            if (ach.id === 'optimizer' && stats.calculations >= ach.goal) reached = true;
+            if (ach.id === 'content_creator' && stats.submissions >= ach.goal) reached = true;
+            if (ach.id === 'grinder' && stats.streak >= ach.goal) reached = true;
+            if (ach.id === 'rising_star' && stats.level >= ach.goal) reached = true;
+            if (ach.id === 'verified_player' && stats.rank.minAXP >= 90000) reached = true;
+            if (ach.id === 'legendary' && stats.rank.minAXP >= 100000) reached = true;
+            if (ach.id === 'supporter' && localStorage.getItem('xp_visited_support')) reached = true;
+
+            if (reached) {
+                stats.achievements.push(ach.id);
+                unlockedNew = true;
+                if (window.Toast) {
+                    Toast.show(`Achievement Unlocked: ${ach.name}! ${ach.icon}`, 'success', 5000);
+                }
+                if (window.Celebration) Celebration.fire();
+                this.addAXP(100, `Achievement: ${ach.name}`);
+            }
+        });
+
+        if (unlockedNew) {
+            const user = Auth.getCurrentUser();
+            localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+        }
+    },
+
+    addAXPLocally(amount, reason) {
+        this.updateStatsLocally(stats => {
+            stats.axp += amount;
+            if (window.Toast) {
+                Toast.show(`+${amount} AXP: ${reason}`, 'xp', 2000);
+            }
+        });
+    },
+
+    async addAXP(amount, reason) {
+        this.addAXPLocally(amount, reason);
+        if (reason) this.logActivityLocally(reason);
+        await fetch(`${window.API_URL}/api/user/axp`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${Auth.getToken()}`
+            },
+            body: JSON.stringify({ amount, reason })
+        });
+    },
+
+    checkDailyLogin() {
+        // Removed local handling, can be integrated via backend in the future
+    }
+};
+
+window.User = User;
+window.RANKS = RANKS;
+
+// ==========================
+// SQUAD / CLAN SYSTEM MOCK
+// ==========================
+const SquadSystem = {
+    getSquad(name) { return JSON.parse(localStorage.getItem(`xp_squad_${name.toUpperCase()}`)); },
+    saveSquad(squad) { localStorage.setItem(`xp_squad_${squad.name.toUpperCase()}`, JSON.stringify(squad)); },
+    promptCreate() { /* Mock removed for brevity to focus on Phase 3 and 4 */ },
+    promptJoin() { /* Mock removed */ },
+    leave() { /* Mock removed */ },
+    updateUI() { /* Mock removed */ }
+};
+window.SquadSystem = SquadSystem;
+
+// Async Load Data On Initializing
+window.addEventListener('authChange', () => {
+    if (Auth.isLoggedIn()) {
+        User.loadStats();
+    }
+});
+
+if (Auth.isLoggedIn()) {
+    User.loadStats();
+}
