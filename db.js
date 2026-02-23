@@ -17,14 +17,19 @@ const pool = mysql.createPool({
 });
 
 // Test connection and log errors
+console.log(`Attempting to connect to DB at ${process.env.DB_HOST}:${process.env.DB_PORT || 3306}...`);
+
 pool.getConnection()
     .then(conn => {
-        console.log('Successfully connected to MySQL database');
+        console.log('✅ Successfully connected to MySQL database');
         conn.release();
     })
     .catch(err => {
-        console.error('Critical Database Connection Error:', err.message);
-        console.error('Check your DB_HOST, DB_USER, DB_PASSWORD, and IP Whitelist!');
+        console.error('❌ Critical Database Connection Error!');
+        console.error('Error Name:', err.name);
+        console.error('Error Code:', err.code);
+        console.error('Error Message:', err.message);
+        console.error('Check your DB_HOST, DB_USER, DB_PASSWORD, DB_PORT, and IP Whitelist!');
     });
 
 // Helper for single queries (compatibility with sqlite3-like interface where possible)
