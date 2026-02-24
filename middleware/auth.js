@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
-
-const JWT_SECRET = process.env.JWT_SECRET || 'xpare123secretkey'; // Fallback for prototyping
+const JWT_SECRET = process.env.NODE_ENV === 'production'
+  ? process.env.JWT_SECRET
+  : (process.env.JWT_SECRET || 'xpare123secretkey');
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];

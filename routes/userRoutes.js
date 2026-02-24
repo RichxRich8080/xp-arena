@@ -43,7 +43,9 @@ router.post('/nickname', authenticateToken, async (req, res) => {
         const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET);
         res.json({ success: true, token, user: { id: req.user.id, username: newUsername }, cost });
     } catch (err) {
-        if (err.message && err.message.includes('UNIQUE')) return res.status(400).json({ error: 'Username already taken' });
+        if ((err && err.code === 'ER_DUP_ENTRY') || (err.message && err.message.includes('UNIQUE'))) {
+            return res.status(400).json({ error: 'Username already taken' });
+        }
         res.status(500).json({ error: 'Database error' });
     }
 });

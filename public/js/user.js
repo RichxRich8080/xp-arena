@@ -25,11 +25,15 @@ const ACHIEVEMENTS = [
     { id: 'legendary', name: 'Arena Legend', desc: 'Reach Champion rank', icon: '🏆', goal: 1 }
 ];
 
+const API_BASE_USER = (typeof window !== 'undefined' && typeof window.API_URL !== 'undefined')
+    ? window.API_URL
+    : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+
 const User = {
     async loadStats() {
         if (!Auth.isLoggedIn()) return;
         try {
-            const res = await fetch(`${window.API_URL}/api/user/profile`, {
+            const res = await fetch(`${API_BASE_USER}/api/user/profile`, {
                 headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
             });
             if (res.ok) {
@@ -104,7 +108,7 @@ const User = {
     async updateUsername(newUsername) {
         if (newUsername.length < 3) return { success: false, message: 'Username too short' };
         try {
-            const res = await fetch(`${window.API_URL}/api/user/nickname`, {
+            const res = await fetch(`${API_BASE_USER}/api/user/nickname`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,7 +140,7 @@ const User = {
     async updatePassword(currentPassword, newPassword) {
         if (newPassword.length < 6) return { success: false, message: 'Password must be at least 6 characters' };
         try {
-            const res = await fetch(`${window.API_URL}/api/user/password`, {
+            const res = await fetch(`${API_BASE_USER}/api/user/password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -159,7 +163,7 @@ const User = {
         this.updateStatsLocally(stats => {
             stats.socials = { ...stats.socials, ...socials };
         });
-        await fetch(`${window.API_URL}/api/user/socials`, {
+        await fetch(`${API_BASE_USER}/api/user/socials`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -183,7 +187,7 @@ const User = {
             this.logActivityLocally(`Submitted a gameplay clip on ${clipData.device}`);
         });
 
-        await fetch(`${window.API_URL}/api/user/clip`, {
+        await fetch(`${API_BASE_USER}/api/user/clip`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -206,7 +210,7 @@ const User = {
             this.logActivityLocally(`Saved ${result.device} settings to Vault`);
         });
 
-        await fetch(`${window.API_URL}/api/user/vault`, {
+        await fetch(`${API_BASE_USER}/api/user/vault`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -231,7 +235,7 @@ const User = {
             if (stats.presets.length > 10) stats.presets.pop();
         });
 
-        await fetch(`${window.API_URL}/api/user/preset`, {
+        await fetch(`${API_BASE_USER}/api/user/preset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -251,7 +255,7 @@ const User = {
             stats.calculations++;
         });
 
-        await fetch(`${window.API_URL}/api/user/history`, {
+        await fetch(`${API_BASE_USER}/api/user/history`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -272,7 +276,7 @@ const User = {
             this.showAXPIncrement(20);
 
             // Sync AXP
-            fetch(`${window.API_URL}/api/user/axp`, {
+            fetch(`${API_BASE_USER}/api/user/axp`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
                 body: JSON.stringify({ amount: 20, reason: 'First Avatar Selected' })
@@ -282,7 +286,7 @@ const User = {
         this.updateStatsLocally(s => s.avatar = icon);
         this.updateUI();
 
-        await fetch(`${window.API_URL}/api/user/avatar`, {
+        await fetch(`${API_BASE_USER}/api/user/avatar`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -484,7 +488,7 @@ const User = {
     async addAXP(amount, reason) {
         this.addAXPLocally(amount, reason);
         if (reason) this.logActivityLocally(reason);
-        await fetch(`${window.API_URL}/api/user/axp`, {
+        await fetch(`${API_BASE_USER}/api/user/axp`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

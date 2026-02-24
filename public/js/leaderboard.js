@@ -3,6 +3,10 @@
  * Pulls real user data from localStorage, sorted by AXP.
  */
 
+const API_BASE_LB = (typeof window !== 'undefined' && typeof window.API_URL !== 'undefined')
+    ? window.API_URL
+    : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+
 document.addEventListener('DOMContentLoaded', () => {
     startCountdown();
     renderLeaderboard();
@@ -14,7 +18,7 @@ async function renderLeaderboard() {
 
     let dbPlayers = [];
     try {
-        const res = await fetch(`${window.API_URL}/api/leaderboard`);
+        const res = await fetch(`${API_BASE_LB}/api/leaderboard`);
         if (res.ok) {
             dbPlayers = await res.json();
         }
