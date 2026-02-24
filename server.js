@@ -104,5 +104,6 @@ if (require.main === module) {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
 }
+module.exports = app;
 
 module.exports = app;
