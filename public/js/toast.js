@@ -9,9 +9,9 @@ const Toast = {
             container.id = 'toast-container';
             container.style.cssText = `
                 position: fixed;
-                top: 20px;
+                top: 80px; /* Below fixed navbar */
                 right: 20px;
-                z-index: 9999;
+                z-index: 20000; /* Above navbar */
                 display: flex;
                 flex-direction: column;
                 gap: 10px;

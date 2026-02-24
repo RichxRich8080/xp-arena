@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xp-arena-v3';
+const CACHE_NAME = 'xp-arena-v4';
 const ASSETS = [
   '/',
   '/index.html',
@@ -11,7 +11,6 @@ const ASSETS = [
   '/js/layout.js',
   '/js/app.js',
   '/js/effects.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap'
 ];
 

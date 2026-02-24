@@ -69,9 +69,6 @@ function injectLayout() {
     const navbarHTML = `
         <div class="xp-bar-global" id="globalXPBar" style="width: 0%;"></div>
         <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
-            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
-                ${avatarHtml}
-            </a>
             <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
             </button>
@@ -81,33 +78,55 @@ function injectLayout() {
                 <i class="fas fa-crosshairs" style="color: var(--accent); font-size: 1.2rem;"></i> XP ARENA
             </a>
         </div>
-        <div class="nav-right" style="display: flex; align-items: center; gap: 8px;">
-            <button class="theme-mode-toggle" onclick="toggleDarkMode()" title="Toggle Dark/Light Mode">
-                ${isLightMode ? '🌙 Dark' : '☀️ Light'}
+        <div class="nav-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
+            ${isLoggedIn ? `
+            <button id="notifBtn" title="Notifications" style="background: rgba(255,255,255,0.08); border:1px solid var(--border); color:#fff; width:36px;height:36px;border-radius:8px; display:flex; align-items:center; justify-content:center;">
+              <i class="fas fa-bell"></i>
             </button>
+            <div id="notifDropdown" style="display:none; position:absolute; right:56px; top:50px; width:260px; background: var(--card-dark); border:1px solid var(--border); border-radius:12px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);">
+              <div style="padding:0.6rem 0.8rem; font-weight:800; border-bottom:1px solid var(--border);">Recent</div>
+              <div id="notifList" style="max-height:260px; overflow:auto;"></div>
+            </div>` : ``}
             ${isLoggedIn && typeof window.User !== 'undefined' && window.User.getStats() ? `<span class="level-badge-nav" id="globalLevelBadge">Lvl ${window.User.getStats().level}</span>` : ''}
+            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
+                ${avatarHtml}
+            </a>
         </div>
     `;
     const nav = document.querySelector('nav.navbar');
     if (nav) nav.innerHTML = navbarHTML;
 
     // 2. Inject Sidebar
+    const stats = isLoggedIn && typeof window.User !== 'undefined' ? window.User.getStats() : null;
+    const premiumBadge = stats && stats.is_premium ? '<span style="font-size:0.7rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd700;padding:2px 6px;border-radius:6px;margin-left:6px;">PREMIUM</span>' : '';
+    const displayName = isLoggedIn ? (Auth.getCurrentUser().username || 'Player') : 'Guest';
     const sidebarHTML = `
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem;">
-                <a href="mystery.html" class="logo" style="text-decoration: none; color: inherit; display: block;" title="Secret System Protocol">XP ARENA</a>
+            <div class="sidebar-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; display:flex; align-items:center; gap:12px;">
+                <a href="profile.html" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff;">
+                    <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);border-radius:50%;">${avatarHtml}</div>
+                    <div style="display:flex;align-items:center;gap:6px;font-weight:800;">
+                        <span>${displayName}</span>${premiumBadge}
+                    </div>
+                </a>
             </div>
             <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
             <a href="tool.html" class="sidebar-link"><i class="fas fa-tools"></i> Sensitivity Tool</a>
             <a href="compare.html" class="sidebar-link"><i class="fas fa-balance-scale"></i> Compare Devices</a>
             <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Leaderboard</a>
+            <a href="setups.html" class="sidebar-link"><i class="fas fa-sliders-h"></i> Popular Setups</a>
             <a href="ranks.html" class="sidebar-link"><i class="fas fa-layer-group"></i> Ranks</a>
             <a href="clips.html" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
             <a href="quests.html" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
-            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: #0f0;"></i> Guild Wars <span style="font-size: 0.6rem; background: rgba(255,255,255,0.1); color: var(--text-muted); padding: 2px 5px; border-radius: 4px; margin-left: 5px;">COMING SOON</span></a>
+            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: #0f0;"></i> Guilds</a>
+            <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Guild Wars</a>
             <a href="submit.html" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
             <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
+            <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:#bf00ff;"></i> Premium & Plans</a>
+            <a href="premium-dashboard.html" class="sidebar-link"><i class="fas fa-crown"></i> Premium Hub</a>
+            <a href="creators.html" class="sidebar-link"><i class="fas fa-user-astronaut"></i> Creator</a>
+            ${stats && stats.is_admin ? `<a href="admin.html" class="sidebar-link"><i class="fas fa-shield-virus"></i> Admin</a>` : ``}
             <a href="sponsors.html" class="sidebar-link"><i class="fas fa-handshake"></i> Sponsors</a>
             <a href="support.html" class="sidebar-link"><i class="fas fa-heart"></i> Support XP Arena</a>
             <a href="help.html" class="sidebar-link"><i class="fas fa-question-circle"></i> Help & FAQ</a>
@@ -125,20 +144,14 @@ function injectLayout() {
             <a href="contact.html" class="sidebar-link"><i class="fas fa-phone"></i> Contact</a>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.5rem 0;">
             <div style="padding: 0 1.5rem 1.5rem; margin-top: auto;">
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800;">Visual Theme</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800;">Visual Theme Accent</div>
                 <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
                     <div class="theme-dot" onclick="setTheme('default')" style="background: #00e5ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;" title="Default Neon"></div>
                     <div class="theme-dot" onclick="setTheme('theme-cyber')" style="background: linear-gradient(135deg, #0f0, #00e5ff); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 1px solid #0f0; box-shadow: 0 0 10px #0f0;" title="$100k Cyber Neon"></div>
                     <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
                     <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>
                     <div class="theme-dot" onclick="setTheme('theme-gold')" style="background: #ffcc00; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Gold"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-blade')" style="background: #ff00e6; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(255,0,230,0.6);" title="Blade Neon"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-royal')" style="background: #6aa8ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(106,168,255,0.6);" title="Royal Blue"></div>
-                    <input type="color" id="customColorPicker" onchange="setCustomColor(this.value, true)" value="#00e5ff" style="width: 25px; height: 25px; border: none; outline: none; border-radius: 50%; cursor: pointer; background: transparent; padding: 0;" title="Custom Color">
                 </div>
-                <button class="theme-mode-toggle" onclick="toggleDarkMode()" style="width: 100%; justify-content: center;">
-                    ${document.body.classList.contains('light-mode') ? '🌙 Switch to Dark Mode' : '☀️ Switch to Light Mode'}
-                </button>
             </div>
         </div>
     `;
@@ -162,6 +175,10 @@ function injectLayout() {
             <span class="nav-icon"><i class="fas fa-tools"></i></span>
             <span>Tool</span>
         </a>
+        <a href="setups.html" class="nav-item" data-page="setups.html">
+            <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
+            <span>Setups</span>
+        </a>
         <a href="guilds.html" class="nav-item" data-page="guilds.html">
             <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
             <span>Guilds</span>
@@ -183,19 +200,33 @@ function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.querySelector('.sidebar-overlay');
     if (sidebar && overlay) {
-        sidebar.classList.toggle('active');
+        const isActive = sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
+
+        // Scroll Lock
+        if (isActive) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.height = '100vh';
+        } else {
+            document.body.style.overflow = '';
+            document.body.style.height = '';
+        }
     }
 }
 
 function highlightActiveLinks() {
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+    const cleanPath = currentPath.replace('.html', '');
 
     // Highlight Sidebar
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     sidebarLinks.forEach(link => {
         const href = link.getAttribute('href');
-        if (href === currentPath || (currentPath === 'profile.html' && href.includes('profile.html'))) {
+        if (!href) return;
+
+        const linkClean = href.replace('.html', '');
+        if (href === currentPath || linkClean === cleanPath ||
+            (currentPath === 'profile.html' && href.includes('profile.html'))) {
             link.classList.add('link-active');
             link.style.color = 'var(--accent)';
         }
@@ -204,7 +235,11 @@ function highlightActiveLinks() {
     // Highlight Bottom Nav
     const bottomLinks = document.querySelectorAll('.nav-item');
     bottomLinks.forEach(link => {
-        if (link.getAttribute('data-page') === currentPath) {
+        const page = link.getAttribute('data-page');
+        if (!page) return;
+
+        const pageClean = page.replace('.html', '');
+        if (page === currentPath || pageClean === cleanPath) {
             link.classList.add('active');
         }
     });
@@ -348,3 +383,22 @@ function toggleDarkMode() {
 }
 
 window.toggleDarkMode = toggleDarkMode;
+
+document.addEventListener('click', (e) => {
+  const btn = document.getElementById('notifBtn');
+  const dd = document.getElementById('notifDropdown');
+  if (!btn || !dd) return;
+  if (btn.contains(e.target)) {
+    dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    if (dd.style.display === 'block' && typeof Auth !== 'undefined' && Auth.isLoggedIn() && typeof User !== 'undefined') {
+      const stats = User.getStats();
+      const list = document.getElementById('notifList');
+      if (list) {
+        const items = (stats.activities || []).slice(0,5).map(a => `<div style="padding:0.6rem 0.8rem; border-bottom:1px solid var(--border);">${a.text}<br><span style="font-size:0.75rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>`).join('');
+        list.innerHTML = items || '<div style="padding:0.6rem 0.8rem;">No recent activity</div>';
+      }
+    }
+  } else if (!dd.contains(e.target)) {
+    dd.style.display = 'none';
+  }
+});

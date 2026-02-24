@@ -189,6 +189,27 @@
                 <div id="loader" class="loader hidden"></div>
                 <button id="calculateBtn" class="btn-primary" style="margin-top: 1rem;">CALCULATE SENSITIVITY</button>
 
+                <!-- MANUAL MODE -->
+                <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h3 style="margin-bottom: 0.6rem;"><i class="fas fa-pen"></i> Manual Mode</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Enter your own sensitivity and publish to the community leaderboard. Values capped at 200. Add a short comment explaining your setup.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
+                        <input type="number" id="manGen" placeholder="General" min="0" max="200" class="settings-input">
+                        <input type="number" id="manRed" placeholder="Red Dot" min="0" max="200" class="settings-input">
+                        <input type="number" id="man2x" placeholder="2x Scope" min="0" max="200" class="settings-input">
+                        <input type="number" id="man4x" placeholder="4x Scope" min="0" max="200" class="settings-input">
+                        <input type="number" id="man8x" placeholder="8x Scope" min="0" max="200" class="settings-input">
+                    </div>
+                    <textarea id="manComment" class="settings-input" placeholder="Why does this setup work for you? (min 10 chars)" style="margin-top: 10px;"></textarea>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted); margin: 8px 0;">
+                        <input type="checkbox" id="manPrivate"> Private (Premium only)
+                    </label>
+                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                        <button class="btn-secondary" style="width:auto;" onclick="manualSubmit()">Submit Manual Setup</button>
+                        <a href="setups.html" class="btn-secondary" style="width:auto;">View Popular Setups</a>
+                    </div>
+                </div>
+
                 <!-- PRO PRESETS -->
                 <div style="margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
                     <h3 style="margin-bottom: 1rem; color: #ffcc00; font-size: 1.1rem;"><i class="fas fa-crown"></i>
@@ -311,6 +332,27 @@
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
+    <script>
+        async function manualSubmit() {
+            if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const payload = {
+                general: document.getElementById('manGen').value,
+                reddot: document.getElementById('manRed').value,
+                scope2x: document.getElementById('man2x').value,
+                scope4x: document.getElementById('man4x').value,
+                scope8x: document.getElementById('man8x').value,
+                comment: document.getElementById('manComment').value,
+                is_private: document.getElementById('manPrivate').checked
+            };
+            const res = await SubmitManualSetup(payload);
+            if (res && res.success) {
+                document.getElementById('manComment').value = '';
+            }
+        }
+    </script>
 </body>
 
 </html>

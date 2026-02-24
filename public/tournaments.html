@@ -20,46 +20,23 @@
 
     <div class="container" style="max-width: 1000px;">
         <div class="page-header">
-            <h1>Active Tournaments</h1>
-            <p>Compete for cash prizes and recognition.</p>
+            <h1>Tournaments</h1>
+            <p>Create and join community tournaments.</p>
         </div>
-
-        <div class="tournament-grid">
-            <!-- Active Tournament -->
-            <div class="tournament-card">
-                <div class="card-image-placeholder">WEEKLY CUP</div>
-                <div class="card-content">
-                    <span
-                        style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem;">SUNDAY,
-                        8:00 PM EST</span>
-                    <h3>Weekly Community Cup #1</h3>
-                    <span class="prize-pool">TBD Prize Pool</span>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-                        Free entry for top leaderboard players. Squads mode.
-                    </p>
-                    <button class="btn-primary" style="margin-top: 1.5rem;"
-                        onclick="if(typeof Auth !== 'undefined' && Auth.isLoggedIn()) { if(window.Toast) Toast.show('Successfully registered for Community Cup!', 'success'); if(typeof User !== 'undefined') User.addAXP(100, 'Tournament Registration'); this.innerHTML = 'Registered ✅'; this.disabled = true; this.style.opacity = '0.7'; } else { window.location.href='login.html'; }">Register
-                        Now</button>
-                </div>
+        <div class="form-card" style="margin-bottom:1rem;">
+            <h3 style="margin-bottom:0.5rem;">Create Tournament</h3>
+            <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;">
+                <input id="tName" class="settings-input" placeholder="Name">
+                <input id="tEntry" class="settings-input" type="number" min="0" placeholder="Entry AXP">
+                <input id="tPrize" class="settings-input" type="number" min="0" placeholder="Prize AXP">
+                <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text-muted)">
+                    <input id="tPrivate" type="checkbox"> Private
+                </label>
             </div>
-
-            <!-- Upcoming -->
-            <div class="tournament-card">
-                <div class="card-image-placeholder">PRO LEAGUE</div>
-                <div class="card-content">
-                    <span
-                        style="background: rgba(255, 255, 255, 0.1); color: var(--text-muted); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem;">2026</span>
-                    <h3>Spring Season Qualifier</h3>
-                    <span class="prize-pool">TBD Prize Pool</span>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-                        Open qualifiers for all regions.
-                    </p>
-                    <button class="btn-primary"
-                        style="background: rgba(255, 255, 255, 0.05); color: var(--text-muted); cursor: not-allowed; margin-top: 1.5rem;">Registration
-                        Opens Soon</button>
-                </div>
-            </div>
+            <button class="btn-primary" style="margin-top:10px;width:auto;" onclick="createTournament()">Create</button>
+            <div id="tCreateMsg" style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)"></div>
         </div>
+        <div id="tList" class="tournament-grid"></div>
     </div>
 
     <nav class="bottom-nav">
@@ -70,6 +47,61 @@
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { loadTournaments(); });
+        async function loadTournaments() {
+            const el = document.getElementById('tList');
+            el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Loading...</div>';
+            try {
+                const res = await fetch((window.API_URL||'')+'/api/tournaments/list');
+                const rows = res.ok ? await res.json() : [];
+                el.innerHTML = rows.map(t => `
+                    <div class="tournament-card">
+                        <div class="card-image-placeholder">${t.private_only ? 'PRIVATE' : 'OPEN'}</div>
+                        <div class="card-content">
+                            <h3>${t.name}</h3>
+                            <span class="prize-pool">Prize: ${Number(t.prize_pool_axp||0).toLocaleString()} AXP</span>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
+                                Entry: ${Number(t.entry_fee_axp||0).toLocaleString()} AXP • Participants: ${t.participants}
+                            </p>
+                            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 1rem;">
+                                <button class="btn-primary" style="width:auto;" onclick="joinTournament(${t.id})">Join</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch {
+                el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
+            }
+        }
+        async function createTournament() {
+            if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
+            const name = document.getElementById('tName').value;
+            const entry_fee_axp = parseInt(document.getElementById('tEntry').value||0,10);
+            const prize_pool_axp = parseInt(document.getElementById('tPrize').value||0,10);
+            const private_only = document.getElementById('tPrivate').checked;
+            const msg = document.getElementById('tCreateMsg');
+            const res = await fetch((window.API_URL||'')+'/api/tournaments/create', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()},
+                body: JSON.stringify({ name, entry_fee_axp, prize_pool_axp, private_only })
+            });
+            const data = await res.json();
+            msg.textContent = res.ok ? 'Created!' : (data.error||'Error');
+            if (res.ok) loadTournaments();
+        }
+        async function joinTournament(id) {
+            if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
+            const res = await fetch((window.API_URL||'')+'/api/tournaments/join', {
+                method:'POST',
+                headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()},
+                body: JSON.stringify({ tournament_id: id })
+            });
+            const data = await res.json();
+            if (res.ok && window.Toast) Toast.show('Joined tournament!', 'success');
+            if (!res.ok && window.Toast) Toast.show(data.error||'Error', 'error');
+        }
+    </script>
 </body>
 
 </html>

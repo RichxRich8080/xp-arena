@@ -667,3 +667,60 @@ function generateShareImage(result) {
         }
     }, 'image/png');
 }
+
+async function SubmitManualSetup(payload) {
+    if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+    const cap = v => Math.max(0, Math.min(200, parseInt(v, 10) || 0));
+    const body = {
+        mode: 'manual',
+        general: cap(payload.general),
+        reddot: cap(payload.reddot),
+        scope2x: cap(payload.scope2x),
+        scope4x: cap(payload.scope4x),
+        scope8x: cap(payload.scope8x),
+        comment: String(payload.comment || '').slice(0, 500),
+        is_private: !!payload.is_private
+    };
+    const res = await fetch((window.API_URL || '') + '/api/setups/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+        body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (res.ok) {
+        if (window.Toast) Toast.show('Setup submitted +50 AXP', 'success');
+        return { success: true, id: data.id };
+    }
+    if (window.Toast) Toast.show(data.error || 'Error', 'error');
+    return { success: false, message: data.error || 'Error' };
+}
+
+async function LikeSetup(id) {
+    if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+    const res = await fetch((window.API_URL || '') + `/api/setups/like/${id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+    });
+    const data = await res.json();
+    if (res.ok) {
+        if (window.Toast) Toast.show('Liked', 'success');
+        return { success: true };
+    }
+    if (window.Toast) Toast.show(data.error || 'Error', 'error');
+    return { success: false, message: data.error || 'Error' };
+}
+
+async function CopySetup(id) {
+    if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+    const res = await fetch((window.API_URL || '') + `/api/setups/copy/${id}`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+    });
+    const data = await res.json();
+    if (res.ok) {
+        if (window.Toast) Toast.show('Copied +20 AXP to owner', 'success');
+        return { success: true };
+    }
+    if (window.Toast) Toast.show(data.error || 'Error', 'error');
+    return { success: false, message: data.error || 'Error' };
+}

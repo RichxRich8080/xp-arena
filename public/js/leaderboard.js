@@ -26,16 +26,23 @@ async function renderLeaderboard() {
         console.error('Leaderboard Fetch Error:', e);
     }
 
-    const players = dbPlayers.map(p => ({
-        username: p.username,
-        axp: p.axp || 0,
-        level: p.level || 1,
-        streak: p.streak || 0,
-        avatar: p.avatar || '👤',
-        rank: getRank(p.axp || 0),
-        submissions: 0,
-        isMe: (typeof Auth !== 'undefined' && Auth.isLoggedIn() && Auth.getCurrentUser()?.id === p.id)
-    }));
+    const players = dbPlayers.map(p => {
+        const rankName = p.rank || null;
+        const rankObj = rankName ? getRankByName(rankName) : getRank(p.axp || 0);
+        return {
+            id: p.id,
+            username: p.username,
+            axp: p.axp || 0,
+            level: p.level || 1,
+            streak: p.streak || 0,
+            avatar: p.avatar || '👤',
+            rank: rankObj,
+            setup_type: p.setup_type || null,
+            badges: p.badges || {},
+            submissions: 0,
+            isMe: (typeof Auth !== 'undefined' && Auth.isLoggedIn() && Auth.getCurrentUser()?.id === p.id)
+        };
+    });
 
     // Seed with realistic placeholder players if very few real data
     if (players.length < 5) {
@@ -81,6 +88,12 @@ async function renderLeaderboard() {
         const posLabel = isTop3 ? ['🥇', '🥈', '🥉'][idx] : `#${pos}`;
         const axpProgress = (p.axp % 500) / 500 * 100;
 
+        const badgeChips = [
+            p.badges && p.badges.v_badge ? '<span style="font-size:0.7rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd700;padding:2px 6px;border-radius:6px;">VIP</span>' : '',
+            p.badges && p.badges.verified_setup ? '<span style="font-size:0.7rem;background:rgba(0,229,255,0.12);border:1px solid rgba(0,229,255,0.3);color:#00e5ff;padding:2px 6px;border-radius:6px;">Verified Setup</span>' : '',
+            p.badges && p.badges.premium ? '<span style="font-size:0.7rem;background:rgba(191,0,255,0.12);border:1px solid rgba(191,0,255,0.4);color:#bf00ff;padding:2px 6px;border-radius:6px;">Premium</span>' : ''
+        ].filter(Boolean).join(' ');
+        const setupChip = p.setup_type ? `<span style="font-size:0.7rem;background:rgba(255,255,255,0.06);border:1px solid var(--border);padding:2px 6px;border-radius:6px;">${p.setup_type}</span>` : '';
         return `
             <div style="
                 display: grid;
@@ -103,10 +116,12 @@ async function renderLeaderboard() {
                             <div style="font-weight: 800; font-size: 0.95rem; color: ${p.isMe ? 'var(--accent)' : '#fff'};">
                                 ${p.username}${p.isMe ? ' <span style="font-size: 0.7rem; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px; font-weight: 900;">YOU</span>' : ''}
                             </div>
-                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 4px; flex-wrap: wrap;">
                                 <span style="font-size: 0.75rem; color: var(--text-muted);">${p.rank.icon} ${p.rank.name}</span>
                                 <span style="font-size: 0.75rem; color: var(--text-muted);">Lv.${p.level}</span>
                                 ${p.streak >= 3 ? `<span style="font-size: 0.75rem; color: #ff6b35;">🔥 ${p.streak}d</span>` : ''}
+                                ${setupChip}
+                                ${badgeChips}
                             </div>
                             <div style="margin-top: 6px; height: 3px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; width: 120px;">
                                 <div style="height: 100%; width: ${axpProgress}%; background: var(--accent); border-radius: 2px;"></div>
@@ -200,19 +215,27 @@ window.showPlayerCard = function (username, axp, avatar, rankName, level, streak
 
 function getRank(axp) {
     const RANKS = [
-        { name: 'Starter', minAXP: 0, icon: '🆕' },
-        { name: 'Bronze', minAXP: 1000, icon: '🥉' },
-        { name: 'Silver', minAXP: 5000, icon: '🥈' },
-        { name: 'Gold', minAXP: 15000, icon: '🥇' },
-        { name: 'Platinum', minAXP: 30000, icon: '💎' },
-        { name: 'Diamond', minAXP: 50000, icon: '☄️' },
-        { name: 'Elite', minAXP: 75000, icon: '🔥' },
-        { name: 'Master', minAXP: 90000, icon: '👑' },
-        { name: 'Champion', minAXP: 100000, icon: '🛡️' }
+        { name: 'Rookie', minAXP: 0, icon: '🆕' },
+        { name: 'Grinder', minAXP: 1000, icon: '⚒️' },
+        { name: 'Elite', minAXP: 10000, icon: '🔥' },
+        { name: 'Champion', minAXP: 50000, icon: '🛡️' },
+        { name: 'Legend', minAXP: 100000, icon: '👑' },
+        { name: 'Arena Master', minAXP: 200000, icon: '🏆' }
     ];
     return [...RANKS].reverse().find(r => axp >= r.minAXP) || RANKS[0];
 }
 
+function getRankByName(name) {
+    const map = {
+        'Rookie': { name: 'Rookie', icon: '🆕' },
+        'Grinder': { name: 'Grinder', icon: '⚒️' },
+        'Elite': { name: 'Elite', icon: '🔥' },
+        'Champion': { name: 'Champion', icon: '🛡️' },
+        'Legend': { name: 'Legend', icon: '👑' },
+        'Arena Master': { name: 'Arena Master', icon: '🏆' }
+    };
+    return map[name] || { name, icon: '⭐' };
+}
 function startCountdown() {
     const daysEl = document.getElementById('days');
     const hoursEl = document.getElementById('hours');

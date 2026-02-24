@@ -3,15 +3,12 @@
  */
 
 const RANKS = [
-    { name: 'Starter', minAXP: 0, icon: '🆕' },
-    { name: 'Bronze', minAXP: 1000, icon: '🥉' },
-    { name: 'Silver', minAXP: 5000, icon: '🥈' },
-    { name: 'Gold', minAXP: 15000, icon: '🥇' },
-    { name: 'Platinum', minAXP: 30000, icon: '💎' },
-    { name: 'Diamond', minAXP: 50000, icon: '☄️' },
-    { name: 'Elite', minAXP: 75000, icon: '🔥' },
-    { name: 'Master', minAXP: 90000, icon: '👑' },
-    { name: 'Champion', minAXP: 100000, icon: '🛡️', verified: true }
+    { name: 'Rookie', minAXP: 0, icon: '🆕' },
+    { name: 'Grinder', minAXP: 1000, icon: '⚒️' },
+    { name: 'Elite', minAXP: 10000, icon: '🔥' },
+    { name: 'Champion', minAXP: 50000, icon: '🛡️' },
+    { name: 'Legend', minAXP: 100000, icon: '👑', verified: true },
+    { name: 'Arena Master', minAXP: 200000, icon: '🏆', verified: true }
 ];
 
 const ACHIEVEMENTS = [
@@ -49,6 +46,10 @@ const User = {
                     avatar: data.user.avatar || '👤',
                     streak: data.user.streak || 0,
                     lastLogin: data.user.last_login,
+                    is_premium: !!data.user.is_premium,
+                    is_admin: !!data.user.is_admin,
+                    premium_name_color: data.user.premium_name_color || null,
+                    premium_glow: !!data.user.premium_glow,
                     socials: typeof data.user.socials === 'string' ? JSON.parse(data.user.socials) : (data.user.socials || { tiktok: '', instagram: '', youtube: '' }),
                     activities: data.activities || [],
                     vault: data.vault || [],
@@ -531,8 +532,34 @@ const User = {
         });
     },
 
-    checkDailyLogin() {
-        // Removed local handling, can be integrated via backend in the future
+    async claimDailyLogin() {
+        if (!Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+        const res = await fetch(`${API_BASE_USER}/api/user/daily-login`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+            this.addAXPLocally(data.axp, 'Daily login');
+            this.updateStatsLocally(s => { s.streak = data.streak; s.lastLogin = data.date; });
+            return { success: true };
+        }
+        return { success: false, message: data.error || 'Error' };
+    },
+
+    async activateXPDoubler(hours = 24) {
+        if (!Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+        const res = await fetch(`${API_BASE_USER}/api/user/xp-doubler/activate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+            body: JSON.stringify({ hours })
+        });
+        const data = await res.json();
+        if (res.ok) {
+            this.logActivityLocally('XP doubler activated');
+            return { success: true, until: data.until };
+        }
+        return { success: false, message: data.error || 'Error' };
     }
 };
 

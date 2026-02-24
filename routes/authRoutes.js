@@ -37,7 +37,7 @@ router.post('/register', authLimiter, async (req, res) => {
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [userId, 'Account created! Welcome bonus awarded.']);
 
         console.log('[Auth] Registration complete. Generating token...');
-        const token = jwt.sign({ id: userId, username }, JWT_SECRET);
+        const token = jwt.sign({ id: userId, username }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, token, user: { id: userId, username, email } });
     } catch (err) {
         console.error('[Auth] Registration Error:', err);
@@ -56,11 +56,12 @@ router.post('/login', authLimiter, async (req, res) => {
     try {
         const user = await db.get('SELECT * FROM users WHERE username = ?', [username]);
         if (!user) return res.status(400).json({ error: 'Invalid username or password' });
+        if (user.banned) return res.status(403).json({ error: 'Account banned' });
 
         const match = await bcrypt.compare(password, user.password_hash);
         if (!match) return res.status(400).json({ error: 'Invalid username or password' });
 
-        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
+        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
         res.json({ success: true, token, user: { id: user.id, username: user.username, email: user.email } });
     } catch (err) {
         console.error(err);

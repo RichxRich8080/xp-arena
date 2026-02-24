@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guild Wars • XP ARENA</title>
+  <link rel="stylesheet" href="css/main.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+<body class="fade-in">
+  <nav class="navbar"></nav>
+  <div class="container" style="max-width: 1000px;">
+    <div class="page-header">
+      <h1>Guild War Applications</h1>
+      <p>Apply from your guild page as owner. View recent applications below.</p>
+    </div>
+    <div id="warList" style="display:grid; gap: 10px;"></div>
+  </div>
+  <nav class="bottom-nav"></nav>
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', loadWars);
+    async function loadWars() {
+      const el = document.getElementById('warList');
+      el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Loading...</div>';
+      try {
+        const res = await fetch((window.API_URL||'') + '/api/guilds/war/list');
+        const rows = res.ok ? await res.json() : [];
+        el.innerHTML = rows.map(r => `
+          <div class="form-card" style="display:grid; grid-template-columns: 1fr auto; gap: 10px; align-items:center;">
+            <div>
+              <div style="font-weight:800;">${r.badge ? r.badge + ' ' : ''}${r.name}</div>
+              <div style="color: var(--text-muted); font-size:0.85rem;">${new Date(r.created_at).toLocaleString()}</div>
+              ${r.note ? `<div style="margin-top:6px; color:#fff;">${r.note}</div>` : ''}
+            </div>
+            <div><a href="guilds.html" class="btn-secondary" style="width:auto;">View Guild</a></div>
+          </div>
+        `).join('');
+        if (!rows.length) el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">No applications yet.</div>';
+      } catch {
+        el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
+      }
+    }
+  </script>
+</body>
+</html>
