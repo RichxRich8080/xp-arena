@@ -7,7 +7,7 @@ const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 function todayDateStr(d) {
     const x = d || new Date();
-    return `${x.getFullYear()}-${x.getMonth()+1}-${x.getDate()}`;
+    return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
 }
 
 router.post('/password', authenticateToken, async (req, res) => {
@@ -88,22 +88,8 @@ router.get('/profile', authenticateToken, async (req, res) => {
     }
 });
 
-router.post('/axp', authenticateToken, async (req, res) => {
-    const { amount, reason } = req.body;
-    try {
-        const u = await db.get('SELECT xp_doubler_until FROM users WHERE id = ?', [req.user.id]);
-        let delta = parseInt(amount || 0, 10);
-        if (u && u.xp_doubler_until) {
-            const until = new Date(u.xp_doubler_until).getTime();
-            if (Date.now() < until) delta = delta * 2;
-        }
-        await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [delta, req.user.id]);
-        if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, reason]);
-        res.json({ success: true });
-    } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
-    }
-});
+// [REMOVED] Insecure arbitrary AXP endpoint.
+// AXP is now only awarded server-side during specific actions (clips, setups, daily login).
 
 router.post('/daily-login', authenticateToken, async (req, res) => {
     try {
@@ -113,7 +99,7 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
         let streak = 1;
         if (u && u.last_login) {
             const last = new Date(u.last_login);
-            const diff = Math.floor((now - last) / (1000*60*60*24));
+            const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
             if (diff === 0) return res.status(400).json({ error: 'Already claimed' });
             if (diff === 1) streak = (u.streak || 0) + 1;
         }
@@ -133,7 +119,7 @@ router.post('/xp-doubler/activate', authenticateToken, async (req, res) => {
     try {
         const { hours } = req.body;
         const h = Math.min(parseInt(hours || 24, 10), 48);
-        const until = new Date(Date.now() + h*60*60*1000);
+        const until = new Date(Date.now() + h * 60 * 60 * 1000);
         await db.run('UPDATE users SET xp_doubler_until = ? WHERE id = ?', [until, req.user.id]);
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `XP doubler active for ${h}h`]);
         res.json({ success: true, until });

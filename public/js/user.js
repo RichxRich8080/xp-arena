@@ -265,7 +265,7 @@ const User = {
             body: JSON.stringify({ device: entry.device, general_mid: entry.general_mid, general_range: entry.general_range })
         });
     },
-    
+
     async deleteVault(id) {
         this.updateStatsLocally(stats => {
             stats.vault = (stats.vault || []).filter(v => v.id !== id);
@@ -305,17 +305,10 @@ const User = {
 
     async updateAvatar(icon) {
         const stats = this.getStats();
-        if (!stats.avatar || stats.avatar === '👤') {
-            this.addAXPLocally(20, 'First Avatar Selected');
-            this.showAXPIncrement(20);
-
-            // Sync AXP
-            fetch(`${API_BASE_USER}/api/user/axp`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
-                body: JSON.stringify({ amount: 20, reason: 'First Avatar Selected' })
-            });
-        }
+        this.addAXPLocally(20, 'First Avatar Selected');
+        this.showAXPIncrement(20);
+        // NOTE: Server-side AXP for avatar selection is currently not implemented in the backend 
+        // for security (preventing spam). Consider adding it to the /avatar endpoint if needed.
 
         this.updateStatsLocally(s => s.avatar = icon);
         this.updateUI();
@@ -331,7 +324,7 @@ const User = {
     },
 
     openAvatarModal() {
-        const avatars = ['🕹️','🎮','🎧','🎯','⚔️','🛡️','👑','🔥','⚡','💎','☠️','👾','🤖','🐺','🐉','🛰️','🏆','🥇','🎲','🧠'];
+        const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '🐺', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
         const icon = prompt(`Select your avatar:\n${avatars.join(' ')}`);
         if (icon && avatars.includes(icon)) {
             this.updateAvatar(icon);
@@ -520,16 +513,12 @@ const User = {
     },
 
     async addAXP(amount, reason) {
+        // Award locally for immediate UI feedback
         this.addAXPLocally(amount, reason);
         if (reason) this.logActivityLocally(reason);
-        await fetch(`${API_BASE_USER}/api/user/axp`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${Auth.getToken()}`
-            },
-            body: JSON.stringify({ amount, reason })
-        });
+
+        // NOTE: Generic /api/user/axp endpoint removed for security.
+        // Backend now handles AXP awarding during specific action endpoints.
     },
 
     async claimDailyLogin() {
