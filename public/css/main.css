@@ -1059,6 +1059,112 @@ select:focus {
   filter: drop-shadow(0 0 8px var(--accent));
 }
 
+.tab-container {
+  display: flex;
+  gap: 8px;
+  padding: 0.6rem;
+  overflow-x: auto;
+  position: sticky;
+  top: 60px;
+  z-index: 999;
+  backdrop-filter: blur(10px);
+  background: rgba(11, 15, 23, 0.75);
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-container::-webkit-scrollbar {
+  height: 6px;
+}
+.tab-container::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.15);
+  border-radius: 6px;
+}
+
+.tab-btn {
+  white-space: nowrap;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.05);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.tab-btn.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(0,229,255,0.08);
+}
+
+.settings-input, .form-group input.settings-input, .settings-group input, .settings-group select {
+  min-height: 48px;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+}
+
+.settings-actions .btn-primary, .settings-actions .btn-secondary {
+  min-height: 44px;
+}
+
+.accordion details {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+  background: var(--card-dark);
+}
+.accordion details[open] {
+  border-color: var(--accent);
+}
+.accordion summary {
+  list-style: none;
+  padding: 0.9rem 1rem;
+  font-weight: 800;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.accordion summary::after {
+  content: '›';
+  transform: rotate(90deg);
+  color: var(--accent);
+  font-weight: 900;
+}
+.accordion details[open] summary::after {
+  transform: rotate(-90deg);
+}
+.accordion .content {
+  padding: 0 1rem 1rem;
+}
+
+.split-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .split-two {
+    grid-template-columns: 1fr;
+  }
+  .profile-hero {
+    padding: 1rem;
+  }
+  .tab-container {
+    top: 58px;
+  }
+  .form-card {
+    padding: 1.5rem;
+  }
+  .hero {
+    padding: 3rem 1rem;
+  }
+}
+
 .placeholder-clip {
   transition: var(--transition);
 }
@@ -1811,4 +1917,33 @@ a:hover {
 
 .settings-input:focus {
   border-color: var(--accent);
+}
+
+/* Additional Neon Themes & Cursor Glow */
+body.theme-blade {
+  --accent: #ff00e6;
+  --accent-glow: rgba(255, 0, 230, 0.5);
+  --bg-dark: #0a0c12;
+  --card-dark: #0f1220;
+  --border: rgba(255, 0, 230, 0.25);
+}
+body.theme-royal {
+  --accent: #6aa8ff;
+  --accent-glow: rgba(106, 168, 255, 0.45);
+  --bg-dark: #0b1020;
+  --card-dark: #10172b;
+  --border: rgba(106, 168, 255, 0.25);
+}
+body.theme-blade .text-neon,
+body.theme-royal .text-neon {
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+#cursor-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(400px circle at 50% 50%, rgba(0,229,255,0.08), transparent 60%);
+  transition: background-position 0.06s linear;
 }

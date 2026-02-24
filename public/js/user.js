@@ -264,6 +264,39 @@ const User = {
             body: JSON.stringify({ device: entry.device, general_mid: entry.general_mid, general_range: entry.general_range })
         });
     },
+    
+    async deleteVault(id) {
+        this.updateStatsLocally(stats => {
+            stats.vault = (stats.vault || []).filter(v => v.id !== id);
+        });
+        await fetch(`${API_BASE_USER}/api/user/vault/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+        });
+        if (window.Toast) Toast.show('Removed from Vault', 'success');
+    },
+
+    async deletePreset(id) {
+        this.updateStatsLocally(stats => {
+            stats.presets = (stats.presets || []).filter(p => p.id !== id);
+        });
+        await fetch(`${API_BASE_USER}/api/user/preset/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+        });
+        if (window.Toast) Toast.show('Preset deleted', 'success');
+    },
+
+    async deleteHistory(id) {
+        this.updateStatsLocally(stats => {
+            stats.sensitivityHistory = (stats.sensitivityHistory || []).filter(h => h.id !== id);
+        });
+        await fetch(`${API_BASE_USER}/api/user/history/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+        });
+        if (window.Toast) Toast.show('History removed', 'success');
+    },
 
     getCurrentRank(axp) {
         return [...RANKS].reverse().find(r => axp >= r.minAXP) || RANKS[0];
@@ -297,7 +330,7 @@ const User = {
     },
 
     openAvatarModal() {
-        const avatars = ['👤', '🎮', '🔥', '⚡️', '🏆', '🎯', '⚔️', '🛡️', '👑', '🥇'];
+        const avatars = ['🕹️','🎮','🎧','🎯','⚔️','🛡️','👑','🔥','⚡','💎','☠️','👾','🤖','🐺','🐉','🛰️','🏆','🥇','🎲','🧠'];
         const icon = prompt(`Select your avatar:\n${avatars.join(' ')}`);
         if (icon && avatars.includes(icon)) {
             this.updateAvatar(icon);

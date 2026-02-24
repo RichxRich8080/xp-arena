@@ -3,8 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('/sw.js')
-                .then(reg => console.log('SW Registered'))
-                .catch(err => console.log('SW Failed', err));
+                .then(reg => {
+                    if (reg.waiting && window.Toast) {
+                        Toast.show('New version ready. Reloading...', 'info', 1500);
+                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                        setTimeout(() => location.reload(), 1800);
+                    }
+                    reg.addEventListener('updatefound', () => {
+                        const sw = reg.installing;
+                        if (!sw) return;
+                        sw.addEventListener('statechange', () => {
+                            if (sw.state === 'installed' && navigator.serviceWorker.controller && window.Toast) {
+                                Toast.show('New version installed. Reloading...', 'info', 1500);
+                                setTimeout(() => location.reload(), 1800);
+                            }
+                        });
+                    });
+                    navigator.serviceWorker.addEventListener('message', (e) => {
+                        if (e.data && e.data.type === 'SW_ACTIVE' && window.Toast) {
+                            // no-op toast optional
+                        }
+                    });
+                })
+                .catch(() => {});
         });
     }
 

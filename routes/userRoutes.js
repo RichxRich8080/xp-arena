@@ -154,4 +154,37 @@ router.post('/clip', authenticateToken, async (req, res) => {
     }
 });
 
+router.delete('/vault/:id', authenticateToken, async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    try {
+        await db.run('DELETE FROM vault WHERE id = ? AND user_id = ?', [id, req.user.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'DB Error' });
+    }
+});
+
+router.delete('/preset/:id', authenticateToken, async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    try {
+        await db.run('DELETE FROM presets WHERE id = ? AND user_id = ?', [id, req.user.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'DB Error' });
+    }
+});
+
+router.delete('/history/:id', authenticateToken, async (req, res) => {
+    const id = parseInt(req.params.id, 10);
+    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    try {
+        await db.run('DELETE FROM history WHERE id = ? AND user_id = ?', [id, req.user.id]);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'DB Error' });
+    }
+});
+
 module.exports = router;

@@ -110,6 +110,9 @@ function injectLayout() {
             <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
             <a href="sponsors.html" class="sidebar-link"><i class="fas fa-handshake"></i> Sponsors</a>
             <a href="support.html" class="sidebar-link"><i class="fas fa-heart"></i> Support XP Arena</a>
+            <a href="help.html" class="sidebar-link"><i class="fas fa-question-circle"></i> Help & FAQ</a>
+            <a href="mydata.html" class="sidebar-link"><i class="fas fa-database"></i> My Data</a>
+            <a href="profile.html#settings" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 1rem 0;">
             ${user ? `
                 <a href="profile.html" class="sidebar-link" id="nav-profile"><i class="fas fa-user-circle"></i> Profile (${user.username})</a>
@@ -129,6 +132,8 @@ function injectLayout() {
                     <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
                     <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>
                     <div class="theme-dot" onclick="setTheme('theme-gold')" style="background: #ffcc00; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Gold"></div>
+                    <div class="theme-dot" onclick="setTheme('theme-blade')" style="background: #ff00e6; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(255,0,230,0.6);" title="Blade Neon"></div>
+                    <div class="theme-dot" onclick="setTheme('theme-royal')" style="background: #6aa8ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 10px rgba(106,168,255,0.6);" title="Royal Blue"></div>
                     <input type="color" id="customColorPicker" onchange="setCustomColor(this.value, true)" value="#00e5ff" style="width: 25px; height: 25px; border: none; outline: none; border-radius: 50%; cursor: pointer; background: transparent; padding: 0;" title="Custom Color">
                 </div>
                 <button class="theme-mode-toggle" onclick="toggleDarkMode()" style="width: 100%; justify-content: center;">
@@ -189,7 +194,8 @@ function highlightActiveLinks() {
     // Highlight Sidebar
     const sidebarLinks = document.querySelectorAll('.sidebar-link');
     sidebarLinks.forEach(link => {
-        if (link.getAttribute('href') === currentPath) {
+        const href = link.getAttribute('href');
+        if (href === currentPath || (currentPath === 'profile.html' && href.includes('profile.html'))) {
             link.classList.add('link-active');
             link.style.color = 'var(--accent)';
         }
@@ -204,7 +210,16 @@ function highlightActiveLinks() {
     });
 }
 
-// Inject Toast Script
+// Deep link to profile settings tab via hash
+if (window.location.hash === '#settings') {
+    window.addEventListener('load', () => {
+        const btn = Array.from(document.querySelectorAll('.tab-btn'))
+            .find(el => ((el.getAttribute('onclick') || '').includes("switchTab('settings')")));
+        if (btn) btn.click();
+    });
+}
+
+// Inject Toast / Effects Scripts
 if (!document.querySelector('script[src="js/toast.js"]')) {
     const toastScript = document.createElement('script');
     toastScript.src = 'js/toast.js';
@@ -213,6 +228,10 @@ if (!document.querySelector('script[src="js/toast.js"]')) {
     const confettiScript = document.createElement('script');
     confettiScript.src = 'js/confetti.js';
     document.head.appendChild(confettiScript);
+
+    const effectsScript = document.createElement('script');
+    effectsScript.src = 'js/effects.js';
+    document.head.appendChild(effectsScript);
 }
 
 function syncGlobalXP() {
