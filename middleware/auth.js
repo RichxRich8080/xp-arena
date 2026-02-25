@@ -1,13 +1,18 @@
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
 const JWT_SECRET = process.env.NODE_ENV === 'production'
-  ? process.env.JWT_SECRET
-  : (process.env.JWT_SECRET || 'xpare123secretkey');
+    ? process.env.JWT_SECRET
+    : (process.env.JWT_SECRET || 'xpare123secretkey');
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
     if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
+
+    if (!JWT_SECRET) {
+        console.error('[Middleware] JWT_SECRET not configured.');
+        return res.status(500).json({ error: 'Server authentication configuration error.' });
+    }
 
     jwt.verify(token, JWT_SECRET, async (err, user) => {
         if (err) return res.status(403).json({ error: 'Invalid or expired token.' });

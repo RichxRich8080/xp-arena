@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    throw new Error('JWT_SECRET is required in production');
+    console.error('⚠️ [CRITICAL] JWT_SECRET is missing in production environment. Auth features will fail.');
 }
 app.set('trust proxy', 1);
 
