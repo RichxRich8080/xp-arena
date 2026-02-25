@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Premium & Plans • XP ARENA</title>
   <link rel="stylesheet" href="css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -19,48 +19,51 @@
         <p id="currentPlan" style="font-weight:800;"></p>
       </div>
 
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem;">
-        <div class="form-card">
-          <h3>Basic</h3>
-          <ul style="color: var(--text-muted); line-height: 1.8;">
-            <li>Default avatars</li>
-            <li>Basic name color</li>
-            <li>Free tournaments participation</li>
-            <li>Manual setups (public)</li>
-            <li>Daily login rewards + streaks</li>
+      <div
+        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px,1fr)); gap: 2rem; margin-top: 2rem;">
+        <!-- ARENI FREE -->
+        <div class="form-card" style="border-radius: 20px; padding: 2.5rem; background: rgba(255,255,255,0.02);">
+          <div
+            style="font-size: 0.7rem; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.5rem;">
+            PROTOCOL: ZERO</div>
+          <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 1.5rem;">ARENI</h2>
+          <ul style="color: var(--text-muted); line-height: 2; list-style: none; padding: 0;">
+            <li><i class="fas fa-check" style="color: var(--accent); margin-right: 10px;"></i> Default avatars & color
+            </li>
+            <li><i class="fas fa-check" style="color: var(--accent); margin-right: 10px;"></i> Search basic devices</li>
+            <li><i class="fas fa-check" style="color: var(--accent); margin-right: 10px;"></i> Global Leaderboard entry
+            </li>
+            <li><i class="fas fa-check" style="color: var(--accent); margin-right: 10px;"></i> Daily Rewards access</li>
           </ul>
-          <div style="margin-top:1rem;"><span class="stat-val">$0</span></div>
+          <div style="margin-top: 2.5rem;"><span style="font-size: 1.5rem; font-weight: 900; color: #fff;">$0</span>
+            <span style="color: var(--text-muted);">/ LIFETIME</span></div>
         </div>
 
-        <div class="form-card" style="border-color: rgba(191,0,255,0.4);">
-          <h3>Premium</h3>
-          <ul style="color: var(--text-muted); line-height: 1.8;">
-            <li>Upload avatar</li>
-            <li>Name color + glow</li>
-            <li>Private setup codes</li>
-            <li>Free tournament & clan creation</li>
-            <li>XP Doubler access</li>
-            <li>Early access features</li>
+        <!-- ELITE PRO -->
+        <div class="form-card glow-neon"
+          style="border-radius: 20px; padding: 2.5rem; background: linear-gradient(145deg, rgba(0,229,255,0.05), rgba(191,0,255,0.05)); border: 2px solid var(--accent) !important;">
+          <div
+            style="font-size: 0.7rem; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 0.5rem; font-weight: 800;">
+            PROTOCOL: ALPHA</div>
+          <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 1.5rem;">ELITE PRO</h2>
+          <ul style="color: #fff; line-height: 2; list-style: none; padding: 0; font-weight: 600;">
+            <li><i class="fas fa-crown" style="color: #ffcc00; margin-right: 10px;"></i> Custom Profile Slug & Socials
+            </li>
+            <li><i class="fas fa-bolt" style="color: var(--accent); margin-right: 10px;"></i> Global Creator Dashboard
+            </li>
+            <li><i class="fas fa-magic" style="color: var(--accent); margin-right: 10px;"></i> Profile Glow & Neon Name
+            </li>
+            <li><i class="fas fa-chart-line" style="color: var(--accent); margin-right: 10px;"></i> Advanced Gaming
+              Analytics</li>
+            <li><i class="fas fa-shield-alt" style="color: var(--accent); margin-right: 10px;"></i> Early Access to New
+              Tools</li>
+            <li><i class="fas fa-star" style="color: #ffcc00; margin-right: 10px;"></i> Verified "Master" Badge</li>
           </ul>
-          <div style="margin-top:1rem;"><span class="stat-val">$3 / month</span></div>
-          <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap;">
-            <button class="btn-primary" style="width:auto;" onclick="buyPremium()">Get Premium</button>
-          </div>
-        </div>
-
-        <div class="form-card" style="border-color: rgba(255,215,0,0.4);">
-          <h3>Creator</h3>
-          <ul style="color: var(--text-muted); line-height: 1.8;">
-            <li>Custom profile page (slug)</li>
-            <li>Followers</li>
-            <li>Featured setups</li>
-            <li>Analytics / stats</li>
-            <li>Verified badge (when eligible)</li>
-          </ul>
-          <div style="margin-top:1rem;"><span class="stat-val">Premium only</span></div>
-          <div style="margin-top:1rem; display:flex; gap:10px;">
-            <a class="btn-secondary" style="width:auto;" href="creators.html">Creator Dashboard</a>
-          </div>
+          <div style="margin-top: 2.5rem;"><span
+              style="font-size: 2rem; font-weight: 900; color: var(--accent);">$3</span> <span
+              style="color: var(--text-muted);">/ MONTHLY</span></div>
+          <button class="btn-primary" style="margin-top: 1.5rem; font-weight: 900;" onclick="buyPremium()">ASCEND TO
+            ELITE</button>
         </div>
       </div>
     </div>
@@ -94,19 +97,12 @@
 
     document.addEventListener('DOMContentLoaded', async () => {
       const planEl = document.getElementById('currentPlan');
-      let plan = 'Basic';
+      let plan = 'Areni (Standard)';
       if (Auth.isLoggedIn()) {
         const stats = User.getStats();
-        if (stats && stats.is_premium) plan = 'Premium';
-        try {
-          const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-          if (res.ok) {
-            const data = await res.json();
-            if (data.creator) plan = 'Creator';
-          }
-        } catch { }
+        if (stats && stats.is_premium) plan = 'Elite Pro';
       }
-      planEl.textContent = 'Current plan: ' + plan;
+      planEl.innerHTML = `<span style="color: var(--text-muted);">CURRENT STATUS:</span> <span style="color: ${plan === 'Elite Pro' ? 'var(--accent)' : '#fff'};">${plan.toUpperCase()}</span>`;
     });
   </script>
 </body>

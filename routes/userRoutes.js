@@ -219,6 +219,27 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
     }
 });
 
+// Daily Mystery Protocol Reward
+router.post('/daily-protocol', authenticateToken, async (req, res) => {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const lastProtocol = await db.get('SELECT last_protocol_date FROM users WHERE id = ?', [req.user.id]);
+
+        if (lastProtocol && lastProtocol.last_protocol_date === today) {
+            return res.status(400).json({ error: 'Protocol already completed for today' });
+        }
+
+        const axpReward = 200;
+        await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Completed the Secret Protocol today (+${axpReward} AXP)`]);
+
+        res.json({ success: true, axp: axpReward });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 router.post('/premium/style', authenticateToken, async (req, res) => {
     const { name_color, glow } = req.body;
     try {

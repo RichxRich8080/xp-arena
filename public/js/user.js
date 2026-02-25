@@ -48,6 +48,7 @@ const User = {
                     lastLogin: data.user.last_login,
                     is_premium: !!data.user.is_premium,
                     is_admin: !!data.user.is_admin,
+                    last_protocol_date: data.user.last_protocol_date,
                     premium_name_color: data.user.premium_name_color || null,
                     premium_glow: !!data.user.premium_glow,
                     socials: typeof data.user.socials === 'string' ? JSON.parse(data.user.socials) : (data.user.socials || { tiktok: '', instagram: '', youtube: '' }),

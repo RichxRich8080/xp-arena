@@ -5,16 +5,27 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function updateMetaTitle() {
-    const page = window.location.pathname.split('/').pop().replace('.html', '') || 'Home';
+    const page = window.location.pathname.split('/').pop().replace('.html', '') || 'index';
     const titleMap = {
         'index': 'Home',
-        'tool': 'Sensitivity Tool',
-        'leaderboard': 'Global Rankings',
-        'profile': 'My Dossier',
-        'shop': 'The Armory',
-        'guilds': 'Clan HQ'
+        'tool': 'Precision Tool',
+        'leaderboard': 'Elite Rankings',
+        'profile': 'Areni Dossier',
+        'shop': 'Supply Armory',
+        'guilds': 'Clan Command',
+        'daily-login': 'Daily Protocol',
+        'mystery': 'DECRYPTING...',
+        'premium': 'Ascension Plans'
     };
-    const friendlyName = titleMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+
+    let friendlyName = titleMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+
+    // Dynamic user context in title if logged in
+    if (page === 'profile' && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+        const user = Auth.getCurrentUser();
+        friendlyName = `@${user.username} • Profile`;
+    }
+
     document.title = `${friendlyName} • XP ARENA`;
 }
 

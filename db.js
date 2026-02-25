@@ -18,20 +18,7 @@ const pool = mysql.createPool({
     }
 });
 
-// Test connection and log errors
-console.log(`📡 Attempting to connect to TiDB at ${process.env.DB_HOST}:${process.env.DB_PORT || 3306}...`);
-
-pool.getConnection()
-    .then(conn => {
-        console.log('✅ Successfully connected to TiDB database');
-        conn.release();
-    })
-    .catch(err => {
-        console.error('❌ Critical Database Connection Error!');
-        console.error('Error Code:', err.code);
-        console.error('Error Message:', err.message);
-        console.error('Action: Check DB_HOST, DB_USER, DB_PASSWORD, DB_PORT and IP Whitelist on TiDB Cloud.');
-    });
+// Connection will be established on first query
 
 // Helper for single queries (compatible with sqlite3-like interface where possible)
 const databaseHelper = {

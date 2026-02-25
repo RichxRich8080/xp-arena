@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Daily Rewards – XP Arena</title>
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
@@ -21,8 +21,7 @@
                 <p>Maintain your daily synchronization to earn premium AXP and Clan bonuses.</p>
             </div>
 
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+            <div class="dash-grid-stats">
                 <div class="form-card"
                     style="text-align: center; padding: 1.5rem; background: rgba(0, 229, 255, 0.05); border-color: var(--accent);">
                     <i class="fas fa-fire"
@@ -49,7 +48,30 @@
                         style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
                         NEXT MISSION</p>
                 </div>
+                <div class="form-card" style="text-align: center; padding: 1.5rem;">
+                    <i class="fas fa-chart-line"
+                        style="color: #00ff88; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(0,255,136,0.3);"></i>
+                    <h3 id="dashRankXP" style="margin:0; font-size: 2rem; color: #fff;">0</h3>
+                    <p
+                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
+                        RANK XP</p>
+                </div>
             </div>
+
+            <style>
+                .dash-grid-stats {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 1rem;
+                    margin-bottom: 2.5rem;
+                }
+
+                @media (min-width: 768px) {
+                    .dash-grid-stats {
+                        grid-template-columns: repeat(4, 1fr);
+                    }
+                }
+            </style>
 
             <h3
                 style="margin-bottom: 1rem; color: #fff; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
@@ -105,6 +127,7 @@
 
                     document.getElementById('dashStreak').innerHTML = `${streak} <span style="font-size: 1rem; color: var(--text-muted);">DAYS</span>`;
                     document.getElementById('dashAXP').textContent = Number(stats.axp || 0).toLocaleString();
+                    document.getElementById('dashRankXP').textContent = Number(stats.axp % 500).toLocaleString();
 
                     const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);
                     document.getElementById('dashNextReward').textContent = `${rewards[nextDayIdx || 0].reward}`;

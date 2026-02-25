@@ -49,7 +49,7 @@ router.post('/send', authenticateToken, async (req, res) => {
             return res.status(403).json({ error: 'Unauthorized to send push notifications to others' });
         }
 
-        const [rows] = await db.query('SELECT subscription_json FROM push_subscriptions WHERE user_id = ?', [targetUserId]);
+        const rows = await db.query('SELECT subscription_json FROM push_subscriptions WHERE user_id = ?', [targetUserId]);
         if (rows.length === 0) {
             return res.status(404).json({ error: 'User has no active push subscription' });
         }

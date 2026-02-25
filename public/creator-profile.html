@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Creator Profile • XP ARENA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .creator-banner {
+            height: 300px;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)), url('assets/images/gaming-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 20px;
+            margin-bottom: -60px;
+            position: relative;
+            border: 1px solid var(--border);
+        }
+
+        .creator-header {
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .creator-avatar {
+            width: 120px;
+            height: 120px;
+            background: #111;
+            border: 4px solid var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .creator-info {
+            padding-bottom: 20px;
+        }
+
+        .setup-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .setup-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .setup-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            background: rgba(0, 229, 255, 0.05);
+        }
+    </style>
+</head>
+
+<body class="fade-in">
+    <nav class="navbar"></nav>
+    <main class="main-content-area">
+        <div class="container" style="max-width: 1100px;">
+
+            <div id="loadingProfile" style="text-align:center; padding: 5rem;">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent);"></i>
+                <p style="margin-top:1rem; color: var(--text-muted); letter-spacing: 2px;">SYNCHRONIZING PROFILE...</p>
+            </div>
+
+            <div id="profileContent" style="display:none;">
+                <div class="creator-banner" id="pBanner"></div>
+                <div class="creator-header">
+                    <div class="creator-avatar" id="pAvatar">👤</div>
+                    <div class="creator-info">
+                        <h1 id="pUsername"
+                            style="font-size: 2.5rem; font-weight: 900; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
+                            ARENI</h1>
+                        <div id="pSlug" style="color: var(--accent); font-weight: 700; letter-spacing: 1px;">@slug</div>
+                    </div>
+                    <div style="margin-left: auto; padding-bottom: 25px;">
+                        <button class="btn-primary" style="width:auto; padding: 10px 25px;" onclick="followCreator()"><i
+                                class="fas fa-plus"></i> FOLLOW</button>
+                    </div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 4rem;">
+                    <aside>
+                        <div class="form-card">
+                            <h3 style="font-size: 0.8rem; letter-spacing: 2px; color: var(--text-muted);">PERSONA BIO
+                            </h3>
+                            <p id="pBio" style="line-height: 1.6; margin-top: 10px;"></p>
+
+                            <div style="margin-top: 2rem; display: flex; gap: 1rem; font-size: 1.2rem;">
+                                <a id="sInstagram" href="#" style="color: var(--text-muted);"><i
+                                        class="fab fa-instagram"></i></a>
+                                <a id="sTikTok" href="#" style="color: var(--text-muted);"><i
+                                        class="fab fa-tiktok"></i></a>
+                                <a id="sYouTube" href="#" style="color: var(--text-muted);"><i
+                                        class="fab fa-youtube"></i></a>
+                            </div>
+
+                            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                                    <span style="color: var(--text-muted); font-size: 0.8rem;">INFLUENCE</span>
+                                    <span id="pFollowers" style="font-weight: 900; color: var(--accent);">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    <section>
+                        <h2 style="font-weight: 900; letter-spacing: -1px;">FEATURED SETUPS</h2>
+                        <div id="setupGrid" class="setup-grid"></div>
+                    </section>
+                </div>
+            </div>
+
+            <div id="notFound" style="display:none; text-align:center; padding: 5rem;">
+                <i class="fas fa-user-secret"
+                    style="font-size: 4rem; color: var(--text-muted); margin-bottom: 2rem;"></i>
+                <h2>UPLINK FAILED</h2>
+                <p style="color: var(--text-muted);">The requested creator profile does not exist in the arena.</p>
+                <a href="index.html" class="btn-secondary"
+                    style="display:inline-block; width:auto; margin-top: 1.5rem;">RETURN TO BASE</a>
+            </div>
+
+        </div>
+    </main>
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            if (!slug) {
+                document.getElementById('loadingProfile').style.display = 'none';
+                document.getElementById('notFound').style.display = 'block';
+                return;
+            }
+
+            try {
+                const res = await fetch((window.API_URL || '') + '/api/creators/' + encodeURIComponent(slug));
+                const data = await res.json();
+
+                document.getElementById('loadingProfile').style.display = 'none';
+                if (!res.ok) {
+                    document.getElementById('notFound').style.display = 'block';
+                    return;
+                }
+
+                const c = data.creator;
+                document.getElementById('profileContent').style.display = 'block';
+                document.getElementById('pUsername').innerHTML = c.username + (c.verified ? ' <i class="fas fa-check-circle" style="color:#00ff88; font-size: 1.2rem;"></i>' : '');
+                document.getElementById('pSlug').textContent = '@' + c.slug;
+                document.getElementById('pBio').textContent = c.bio || 'This creator maintains a low profile.';
+                document.getElementById('pAvatar').textContent = c.avatar || '👤';
+                document.getElementById('pFollowers').textContent = data.followers || 0;
+
+                if (c.banner_url) {
+                    document.getElementById('pBanner').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${c.banner_url}')`;
+                }
+
+                // Socials
+                if (c.socials) {
+                    try {
+                        const s = JSON.parse(c.socials);
+                        if (s.instagram) { document.getElementById('sInstagram').href = 'https://instagram.com/' + s.instagram; document.getElementById('sInstagram').style.color = 'var(--accent)'; }
+                        if (s.tiktok) { document.getElementById('sTikTok').href = 'https://tiktok.com/@' + s.tiktok; document.getElementById('sTikTok').style.color = 'var(--accent)'; }
+                        if (s.youtube) { document.getElementById('sYouTube').href = s.youtube; document.getElementById('sYouTube').style.color = 'var(--accent)'; }
+                    } catch (e) { }
+                }
+
+                // Setups
+                const grid = document.getElementById('setupGrid');
+                if (data.setups && data.setups.length > 0) {
+                    grid.innerHTML = data.setups.map(s => `
+                <div class="setup-card">
+                    <div style="font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 5px;">${s.mode.toUpperCase()} CONFIG</div>
+                    <div style="font-weight: 800; color: #fff; font-size: 1.1rem; margin-bottom: 10px;">Gen ${s.general} Sensitivity</div>
+                    <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
+                        <span><i class="fas fa-heart"></i> ${s.likes || 0}</span>
+                        <span><i class="fas fa-clone"></i> ${s.copies || 0}</span>
+                    </div>
+                </div>
+            `).join('');
+                } else {
+                    grid.innerHTML = '<p style="color: var(--text-muted);">No public configurations deployed.</p>';
+                }
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loadingProfile').style.display = 'none';
+                document.getElementById('notFound').style.display = 'block';
+            }
+        });
+
+        async function followCreator() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            if (window.Toast) Toast.show('Follow system initialization in progress...', 'info');
+        }
+    </script>
+</body>
+
+</html>

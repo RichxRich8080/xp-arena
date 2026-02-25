@@ -2,7 +2,15 @@ const smartphoneDatabase = [
     {
         brand: "Samsung",
         series: [
-            { name: "Galaxy S Series", models: ["Galaxy S24 Ultra", "Galaxy S24+", "Galaxy S24", "Galaxy S23 Ultra", "Galaxy S23+", "Galaxy S23", "Galaxy S23 FE", "Galaxy S22 Ultra", "Galaxy S22+", "Galaxy S22", "Galaxy S21 Ultra", "Galaxy S21+", "Galaxy S21", "Galaxy S21 FE", "Galaxy S20 Ultra", "Galaxy S20+", "Galaxy S20", "Galaxy S20 FE", "Galaxy S10+", "Galaxy S10", "Galaxy S10e", "Galaxy S10 Lite", "Galaxy S10 5G", "Galaxy S9+", "Galaxy S9", "Galaxy S8+", "Galaxy S8", "Galaxy S7 Edge", "Galaxy S7", "Galaxy S6 Edge+", "Galaxy S6 Edge", "Galaxy S6", "Galaxy S5", "Galaxy S4", "Galaxy S3", "Galaxy S2", "Galaxy S1"] },
+            {
+                name: "Galaxy S Series", models: [
+                    { name: "Galaxy S24 Ultra", touchSampling: "240Hz", latency: "16ms", score: 96 },
+                    { name: "Galaxy S24+", touchSampling: "240Hz", latency: "18ms", score: 92 },
+                    { name: "Galaxy S24", touchSampling: "240Hz", latency: "20ms", score: 90 },
+                    { name: "Galaxy S23 Ultra", touchSampling: "240Hz", latency: "18ms", score: 94 },
+                    "Galaxy S23+", "Galaxy S23", "Galaxy S23 FE", "Galaxy S22 Ultra", "Galaxy S22+", "Galaxy S22", "Galaxy S21 Ultra", "Galaxy S21+", "Galaxy S21", "Galaxy S21 FE", "Galaxy S20 Ultra", "Galaxy S20+", "Galaxy S20", "Galaxy S20 FE", "Galaxy S10+", "Galaxy S10", "Galaxy S10e", "Galaxy S10 Lite", "Galaxy S10 5G", "Galaxy S9+", "Galaxy S9", "Galaxy S8+", "Galaxy S8", "Galaxy S7 Edge", "Galaxy S7", "Galaxy S6 Edge+", "Galaxy S6 Edge", "Galaxy S6", "Galaxy S5", "Galaxy S4", "Galaxy S3", "Galaxy S2", "Galaxy S1"
+                ]
+            },
             { name: "Galaxy Note Series", models: ["Galaxy Note 20 Ultra", "Galaxy Note 20", "Galaxy Note 10+", "Galaxy Note 10", "Galaxy Note 10 Lite", "Galaxy Note 9", "Galaxy Note 8", "Galaxy Note 7", "Galaxy Note FE", "Galaxy Note 5", "Galaxy Note 4", "Galaxy Note Edge", "Galaxy Note 3", "Galaxy Note 3 Neo", "Galaxy Note 2", "Galaxy Note"] },
             { name: "Galaxy Z Series (Fold & Flip)", models: ["Galaxy Z Fold 5", "Galaxy Z Flip 5", "Galaxy Z Fold 4", "Galaxy Z Flip 4", "Galaxy Z Fold 3", "Galaxy Z Flip 3", "Galaxy Z Fold 2", "Galaxy Z Flip", "Galaxy Z Flip 5G", "Galaxy Fold"] },
             { name: "Galaxy A Series", models: ["Galaxy A55", "Galaxy A54", "Galaxy A53", "Galaxy A52s 5G", "Galaxy A52 5G", "Galaxy A52", "Galaxy A51", "Galaxy A50s", "Galaxy A50", "Galaxy A35", "Galaxy A34", "Galaxy A33", "Galaxy A32", "Galaxy A31", "Galaxy A30s", "Galaxy A30", "Galaxy A25", "Galaxy A24", "Galaxy A23", "Galaxy A22", "Galaxy A21s", "Galaxy A21", "Galaxy A20s", "Galaxy A20", "Galaxy A15", "Galaxy A14", "Galaxy A13", "Galaxy A12", "Galaxy A11", "Galaxy A10s", "Galaxy A10", "Galaxy A05s", "Galaxy A05", "Galaxy A04s", "Galaxy A04", "Galaxy A03s", "Galaxy A03", "Galaxy A02s", "Galaxy A02", "Galaxy A01", "Galaxy A90 5G", "Galaxy A80", "Galaxy A73 5G", "Galaxy A72", "Galaxy A71", "Galaxy A70s", "Galaxy A70", "Galaxy A60", "Galaxy A42 5G", "Galaxy A41", "Galaxy A40"] },
@@ -14,7 +22,14 @@ const smartphoneDatabase = [
     {
         brand: "Apple",
         series: [
-            { name: "iPhone Series", models: ["iPhone 15 Pro Max", "iPhone 15 Pro", "iPhone 15 Plus", "iPhone 15", "iPhone 14 Pro Max", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14", "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13 mini", "iPhone 13", "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12 mini", "iPhone 12", "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11", "iPhone XS Max", "iPhone XS", "iPhone XR", "iPhone X", "iPhone 8 Plus", "iPhone 8", "iPhone 7 Plus", "iPhone 7", "iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6", "iPhone SE (3rd gen)", "iPhone SE (2nd gen)", "iPhone SE (1st gen)", "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4s", "iPhone 4", "iPhone 3GS", "iPhone 3G", "iPhone (1st gen)"] }
+            {
+                name: "iPhone Series", models: [
+                    { name: "iPhone 15 Pro Max", touchSampling: "240Hz", latency: "15ms", score: 98 },
+                    { name: "iPhone 15 Pro", touchSampling: "240Hz", latency: "16ms", score: 97 },
+                    { name: "iPhone 14 Pro Max", touchSampling: "240Hz", latency: "18ms", score: 95 },
+                    "iPhone 15 Plus", "iPhone 15", "iPhone 14 Pro", "iPhone 14 Plus", "iPhone 14", "iPhone 13 Pro Max", "iPhone 13 Pro", "iPhone 13 mini", "iPhone 13", "iPhone 12 Pro Max", "iPhone 12 Pro", "iPhone 12 mini", "iPhone 12", "iPhone 11 Pro Max", "iPhone 11 Pro", "iPhone 11", "iPhone XS Max", "iPhone XS", "iPhone XR", "iPhone X", "iPhone 8 Plus", "iPhone 8", "iPhone 7 Plus", "iPhone 7", "iPhone 6s Plus", "iPhone 6s", "iPhone 6 Plus", "iPhone 6", "iPhone SE (3rd gen)", "iPhone SE (2nd gen)", "iPhone SE (1st gen)", "iPhone 5s", "iPhone 5c", "iPhone 5", "iPhone 4s", "iPhone 4", "iPhone 3GS", "iPhone 3G", "iPhone (1st gen)"
+                ]
+            }
         ]
     },
     {
@@ -149,7 +164,14 @@ const smartphoneDatabase = [
     {
         brand: "Asus",
         series: [
-            { name: "ROG Phone Series (Gaming)", models: ["Asus ROG Phone 8 Pro", "Asus ROG Phone 8", "Asus ROG Phone 7 Ultimate", "Asus ROG Phone 7", "Asus ROG Phone 6 Pro", "Asus ROG Phone 6D Ultimate", "Asus ROG Phone 6D", "Asus ROG Phone 6", "Asus ROG Phone 5s Pro", "Asus ROG Phone 5s", "Asus ROG Phone 5 Ultimate", "Asus ROG Phone 5 Pro", "Asus ROG Phone 5", "Asus ROG Phone 3", "Asus ROG Phone II", "Asus ROG Phone"] },
+            {
+                name: "ROG Phone Series (Gaming)", models: [
+                    { name: "Asus ROG Phone 8 Pro", touchSampling: "720Hz", latency: "12ms", score: 99 },
+                    { name: "Asus ROG Phone 8", touchSampling: "720Hz", latency: "14ms", score: 98 },
+                    { name: "Asus ROG Phone 7 Ultimate", touchSampling: "720Hz", latency: "15ms", score: 97 },
+                    "Asus ROG Phone 7", "Asus ROG Phone 6 Pro", "Asus ROG Phone 6D Ultimate", "Asus ROG Phone 6D", "Asus ROG Phone 6", "Asus ROG Phone 5s Pro", "Asus ROG Phone 5s", "Asus ROG Phone 5 Ultimate", "Asus ROG Phone 5 Pro", "Asus ROG Phone 5", "Asus ROG Phone 3", "Asus ROG Phone II", "Asus ROG Phone"
+                ]
+            },
             { name: "Zenfone Series", models: ["Asus Zenfone 11 Ultra", "Asus Zenfone 10", "Asus Zenfone 9", "Asus Zenfone 8 Flip", "Asus Zenfone 8", "Asus Zenfone 7 Pro", "Asus Zenfone 7", "Asus Zenfone 6", "Asus Zenfone 5z", "Asus Zenfone 5", "Asus Zenfone 4 Pro", "Asus Zenfone 4", "Asus Zenfone 3 Deluxe", "Asus Zenfone 3", "Asus Zenfone 2"] }
         ]
     },

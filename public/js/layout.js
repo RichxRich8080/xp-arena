@@ -34,6 +34,12 @@ document.addEventListener('DOMContentLoaded', () => {
         setupPageTransitions();
         window.addEventListener('statsChange', syncGlobalXP);
 
+        // Elite Gating
+        applyEliteGating();
+
+        // Mystery Protocol
+        checkMysteryProtocol();
+
         // Initial user checks
         if (typeof User !== 'undefined' && Auth.isLoggedIn()) {
             User.checkDailyLogin();
@@ -73,7 +79,6 @@ function injectLayout() {
     }
 
     const navbarHTML = `
-        <div class="xp-bar-global" id="globalXPBar" style="width: 0%;"></div>
         <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
             <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
@@ -227,23 +232,112 @@ function checkDailyRewardReminder() {
         const today = new Date().toDateString();
         if (stats && stats.lastLoginDate !== today) {
             const reminder = document.createElement('div');
+            reminder.id = 'daily-reminder-popup';
             reminder.innerHTML = `
-                <div style="position: fixed; top: 100px; right: 20px; z-index: 9999; background: rgba(18,24,38,0.95); border: 1px solid var(--accent); border-radius: 12px; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sideSlide 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
-                    <div style="display:flex; align-items:center; gap:12px;">
-                        <div style="background: var(--accent); color:#000; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                <div class="reminder-card">
+                    <div class="reminder-glow"></div>
+                    <div class="reminder-content">
+                        <div class="reminder-icon">
                             <i class="fas fa-gift"></i>
                         </div>
-                        <div>
-                            <div style="font-weight:900; color:#fff; font-size:0.9rem;">DAILY BOUNTY AVAILABLE</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">Sync now to maintain your streak.</div>
+                        <div class="reminder-text">
+                            <div class="reminder-title">DAILY BOUNTY</div>
+                            <div class="reminder-sub">Tap to Sync</div>
                         </div>
-                        <button onclick="window.location.href='daily-login.html'" style="background:var(--accent); border:none; color:#000; font-weight:800; padding:6px 15px; border-radius:6px; cursor:pointer; font-size:0.75rem; margin-left:10px;">CLAIM</button>
+                        <button onclick="window.location.href='daily-login.html'" class="reminder-btn">CLAIM</button>
+                        <button onclick="this.closest('#daily-reminder-popup').remove()" class="reminder-close">&times;</button>
                     </div>
                 </div>
                 <style>
-                    @keyframes sideSlide {
-                        0% { transform: translateX(120%); opacity: 0; }
-                        100% { transform: translateX(0); opacity: 1; }
+                    #daily-reminder-popup {
+                        position: fixed;
+                        bottom: 110px;
+                        right: 20px;
+                        z-index: 100000;
+                        pointer-events: auto;
+                    }
+                    .reminder-card {
+                        background: rgba(11, 15, 23, 0.9);
+                        backdrop-filter: blur(20px);
+                        -webkit-backdrop-filter: blur(20px);
+                        border: 1px solid var(--accent);
+                        border-radius: 16px;
+                        padding: 12px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
+                        animation: reminderSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                        position: relative;
+                        overflow: hidden;
+                        min-width: 240px;
+                    }
+                    .reminder-content {
+                        display: flex;
+                        align-items: center;
+                        gap: 12px;
+                        position: relative;
+                        z-index: 2;
+                    }
+                    .reminder-icon {
+                        background: var(--accent);
+                        color: #000;
+                        width: 36px;
+                        height: 36px;
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 1rem;
+                        flex-shrink: 0;
+                    }
+                    .reminder-title {
+                        font-weight: 950;
+                        color: #fff;
+                        font-size: 0.8rem;
+                        letter-spacing: 1px;
+                        line-height: 1;
+                    }
+                    .reminder-sub {
+                        font-size: 0.7rem;
+                        color: var(--text-muted);
+                        margin-top: 2px;
+                    }
+                    .reminder-btn {
+                        background: var(--accent);
+                        border: none;
+                        color: #000;
+                        font-weight: 900;
+                        padding: 6px 14px;
+                        border-radius: 8px;
+                        cursor: pointer;
+                        font-size: 0.75rem;
+                        margin-left: auto;
+                        transition: transform 0.2s;
+                    }
+                    .reminder-btn:hover { transform: scale(1.05); }
+                    .reminder-close {
+                        background: none;
+                        border: none;
+                        color: rgba(255,255,255,0.3);
+                        font-size: 1.2rem;
+                        cursor: pointer;
+                        padding: 0 5px;
+                    }
+                    .reminder-glow {
+                        position: absolute;
+                        top: 0; left: 0; width: 100%; height: 100%;
+                        background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
+                        opacity: 0.3;
+                    }
+                    @keyframes reminderSlideIn {
+                        0% { transform: translateX(120%) scale(0.8); opacity: 0; }
+                        100% { transform: translateX(0) scale(1); opacity: 1; }
+                    }
+                    @media (max-width: 600px) {
+                        #daily-reminder-popup {
+                            right: 10px;
+                            left: 10px;
+                            bottom: 100px;
+                        }
+                        .reminder-card { min-width: auto; }
                     }
                 </style>
             `;
@@ -476,13 +570,7 @@ function syncGlobalXP() {
     const stats = User.getStats();
     if (!stats) return;
 
-    const bar = document.getElementById('globalXPBar');
     const badge = document.getElementById('globalLevelBadge');
-
-    if (bar) {
-        const progressPercent = ((stats.axp % 500) / 500) * 100;
-        bar.style.width = `${progressPercent}%`;
-    }
 
     if (badge) {
         badge.textContent = `Lvl ${stats.level}`;
@@ -717,4 +805,67 @@ function urlBase64ToUint8Array(base64String) {
         outputArray[i] = rawData.charCodeAt(i);
     }
     return outputArray;
+}
+
+function applyEliteGating() {
+    if (typeof User === 'undefined') return;
+    const stats = User.getStats();
+    const isElite = stats && stats.is_premium;
+
+    // Professional hiding of Pro-only elements
+    document.querySelectorAll('.pro-only').forEach(el => {
+        if (!isElite) {
+            el.style.display = 'none';
+        } else {
+            el.classList.add('premium-active');
+        }
+    });
+
+    // Toggle visibility of creator dashboard in sidebar
+    const crLink = document.querySelector('a[href="creators.html"]');
+    if (crLink && !isElite) {
+        crLink.style.opacity = '0.4';
+        crLink.style.pointerEvents = 'none';
+        crLink.style.cursor = 'not-allowed';
+        crLink.innerHTML += ' <i class="fas fa-lock" style="font-size:0.6rem; margin-left:8px; color: var(--accent);"></i>';
+    }
+}
+
+function checkMysteryProtocol() {
+    if (!Auth.isLoggedIn()) return;
+    const today = new Date().toISOString().split('T')[0];
+    if (localStorage.getItem('xp_mystery_protocol') === today) return;
+
+    // Show Protocol Pop-up
+    const popup = document.createElement('div');
+    popup.id = 'mysteryProtocolPopup';
+    popup.style = `
+        position: fixed; bottom: 85px; right: 20px; z-index: 9999;
+        background: linear-gradient(135deg, rgba(10,10,10,0.95), rgba(0,20,20,0.95));
+        border: 2px solid var(--accent); border-radius: 12px; padding: 1.5rem;
+        box-shadow: 0 0 30px var(--accent-glow); color: #fff; width: 280px;
+        transform: translateY(100px); opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    `;
+    popup.innerHTML = `
+        <div style="font-size: 0.6rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 8px;">UPLINK DETECTED</div>
+        <h3 style="margin: 0 0 10px 0; font-weight: 900;">SECRET PROTOCOL</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">A new tactical encryption has appeared in the Mystery Room. Decrypt for AXP rewards.</p>
+        <div style="display:flex; gap:10px;">
+            <a href="mystery.html" class="btn-primary" style="padding: 8px 15px; font-size: 0.75rem; text-decoration:none;" onclick="markProtocolSeen()">ENTER ROOM</a>
+            <button class="btn-secondary" style="padding: 8px 15px; font-size: 0.75rem;" onclick="markProtocolSeen()">IGNORE</button>
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+    setTimeout(() => {
+        popup.style.transform = 'translateY(0)';
+        popup.style.opacity = '1';
+    }, 2000);
+
+    window.markProtocolSeen = () => {
+        localStorage.setItem('xp_mystery_protocol', today);
+        popup.style.transform = 'translateY(100px)';
+        popup.style.opacity = '0';
+        setTimeout(() => popup.remove(), 500);
+    };
 }

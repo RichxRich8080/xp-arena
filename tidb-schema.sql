@@ -1,12 +1,5 @@
--- Users Table
-CREATE TABLE IF NOT EXISTS axp_history (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    axp INT NOT NULL,
-    date DATE NOT NULL,
-    UNIQUE KEY user_date (user_id, date),
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- XP Arena TiDB Schema (Cloud Production)
+-- Users Table (Primary)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -37,7 +30,17 @@ CREATE TABLE IF NOT EXISTS users (
     referred_by INT,
     login_attempts INT DEFAULT 0,
     lockout_until DATETIME,
+    last_protocol_date DATE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+-- AXP History (Analytics)
+CREATE TABLE IF NOT EXISTS axp_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    axp INT NOT NULL,
+    date DATE NOT NULL,
+    UNIQUE KEY user_date_uniq (user_id, date),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -91,7 +94,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     achievement_id VARCHAR(100),
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY (user_id, achievement_id)
+    UNIQUE KEY uniq_user_ach (user_id, achievement_id)
 );
 -- Sensitivity Setups
 CREATE TABLE IF NOT EXISTS setups (
@@ -219,6 +222,17 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_push (user_id)
+);
+-- Premium Codes
+CREATE TABLE IF NOT EXISTS premium_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    duration_days INT DEFAULT 30,
+    used_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME,
+    FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE
+    SET NULL
 );
 -- Shop Items
 CREATE TABLE IF NOT EXISTS shop_items (

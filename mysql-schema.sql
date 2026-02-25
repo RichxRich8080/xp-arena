@@ -1,7 +1,5 @@
--- XP Arena MySQL Schema
--- TIP: If you get "Unknown database", look at the top-right of TiDB 
--- and select the "test" database instead of "xp_arena".
--- Users Table
+-- XP Arena MySQL Schema (Local Development)
+-- Users Table (Primary)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -13,7 +11,6 @@ CREATE TABLE IF NOT EXISTS users (
     streak INT DEFAULT 0,
     last_login DATETIME,
     socials TEXT,
-    -- JSON string
     name_changes INT DEFAULT 0,
     is_premium TINYINT(1) DEFAULT 0,
     premium_name_color VARCHAR(20),
@@ -31,7 +28,19 @@ CREATE TABLE IF NOT EXISTS users (
     reset_token_expires DATETIME,
     referral_code VARCHAR(20) UNIQUE,
     referred_by INT,
+    login_attempts INT DEFAULT 0,
+    lockout_until DATETIME,
+    last_protocol_date DATE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+-- AXP History (Analytics)
+CREATE TABLE IF NOT EXISTS axp_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    axp INT NOT NULL,
+    date DATE NOT NULL,
+    UNIQUE KEY user_date_uniq (user_id, date),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -57,7 +66,6 @@ CREATE TABLE IF NOT EXISTS presets (
     user_id INT NOT NULL,
     name VARCHAR(255),
     settings_json TEXT,
-    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -66,7 +74,6 @@ CREATE TABLE IF NOT EXISTS vault (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     settings_json TEXT,
-    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -87,7 +94,7 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     achievement_id VARCHAR(100),
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY (user_id, achievement_id)
+    UNIQUE KEY uniq_user_ach (user_id, achievement_id)
 );
 -- Sensitivity Setups
 CREATE TABLE IF NOT EXISTS setups (
@@ -196,16 +203,6 @@ CREATE TABLE IF NOT EXISTS creator_followers (
     FOREIGN KEY (follower_user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_creator_follower (creator_user_id, follower_user_id)
 );
--- Indices for Optimization
-CREATE INDEX idx_users_axp ON users(axp);
-CREATE INDEX idx_users_guild ON users(guild_id);
-CREATE INDEX idx_activity_user_time ON activity(user_id, timestamp);
-CREATE INDEX idx_setups_user_time ON setups(user_id, created_at);
-CREATE INDEX idx_setups_priv_time ON setups(is_private, created_at);
-CREATE INDEX idx_setups_pop ON setups(likes, copies);
-CREATE INDEX idx_guild_members_user ON guild_members(user_id);
-CREATE INDEX idx_tournaments_time ON tournaments(created_at);
-CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
 -- Referrals Tracking
 CREATE TABLE IF NOT EXISTS referrals (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -223,7 +220,8 @@ CREATE TABLE IF NOT EXISTS push_subscriptions (
     user_id INT NOT NULL,
     subscription_json TEXT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_push (user_id)
 );
 -- Premium Codes
 CREATE TABLE IF NOT EXISTS premium_codes (
@@ -259,11 +257,13 @@ CREATE TABLE IF NOT EXISTS user_inventory (
     FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_item (user_id, item_id)
 );
-CREATE TABLE IF NOT EXISTS push_subscriptions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    subscription_json TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY (user_id)
-);
+-- Indices for Optimization
+CREATE INDEX idx_users_axp ON users(axp);
+CREATE INDEX idx_users_guild ON users(guild_id);
+CREATE INDEX idx_activity_user_time ON activity(user_id, timestamp);
+CREATE INDEX idx_setups_user_time ON setups(user_id, created_at);
+CREATE INDEX idx_setups_priv_time ON setups(is_private, created_at);
+CREATE INDEX idx_setups_pop ON setups(likes, copies);
+CREATE INDEX idx_guild_members_user ON guild_members(user_id);
+CREATE INDEX idx_tournaments_time ON tournaments(created_at);
+CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);

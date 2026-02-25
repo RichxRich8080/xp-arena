@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Creator Dashboard • XP ARENA</title>
   <link rel="stylesheet" href="css/main.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
@@ -15,31 +15,79 @@
   <main class="main-content-area">
     <div class="container">
       <div class="page-header">
-        <h1>Creator Dashboard</h1>
-        <p>Premium only: enable your public creator profile and manage your page.</p>
+        <h1>Creator Hub</h1>
+        <p>Manage your public persona and tactical influence.</p>
       </div>
 
-      <div class="form-card">
-        <h3>Enable Creator Profile</h3>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-          <input id="crSlug" class="settings-input" placeholder="slug (lowercase letters and -)">
-          <input id="crBanner" class="settings-input" placeholder="banner URL (optional)">
-        </div>
-        <textarea id="crBio" class="settings-input" placeholder="Short bio" style="margin-top:10px;"></textarea>
-        <div style="display:flex; gap:10px; margin-top: 10px;">
-          <button class="btn-primary" style="width:auto;" onclick="enableCreator()">Enable</button>
-          <button class="btn-secondary" style="width:auto;" onclick="checkMe()">Check Status</button>
-        </div>
-        <div id="crMsg" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);"></div>
+      <!-- ELITE PRO GATE -->
+      <div id="noEliteMsg" class="form-card" style="display:none; text-align:center; padding: 3rem;">
+        <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+        <h2>ELITE ACCESS REQUIRED</h2>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">The Creator Hub is exclusively for Elite Pro members.
+        </p>
+        <a href="premium.html" class="btn-primary" style="display:inline-block; width:auto;">ASCEND TO ELITE</a>
       </div>
 
-      <div class="form-card" style="margin-top:1rem;">
-        <h3>View Creator Page</h3>
-        <div style="display:grid; grid-template-columns: 1fr auto; gap: 10px;">
-          <input id="viewSlug" class="settings-input" placeholder="slug">
-          <button class="btn-secondary" style="width:auto;" onclick="viewCreator()">View</button>
+      <div id="creatorAuthArea" style="display:none;">
+        <div class="form-card glow-neon" style="margin-bottom: 2rem;">
+          <h3 style="color: var(--accent);"><i class="fas fa-id-card"></i> IDENTITY STATUS</h3>
+          <div id="identityStatus" style="margin-top: 10px; font-weight: 800; font-size: 1.1rem; color: #fff;">
+            PENDING...</div>
+          <div id="identityBio" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;"></div>
         </div>
-        <div id="crView" style="margin-top: 10px;"></div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+          <div class="form-card">
+            <h3><i class="fas fa-edit"></i> PROFILE SETTINGS</h3>
+            <div style="margin-top: 15px;">
+              <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Unique Slug
+                (@)</label>
+              <input id="crSlug" class="settings-input" placeholder="e.g. areni-master" style="margin-top: 5px;">
+
+              <label
+                style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 15px;">Persona
+                Bio</label>
+              <textarea id="crBio" class="settings-input" placeholder="Tell the arena who you are..."
+                style="margin-top: 5px; height: 100px;"></textarea>
+
+              <label
+                style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 15px;">Banner
+                Image URL</label>
+              <input id="crBanner" class="settings-input" placeholder="https://..." style="margin-top: 5px;">
+
+              <button class="btn-primary" style="margin-top: 20px;" onclick="enableCreator()">UPDATE PROTOCOL</button>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <h3><i class="fas fa-chart-bar"></i> INFLUENCE ANALYTICS</h3>
+            <div style="margin-top: 20px;">
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text-muted);">FOLLOWER COUNT</span>
+                <span id="statFollowers" style="font-weight: 900; color: var(--accent);">0</span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text-muted);">SETUP ENDORSEMENTS</span>
+                <span id="statLikes" style="font-weight: 900; color: var(--accent);">0</span>
+              </div>
+              <div
+                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                <span style="color: var(--text-muted);">TACTICAL REPLICAS</span>
+                <span id="statCopies" style="font-weight: 900; color: var(--accent);">0</span>
+              </div>
+              <div style="margin-top: 20px; text-align: center;">
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">PUBLIC ACCESS LINK:</p>
+                <div id="publicLink"
+                  style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; font-size: 0.8rem; word-break: break-all;">
+                </div>
+                <button class="btn-secondary" style="margin-top: 10px; font-size: 0.7rem; width: auto;"
+                  onclick="copyPublicLink()">COPY LINK</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -48,47 +96,75 @@
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
   <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const stats = User.getStats();
+      if (!stats || !stats.is_premium) {
+        document.getElementById('noEliteMsg').style.display = 'block';
+        return;
+      }
+      document.getElementById('creatorAuthArea').style.display = 'block';
+      await checkMe();
+    });
+
     async function enableCreator() {
       if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
       const slug = document.getElementById('crSlug').value.trim();
       const bio = document.getElementById('crBio').value.trim();
       const banner_url = document.getElementById('crBanner').value.trim();
-      const msg = document.getElementById('crMsg');
-      const res = await fetch((window.API_URL || '') + '/api/creators/enable', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-        body: JSON.stringify({ slug, bio, banner_url })
-      });
-      const data = await res.json();
-      msg.textContent = res.ok ? 'Creator profile enabled! /api/creators/' + slug : (data.error || 'Error');
+      
+      try {
+        const res = await fetch((window.API_URL || '') + '/api/creators/enable', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+          body: JSON.stringify({ slug, bio, banner_url })
+        });
+        const data = await res.json();
+        if (res.ok) {
+           if (window.Toast) Toast.show('Creator Protocol Updated!', 'success');
+           checkMe();
+        } else {
+           if (window.Toast) Toast.show(data.error || 'Error updating profile', 'error');
+        }
+      } catch (e) {
+        console.error(e);
+      }
     }
+
     async function checkMe() {
-      if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-      const msg = document.getElementById('crMsg');
+      if (!Auth.isLoggedIn()) return;
       const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const data = await res.json();
-      msg.textContent = data && data.creator ? ('You are a creator: ' + data.creator.slug) : 'Not a creator yet';
+      
+      const idStatus = document.getElementById('identityStatus');
+      const idBio = document.getElementById('identityBio');
+      const publicLink = document.getElementById('publicLink');
+      
+      if (data && data.creator) {
+        const c = data.creator;
+        idStatus.innerHTML = `${c.username.toUpperCase()} <span style="color: var(--accent);">@${c.slug}</span> ${c.verified ? ' <i class="fas fa-check-circle" style="color:#00ff88;"></i>' : ''}`;
+        idBio.textContent = c.bio || 'No bio set.';
+        publicLink.textContent = window.location.origin + '/creator-profile.html?slug=' + c.slug;
+        
+        document.getElementById('crSlug').value = c.slug;
+        document.getElementById('crBio').value = c.bio || '';
+        document.getElementById('crBanner').value = c.banner_url || '';
+        
+        document.getElementById('statFollowers').textContent = data.followers || 0;
+        document.getElementById('statLikes').textContent = (data.setups || []).reduce((acc, s) => acc + (s.likes || 0), 0);
+        document.getElementById('statCopies').textContent = (data.setups || []).reduce((acc, s) => acc + (s.copies || 0), 0);
+      } else {
+        idStatus.textContent = 'ACCOUNT NOT INITIALIZED';
+        idBio.textContent = 'Enable your creator profile below to start building your influence.';
+        publicLink.textContent = 'N/A';
+      }
     }
-    async function viewCreator() {
-      const slug = document.getElementById('viewSlug').value.trim();
-      const view = document.getElementById('crView');
-      view.innerHTML = 'Loading...';
-      const res = await fetch((window.API_URL || '') + '/api/creators/' + encodeURIComponent(slug));
-      const data = await res.json();
-      if (!res.ok) { view.innerHTML = (data.error || 'Not found'); return; }
-      const c = data.creator;
-      const setups = (data.setups || []).map(s => `<li>${s.mode.toUpperCase()} • Gen ${s.general} • Likes ${s.likes} • Copies ${s.copies}</li>`).join('');
-      view.innerHTML = `
-        <div class="form-card">
-          <div style="font-weight:800; font-size:1.1rem;">${c.username} (@${c.slug}) ${c.verified ? '✅' : ''}</div>
-          <div style="color: var(--text-muted); margin: 6px 0;">${c.bio || ''}</div>
-          <div style="margin-top: 10px;">
-            <div style="font-weight:800; margin-bottom: 6px;">Featured Setups</div>
-            <ul>${setups || '<li>No public setups yet.</li>'}</ul>
-          </div>
-          <div style="margin-top: 10px; color: var(--text-muted);">Followers: ${data.followers || 0}</div>
-        </div>
-      `;
+
+    function copyPublicLink() {
+      const link = document.getElementById('publicLink').textContent;
+      if (link && link !== 'N/A') {
+        navigator.clipboard.writeText(link);
+        if (window.Toast) Toast.show('Link copied to clipboard!', 'success');
+      }
     }
   </script>
 </body>
