@@ -1,3 +1,35 @@
+// --- PHASE 3: SEO & VISUAL EFFECTS ---
+document.addEventListener('DOMContentLoaded', () => {
+    updateMetaTitle();
+    initFloatEffects();
+});
+
+function updateMetaTitle() {
+    const page = window.location.pathname.split('/').pop().replace('.html', '') || 'Home';
+    const titleMap = {
+        'index': 'Home',
+        'tool': 'Sensitivity Tool',
+        'leaderboard': 'Global Rankings',
+        'profile': 'My Dossier',
+        'shop': 'The Armory',
+        'guilds': 'Clan HQ'
+    };
+    const friendlyName = titleMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+    document.title = `${friendlyName} • XP ARENA`;
+}
+
+function initFloatEffects() {
+    window.addEventListener('mousemove', (e) => {
+        const heroes = document.querySelectorAll('.hero-content, .page-header');
+        if (heroes.length === 0) return;
+        const x = (window.innerWidth / 2 - e.pageX) / 50;
+        const y = (window.innerHeight / 2 - e.pageY) / 50;
+        heroes.forEach(h => {
+            h.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // --- SERVICE WORKER REGISTRATION ---
     if ('serviceWorker' in navigator) {
@@ -609,38 +641,9 @@ function generateShareImage(result) {
         { label: '8X SCOPE', value: result.scope8x },
     ];
 
-    document.addEventListener('DOMContentLoaded', () => {
-        updateMetaTitle();
-        initFloatEffects();
-    });
-
-    function updateMetaTitle() {
-        const page = window.location.pathname.split('/').pop().replace('.html', '') || 'Home';
-        const titleMap = {
-            'index': 'Home',
-            'tool': 'Sensitivity Tool',
-            'leaderboard': 'Global Rankings',
-            'profile': 'My Dossier',
-            'shop': 'The Armory',
-            'guilds': 'Clan HQ'
-        };
-        const friendlyName = titleMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
-        document.title = `${friendlyName} • XP ARENA`;
-    }
-
-    function initFloatEffects() {
-        // Add subtle parallax to hero elements
-        window.addEventListener('mousemove', (e) => {
-            const heroes = document.querySelectorAll('.hero-content, .page-header');
-            const x = (window.innerWidth / 2 - e.pageX) / 50;
-            const y = (window.innerHeight / 2 - e.pageY) / 50;
-            heroes.forEach(h => {
-                h.style.transform = `translate(${x}px, ${y}px)`;
-            });
-        });
-    }
-
     const API_BASE_APP = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:3000'
+        : '';
 
     const colW = 160;
     const startX = 50;

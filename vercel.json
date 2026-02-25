@@ -1,15 +1,15 @@
 {
     "version": 2,
+    "cleanUrls": true,
+    "trailingSlash": false,
     "rewrites": [
         {
             "source": "/api/(.*)",
-            "destination": "api/server.js"
+            "destination": "/api/server.js"
         },
         {
             "source": "/(.*)",
-            "destination": "public/$1"
+            "destination": "/public/$1"
         }
-    ],
-    "cleanUrls": true,
-    "trailingSlash": false
+    ]
 }

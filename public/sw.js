@@ -41,7 +41,15 @@ self.addEventListener('message', (event) => {
 self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
-  if (ASSETS.some(a => req.url.includes(a)) || req.destination === 'style' || req.destination === 'script') {
+
+  // For API calls, always go network-first
+  if (req.url.includes('/api/')) {
+    event.respondWith(fetch(req).catch(() => caches.match(req)));
+    return;
+  }
+
+  // For static assets, use stale-while-revalidate
+  if (ASSETS.some(a => req.url.includes(a)) || req.destination === 'style' || req.destination === 'script' || req.destination === 'image') {
     event.respondWith(staleWhileRevalidate(req));
   } else {
     event.respondWith(fetch(req).catch(() => caches.match(req)));
@@ -51,9 +59,11 @@ self.addEventListener('fetch', (event) => {
 async function staleWhileRevalidate(req) {
   const cache = await caches.open(CACHE_NAME);
   const cached = await cache.match(req);
+
   const networkPromise = fetch(req).then(res => {
-    if (res && res.ok) cache.put(req, res.clone());
+    if (res && res.status === 200) cache.put(req, res.clone());
     return res;
   }).catch(() => null);
+
   return cached || networkPromise || fetch(req);
 }
