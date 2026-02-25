@@ -301,6 +301,32 @@ async function run() {
     )
   `);
 
+  await ensureTable('shop_items', `
+    CREATE TABLE IF NOT EXISTS shop_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        type ENUM('booster', 'cosmetic', 'item') DEFAULT 'item',
+        price_axp INT NOT NULL,
+        stock INT DEFAULT -1,
+        icon VARCHAR(50),
+        rarity ENUM('common', 'uncommon', 'rare', 'epic', 'legendary') DEFAULT 'common',
+        active TINYINT(1) DEFAULT 1,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await ensureTable('user_inventory', `
+    CREATE TABLE IF NOT EXISTS user_inventory (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        item_id INT NOT NULL,
+        purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE
+    )
+  `);
+
   // 2. Structural checks (columns that might be missing in older versions)
   await ensureColumn('users', 'is_premium', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'premium_name_color', 'VARCHAR(20)');

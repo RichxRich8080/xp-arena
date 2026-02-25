@@ -12,7 +12,8 @@ router.get('/items', async (req, res) => {
         res.json(items);
     } catch (err) {
         console.error('[Shop] Fetch items error:', err);
-        res.status(500).json({ error: 'Failed to fetch items' });
+        // Fallback to empty array if table doesn't exist yet
+        res.json([]);
     }
 });
 

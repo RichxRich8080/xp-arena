@@ -1,4 +1,4 @@
-const CACHE_NAME = 'xp-arena-v4';
+const CACHE_NAME = 'xp-arena-v5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -69,8 +69,9 @@ async function staleWhileRevalidate(req) {
       return null;
     });
 
-    // Return cached response if available, otherwise wait for network
-    return cached || networkPromise || fetch(req);
+    // Return cached response if available, otherwise return network promise (even if null, let it fall through)
+    // If everything fails, return a fresh fetch or a generic response
+    return cached || (await networkPromise) || fetch(req);
   } catch (err) {
     console.error('[SW] staleWhileRevalidate error:', err);
     return fetch(req);
