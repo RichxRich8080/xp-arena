@@ -93,53 +93,55 @@
 <body class="fade-in">
     <nav class="navbar"></nav>
 
-    <div class="container" style="max-width: 900px;">
-        <div class="page-header" style="text-align: center; margin-bottom: 2rem;">
-            <h1>Compare Devices</h1>
-            <p>See which device has the natural sensitivity advantage.</p>
-        </div>
+    <main class="main-content-area">
+        <div class="container">
+            <div class="page-header" style="text-align: center; margin-bottom: 2rem;">
+                <h1>Compare Devices</h1>
+                <p>See which device has the natural sensitivity advantage.</p>
+            </div>
 
-        <div class="form-card compare-grid">
-            <!-- DEVICE A -->
-            <div class="form-group" style="margin: 0;">
-                <label style="color: #ff4d4d; font-weight: 800;">🔴 DEVICE A</label>
-                <div class="search-wrap">
-                    <input type="text" id="searchA" class="search-input" placeholder="Search device A..."
-                        autocomplete="off">
-                    <div id="suggA" class="suggestions"></div>
+            <div class="form-card compare-grid">
+                <!-- DEVICE A -->
+                <div class="form-group" style="margin: 0;">
+                    <label style="color: #ff4d4d; font-weight: 800;">🔴 DEVICE A</label>
+                    <div class="search-wrap">
+                        <input type="text" id="searchA" class="search-input" placeholder="Search device A..."
+                            autocomplete="off">
+                        <div id="suggA" class="suggestions"></div>
+                    </div>
+                </div>
+
+                <!-- DEVICE B -->
+                <div class="form-group" style="margin: 0;">
+                    <label style="color: #00e5ff; font-weight: 800;">🔵 DEVICE B</label>
+                    <div class="search-wrap">
+                        <input type="text" id="searchB" class="search-input" placeholder="Search device B..."
+                            autocomplete="off">
+                        <div id="suggB" class="suggestions"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- DEVICE B -->
-            <div class="form-group" style="margin: 0;">
-                <label style="color: #00e5ff; font-weight: 800;">🔵 DEVICE B</label>
-                <div class="search-wrap">
-                    <input type="text" id="searchB" class="search-input" placeholder="Search device B..."
-                        autocomplete="off">
-                    <div id="suggB" class="suggestions"></div>
+            <div style="text-align: center; margin: 1.5rem 0;">
+                <button id="compareBtn" class="btn-primary" style="width: auto; padding: 0.8rem 3rem;" disabled>VS
+                    COMPUTE</button>
+            </div>
+
+            <div id="resultSection" class="hidden fade-in-up">
+                <div style="text-align: center;">
+                    <div class="vs-badge">VERSUS RESULT</div>
+                </div>
+                <div class="compare-grid" id="compareCards">
+                    <!-- Injected via JS -->
+                </div>
+
+                <div id="winnerBanner"
+                    style="margin-top: 1.5rem; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--accent);">
                 </div>
             </div>
+
         </div>
-
-        <div style="text-align: center; margin: 1.5rem 0;">
-            <button id="compareBtn" class="btn-primary" style="width: auto; padding: 0.8rem 3rem;" disabled>VS
-                COMPUTE</button>
-        </div>
-
-        <div id="resultSection" class="hidden fade-in-up">
-            <div style="text-align: center;">
-                <div class="vs-badge">VERSUS RESULT</div>
-            </div>
-            <div class="compare-grid" id="compareCards">
-                <!-- Injected via JS -->
-            </div>
-
-            <div id="winnerBanner"
-                style="margin-top: 1.5rem; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--accent);">
-            </div>
-        </div>
-
-    </div>
+    </main>
 
     <nav class="bottom-nav"></nav>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,60 +9,63 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
+
 <body class="fade-in">
   <nav class="navbar"></nav>
-  <div class="container" style="max-width: 900px;">
-    <div class="page-header">
-      <h1>Creator Dashboard</h1>
-      <p>Premium only: enable your public creator profile and manage your page.</p>
-    </div>
+  <main class="main-content-area">
+    <div class="container">
+      <div class="page-header">
+        <h1>Creator Dashboard</h1>
+        <p>Premium only: enable your public creator profile and manage your page.</p>
+      </div>
 
-    <div class="form-card">
-      <h3>Enable Creator Profile</h3>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-        <input id="crSlug" class="settings-input" placeholder="slug (lowercase letters and -)">
-        <input id="crBanner" class="settings-input" placeholder="banner URL (optional)">
+      <div class="form-card">
+        <h3>Enable Creator Profile</h3>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <input id="crSlug" class="settings-input" placeholder="slug (lowercase letters and -)">
+          <input id="crBanner" class="settings-input" placeholder="banner URL (optional)">
+        </div>
+        <textarea id="crBio" class="settings-input" placeholder="Short bio" style="margin-top:10px;"></textarea>
+        <div style="display:flex; gap:10px; margin-top: 10px;">
+          <button class="btn-primary" style="width:auto;" onclick="enableCreator()">Enable</button>
+          <button class="btn-secondary" style="width:auto;" onclick="checkMe()">Check Status</button>
+        </div>
+        <div id="crMsg" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);"></div>
       </div>
-      <textarea id="crBio" class="settings-input" placeholder="Short bio" style="margin-top:10px;"></textarea>
-      <div style="display:flex; gap:10px; margin-top: 10px;">
-        <button class="btn-primary" style="width:auto;" onclick="enableCreator()">Enable</button>
-        <button class="btn-secondary" style="width:auto;" onclick="checkMe()">Check Status</button>
-      </div>
-      <div id="crMsg" style="margin-top: 8px; font-size: 0.85rem; color: var(--text-muted);"></div>
-    </div>
 
-    <div class="form-card" style="margin-top:1rem;">
-      <h3>View Creator Page</h3>
-      <div style="display:grid; grid-template-columns: 1fr auto; gap: 10px;">
-        <input id="viewSlug" class="settings-input" placeholder="slug">
-        <button class="btn-secondary" style="width:auto;" onclick="viewCreator()">View</button>
+      <div class="form-card" style="margin-top:1rem;">
+        <h3>View Creator Page</h3>
+        <div style="display:grid; grid-template-columns: 1fr auto; gap: 10px;">
+          <input id="viewSlug" class="settings-input" placeholder="slug">
+          <button class="btn-secondary" style="width:auto;" onclick="viewCreator()">View</button>
+        </div>
+        <div id="crView" style="margin-top: 10px;"></div>
       </div>
-      <div id="crView" style="margin-top: 10px;"></div>
     </div>
-  </div>
+  </main>
   <nav class="bottom-nav"></nav>
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
   <script>
     async function enableCreator() {
-      if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
+      if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
       const slug = document.getElementById('crSlug').value.trim();
       const bio = document.getElementById('crBio').value.trim();
       const banner_url = document.getElementById('crBanner').value.trim();
       const msg = document.getElementById('crMsg');
-      const res = await fetch((window.API_URL||'') + '/api/creators/enable', {
-        method:'POST',
-        headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+Auth.getToken() },
+      const res = await fetch((window.API_URL || '') + '/api/creators/enable', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
         body: JSON.stringify({ slug, bio, banner_url })
       });
       const data = await res.json();
-      msg.textContent = res.ok ? 'Creator profile enabled! /api/creators/'+slug : (data.error || 'Error');
+      msg.textContent = res.ok ? 'Creator profile enabled! /api/creators/' + slug : (data.error || 'Error');
     }
     async function checkMe() {
-      if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
+      if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
       const msg = document.getElementById('crMsg');
-      const res = await fetch((window.API_URL||'') + '/api/creators/me', { headers: { 'Authorization':'Bearer '+Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const data = await res.json();
       msg.textContent = data && data.creator ? ('You are a creator: ' + data.creator.slug) : 'Not a creator yet';
     }
@@ -69,11 +73,11 @@
       const slug = document.getElementById('viewSlug').value.trim();
       const view = document.getElementById('crView');
       view.innerHTML = 'Loading...';
-      const res = await fetch((window.API_URL||'') + '/api/creators/' + encodeURIComponent(slug));
+      const res = await fetch((window.API_URL || '') + '/api/creators/' + encodeURIComponent(slug));
       const data = await res.json();
       if (!res.ok) { view.innerHTML = (data.error || 'Not found'); return; }
       const c = data.creator;
-      const setups = (data.setups||[]).map(s => `<li>${s.mode.toUpperCase()} • Gen ${s.general} • Likes ${s.likes} • Copies ${s.copies}</li>`).join('');
+      const setups = (data.setups || []).map(s => `<li>${s.mode.toUpperCase()} • Gen ${s.general} • Likes ${s.likes} • Copies ${s.copies}</li>`).join('');
       view.innerHTML = `
         <div class="form-card">
           <div style="font-weight:800; font-size:1.1rem;">${c.username} (@${c.slug}) ${c.verified ? '✅' : ''}</div>
@@ -88,4 +92,5 @@
     }
   </script>
 </body>
+
 </html>

@@ -101,38 +101,42 @@
 <body class="fade-in">
     <nav class="navbar"></nav>
 
-    <div class="container">
-        <div class="page-header">
-            <h1>Rank Tiers</h1>
-            <p>Climb the ranks by earning AXP through activities</p>
-        </div>
+    <main class="main-content-area">
+        <div class="container">
+            <div class="page-header">
+                <h1>Rank Tiers</h1>
+                <p>Climb the ranks by earning AXP through activities</p>
+            </div>
 
-        <div class="player-status" id="playerStatus">
-            <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">YOUR CURRENT RANK</div>
-            <div id="currentRankDisplay"
-                style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">Starter</div>
-            <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                <div id="axpSummary" style="font-weight: 600;">0 AXP Total</div>
-                <div class="progress-bar-container" style="width: 100%; max-width: 300px;">
-                    <div id="axp-progress-fill" class="progress-bar-fill"></div>
+            <div class="player-status" id="playerStatus">
+                <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">YOUR CURRENT RANK</div>
+                <div id="currentRankDisplay"
+                    style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">Starter
                 </div>
-                <div id="nextRankStatus" style="font-size: 0.85rem; color: var(--text-muted);">---</div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <div id="axpSummary" style="font-weight: 600;">0 AXP Total</div>
+                    <div class="progress-bar-container" style="width: 100%; max-width: 300px;">
+                        <div id="axp-progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="nextRankStatus" style="font-size: 0.85rem; color: var(--text-muted);">---</div>
+                </div>
+            </div>
+
+            <div id="ranksList">
+                <!-- Tiers will be injected here -->
+            </div>
+
+            <div class="v-badge-info">
+                <div style="font-size: 2rem;">🛡️</div>
+                <div>
+                    <h4 style="color: var(--accent); margin-bottom: 0.2rem;">The Champion's Proof</h4>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Reach the Champion rank (100,000 AXP) to
+                        unlock
+                        your exclusive Verified Badge and special profile effects.</p>
+                </div>
             </div>
         </div>
-
-        <div id="ranksList">
-            <!-- Tiers will be injected here -->
-        </div>
-
-        <div class="v-badge-info">
-            <div style="font-size: 2rem;">🛡️</div>
-            <div>
-                <h4 style="color: var(--accent); margin-bottom: 0.2rem;">The Champion's Proof</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);">Reach the Champion rank (100,000 AXP) to unlock
-                    your exclusive Verified Badge and special profile effects.</p>
-            </div>
-        </div>
-    </div>
+    </main>
 
     <nav class="bottom-nav"></nav>
 

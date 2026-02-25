@@ -85,40 +85,42 @@
 
     <nav class="navbar"></nav>
 
-    <div class="page-header"
-        style="padding: 4rem 1rem; background: radial-gradient(circle at top, rgba(191, 0, 255, 0.1), transparent 70%);">
-        <h1 style="color: var(--accent);">Hero's Journey</h1>
-        <p>Complete daily and weekly missions to earn massive AXP and level up.</p>
-    </div>
+    <main class="main-content-area">
+        <div class="page-header"
+            style="padding: 4rem 1rem; background: radial-gradient(circle at top, rgba(191, 0, 255, 0.1), transparent 70%);">
+            <h1 style="color: var(--accent);">Hero's Journey</h1>
+            <p>Complete daily and weekly missions to earn massive AXP and level up.</p>
+        </div>
 
-    <div class="main-container" style="max-width: 800px; margin: 0 auto; padding: 2rem 1rem;">
+        <div class="container">
 
-        <!-- DAILY QUESTS -->
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
-            <div class="quest-section-title" style="margin-bottom: 0;">
-                <i class="fas fa-sun"></i> Daily Quests
+            <!-- DAILY QUESTS -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 0.5rem;">
+                <div class="quest-section-title" style="margin-bottom: 0;">
+                    <i class="fas fa-sun"></i> Daily Quests
+                </div>
+                <div class="reset-timer"
+                    style="margin-bottom: 0; background: rgba(0,229,255,0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(0,229,255,0.2);">
+                    <i class="far fa-clock" style="color: var(--accent); margin-right: 5px;"></i> Ends in <span
+                        id="dailyCountdown">00:00:00</span>
+                </div>
             </div>
-            <div class="reset-timer"
-                style="margin-bottom: 0; background: rgba(0,229,255,0.1); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(0,229,255,0.2);">
-                <i class="far fa-clock" style="color: var(--accent); margin-right: 5px;"></i> Ends in <span
-                    id="dailyCountdown">00:00:00</span>
+            <div id="questList" style="display: grid; gap: 1.5rem; margin-bottom: 3rem; margin-top: 1rem;"></div>
+
+            <!-- WEEKLY CHALLENGES -->
+            <div class="quest-section-title">
+                <i class="fas fa-calendar-week"></i> Weekly Challenges
+                <span class="weekly-badge">WEEKLY</span>
+            </div>
+            <div class="reset-timer">Resets in <span id="weeklyResetCountdown">7 days</span></div>
+            <div id="weeklyQuestList" style="display: grid; gap: 1.5rem;"></div>
+
+            <div style="margin-top: 4rem; text-align: center; border-top: 1px solid var(--border); padding-top: 2rem;">
+                <p style="color: var(--text-muted);">Complete quests daily to maintain your streak and boost your rank
+                    faster!</p>
             </div>
         </div>
-        <div id="questList" style="display: grid; gap: 1.5rem; margin-bottom: 3rem; margin-top: 1rem;"></div>
-
-        <!-- WEEKLY CHALLENGES -->
-        <div class="quest-section-title">
-            <i class="fas fa-calendar-week"></i> Weekly Challenges
-            <span class="weekly-badge">WEEKLY</span>
-        </div>
-        <div class="reset-timer">Resets in <span id="weeklyResetCountdown">7 days</span></div>
-        <div id="weeklyQuestList" style="display: grid; gap: 1.5rem;"></div>
-
-        <div style="margin-top: 4rem; text-align: center; border-top: 1px solid var(--border); padding-top: 2rem;">
-            <p style="color: var(--text-muted);">Complete quests daily to maintain your streak and boost your rank
-                faster!</p>
-        </div>
-    </div>
+    </main>
 
     <nav class="bottom-nav"></nav>
 

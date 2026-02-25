@@ -7,18 +7,20 @@ const API_BASE_AUTH = (typeof window !== 'undefined' && typeof window.API_URL !=
     : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
 
 const Auth = {
-    async signup(username, email, password) {
+    async signup(username, email, password, ref = null) {
         try {
             const res = await fetch(`${API_BASE_AUTH}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
+                body: JSON.stringify({ username, email, password, ref })
             });
             const data = await res.json();
             if (res.ok) {
+                if (data.requires_verification) {
+                    return { success: true, requires_verification: true, username: data.username };
+                }
                 localStorage.setItem('xp_token', data.token);
                 localStorage.setItem('xp_current_user', JSON.stringify(data.user));
-                // We don't initialize stats locally anymore; backend handles initial AXP
                 localStorage.setItem('xp_signup_success', 'true');
                 window.dispatchEvent(new Event('authChange'));
                 return { success: true };
@@ -38,6 +40,12 @@ const Auth = {
                 body: JSON.stringify({ username, password })
             });
             const data = await res.json();
+
+            // Handle HTTP 403 Forbidden with verification requirement
+            if (res.status === 403 && data.requires_verification) {
+                return { success: false, requires_verification: true, message: data.error, username: data.username };
+            }
+
             if (res.ok) {
                 localStorage.setItem('xp_token', data.token);
                 localStorage.setItem('xp_current_user', JSON.stringify(data.user));

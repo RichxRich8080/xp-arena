@@ -104,465 +104,523 @@
 <body class="fade-in">
     <nav class="navbar"></nav>
 
-    <div class="container" style="max-width: 800px;">
-        <!-- HERO SECTION -->
-        <div class="profile-hero">
-            <div class="avatar-container" onclick="openAvatarModal()" style="cursor: pointer; position: relative;">
-                <div class="avatar-main" id="avatarImage"
-                    style="transition: transform 0.3s; box-shadow: 0 0 20px rgba(0,229,255,0.2);">👤</div>
-                <div
-                    style="position: absolute; bottom: -5px; right: -5px; background: var(--accent); color: #000; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--accent-glow);">
-                    <i class="fas fa-camera"></i>
+    <main class="main-content-area">
+        <div class="container">
+            <!-- HERO SECTION -->
+            <div class="profile-hero">
+                <div class="avatar-container" onclick="openAvatarModal()" style="cursor: pointer; position: relative;">
+                    <div class="avatar-main" id="avatarImage"
+                        style="transition: transform 0.3s; box-shadow: 0 0 20px rgba(0,229,255,0.2);">👤</div>
+                    <div
+                        style="position: absolute; bottom: -5px; right: -5px; background: var(--accent); color: #000; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--accent-glow);">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                </div>
+
+                <h1 class="text-neon"
+                    style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.5rem;">
+                    <span id="profile-username">Username</span>
+                    <span id="v-badge" style="display: none; color: var(--accent); font-size: 1.8rem;"
+                        title="Verified Champion">🛡️</span>
+                </h1>
+
+                <div id="social-links"
+                    style="display: flex; justify-content: center; gap: 15px; margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-muted);">
+                    <i class="fab fa-tiktok" id="link-tiktok" style="display: none;"></i>
+                    <i class="fab fa-instagram" id="link-instagram" style="display: none;"></i>
+                    <i class="fab fa-youtube" id="link-youtube" style="display: none;"></i>
+                </div>
+
+                <div id="display-level"
+                    style="font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;">Level 1
+                </div>
+
+                <div id="display-streak"
+                    style="margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; color: #ffcc00;">
+                    <i class="fas fa-fire"></i> <span id="streak-count">0</span> Day Streak
+                </div>
+                <div id="display-guild" style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
+                    <i class="fas fa-shield-alt"></i> Clan: <span id="guildName">None</span>
+                </div>
+                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
+                    <button class="btn-primary" style="width:auto;" onclick="claimDaily()">Claim Daily AXP</button>
+                    <button class="btn-secondary" style="width:auto;" onclick="activateDoubler()">Activate XP Doubler
+                        (24h)</button>
+                </div>
+
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <div class="progress-bar-container">
+                        <div id="axp-progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div id="display-axp-label"
+                        style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">0
+                        / 500 AXP</div>
                 </div>
             </div>
 
-            <h1 class="text-neon"
-                style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.5rem;">
-                <span id="profile-username">Username</span>
-                <span id="v-badge" style="display: none; color: var(--accent); font-size: 1.8rem;"
-                    title="Verified Champion">🛡️</span>
-            </h1>
-
-            <div id="social-links"
-                style="display: flex; justify-content: center; gap: 15px; margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-muted);">
-                <i class="fab fa-tiktok" id="link-tiktok" style="display: none;"></i>
-                <i class="fab fa-instagram" id="link-instagram" style="display: none;"></i>
-                <i class="fab fa-youtube" id="link-youtube" style="display: none;"></i>
+            <!-- TABS -->
+            <div class="tab-container">
+                <button class="tab-btn active" onclick="switchTab('overview')"><i class="fas fa-th-large"></i>
+                    Overview</button>
+                <button class="tab-btn" onclick="switchTab('clips')">Clips</button>
+                <button class="tab-btn" onclick="switchTab('vault')">Vault</button>
+                <button class="tab-btn" onclick="switchTab('history')"><i class="fas fa-chart-line"></i>
+                    History</button>
+                <button class="tab-btn" onclick="switchTab('achievements')"><i class="fas fa-trophy"></i>
+                    Badges</button>
+                <button class="tab-btn" onclick="switchTab('squad')"><i class="fas fa-users"></i> Squad</button>
+                <button class="tab-btn" onclick="switchTab('card')"><i class="fas fa-id-card"></i> Card</button>
+                <button class="tab-btn" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
             </div>
 
-            <div id="display-level"
-                style="font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;">Level 1</div>
-
-            <div id="display-streak" style="margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; color: #ffcc00;">
-                <i class="fas fa-fire"></i> <span id="streak-count">0</span> Day Streak
-            </div>
-            <div id="display-guild" style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                <i class="fas fa-shield-alt"></i> Guild: <span id="guildName">None</span>
-            </div>
-            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
-                <button class="btn-primary" style="width:auto;" onclick="claimDaily()">Claim Daily AXP</button>
-                <button class="btn-secondary" style="width:auto;" onclick="activateDoubler()">Activate XP Doubler (24h)</button>
-            </div>
-
-            <div style="max-width: 400px; margin: 0 auto;">
-                <div class="progress-bar-container">
-                    <div id="axp-progress-fill" class="progress-bar-fill"></div>
+            <!-- TAB: OVERVIEW -->
+            <div id="tab-overview" class="tab-content active">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                    <div class="stat-card"
+                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                        <span class="stat-label"
+                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total
+                            AXP</span>
+                        <span class="stat-val"
+                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
+                            id="axpDisplay">0</span>
+                    </div>
+                    <div class="stat-card"
+                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                        <span class="stat-label"
+                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Global
+                            Rank</span>
+                        <span class="stat-val"
+                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
+                            id="profile-rank">Starter</span>
+                    </div>
+                    <div class="stat-card"
+                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                        <span class="stat-label"
+                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Submissions</span>
+                        <span class="stat-val"
+                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
+                            id="submissionsDisplay">0</span>
+                    </div>
                 </div>
-                <div id="display-axp-label" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">0
-                    / 500 AXP</div>
-            </div>
-        </div>
 
-        <!-- TABS -->
-        <div class="tab-container">
-            <button class="tab-btn active" onclick="switchTab('overview')"><i class="fas fa-th-large"></i>
-                Overview</button>
-            <button class="tab-btn" onclick="switchTab('clips')">Clips</button>
-            <button class="tab-btn" onclick="switchTab('vault')">Vault</button>
-            <button class="tab-btn" onclick="switchTab('history')"><i class="fas fa-chart-line"></i> History</button>
-            <button class="tab-btn" onclick="switchTab('achievements')"><i class="fas fa-trophy"></i> Badges</button>
-            <button class="tab-btn" onclick="switchTab('squad')"><i class="fas fa-users"></i> Squad</button>
-            <button class="tab-btn" onclick="switchTab('card')"><i class="fas fa-id-card"></i> Card</button>
-            <button class="tab-btn" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
-        </div>
-
-        <!-- TAB: OVERVIEW -->
-        <div id="tab-overview" class="tab-content active">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                <div class="stat-card"
-                    style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
-                    <span class="stat-label"
-                        style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total
-                        AXP</span>
-                    <span class="stat-val"
-                        style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                        id="axpDisplay">0</span>
-                </div>
-                <div class="stat-card"
-                    style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
-                    <span class="stat-label"
-                        style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Global
-                        Rank</span>
-                    <span class="stat-val"
-                        style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                        id="profile-rank">Starter</span>
-                </div>
-                <div class="stat-card"
-                    style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
-                    <span class="stat-label"
-                        style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Submissions</span>
-                    <span class="stat-val"
-                        style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                        id="submissionsDisplay">0</span>
+                <div class="form-card" style="margin-top: 1.5rem;">
+                    <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                    <p id="noActivity" style="color: var(--text-muted); font-size: 0.9rem;">No recent activity yet.
+                        Start
+                        earning AXP!</p>
+                    <div id="recentActivityList"></div>
                 </div>
             </div>
 
-            <div class="form-card" style="margin-top: 1.5rem;">
-                <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
-                <p id="noActivity" style="color: var(--text-muted); font-size: 0.9rem;">No recent activity yet. Start
-                    earning AXP!</p>
-                <div id="recentActivityList"></div>
-            </div>
-        </div>
-
-        <!-- TAB: CLIPS -->
-        <div id="tab-clips" class="tab-content">
-            <div id="clipsGrid">
-                <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem;">
-                    <div style="text-align: center;">
-                        <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                        <p>No clips submitted yet.</p>
-                        <a href="submit.html" class="btn-primary"
-                            style="margin-top: 1rem; width: auto; padding: 0.6rem 1.2rem;">Submit Your First Clip</a>
+            <!-- TAB: CLIPS -->
+            <div id="tab-clips" class="tab-content">
+                <div id="clipsGrid">
+                    <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem;">
+                        <div style="text-align: center;">
+                            <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                            <p>No clips submitted yet.</p>
+                            <a href="submit.html" class="btn-primary"
+                                style="margin-top: 1rem; width: auto; padding: 0.6rem 1.2rem;">Submit Your First
+                                Clip</a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB: VAULT + PRESETS -->
-        <div id="tab-vault" class="tab-content">
-            <!-- Presets section -->
-            <div id="presetsSection">
-                <h3 style="margin-bottom: 1rem; color: #bf00ff;"><i class="fas fa-star"></i> My Presets</h3>
-                <div id="presetsList" style="display: grid; gap: 0.75rem; margin-bottom: 2rem;"></div>
-            </div>
-            <!-- Vault -->
-            <h3 style="margin-bottom: 1rem;"><i class="fas fa-archive"></i> Sensitivity Vault</h3>
-            <div id="vaultList"
-                style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));"></div>
-        </div>
-
-        <!-- TAB: HISTORY GRAPH -->
-        <div id="tab-history" class="tab-content">
-            <div class="form-card">
-                <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-chart-line"></i> Sensitivity History</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Your last 20
-                    calculations — general sensitivity midpoint over time.</p>
-                <canvas id="historCanvas"></canvas>
-                <div id="historyEmpty"
-                    style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
-                    No history yet. <a href="tool.html" style="color: var(--accent);">Calculate your sensitivity →</a>
+            <!-- TAB: VAULT + PRESETS -->
+            <div id="tab-vault" class="tab-content">
+                <!-- Presets section -->
+                <div id="presetsSection">
+                    <h3 style="margin-bottom: 1rem; color: #bf00ff;"><i class="fas fa-star"></i> My Presets</h3>
+                    <div id="presetsList" style="display: grid; gap: 0.75rem; margin-bottom: 2rem;"></div>
                 </div>
-            </div>
-        </div>
-
-        <!-- TAB: BADGES -->
-        <div id="tab-achievements" class="tab-content">
-            <div id="achievementsList" style="display: grid; gap: 1rem;"></div>
-        </div>
-
-        <!-- TAB: SQUAD (CLAN) -->
-        <div id="tab-squad" class="tab-content">
-            <div id="squadNone" style="text-align: center; padding: 2rem;">
-                <i class="fas fa-users" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-                <h3 style="margin-bottom: 10px;">Join or Create a Squad</h3>
-                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Pool your AXP together
-                    and climb the global squad leaderboards!</p>
-
-                <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto;">
-                    <button class="btn-primary" onclick="SquadSystem.promptCreate()">Create New Squad</button>
-                    <button class="btn-secondary" onclick="SquadSystem.promptJoin()">Join Existing Squad</button>
+                <!-- Vault -->
+                <h3 style="margin-bottom: 1rem;"><i class="fas fa-archive"></i> Sensitivity Vault</h3>
+                <div id="vaultList"
+                    style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
                 </div>
             </div>
 
-            <div id="squadActive" class="hidden">
-                <div class="form-card"
-                    style="text-align: center; border: 1px solid var(--accent); background: rgba(0,229,255,0.05);">
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;" id="squadIcon">🛡️</div>
-                    <h2 id="squadName" style="color: #fff; margin-bottom: 5px; font-weight: 900;">[SQUAD] Name</h2>
-                    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Founded by <span
-                            id="squadFounder">Player</span></p>
+            <!-- TAB: HISTORY GRAPH -->
+            <div id="tab-history" class="tab-content">
+                <div class="form-card" style="margin-bottom: 1.5rem;">
+                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-chart-line"></i> AXP Growth (Performance
+                        Analytics)</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Track your AXP
+                        progress over the last 30 days.</p>
+                    <canvas id="axpGrowthCanvas" style="width: 100%; height: 220px;"></canvas>
+                    <div id="axpHistoryEmpty"
+                        style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
+                        No AXP history yet. Claim your daily reward to start tracking!
+                    </div>
+                </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
-                        <div
-                            style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
-                            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Total
-                                Squad AXP</div>
-                            <div id="squadTotalAxp" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">0
+                <div class="form-card">
+                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-crosshairs"></i> Sensitivity History</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Your last
+                        calculations — general sensitivity midpoint.</p>
+                    <canvas id="historCanvas"></canvas>
+                    <div id="historyEmpty"
+                        style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
+                        No history yet. <a href="tool.html" style="color: var(--accent);">Calculate your sensitivity
+                            →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: BADGES -->
+            <div id="tab-achievements" class="tab-content">
+                <div id="achievementsList" style="display: grid; gap: 1rem;"></div>
+            </div>
+
+            <!-- TAB: SQUAD (CLAN) -->
+            <div id="tab-squad" class="tab-content">
+                <div id="squadNone" style="text-align: center; padding: 2rem;">
+                    <i class="fas fa-users" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                    <h3 style="margin-bottom: 10px;">Join or Create a Squad</h3>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Pool your AXP
+                        together
+                        and climb the global squad leaderboards!</p>
+
+                    <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto;">
+                        <button class="btn-primary" onclick="SquadSystem.promptCreate()">Create New Squad</button>
+                        <button class="btn-secondary" onclick="SquadSystem.promptJoin()">Join Existing Squad</button>
+                    </div>
+                </div>
+
+                <div id="squadActive" class="hidden">
+                    <div class="form-card"
+                        style="text-align: center; border: 1px solid var(--accent); background: rgba(0,229,255,0.05);">
+                        <div style="font-size: 2.5rem; margin-bottom: 10px;" id="squadIcon">🛡️</div>
+                        <h2 id="squadName" style="color: #fff; margin-bottom: 5px; font-weight: 900;">[SQUAD] Name</h2>
+                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Founded by <span
+                                id="squadFounder">Player</span></p>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
+                            <div
+                                style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
+                                    Total
+                                    Squad AXP</div>
+                                <div id="squadTotalAxp"
+                                    style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">0
+                                </div>
+                            </div>
+                            <div
+                                style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
+                                    Members
+                                </div>
+                                <div id="squadMemberCount" style="font-size: 1.5rem; font-weight: 800; color: #fff;">1
+                                </div>
                             </div>
                         </div>
-                        <div
-                            style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
-                            <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Members
-                            </div>
-                            <div id="squadMemberCount" style="font-size: 1.5rem; font-weight: 800; color: #fff;">1</div>
+
+                        <div style="text-align: left; margin-top: 2rem;">
+                            <h4 style="margin-bottom: 10px; color: var(--text-muted);"><i class="fas fa-list"></i>
+                                Roster
+                            </h4>
+                            <div id="squadRosterList" style="display: grid; gap: 10px;"></div>
                         </div>
-                    </div>
 
-                    <div style="text-align: left; margin-top: 2rem;">
-                        <h4 style="margin-bottom: 10px; color: var(--text-muted);"><i class="fas fa-list"></i> Roster
-                        </h4>
-                        <div id="squadRosterList" style="display: grid; gap: 10px;"></div>
+                        <button class="btn-secondary" onclick="SquadSystem.leave()"
+                            style="margin-top: 2rem; border-color: rgba(255,77,77,0.3); color: #ff4d4d;">Leave
+                            Squad</button>
                     </div>
+                </div>
+            </div>
 
-                    <button class="btn-secondary" onclick="SquadSystem.leave()"
-                        style="margin-top: 2rem; border-color: rgba(255,77,77,0.3); color: #ff4d4d;">Leave
-                        Squad</button>
+            <!-- TAB: PLAYER CARD -->
+            <div id="tab-card" class="tab-content">
+                <div class="form-card" style="text-align: center;">
+                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-id-card"></i> My Player Card</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Share your rank &
+                        stats
+                        with the community.</p>
+                    <canvas id="playerCardCanvas"
+                        style="max-width: 100%; border-radius: 16px; border: 1px solid var(--border);"></canvas>
+                    <br>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:1rem">
+                        <button id="downloadCardBtn" class="btn-primary" style="width:auto;padding:0.75rem 2rem;">
+                            <i class="fas fa-download"></i> Download
+                        </button>
+                        <button id="shareCardBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
+                            <i class="fas fa-share"></i> Share
+                        </button>
+                        <button id="copyLinkBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-content">
+                <div class="form-card accordion">
+                    <details open>
+                        <summary>Nickname</summary>
+                        <div class="content">
+                            <div class="settings-group">
+                                <div class="split-two settings-actions">
+                                    <input type="text" id="edit-username" class="settings-input"
+                                        placeholder="New nickname">
+                                    <button class="btn-primary" onclick="updateNickname()">Save</button>
+                                </div>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">First change is
+                                    free.
+                                    Subsequent changes cost 500 AXP.</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Password</summary>
+                        <div class="content">
+                            <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
+                                <input type="password" id="edit-current-password" class="settings-input"
+                                    placeholder="Current password">
+                                <input type="password" id="edit-new-password" class="settings-input"
+                                    placeholder="New password">
+                                <button class="btn-primary" onclick="updatePassword()">Update Password</button>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Socials</summary>
+                        <div class="content">
+                            <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
+                                <input type="text" id="edit-tiktok" class="settings-input"
+                                    placeholder="TikTok @username">
+                                <input type="text" id="edit-instagram" class="settings-input"
+                                    placeholder="Instagram username">
+                                <input type="text" id="edit-youtube" class="settings-input"
+                                    placeholder="YouTube channel">
+                                <button class="btn-primary" onclick="updateSocials()">Update Socials</button>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Avatar</summary>
+                        <div class="content">
+                            <div class="settings-group">
+                                <div id="avatarSelectGrid"
+                                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                                </div>
+                            </div>
+                            <div class="settings-group" style="margin-top: 1rem;">
+                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">Premium:
+                                    Avatar Image URL</div>
+                                <div class="settings-actions"
+                                    style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                                    <input type="url" id="avatarUrlInput" class="settings-input"
+                                        placeholder="https://...">
+                                    <button class="btn-secondary" onclick="saveAvatarUrl()">Save</button>
+                                </div>
+                                <p style="font-size:0.75rem; color: var(--text-muted); margin-top:6px;">Premium only</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Premium Name Style</summary>
+                        <div class="content">
+                            <div class="settings-group settings-actions"
+                                style="display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;">
+                                <label for="nameColor" style="font-size:0.9rem; color: var(--text-muted);">Name
+                                    Color</label>
+                                <input type="color" id="nameColor" value="#00e5ff" class="settings-input"
+                                    style="padding:0; width:60px; height:40px;">
+                                <label
+                                    style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted);">
+                                    <input type="checkbox" id="nameGlow"> Glow
+                                </label>
+                                <button class="btn-primary" style="grid-column: 1/-1; width:auto;"
+                                    onclick="savePremiumStyle()">Apply</button>
+                                <p style="grid-column: 1/-1; font-size:0.75rem; color: var(--text-muted); margin:0;">
+                                    Requires Premium</p>
+                            </div>
+                        </div>
+                    </details>
+                    <details>
+                        <summary>Cloud Sync</summary>
+                        <div class="content">
+                            <div class="form-card"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
+                                <div>
+                                    <h4 style="margin: 0; color: #fff;">Sync to XP Arena Cloud</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Backup your AXP,
+                                        Vault, and Ranks online permanently.</p>
+                                </div>
+                                <label class="switch"
+                                    style="position: relative; display: inline-block; width: 50px; height: 28px;">
+                                    <input type="checkbox" id="cloudSyncToggle" onchange="toggleCloudSync(this)"
+                                        style="opacity: 0; width: 0; height: 0;">
+                                    <span class="slider round"
+                                        style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 30px;"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                    <div class="settings-group" style="margin-top: 1rem;">
+                        <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';"
+                            style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB: PLAYER CARD -->
-        <div id="tab-card" class="tab-content">
-            <div class="form-card" style="text-align: center;">
-                <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-id-card"></i> My Player Card</h3>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Share your rank & stats
-                    with the community.</p>
-                <canvas id="playerCardCanvas"
-                    style="max-width: 100%; border-radius: 16px; border: 1px solid var(--border);"></canvas>
-                <br>
-                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:1rem">
-                    <button id="downloadCardBtn" class="btn-primary" style="width:auto;padding:0.75rem 2rem;">
-                        <i class="fas fa-download"></i> Download
-                    </button>
-                    <button id="shareCardBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
-                        <i class="fas fa-share"></i> Share
-                    </button>
-                    <button id="copyLinkBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
-                        <i class="fas fa-link"></i> Copy Link
-                    </button>
-                </div>
-            </div>
-        </div>
+        <nav class="bottom-nav"></nav>
 
-        <div id="tab-settings" class="tab-content">
-            <div class="form-card accordion">
-                <details open>
-                    <summary>Nickname</summary>
-                    <div class="content">
-                        <div class="settings-group">
-                            <div class="split-two settings-actions">
-                                <input type="text" id="edit-username" class="settings-input" placeholder="New nickname">
-                                <button class="btn-primary" onclick="updateNickname()">Save</button>
-                            </div>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">First change is free. Subsequent changes cost 500 AXP.</p>
-                        </div>
-                    </div>
-                </details>
-                <details>
-                    <summary>Password</summary>
-                    <div class="content">
-                        <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
-                            <input type="password" id="edit-current-password" class="settings-input" placeholder="Current password">
-                            <input type="password" id="edit-new-password" class="settings-input" placeholder="New password">
-                            <button class="btn-primary" onclick="updatePassword()">Update Password</button>
-                        </div>
-                    </div>
-                </details>
-                <details>
-                    <summary>Socials</summary>
-                    <div class="content">
-                        <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
-                            <input type="text" id="edit-tiktok" class="settings-input" placeholder="TikTok @username">
-                            <input type="text" id="edit-instagram" class="settings-input" placeholder="Instagram username">
-                            <input type="text" id="edit-youtube" class="settings-input" placeholder="YouTube channel">
-                            <button class="btn-primary" onclick="updateSocials()">Update Socials</button>
-                        </div>
-                    </div>
-                </details>
-                <details>
-                    <summary>Avatar</summary>
-                    <div class="content">
-                        <div class="settings-group">
-                            <div id="avatarSelectGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);"></div>
-                        </div>
-                        <div class="settings-group" style="margin-top: 1rem;">
-                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">Premium: Avatar Image URL</div>
-                            <div class="settings-actions" style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
-                                <input type="url" id="avatarUrlInput" class="settings-input" placeholder="https://...">
-                                <button class="btn-secondary" onclick="saveAvatarUrl()">Save</button>
-                            </div>
-                            <p style="font-size:0.75rem; color: var(--text-muted); margin-top:6px;">Premium only</p>
-                        </div>
-                    </div>
-                </details>
-                <details>
-                    <summary>Premium Name Style</summary>
-                    <div class="content">
-                        <div class="settings-group settings-actions" style="display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;">
-                            <label for="nameColor" style="font-size:0.9rem; color: var(--text-muted);">Name Color</label>
-                            <input type="color" id="nameColor" value="#00e5ff" class="settings-input" style="padding:0; width:60px; height:40px;">
-                            <label style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted);">
-                                <input type="checkbox" id="nameGlow"> Glow
-                            </label>
-                            <button class="btn-primary" style="grid-column: 1/-1; width:auto;" onclick="savePremiumStyle()">Apply</button>
-                            <p style="grid-column: 1/-1; font-size:0.75rem; color: var(--text-muted); margin:0;">Requires Premium</p>
-                        </div>
-                    </div>
-                </details>
-                <details>
-                    <summary>Cloud Sync</summary>
-                    <div class="content">
-                        <div class="form-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
-                            <div>
-                                <h4 style="margin: 0; color: #fff;">Sync to XP Arena Cloud</h4>
-                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Backup your AXP, Vault, and Ranks online permanently.</p>
-                            </div>
-                            <label class="switch" style="position: relative; display: inline-block; width: 50px; height: 28px;">
-                                <input type="checkbox" id="cloudSyncToggle" onchange="toggleCloudSync(this)" style="opacity: 0; width: 0; height: 0;">
-                                <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 30px;"></span>
-                            </label>
-                        </div>
-                    </div>
-                </details>
-                <div class="settings-group" style="margin-top: 1rem;">
-                    <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';" style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <nav class="bottom-nav"></nav>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (!Auth.isLoggedIn()) {
-                window.location.href = 'login.html';
-                return;
-            }
-
-            if (!User.getStats()) {
-                window.addEventListener('statsLoaded', initProfile);
-            } else {
-                initProfile();
-            }
-
-            function initProfile() {
-                renderAvatarSelection();
-                updateProfileUI();
-
-                const cloudToggle = document.getElementById('cloudSyncToggle');
-                if (cloudToggle && localStorage.getItem('xp_cloud_sync') === '1') {
-                    cloudToggle.checked = true;
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="js/auth.js"></script>
+        <script src="js/user.js"></script>
+        <script src="js/layout.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (!Auth.isLoggedIn()) {
+                    window.location.href = 'login.html';
+                    return;
                 }
 
-                if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
-            }
+                if (!User.getStats()) {
+                    window.addEventListener('statsLoaded', initProfile);
+                } else {
+                    initProfile();
+                }
 
-            window.addEventListener('statsChange', () => {
-                updateProfileUI();
-                if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                function initProfile() {
+                    renderAvatarSelection();
+                    updateProfileUI();
+
+                    const cloudToggle = document.getElementById('cloudSyncToggle');
+                    if (cloudToggle && localStorage.getItem('xp_cloud_sync') === '1') {
+                        cloudToggle.checked = true;
+                    }
+
+                    if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                }
+
+                window.addEventListener('statsChange', () => {
+                    updateProfileUI();
+                    if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                });
             });
-        });
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            function switchTab(tabId) {
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            let targetButton = event.target;
-            if (!targetButton.classList.contains('tab-btn')) {
-                targetButton = event.target.closest('.tab-btn');
+                let targetButton = event.target;
+                if (!targetButton.classList.contains('tab-btn')) {
+                    targetButton = event.target.closest('.tab-btn');
+                }
+                if (targetButton) {
+                    targetButton.classList.add('active');
+                } else {
+                    document.querySelector(`.tab-btn[onclick*="switchTab('${tabId}')"]`).classList.add('active');
+                }
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+
+                if (tabId === 'history') {
+                    renderHistoryGraph();
+                    renderAXPGrowthGraph();
+                }
+                if (tabId === 'card') renderPlayerCard();
             }
-            if (targetButton) {
-                targetButton.classList.add('active');
-            } else {
-                document.querySelector(`.tab-btn[onclick*="switchTab('${tabId}')"]`).classList.add('active');
-            }
-            document.getElementById(`tab-${tabId}`).classList.add('active');
 
-            if (tabId === 'history') renderHistoryGraph();
-            if (tabId === 'card') renderPlayerCard();
-        }
-
-        function renderAvatarSelection() {
-            const avatars = ['🕹️','🎮','🎧','🎯','⚔️','🛡️','👑','🔥','⚡','💎','☠️','👾','🤖','🐺','🐉','🛰️','🏆','🥇','🎲','🧠'];
-            const grid = document.getElementById('avatarSelectGrid');
-            grid.innerHTML = avatars.map(a => `
+            function renderAvatarSelection() {
+                const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '🐺', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
+                const grid = document.getElementById('avatarSelectGrid');
+                grid.innerHTML = avatars.map(a => `
                 <div class="badge-item earned" onclick="User.updateAvatar('${a}')" style="cursor: pointer; font-size: 1.8rem; padding: 0.5rem; transition: transform 0.2s; background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.1); border-radius: 8px; text-align: center;" onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(0,229,255,0.1)'" title="Select Avatar">${a}</div>
             `).join('');
-        }
-
-        async function updateNickname() {
-            const input = document.getElementById('edit-username');
-            const result = await User.updateUsername(input.value);
-            if (result.success) {
-                if (window.Toast) Toast.show('Nickname updated!', 'success');
-                input.value = '';
-                updateProfileUI(); // Ensure new name pops immediately
-            } else {
-                if (window.Toast) Toast.show(result.message || 'Error updating nickname', 'error');
             }
-        }
 
-        async function updatePassword() {
-            const currentObj = document.getElementById('edit-current-password');
-            const newObj = document.getElementById('edit-new-password');
-            const result = await User.updatePassword(currentObj.value, newObj.value);
-            if (result.success) {
-                if (window.Toast) Toast.show('Password updated successfully!', 'success');
-                currentObj.value = '';
-                newObj.value = '';
-            } else {
-                if (window.Toast) Toast.show(result.message || 'Error updating password', 'error');
+            async function updateNickname() {
+                const input = document.getElementById('edit-username');
+                const result = await User.updateUsername(input.value);
+                if (result.success) {
+                    if (window.Toast) Toast.show('Nickname updated!', 'success');
+                    input.value = '';
+                    updateProfileUI(); // Ensure new name pops immediately
+                } else {
+                    if (window.Toast) Toast.show(result.message || 'Error updating nickname', 'error');
+                }
             }
-        }
 
-        function updateSocials() {
-            const socials = {
-                tiktok: document.getElementById('edit-tiktok').value,
-                instagram: document.getElementById('edit-instagram').value,
-                youtube: document.getElementById('edit-youtube').value
-            };
-            if (User.updateSocials(socials)) {
-                if (window.Toast) Toast.show('Socials updated!', 'success');
-                updateProfileUI();
+            async function updatePassword() {
+                const currentObj = document.getElementById('edit-current-password');
+                const newObj = document.getElementById('edit-new-password');
+                const result = await User.updatePassword(currentObj.value, newObj.value);
+                if (result.success) {
+                    if (window.Toast) Toast.show('Password updated successfully!', 'success');
+                    currentObj.value = '';
+                    newObj.value = '';
+                } else {
+                    if (window.Toast) Toast.show(result.message || 'Error updating password', 'error');
+                }
             }
-        }
 
-        function openAvatarModal() {
-            switchTab('settings');
-            document.getElementById('avatarSelectGrid').scrollIntoView({ behavior: 'smooth' });
-        }
+            function updateSocials() {
+                const socials = {
+                    tiktok: document.getElementById('edit-tiktok').value,
+                    instagram: document.getElementById('edit-instagram').value,
+                    youtube: document.getElementById('edit-youtube').value
+                };
+                if (User.updateSocials(socials)) {
+                    if (window.Toast) Toast.show('Socials updated!', 'success');
+                    updateProfileUI();
+                }
+            }
 
-        function copyReferralLink() {
-            const stats = User.getStats();
-            const code = stats.referralCode || '';
-            const link = `${window.location.origin}/signup.html?ref=${code}`;
-            navigator.clipboard.writeText(link).then(() => {
-                if (window.Toast) Toast.show('Referral link copied!', 'success');
-            });
-        }
+            function openAvatarModal() {
+                switchTab('settings');
+                document.getElementById('avatarSelectGrid').scrollIntoView({ behavior: 'smooth' });
+            }
 
-        async function updateProfileUI() {
-            const stats = User.getStats();
-            if (!stats) return;
+            function copyReferralLink() {
+                const stats = User.getStats();
+                const code = stats.referralCode || '';
+                const link = `${window.location.origin}/signup.html?ref=${code}`;
+                navigator.clipboard.writeText(link).then(() => {
+                    if (window.Toast) Toast.show('Referral link copied!', 'success');
+                });
+            }
 
-            User.updateUI();
+            async function updateProfileUI() {
+                const stats = User.getStats();
+                if (!stats) return;
 
-            // Referral (Disabled)
-            // const refDisplay = document.getElementById('referralCodeDisplay');
-            // const refCount = document.getElementById('referralCount');
-            // if (refDisplay) refDisplay.textContent = stats.referralCode || 'XPA-???';
-            // if (refCount) refCount.textContent = stats.referralCount || 0;
+                User.updateUI();
 
-            // Activity
-            const recentActivityList = document.getElementById('recentActivityList');
-            const noActivity = document.getElementById('noActivity');
-            if (recentActivityList) {
-                if (stats.activities && stats.activities.length > 0) {
-                    noActivity.style.display = 'none';
-                    recentActivityList.innerHTML = stats.activities.map(a => `
+                // Referral (Disabled)
+                // const refDisplay = document.getElementById('referralCodeDisplay');
+                // const refCount = document.getElementById('referralCount');
+                // if (refDisplay) refDisplay.textContent = stats.referralCode || 'XPA-???';
+                // if (refCount) refCount.textContent = stats.referralCount || 0;
+
+                // Activity
+                const recentActivityList = document.getElementById('recentActivityList');
+                const noActivity = document.getElementById('noActivity');
+                if (recentActivityList) {
+                    if (stats.activities && stats.activities.length > 0) {
+                        noActivity.style.display = 'none';
+                        recentActivityList.innerHTML = stats.activities.map(a => `
                         <div style="padding: 0.8rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.9rem;">${a.text}</span>
                             <span style="font-size: 0.7rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                     `).join('');
-                } else {
-                    noActivity.style.display = 'block';
-                    recentActivityList.innerHTML = '';
+                    } else {
+                        noActivity.style.display = 'block';
+                        recentActivityList.innerHTML = '';
+                    }
                 }
-            }
 
-            // Clips
-            const clipsGrid = document.getElementById('clipsGrid');
-            if (clipsGrid) {
-                if (stats.clips && stats.clips.length > 0) {
-                    clipsGrid.innerHTML = stats.clips.map(c => `
+                // Clips
+                const clipsGrid = document.getElementById('clipsGrid');
+                if (clipsGrid) {
+                    if (stats.clips && stats.clips.length > 0) {
+                        clipsGrid.innerHTML = stats.clips.map(c => `
                         <div class="clip-card" style="margin-bottom: 1rem;">
                             <div class="clip-icon"><i class="fas fa-play"></i></div>
                             <div class="clip-info">
@@ -572,8 +630,8 @@
                             <div class="clip-axp">+50 AXP</div>
                         </div>
                     `).join('');
-                } else {
-                    clipsGrid.innerHTML = `
+                    } else {
+                        clipsGrid.innerHTML = `
                         <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem; width: 100%;">
                             <div style="text-align: center;">
                                 <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
@@ -582,15 +640,15 @@
                             </div>
                         </div>
                     `;
+                    }
                 }
-            }
 
-            // Badges
-            const achListEl = document.getElementById('achievementsList');
-            if (achListEl && typeof ACHIEVEMENTS !== 'undefined') {
-                achListEl.innerHTML = ACHIEVEMENTS.map(ach => {
-                    const isUnlocked = stats.achievements.includes(ach.id);
-                    return `
+                // Badges
+                const achListEl = document.getElementById('achievementsList');
+                if (achListEl && typeof ACHIEVEMENTS !== 'undefined') {
+                    achListEl.innerHTML = ACHIEVEMENTS.map(ach => {
+                        const isUnlocked = stats.achievements.includes(ach.id);
+                        return `
                         <div class="form-card" style="padding: 1rem; display: flex; align-items: center; gap: 15px; opacity: ${isUnlocked ? 1 : 0.3}; border-color: ${isUnlocked ? 'var(--accent)' : 'var(--border)'}; filter: ${isUnlocked ? 'none' : 'grayscale(100%)'} ;">
                             <div style="font-size: 2rem;">${isUnlocked ? ach.icon : '🔒'}</div>
                             <div style="flex: 1;">
@@ -600,14 +658,14 @@
                             <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent);">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</div>
                         </div>
                     `;
-                }).join('');
-            }
+                    }).join('');
+                }
 
-            // Presets
-            const presetsList = document.getElementById('presetsList');
-            if (presetsList) {
-                if (stats.presets && stats.presets.length > 0) {
-                    presetsList.innerHTML = stats.presets.map(p => `
+                // Presets
+                const presetsList = document.getElementById('presetsList');
+                if (presetsList) {
+                    if (stats.presets && stats.presets.length > 0) {
+                        presetsList.innerHTML = stats.presets.map(p => `
                         <div class="preset-card">
                             <div>
                                 <div class="preset-name">⭐ ${p.name}</div>
@@ -616,16 +674,16 @@
                             <div style="font-size: 0.75rem; color: var(--text-muted);">${new Date(p.timestamp).toLocaleDateString()}</div>
                         </div>
                     `).join('');
-                } else {
-                    presetsList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No presets saved yet. Calculate sensitivity and save a preset!</p>`;
+                    } else {
+                        presetsList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No presets saved yet. Calculate sensitivity and save a preset!</p>`;
+                    }
                 }
-            }
 
-            // Vault
-            const vaultList = document.getElementById('vaultList');
-            if (vaultList) {
-                if (stats.vault && stats.vault.length > 0) {
-                    vaultList.innerHTML = stats.vault.map(v => `
+                // Vault
+                const vaultList = document.getElementById('vaultList');
+                if (vaultList) {
+                    if (stats.vault && stats.vault.length > 0) {
+                        vaultList.innerHTML = stats.vault.map(v => `
                         <div class="form-card" style="padding: 1.2rem; border-left: 4px solid var(--accent);">
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
                                 <div>
@@ -642,353 +700,429 @@
                             </div>
                         </div>
                     `).join('');
-                } else {
-                    vaultList.innerHTML = `
+                    } else {
+                        vaultList.innerHTML = `
                         <div class="form-card" style="grid-column: 1/-1; padding: 3rem; text-align: center; opacity: 0.6;">
                             <i class="fas fa-vault" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-muted);"></i>
                             <p>Your sensitivity vault is empty.</p>
                             <a href="tool.html" class="btn-primary" style="margin-top: 1rem; width: auto; display: inline-block; padding: 0.6rem 1.5rem;">Go Calibrate</a>
                         </div>
                     `;
+                    }
                 }
-            }
 
-            // Socials in hero
-            const socials = stats.socials || {};
-            const linkTikTok = document.getElementById('link-tiktok');
-            const linkIG = document.getElementById('link-instagram');
-            const linkYT = document.getElementById('link-youtube');
-            if (linkTikTok) linkTikTok.style.display = socials.tiktok ? 'inline-block' : 'none';
-            if (linkIG) linkIG.style.display = socials.instagram ? 'inline-block' : 'none';
-            if (linkYT) linkYT.style.display = socials.youtube ? 'inline-block' : 'none';
+                // Socials in hero
+                const socials = stats.socials || {};
+                const linkTikTok = document.getElementById('link-tiktok');
+                const linkIG = document.getElementById('link-instagram');
+                const linkYT = document.getElementById('link-youtube');
+                if (linkTikTok) linkTikTok.style.display = socials.tiktok ? 'inline-block' : 'none';
+                if (linkIG) linkIG.style.display = socials.instagram ? 'inline-block' : 'none';
+                if (linkYT) linkYT.style.display = socials.youtube ? 'inline-block' : 'none';
 
-            const editTikTok = document.getElementById('edit-tiktok');
-            const editIG = document.getElementById('edit-instagram');
-            const editYT = document.getElementById('edit-youtube');
-            if (editTikTok) editTikTok.value = socials.tiktok || '';
-            if (editIG) editIG.value = socials.instagram || '';
-            if (editYT) editYT.value = socials.youtube || '';
+                const editTikTok = document.getElementById('edit-tiktok');
+                const editIG = document.getElementById('edit-instagram');
+                const editYT = document.getElementById('edit-youtube');
+                if (editTikTok) editTikTok.value = socials.tiktok || '';
+                if (editIG) editIG.value = socials.instagram || '';
+                if (editYT) editYT.value = socials.youtube || '';
 
-            // Streak
-            const streakEl = document.getElementById('streak-count');
-            if (streakEl) streakEl.textContent = stats.streak || 0;
+                // Streak
+                const streakEl = document.getElementById('streak-count');
+                if (streakEl) streakEl.textContent = stats.streak || 0;
 
-            // Rank visuals
-            const rankLabel = document.getElementById('profile-rank');
-            if (rankLabel) {
-                rankLabel.className = 'stat-val';
-                const rankName = stats.rank.name.toLowerCase();
-                if (rankName === 'diamond') rankLabel.classList.add('rank-diamond');
-                if (rankName === 'master') rankLabel.classList.add('rank-master');
-                if (rankName === 'champion') rankLabel.classList.add('rank-champion');
-            }
-
-            // Influencer Glow
-            const avatarMain = document.getElementById('avatarImage');
-            if (avatarMain) {
-                if (socials.tiktok || socials.instagram || socials.youtube) {
-                    avatarMain.parentElement.classList.add('influencer-glow');
-                } else {
-                    avatarMain.parentElement.classList.remove('influencer-glow');
+                // Rank visuals
+                const rankLabel = document.getElementById('profile-rank');
+                if (rankLabel) {
+                    rankLabel.className = 'stat-val';
+                    const rankName = stats.rank.name.toLowerCase();
+                    if (rankName === 'diamond') rankLabel.classList.add('rank-diamond');
+                    if (rankName === 'master') rankLabel.classList.add('rank-master');
+                    if (rankName === 'champion') rankLabel.classList.add('rank-champion');
                 }
-            }
-            // Guild
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() }});
-                if (res.ok) {
-                    const data = await res.json();
-                    const g = data && data.guild;
-                    const el = document.getElementById('guildName');
-                    if (el) el.textContent = g ? (g.badge ? g.badge+' ' : '') + g.name : 'None';
+
+                // Influencer Glow
+                const avatarMain = document.getElementById('avatarImage');
+                if (avatarMain) {
+                    if (socials.tiktok || socials.instagram || socials.youtube) {
+                        avatarMain.parentElement.classList.add('influencer-glow');
+                    } else {
+                        avatarMain.parentElement.classList.remove('influencer-glow');
+                    }
                 }
-            } catch {}
-        }
-
-        // ========================
-        // SENSITIVITY HISTORY GRAPH (Chart.js)
-        // ========================
-        let historyChartInstance = null;
-        function renderHistoryGraph() {
-            const stats = User.getStats();
-            if (!stats) return;
-            const history = (stats.sensitivityHistory || []).slice().reverse(); // oldest first
-            const canvas = document.getElementById('historCanvas');
-            const emptyEl = document.getElementById('historyEmpty');
-            if (!canvas) return;
-
-            if (history.length < 2) {
-                canvas.style.display = 'none';
-                emptyEl.style.display = 'block';
-                return;
-            }
-            canvas.style.display = 'block';
-            emptyEl.style.display = 'none';
-
-            const values = history.map(h => parseFloat(h.general_mid) || parseFloat((h.general || '').split('-')[0]) || 0);
-            const labels = history.map(h => (h.device || '?').split(' ').slice(-1)[0]);
-
-            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
-
-            if (historyChartInstance) {
-                historyChartInstance.destroy();
+                // Guild
+                try {
+                    const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
+                    if (res.ok) {
+                        const data = await res.json();
+                        const g = data && data.guild;
+                        const el = document.getElementById('guildName');
+                        if (el) el.textContent = g ? (g.badge ? g.badge + ' ' : '') + g.name : 'None';
+                    }
+                } catch { }
             }
 
-            const ctx = canvas.getContext('2d');
-            let gradient = ctx.createLinearGradient(0, 0, 0, 220);
-            gradient.addColorStop(0, accentColor.replace('rgb', 'rgba').replace(')', ', 0.3)').replace('#', '') ? accentColor + "80" : 'rgba(0,229,255,0.3)');
-            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            // ========================
+            // SENSITIVITY HISTORY GRAPH (Chart.js)
+            // ========================
+            let historyChartInstance = null;
+            function renderHistoryGraph() {
+                const stats = User.getStats();
+                if (!stats) return;
+                const history = (stats.sensitivityHistory || []).slice().reverse(); // oldest first
+                const canvas = document.getElementById('historCanvas');
+                const emptyEl = document.getElementById('historyEmpty');
+                if (!canvas) return;
 
-            historyChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'General Focus',
-                        data: values,
-                        borderColor: accentColor,
-                        backgroundColor: gradient,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#0b0f17',
-                        pointBorderColor: accentColor,
-                        pointBorderWidth: 2,
-                        pointRadius: 5,
-                        pointHoverRadius: 7,
-                        fill: true,
-                        tension: 0.4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#121826',
-                            titleColor: accentColor,
-                            bodyColor: '#fff',
-                            borderColor: 'rgba(255,255,255,0.1)',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: false,
-                        }
+                if (history.length < 2) {
+                    canvas.style.display = 'none';
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+                canvas.style.display = 'block';
+                emptyEl.style.display = 'none';
+
+                const values = history.map(h => parseFloat(h.general_mid) || parseFloat((h.general || '').split('-')[0]) || 0);
+                const labels = history.map(h => (h.device || '?').split(' ').slice(-1)[0]);
+
+                const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
+
+                if (historyChartInstance) {
+                    historyChartInstance.destroy();
+                }
+
+                const ctx = canvas.getContext('2d');
+                let gradient = ctx.createLinearGradient(0, 0, 0, 220);
+                gradient.addColorStop(0, accentColor.replace('rgb', 'rgba').replace(')', ', 0.3)').replace('#', '') ? accentColor + "80" : 'rgba(0,229,255,0.3)');
+                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+                historyChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'General Focus',
+                            data: values,
+                            borderColor: accentColor,
+                            backgroundColor: gradient,
+                            borderWidth: 3,
+                            pointBackgroundColor: '#0b0f17',
+                            pointBorderColor: accentColor,
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            fill: true,
+                            tension: 0.4
+                        }]
                     },
-                    scales: {
-                        y: {
-                            grid: { color: 'rgba(255,255,255,0.05)' },
-                            ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
-                        }
-                    },
-                    interaction: { mode: 'index', intersect: false }
-                }
-            });
-        }
-
-        function toggleCloudSync(el) {
-            if (el.checked) {
-                if (window.Toast) Toast.show('Syncing to Cloud...', 'info', 1500);
-                setTimeout(() => {
-                    if (window.Toast) Toast.show('Successfully connected to Cloud Sync!', 'success');
-                    localStorage.setItem('xp_cloud_sync', '1');
-                }, 1500);
-            } else {
-                if (window.Toast) Toast.show('Cloud Sync disabled.', 'info');
-                localStorage.setItem('xp_cloud_sync', '0');
-            }
-        }
-
-        // ========================
-        // PLAYER CARD CANVAS
-        // ========================
-        function renderPlayerCard() {
-            if (!Auth.isLoggedIn()) return;
-            const stats = User.getStats();
-            const user = Auth.getCurrentUser();
-            if (!stats || !user) return;
-
-            const canvas = document.getElementById('playerCardCanvas');
-            if (!canvas) return;
-
-            const W = 600, H = 320;
-            canvas.width = W;
-            canvas.height = H;
-
-            const ctx = canvas.getContext('2d');
-
-            // BG gradient
-            const bg = ctx.createLinearGradient(0, 0, W, H);
-            bg.addColorStop(0, '#0b0f17');
-            bg.addColorStop(1, '#111827');
-            ctx.fillStyle = bg;
-            ctx.fillRect(0, 0, W, H);
-
-            // Glow
-            const glow = ctx.createRadialGradient(W * 0.8, H * 0.2, 10, W * 0.8, H * 0.2, 180);
-            glow.addColorStop(0, 'rgba(0,229,255,0.2)');
-            glow.addColorStop(1, 'rgba(0,229,255,0)');
-            ctx.fillStyle = glow;
-            ctx.fillRect(0, 0, W, H);
-
-            // Border
-            ctx.strokeStyle = 'rgba(0,229,255,0.4)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(8, 8, W - 16, H - 16);
-
-            // Avatar
-            ctx.font = '70px serif';
-            ctx.fillText(stats.avatar || '👤', 40, 120);
-
-            // Username
-            ctx.font = 'bold 28px Inter, sans-serif';
-            ctx.fillStyle = '#ffffff';
-            ctx.fillText(user.username || 'Player', 140, 80);
-
-            // Rank
-            const rank = stats.rank || {};
-            ctx.font = '18px Inter, sans-serif';
-            ctx.fillStyle = '#00e5ff';
-            ctx.fillText(`${rank.icon || ''} ${rank.name || 'Starter'}`, 140, 115);
-
-            // Divider
-            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(140, 130);
-            ctx.lineTo(560, 130);
-            ctx.stroke();
-
-            // Stats row
-            const level = Math.floor(stats.axp / 500) + 1;
-            const statItems = [
-                { label: 'LEVEL', value: level },
-                { label: 'AXP', value: stats.axp.toLocaleString() },
-                { label: 'STREAK', value: `${stats.streak || 0}d` },
-                { label: 'CLIPS', value: stats.submissions || 0 }
-            ];
-
-            statItems.forEach((s, i) => {
-                const x = 140 + i * 110;
-                ctx.font = '11px Inter, sans-serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.fillText(s.label, x, 165);
-                ctx.font = 'bold 22px Inter, sans-serif';
-                ctx.fillStyle = '#00e5ff';
-                ctx.fillText(s.value, x, 195);
-            });
-
-            // XP Bar
-            const progress = (stats.axp % 500) / 500;
-            ctx.fillStyle = 'rgba(255,255,255,0.1)';
-            ctx.beginPath();
-            ctx.roundRect(140, 220, 380, 8, 4);
-            ctx.fill();
-
-            ctx.fillStyle = '#00e5ff';
-            ctx.beginPath();
-            ctx.roundRect(140, 220, 380 * progress, 8, 4);
-            ctx.fill();
-
-            ctx.font = '12px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.4)';
-            ctx.fillText(`${stats.axp % 500} / 500 AXP to next level`, 140, 248);
-
-            // Footer
-            ctx.font = '13px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255,255,255,0.2)';
-            ctx.fillText('xparena.net', 40, H - 20);
-            ctx.fillStyle = '#00e5ff';
-            ctx.fillText('XP ARENA', W - 110, H - 20);
-
-            // Download button
-            const dlBtn = document.getElementById('downloadCardBtn');
-            if (dlBtn) {
-                dlBtn.onclick = () => {
-                    canvas.toBlob(blob => {
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `xparena-card-${user.username || 'player'}.png`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                        if (window.Toast) Toast.show('Player card downloaded!', 'success');
-                    }, 'image/png');
-                };
-            }
-            const shareBtn = document.getElementById('shareCardBtn');
-            if (shareBtn) {
-                if (navigator.share && 'canShare' in navigator) {
-                    shareBtn.onclick = async () => {
-                        try {
-                            const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-                            const files = [new File([blob], `xparena-${user.username}.png`, { type: 'image/png' })];
-                            if (navigator.canShare && navigator.canShare({ files })) {
-                                await navigator.share({ title: 'XP Arena Card', text: 'Check out my stats!', files });
-                            } else {
-                                await navigator.share({ title: 'XP Arena', text: `${location.origin}/profile.html` });
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#121826',
+                                titleColor: accentColor,
+                                bodyColor: '#fff',
+                                borderColor: 'rgba(255,255,255,0.1)',
+                                borderWidth: 1,
+                                padding: 10,
+                                displayColors: false,
                             }
-                        } catch {}
-                    };
+                        },
+                        scales: {
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.05)' },
+                                ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } }
+                            },
+                            x: {
+                                grid: { display: false },
+                                ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
+                            }
+                        },
+                        interaction: { mode: 'index', intersect: false }
+                    }
+                });
+            }
+
+            function toggleCloudSync(el) {
+                if (el.checked) {
+                    if (window.Toast) Toast.show('Syncing to Cloud...', 'info', 1500);
+                    setTimeout(() => {
+                        if (window.Toast) Toast.show('Successfully connected to Cloud Sync!', 'success');
+                        localStorage.setItem('xp_cloud_sync', '1');
+                    }, 1500);
                 } else {
-                    // Hide on browsers without Web Share API
-                    shareBtn.style.display = 'none';
+                    if (window.Toast) Toast.show('Cloud Sync disabled.', 'info');
+                    localStorage.setItem('xp_cloud_sync', '0');
                 }
             }
-            const copyBtn = document.getElementById('copyLinkBtn');
-            if (copyBtn) {
-                copyBtn.onclick = async () => {
-                    const link = `${location.origin}/profile.html`;
-                    await navigator.clipboard.writeText(link);
-                    if (window.Toast) Toast.show('Profile link copied!', 'success');
-                };
+
+            // ========================
+            // PLAYER CARD CANVAS
+            // ========================
+            function renderPlayerCard() {
+                if (!Auth.isLoggedIn()) return;
+                const stats = User.getStats();
+                const user = Auth.getCurrentUser();
+                if (!stats || !user) return;
+
+                const canvas = document.getElementById('playerCardCanvas');
+                if (!canvas) return;
+
+                const W = 600, H = 320;
+                canvas.width = W;
+                canvas.height = H;
+
+                const ctx = canvas.getContext('2d');
+
+                // BG gradient
+                const bg = ctx.createLinearGradient(0, 0, W, H);
+                bg.addColorStop(0, '#0b0f17');
+                bg.addColorStop(1, '#111827');
+                ctx.fillStyle = bg;
+                ctx.fillRect(0, 0, W, H);
+
+                // Glow
+                const glow = ctx.createRadialGradient(W * 0.8, H * 0.2, 10, W * 0.8, H * 0.2, 180);
+                glow.addColorStop(0, 'rgba(0,229,255,0.2)');
+                glow.addColorStop(1, 'rgba(0,229,255,0)');
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, 0, W, H);
+
+                // Border
+                ctx.strokeStyle = 'rgba(0,229,255,0.4)';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(8, 8, W - 16, H - 16);
+
+                // Avatar
+                ctx.font = '70px serif';
+                ctx.fillText(stats.avatar || '👤', 40, 120);
+
+                // Username
+                ctx.font = 'bold 28px Inter, sans-serif';
+                ctx.fillStyle = '#ffffff';
+                ctx.fillText(user.username || 'Player', 140, 80);
+
+                // Rank
+                const rank = stats.rank || {};
+                ctx.font = '18px Inter, sans-serif';
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillText(`${rank.icon || ''} ${rank.name || 'Starter'}`, 140, 115);
+
+                // Divider
+                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(140, 130);
+                ctx.lineTo(560, 130);
+                ctx.stroke();
+
+                // Stats row
+                const level = Math.floor(stats.axp / 500) + 1;
+                const statItems = [
+                    { label: 'LEVEL', value: level },
+                    { label: 'AXP', value: stats.axp.toLocaleString() },
+                    { label: 'STREAK', value: `${stats.streak || 0}d` },
+                    { label: 'CLIPS', value: stats.submissions || 0 }
+                ];
+
+                statItems.forEach((s, i) => {
+                    const x = 140 + i * 110;
+                    ctx.font = '11px Inter, sans-serif';
+                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                    ctx.fillText(s.label, x, 165);
+                    ctx.font = 'bold 22px Inter, sans-serif';
+                    ctx.fillStyle = '#00e5ff';
+                    ctx.fillText(s.value, x, 195);
+                });
+
+                // XP Bar
+                const progress = (stats.axp % 500) / 500;
+                ctx.fillStyle = 'rgba(255,255,255,0.1)';
+                ctx.beginPath();
+                ctx.roundRect(140, 220, 380, 8, 4);
+                ctx.fill();
+
+                ctx.fillStyle = '#00e5ff';
+                ctx.beginPath();
+                ctx.roundRect(140, 220, 380 * progress, 8, 4);
+                ctx.fill();
+
+                ctx.font = '12px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fillText(`${stats.axp % 500} / 500 AXP to next level`, 140, 248);
+
+                // Footer
+                ctx.font = '13px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+                ctx.fillText('xparena.net', 40, H - 20);
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillText('XP ARENA', W - 110, H - 20);
+
+                // Download button
+                const dlBtn = document.getElementById('downloadCardBtn');
+                if (dlBtn) {
+                    dlBtn.onclick = () => {
+                        canvas.toBlob(blob => {
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `xparena-card-${user.username || 'player'}.png`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                            if (window.Toast) Toast.show('Player card downloaded!', 'success');
+                        }, 'image/png');
+                    };
+                }
+                const shareBtn = document.getElementById('shareCardBtn');
+                if (shareBtn) {
+                    if (navigator.share && 'canShare' in navigator) {
+                        shareBtn.onclick = async () => {
+                            try {
+                                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                                const files = [new File([blob], `xparena-${user.username}.png`, { type: 'image/png' })];
+                                if (navigator.canShare && navigator.canShare({ files })) {
+                                    await navigator.share({ title: 'XP Arena Card', text: 'Check out my stats!', files });
+                                } else {
+                                    await navigator.share({ title: 'XP Arena', text: `${location.origin}/profile.html` });
+                                }
+                            } catch { }
+                        };
+                    } else {
+                        // Hide on browsers without Web Share API
+                        shareBtn.style.display = 'none';
+                    }
+                }
+                const copyBtn = document.getElementById('copyLinkBtn');
+                if (copyBtn) {
+                    copyBtn.onclick = async () => {
+                        const link = `${location.origin}/profile.html`;
+                        await navigator.clipboard.writeText(link);
+                        if (window.Toast) Toast.show('Profile link copied!', 'success');
+                    };
+                }
             }
-        }
-        async function claimDaily() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const res = await User.claimDailyLogin();
-            if (res.success && window.Toast) Toast.show('Daily AXP claimed!', 'success');
-        }
-        async function activateDoubler() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const res = await User.activateXPDoubler(24);
-            if (res.success && window.Toast) Toast.show('XP Doubler activated for 24h!', 'success');
-        }
-        async function saveAvatarUrl() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const url = document.getElementById('avatarUrlInput').value;
-            const resp = await fetch((window.API_URL || '') + '/api/user/avatar-url', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
-                body: JSON.stringify({ url })
-            });
-            const data = await resp.json();
-            if (resp.ok) {
-                if (window.Toast) Toast.show('Avatar URL updated!', 'success');
-                User.loadStats();
-            } else {
-                if (window.Toast) Toast.show(data.error || 'Error', 'error');
+            async function claimDaily() {
+                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+                const res = await User.claimDailyLogin();
+                if (res.success && window.Toast) Toast.show('Daily AXP claimed!', 'success');
             }
-        }
-        async function savePremiumStyle() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const name_color = document.getElementById('nameColor').value;
-            const glow = document.getElementById('nameGlow').checked;
-            const resp = await fetch((window.API_URL || '') + '/api/user/premium/style', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
-                body: JSON.stringify({ name_color, glow })
-            });
-            const data = await resp.json();
-            if (resp.ok) {
-                if (window.Toast) Toast.show('Premium style applied!', 'success');
-                User.loadStats();
-            } else {
-                if (window.Toast) Toast.show(data.error || 'Error', 'error');
+            async function activateDoubler() {
+                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+                const res = await User.activateXPDoubler(24);
+                if (res.success && window.Toast) Toast.show('XP Doubler activated for 24h!', 'success');
             }
-        }
-    </script>
+            async function saveAvatarUrl() {
+                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+                const url = document.getElementById('avatarUrlInput').value;
+                const resp = await fetch((window.API_URL || '') + '/api/user/avatar-url', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+                    body: JSON.stringify({ url })
+                });
+                const data = await resp.json();
+                if (resp.ok) {
+                    if (window.Toast) Toast.show('Avatar URL updated!', 'success');
+                    User.loadStats();
+                } else {
+                    if (window.Toast) Toast.show(data.error || 'Error', 'error');
+                }
+            }
+            async function savePremiumStyle() {
+                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+                const name_color = document.getElementById('nameColor').value;
+                const glow = document.getElementById('nameGlow').checked;
+                const resp = await fetch((window.API_URL || '') + '/api/user/premium/style', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+                    body: JSON.stringify({ name_color, glow })
+                });
+                const data = await resp.json();
+                if (resp.ok) {
+                    if (window.Toast) Toast.show('Premium style applied!', 'success');
+                    User.loadStats();
+                } else {
+                    if (window.Toast) Toast.show(data.error || 'Error', 'error');
+                }
+            }
+            async function renderAXPGrowthGraph() {
+                const canvas = document.getElementById('axpGrowthCanvas');
+                const emptyEl = document.getElementById('axpHistoryEmpty');
+                if (!canvas) return;
+
+                try {
+                    const res = await fetch((window.API_URL || '') + '/api/user/axp-history', {
+                        headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+                    });
+                    const history = await res.json();
+
+                    if (!history || history.length < 2) {
+                        canvas.style.display = 'none';
+                        emptyEl.style.display = 'block';
+                        return;
+                    }
+                    canvas.style.display = 'block';
+                    emptyEl.style.display = 'none';
+
+                    const labels = history.map(h => {
+                        const d = new Date(h.date);
+                        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    });
+                    const values = history.map(h => h.axp);
+
+                    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
+                    const ctx = canvas.getContext('2d');
+                    let gradient = ctx.createLinearGradient(0, 0, 0, 220);
+                    gradient.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
+                    gradient.addColorStop(1, 'transparent');
+
+                    if (window.axpChartInstance) window.axpChartInstance.destroy();
+
+                    window.axpChartInstance = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'AXP Total',
+                                data: values,
+                                borderColor: accentColor,
+                                backgroundColor: gradient,
+                                borderWidth: 3,
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#0b0f17',
+                                pointBorderColor: accentColor,
+                                pointRadius: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: {
+                                    backgroundColor: '#121826',
+                                    titleColor: accentColor,
+                                    bodyColor: '#fff',
+                                    displayColors: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    grid: { color: 'rgba(255,255,255,0.05)' },
+                                    ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } }
+                                },
+                                x: {
+                                    grid: { display: false },
+                                    ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
+                                }
+                            }
+                        }
+                    });
+                } catch (e) { console.error('AXP History error:', e); }
+            }
+        </script>
 </body>
 
 </html>

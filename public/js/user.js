@@ -340,7 +340,12 @@ const User = {
         const rank = stats.rank;
 
         const elAvatar = document.getElementById('avatarImage');
-        if (elAvatar && stats.avatar) elAvatar.textContent = stats.avatar;
+        if (elAvatar && stats.avatar) {
+            elAvatar.textContent = stats.avatar;
+            elAvatar.classList.remove('skeleton', 'skeleton-avatar');
+            elAvatar.style.color = 'unset';
+            elAvatar.style.background = 'transparent';
+        }
 
         const level = Math.floor(stats.axp / 500) + 1;
         const currentLevelAXP = stats.axp % 500;
@@ -371,9 +376,38 @@ const User = {
             'currentRankName': rank.name
         };
 
+        const animateValue = (obj, start, end, duration) => {
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                // easeOutQuart
+                const easeOut = 1 - Math.pow(1 - progress, 4);
+                obj.textContent = Math.floor(easeOut * (end - start) + start).toLocaleString();
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    obj.textContent = end.toLocaleString();
+                }
+            };
+            window.requestAnimationFrame(step);
+        };
+
         Object.keys(fields).forEach(id => {
             const el = document.getElementById(id);
-            if (el) el.textContent = fields[id];
+            if (el) {
+                if (typeof fields[id] === 'number') {
+                    const currentVal = parseInt(el.textContent.replace(/,/g, '')) || 0;
+                    if (currentVal !== fields[id]) {
+                        animateValue(el, currentVal, fields[id], 1500);
+                    } else {
+                        el.textContent = fields[id].toLocaleString();
+                    }
+                } else {
+                    el.textContent = fields[id];
+                }
+                el.classList.remove('skeleton', 'skeleton-text', 'short');
+            }
         });
 
         const vBadges = ['v-badge', 'v-badge-top'];

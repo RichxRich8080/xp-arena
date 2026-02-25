@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Rewards – XP Arena</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+    <nav class="navbar"></nav>
+
+    <main class="main-content-area auth-page-wrapper">
+        <section class="auth-card-premium" style="max-width: 800px;">
+            <div class="auth-header" style="margin-bottom: 1.5rem;">
+                <div class="auth-badge">Daily Protocol</div>
+                <h1 class="text-neon">COMMAND DASHBOARD</h1>
+                <p>Maintain your daily synchronization to earn premium AXP and Clan bonuses.</p>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+                <div class="form-card"
+                    style="text-align: center; padding: 1.5rem; background: rgba(0, 229, 255, 0.05); border-color: var(--accent);">
+                    <i class="fas fa-fire"
+                        style="color: var(--accent); font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px var(--accent-glow);"></i>
+                    <h3 id="dashStreak" style="margin:0; font-size: 2rem; color: #fff;">0 <span
+                            style="font-size: 1rem; color: var(--text-muted);">DAYS</span></h3>
+                    <p
+                        style="color: var(--accent); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
+                        ACTIVE STREAK</p>
+                </div>
+                <div class="form-card" style="text-align: center; padding: 1.5rem;">
+                    <i class="fas fa-star"
+                        style="color: #ffcc00; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(255,204,0,0.5);"></i>
+                    <h3 id="dashAXP" style="margin:0; font-size: 2rem; color: #fff;">0</h3>
+                    <p
+                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
+                        TOTAL AXP</p>
+                </div>
+                <div class="form-card" style="text-align: center; padding: 1.5rem;">
+                    <i class="fas fa-gift"
+                        style="color: #bf00ff; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(191,0,255,0.5);"></i>
+                    <h3 id="dashNextReward" style="margin:0; font-size: 2rem; color: #fff;">--</h3>
+                    <p
+                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
+                        NEXT MISSION</p>
+                </div>
+            </div>
+
+            <h3
+                style="margin-bottom: 1rem; color: #fff; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
+                7-Day Supply Drop</h3>
+            <div class="login-grid" id="loginGrid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
+                <!-- Days injected by daily-login.js -->
+            </div>
+
+            <div style="text-align:center;">
+                <button id="claimBtn" class="btn-auth-premium" style="width:auto; padding: 1.2rem 4rem;" disabled>
+                    <span class="btn-text">CLAIM TODAY'S REWARD</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </div>
+        </section>
+        </div>
+
+        <nav class="bottom-nav"></nav>
+
+        <script src="js/auth.js"></script>
+        <script src="js/user.js"></script>
+        <script src="js/layout.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
+                    location.href = 'login.html';
+                    return;
+                }
+
+                const rewards = [
+                    { day: 1, reward: '50 AXP', icon: 'fa-box' },
+                    { day: 2, reward: '75 AXP', icon: 'fa-bolt' },
+                    { day: 3, reward: '100 AXP', icon: 'fa-shield-alt' },
+                    { day: 4, reward: '125 AXP', icon: 'fa-crown' },
+                    { day: 5, reward: '150 AXP', icon: 'fa-gem' },
+                    { day: 6, reward: '200 AXP', icon: 'fa-star' },
+                    { day: 7, reward: '500 AXP', icon: 'fa-trophy' }
+                ];
+
+                const grid = document.getElementById('loginGrid');
+                const claimBtn = document.getElementById('claimBtn');
+                function renderGrid() {
+                    const stats = User.getStats();
+                    const streak = stats.streak || 0;
+                    const today = new Date().toDateString(); // e.g., "Mon Jan 01 2024"
+
+                    let canClaim = true; // Assume can claim by default
+                    if (stats.lastLogin) {
+                        const lastLoginDate = new Date(stats.lastLogin).toDateString(); // Convert stored timestamp/date string to date string
+                        canClaim = lastLoginDate !== today;
+                    }
+
+                    document.getElementById('dashStreak').innerHTML = `${streak} <span style="font-size: 1rem; color: var(--text-muted);">DAYS</span>`;
+                    document.getElementById('dashAXP').textContent = Number(stats.axp || 0).toLocaleString();
+
+                    const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);
+                    document.getElementById('dashNextReward').textContent = `${rewards[nextDayIdx || 0].reward}`;
+
+                    grid.innerHTML = rewards.map((r, i) => {
+                        let statusClass = '';
+                        const dayIdx = i + 1;
+
+                        if (dayIdx <= streak && !canClaim) statusClass = 'claimed';
+                        else if (dayIdx === (canClaim ? streak + 1 : streak)) statusClass = 'current';
+                        else if (dayIdx > (canClaim ? streak + 1 : streak)) statusClass = '';
+
+                        // Overflow handling: if streak > 7, wrap back
+                        const effectiveDay = ((streak % 7) || 7);
+                        if (dayIdx < effectiveDay) statusClass = 'claimed';
+                        if (dayIdx === effectiveDay && !canClaim) statusClass = 'claimed';
+                        if (dayIdx === (canClaim ? effectiveDay : -1)) statusClass = 'current';
+
+                        return `
+                        <div class="login-day ${statusClass}">
+                            <span class="day-num">Day ${r.day}</span>
+                            <i class="fas ${r.icon} day-icon"></i>
+                            <span class="day-reward">${r.reward}</span>
+                        </div>
+                    `;
+                    }).join('');
+
+                    if (canClaim) {
+                        claimBtn.disabled = false;
+                        claimBtn.textContent = "CLAIM TODAY'S REWARD";
+                    } else {
+                        claimBtn.disabled = true;
+                        claimBtn.textContent = "REWARD CLAIMED";
+                        claimBtn.style.opacity = '0.5';
+                    }
+                }
+
+                claimBtn.addEventListener('click', () => {
+                    const stats = User.getStats();
+                    const today = new Date().toDateString();
+
+                    // Rewards logic
+                    const dayIdx = (stats.streak % 7);
+                    const rewardAmount = parseInt(rewards[dayIdx].reward);
+
+                    User.addAXP(rewardAmount, `Daily Login (Day ${stats.streak + 1})`);
+
+                    User.updateStats(s => {
+                        s.streak = (s.streak || 0) + 1;
+                        s.lastLoginDate = today;
+                    });
+
+                    if (window.Toast) Toast.show(`${rewardAmount} AXP Claimed!`, 'success');
+                    if (window.confetti) confetti(); // Trigger confetti if available
+
+                    renderGrid();
+                });
+
+                renderGrid();
+            });
+        </script>
+</body>
+
+</html>

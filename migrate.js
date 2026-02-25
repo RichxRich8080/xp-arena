@@ -267,6 +267,17 @@ async function run() {
     )
   `);
 
+  await ensureTable('push_subscriptions', `
+    CREATE TABLE IF NOT EXISTS push_subscriptions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        subscription_json TEXT NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY (user_id)
+    )
+  `);
+
   // 2. Structural checks (columns that might be missing in older versions)
   await ensureColumn('users', 'is_premium', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'premium_name_color', 'VARCHAR(20)');

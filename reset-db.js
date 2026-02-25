@@ -56,6 +56,25 @@ async function resetDatabase() {
         await connection.query('SET FOREIGN_KEY_CHECKS = 1;');
         console.log('🔒 Foreign key checks re-enabled.');
 
+        // 5. Seed Shop Items
+        console.log('💎 Seeding Armory Items...');
+        const shopItems = [
+            ['XP Booster (24h)', 'Double your AXP gain for 24 hours', 500, 'booster', 'fas fa-bolt', 'rare'],
+            ['XP Booster (48h)', 'Double your AXP gain for 48 hours', 800, 'booster', 'fas fa-bolt', 'epic'],
+            ['Premium Theme: Gold', 'Unlock the luxurious Gold accent theme', 2500, 'cosmetic', 'fas fa-palette', 'epic'],
+            ['VIP Badge', 'Exclusive V verified badge next to your name', 5000, 'badge', 'fas fa-check-circle', 'legendary'],
+            ['Areni Pro Avatar', 'Special pro player silhouette avatar', 1200, 'avatar', 'fas fa-user-astronaut', 'rare'],
+            ['Global Premium Upgrade', 'One-time AXP purchase for permanent Premium status', 25000, 'cosmetic', 'fas fa-gem', 'legendary']
+        ];
+
+        for (const item of shopItems) {
+            await connection.query(
+                'INSERT IGNORE INTO shop_items (name, description, price_axp, type, icon, rarity) VALUES (?, ?, ?, ?, ?, ?)',
+                item
+            );
+        }
+        console.log('✅ Armory seeded.');
+
         console.log('✅ TiDB Database reset and recreation complete!');
 
     } catch (err) {

@@ -1,0 +1,115 @@
+/* Onboarding Tour for XP Arena */
+
+#onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99999;
+}
+
+#onboarding-dimmer {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    transition: opacity 0.3s;
+    pointer-events: auto;
+}
+
+.onboarding-spotlight {
+    position: absolute;
+    border-radius: 8px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8), 0 0 15px var(--accent-glow);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: none;
+    z-index: 100000;
+}
+
+.onboarding-popover {
+    position: absolute;
+    background: var(--card-dark);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 320px;
+    z-index: 100001;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 229, 255, 0.1);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    pointer-events: auto;
+}
+
+.onboarding-popover.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.onboarding-title {
+    font-size: 1.2rem;
+    color: var(--accent);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    font-family: 'Inter', sans-serif;
+}
+
+.onboarding-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.onboarding-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.onboarding-dots {
+    display: flex;
+    gap: 5px;
+}
+
+.onboarding-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transition: all 0.3s;
+}
+
+.onboarding-dot.active {
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    transform: scale(1.2);
+}
+
+.onboarding-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.onboarding-btn:hover {
+    filter: brightness(1.2);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.onboarding-skip {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.onboarding-skip:hover {
+    color: #fff;
+}

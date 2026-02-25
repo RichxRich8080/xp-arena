@@ -12,129 +12,201 @@
 
 <body class="fade-in">
     <nav class="navbar"></nav>
-    <div class="auth-container">
-        <h1>Create Account</h1>
-        <div id="error-msg" class="error-msg"></div>
-        <form id="signupForm">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Choose a username" required>
-            </div>
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="email" placeholder="you@example.com" required>
-            </div>
-            <div class="form-group" style="position: relative;">
-                <label>Password</label>
-                <div style="position: relative;">
-                    <input type="password" id="password" placeholder="••••••••" required
-                        style="padding-right: 40px; width: 100%;">
-                    <i class="fas fa-eye" id="togglePassword"
-                        style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
-                </div>
-                <small style="color: var(--text-muted); font-size: 0.75rem; display: block; margin-top: 4px;">Min 8
-                    chars, 1 uppercase, 1 number, 1 special character.</small>
-            </div>
-            <div class="form-group" style="position: relative;">
-                <label>Confirm Password</label>
-                <div style="position: relative;">
-                    <input type="password" id="confirmPassword" placeholder="••••••••" required
-                        style="padding-right: 40px; width: 100%;">
-                    <i class="fas fa-eye" id="toggleConfirm"
-                        style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted);"></i>
-                </div>
+    <main class="main-content-area auth-page-wrapper">
+        <div class="auth-card-premium">
+            <div class="auth-header">
+                <div class="auth-badge">Enlistment Portal</div>
+                <h1 class="text-neon">ARENA ENLISTMENT</h1>
+                <p>Join the elite ranks of the Arena. Start tracking your sensitivity and Clan progress today.</p>
             </div>
 
-            <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                <input type="checkbox" id="terms" required style="width: auto;">
-                <label for="terms" style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">I agree to the <a
-                        href="#" class="text-neon" style="text-decoration: underline;">Terms & Conditions</a></label>
+            <div id="error-msg" class="error-msg"
+                style="display: none; background: rgba(255, 68, 68, 0.1); border: 1px solid var(--danger); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; color: var(--danger); font-size: 0.9rem; text-align: center;">
             </div>
 
-            <button type="submit" class="btn-auth glow-neon">Sign Up</button>
-        </form>
-        <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
-            Already have an account? <a href="login.html" class="text-neon">Login</a>
+            <form id="signupForm" class="auth-form-gamer">
+                <div class="form-group-glow">
+                    <label><i class="fas fa-id-badge"></i> Areni Alias</label>
+                    <input type="text" id="username" placeholder="Choose a username" required>
+                </div>
+
+                <div class="form-group-glow">
+                    <label><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group-glow">
+                    <label><i class="fas fa-key"></i> Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="password" placeholder="••••••••" required
+                            style="padding-right: 45px !important; width: 100%;">
+                        <i class="fas fa-eye" id="togglePassword"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); z-index: 5;"></i>
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.7rem; margin-top: 4px;">Min 8 chars, 1
+                        uppercase, 1 symbol.</small>
+                </div>
+
+                <div class="form-group-glow">
+                    <label><i class="fas fa-lock"></i> Confirm Password</label>
+                    <div style="position: relative;">
+                        <input type="password" id="confirmPassword" placeholder="••••••••" required
+                            style="padding-right: 45px !important; width: 100%;">
+                        <i class="fas fa-eye" id="toggleConfirm"
+                            style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: var(--text-muted); z-index: 5;"></i>
+                    </div>
+                </div>
+
+                <div class="auth-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="terms" required>
+                        <span class="checkmark"></span>
+                        Accept Terms & Tactical Policy
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-auth-premium">
+                    <span class="btn-text">ENLIST ARENI</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <span>Already enlisted?</span>
+                <a href="login.html" class="signup-link">LOG IN</a>
+            </div>
         </div>
-    </div>
-    <nav class="bottom-nav"></nav>
+        </div>
+        <nav class="bottom-nav"></nav>
 
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            const pwd = document.getElementById('password');
-            const type = pwd.getAttribute('type') === 'password' ? 'text' : 'password';
-            pwd.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
+        <script src="js/auth.js"></script>
+        <script src="js/user.js"></script>
+        <script src="js/layout.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            document.getElementById('togglePassword').addEventListener('click', function () {
+                const pwd = document.getElementById('password');
+                const type = pwd.getAttribute('type') === 'password' ? 'text' : 'password';
+                pwd.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
 
-        document.getElementById('toggleConfirm').addEventListener('click', function () {
-            const confirm = document.getElementById('confirmPassword');
-            const type = confirm.getAttribute('type') === 'password' ? 'text' : 'password';
-            confirm.setAttribute('type', type);
-            this.classList.toggle('fa-eye-slash');
-        });
+            document.getElementById('toggleConfirm').addEventListener('click', function () {
+                const confirm = document.getElementById('confirmPassword');
+                const type = confirm.getAttribute('type') === 'password' ? 'text' : 'password';
+                confirm.setAttribute('type', type);
+                this.classList.toggle('fa-eye-slash');
+            });
 
-        document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const user = document.getElementById('username').value;
-            const email = document.getElementById('email').value;
-            const pass = document.getElementById('password').value;
-            const confirm = document.getElementById('confirmPassword').value;
-            const err = document.getElementById('error-msg');
+            document.getElementById('signupForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+                const pass = document.getElementById('password').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                const err = document.getElementById('error-msg');
 
-            // Custom validation logic
-            const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            if (!passRegex.test(pass)) {
-                err.textContent = "Password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character (@$!%*?&).";
-                err.style.display = 'block';
-                return;
-            }
-
-            if (pass !== confirm) {
-                err.textContent = "Passwords do not match";
-                err.style.display = 'block';
-                return;
-            }
-
-            const btn = document.querySelector('.btn-auth');
-            btn.textContent = 'Creating Account...';
-            btn.disabled = true;
-
-            const result = await Auth.signup(user, email, pass);
-            if (result.success) {
-                // Handle referral reward
-                const urlParams = new URLSearchParams(window.location.search);
-                const refCode = urlParams.get('ref');
-                if (refCode) {
-                    const allKeys = Object.keys(localStorage);
-                    allKeys.forEach(key => {
-                        if (key.startsWith('xp_stats_')) {
-                            try {
-                                const data = JSON.parse(localStorage.getItem(key));
-                                if (data && data.referralCode === refCode) {
-                                    data.axp = (data.axp || 0) + 200;
-                                    data.referralCount = (data.referralCount || 0) + 1;
-                                    if (!data.activities) data.activities = [];
-                                    data.activities.unshift({ text: `Referral reward: ${user} signed up using your code!`, timestamp: new Date().toISOString() });
-                                    localStorage.setItem(key, JSON.stringify(data));
-                                }
-                            } catch (e) { }
-                        }
-                    });
+                // Custom validation logic
+                const passRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                if (!passRegex.test(pass)) {
+                    err.textContent = "Password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character (@$!%*?&).";
+                    err.style.display = 'block';
+                    return;
                 }
 
-                // Show Success Overlay instead of redirect
-                const overlay = document.createElement('div');
-                overlay.style.cssText = `
+                if (pass !== confirm) {
+                    err.textContent = "Passwords do not match";
+                    err.style.display = 'block';
+                    return;
+                }
+
+                const btn = document.querySelector('.btn-auth-premium'); // Corrected selector
+                btn.textContent = 'Creating Account...';
+                btn.disabled = true;
+
+                const result = await Auth.signup(user, email, pass);
+                // Handle requires_verification response for signup
+                if (result.success && result.requires_verification) {
+                    // Show Verification Overlay
+                    const overlay = document.createElement('div');
+                    overlay.id = 'verification-overlay';
+                    overlay.style.cssText = `
+                    position: fixed; inset: 0; background: rgba(11, 15, 23, 0.95); z-index: 10000;
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    backdrop-filter: blur(15px); animation: fadeIn 0.3s ease forwards;
+                `;
+                    overlay.innerHTML = `
+                    <div class="auth-card-premium" style="max-width: 450px; text-align: center; background: rgba(18, 24, 38, 0.95);">
+                        <div class="auth-header">
+                            <div class="auth-badge">Security Protocol</div>
+                            <h2 class="text-neon" style="font-size: 2rem; margin-bottom: 0.5rem;">VERIFY IDENTITY</h2>
+                            <p style="color: var(--text-muted);">A 6-digit code has been sent to <strong>${email}</strong></p>
+                        </div>
+                        <div id="verify-error" style="display:none; color: var(--danger); margin-bottom: 1rem;"></div>
+                        <div class="form-group-glow" style="margin-bottom: 2rem;">
+                            <input type="text" id="verifyCode" placeholder="000000" maxlength="6" style="text-align: center; font-size: 2rem; letter-spacing: 0.5rem; font-weight: 800; font-family: 'Share Tech Mono', monospace;" autocomplete="off">
+                        </div>
+                        <button id="verifyBtn" class="btn-auth-premium">
+                            <span class="btn-text">AUTHENTICATE CODE</span>
+                            <span class="btn-glow"></span>
+                        </button>
+                    </div>
+                `;
+                    document.body.appendChild(overlay);
+
+                    document.getElementById('verifyBtn').addEventListener('click', async () => {
+                        const code = document.getElementById('verifyCode').value;
+                        const vBtn = document.getElementById('verifyBtn');
+                        const vErr = document.getElementById('verify-error');
+
+                        if (code.length !== 6) {
+                            vErr.textContent = "Code must be 6 digits";
+                            vErr.style.display = 'block';
+                            return;
+                        }
+
+                        vBtn.disabled = true;
+                        vBtn.querySelector('.btn-text').textContent = 'VERIFYING...';
+                        vErr.style.display = 'none';
+
+                        try {
+                            const verifyRes = await fetch('/api/auth/verify-email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username: user, code })
+                            });
+                            const verifyData = await verifyRes.json();
+
+                            if (verifyRes.ok && verifyData.success) {
+                                localStorage.setItem('xp_token', verifyData.token);
+                                localStorage.setItem('xp_current_user', JSON.stringify(verifyData.user));
+                                localStorage.setItem('xp_signup_success', 'true');
+                                window.location.href = 'profile.html';
+                            } else {
+                                throw new Error(verifyData.error || 'Verification failed');
+                            }
+                        } catch (e) {
+                            vErr.textContent = e.message;
+                            vErr.style.display = 'block';
+                            vBtn.disabled = false;
+                            vBtn.querySelector('.btn-text').textContent = 'AUTHENTICATE CODE';
+                        }
+                    });
+                    return;
+                }
+
+                if (result.success) {
+                    // Support legacy auto-login if verification isn't needed
+                    // Handle referral reward
+
+                    // Show Success Overlay instead of redirect
+                    const overlay = document.createElement('div');
+                    overlay.style.cssText = `
                     position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000;
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
                     backdrop-filter: blur(10px); animation: fadeIn 0.5s ease forwards;
                 `;
-                overlay.innerHTML = `
+                    overlay.innerHTML = `
                     <div style="text-align: center; max-width: 500px; padding: 2rem;">
                         <i class="fas fa-check-circle" style="font-size: 5rem; color: var(--success); margin-bottom: 1rem; filter: drop-shadow(0 0 20px var(--success)); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;"></i>
                         <h1 style="color: #fff; font-size: 2.5rem; margin-bottom: 0.5rem;">Account Created!</h1>
@@ -152,31 +224,31 @@
                     </div>
                 `;
 
-                // Add popIn animation definition if not present
-                if (!document.getElementById('popInStyle')) {
-                    const style = document.createElement('style');
-                    style.id = 'popInStyle';
-                    style.innerHTML = `@keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }`;
-                    document.head.appendChild(style);
+                    // Add popIn animation definition if not present
+                    if (!document.getElementById('popInStyle')) {
+                        const style = document.createElement('style');
+                        style.id = 'popInStyle';
+                        style.innerHTML = `@keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.2); } 100% { transform: scale(1); } }`;
+                        document.head.appendChild(style);
+                    }
+
+                    document.body.appendChild(overlay);
+                    if (window.Celebration) Celebration.fire();
+
+                    // AXP is now awarded securely by the backend API upon registration
+                    setTimeout(() => {
+                        // Just wait for animation before redirect
+                    }, 500);
+
+                } else {
+                    const err = document.getElementById('error-msg');
+                    err.textContent = result.message;
+                    err.style.display = 'block';
+                    btn.textContent = 'Sign Up';
+                    btn.disabled = false;
                 }
-
-                document.body.appendChild(overlay);
-                if (window.Celebration) Celebration.fire();
-
-                // AXP is now awarded securely by the backend API upon registration
-                setTimeout(() => {
-                    // Just wait for animation before redirect
-                }, 500);
-
-            } else {
-                const err = document.getElementById('error-msg');
-                err.textContent = result.message;
-                err.style.display = 'block';
-                btn.textContent = 'Sign Up';
-                btn.disabled = false;
-            }
-        });
-    </script>
+            });
+        </script>
 </body>
 
 </html>

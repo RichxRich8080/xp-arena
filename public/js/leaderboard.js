@@ -267,3 +267,79 @@ function startCountdown() {
     tick();
     setInterval(tick, 1000);
 }
+
+window.switchLeaderboard = function (type) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(`tab-${type}`).classList.add('active');
+
+    const header = document.getElementById('leaderboard-header');
+    const colName = document.getElementById('col-name');
+    const colExtra = document.getElementById('col-extra');
+
+    const list = document.getElementById('leaderboardList');
+    list.innerHTML = '<div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div>';
+
+    if (type === 'guilds') {
+        colName.textContent = 'Clan';
+        colExtra.textContent = 'Badge';
+        renderGuildLeaderboard();
+    } else {
+        colName.textContent = 'Areni';
+        colExtra.textContent = 'Device';
+        renderLeaderboard();
+    }
+};
+
+async function renderGuildLeaderboard() {
+    const list = document.getElementById('leaderboardList');
+    if (!list) return;
+
+    try {
+        const res = await fetch(`${API_BASE_LB}/api/guild/leaderboard`);
+        if (res.ok) {
+            const guilds = await res.json();
+            if (guilds.length === 0) {
+                list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted);">No clans founded yet. Be the first to start a legacy!</div>';
+                return;
+            }
+            list.innerHTML = guilds.map((g, idx) => {
+                const pos = idx + 1;
+                const isTop3 = pos <= 3;
+                const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
+                const posColor = isTop3 ? medalColors[idx] : 'var(--text-muted)';
+                const posLabel = isTop3 ? ['🥇', '🥈', '🥉'][idx] : `#${pos}`;
+
+                return `
+                    <div style="
+                        display: grid;
+                        grid-template-columns: 48px 1fr auto;
+                        align-items: center;
+                        gap: 1rem;
+                        padding: 1rem 1.2rem;
+                        border-radius: 14px;
+                        margin-bottom: 0.6rem;
+                        background: ${isTop3 ? 'rgba(255,255,255,0.03)' : 'transparent'};
+                        border: 1px solid ${isTop3 ? 'rgba(255,255,255,0.1)' : 'var(--border)'};
+                    " class="lb-row">
+                        <div style="font-size: ${isTop3 ? '1.6rem' : '1rem'}; font-weight: 800; color: ${posColor}; text-align: center;">${posLabel}</div>
+                        <div>
+                            <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">
+                                ${g.name} ${g.badge ? `<span style="font-size:0.8rem; background:var(--accent); color:#000; padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:900;">${g.badge}</span>` : ''}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+                                <i class="fas fa-users"></i> ${g.members} Members
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${(g.axp || 0).toLocaleString()}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">Total AXP</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    } catch (e) {
+        console.error('Guild LB Error:', e);
+        list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--danger);">Error loading Clan Race.</div>';
+    }
+}

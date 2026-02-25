@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                 })
-                .catch(() => {});
+                .catch(() => { });
         });
     }
 
@@ -512,13 +512,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- HOME PAGE ANIMATIONS ---
     const tickerText = document.getElementById('ticker-text');
     if (tickerText) {
-        const messages = [
-            "Player AimBot_Pro just reached Master Rank!",
+        let messages = [
+            "Areni AimBot_Pro just reached Master Rank!",
             "New Sensitivity optimized for Samsung S24 Ultra",
             "Regional Tournament starting in 48 hours!",
-            "Shadow_Slayer earned 200 AXP today!",
-            "Welcome 50 new members to the Arena!"
         ];
+
+        async function refreshLiveFeed() {
+            try {
+                const res = await fetch('/api/activity/live');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        messages = data.map(a => `${a.username}: ${a.text}`);
+                    }
+                }
+            } catch (e) { console.error('Live feed fetch error:', e); }
+        }
+
+        refreshLiveFeed();
+        setInterval(refreshLiveFeed, 60000); // refresh every minute
+
         let i = 0;
         setInterval(() => {
             tickerText.style.opacity = 0;
@@ -527,7 +541,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 tickerText.textContent = messages[i];
                 tickerText.style.opacity = 1;
             }, 500);
-        }, 4000);
+        }, 5000);
     }
 
     // Home Page Animations
@@ -594,6 +608,39 @@ function generateShareImage(result) {
         { label: '4X SCOPE', value: result.scope4x },
         { label: '8X SCOPE', value: result.scope8x },
     ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateMetaTitle();
+        initFloatEffects();
+    });
+
+    function updateMetaTitle() {
+        const page = window.location.pathname.split('/').pop().replace('.html', '') || 'Home';
+        const titleMap = {
+            'index': 'Home',
+            'tool': 'Sensitivity Tool',
+            'leaderboard': 'Global Rankings',
+            'profile': 'My Dossier',
+            'shop': 'The Armory',
+            'guilds': 'Clan HQ'
+        };
+        const friendlyName = titleMap[page] || page.charAt(0).toUpperCase() + page.slice(1);
+        document.title = `${friendlyName} • XP ARENA`;
+    }
+
+    function initFloatEffects() {
+        // Add subtle parallax to hero elements
+        window.addEventListener('mousemove', (e) => {
+            const heroes = document.querySelectorAll('.hero-content, .page-header');
+            const x = (window.innerWidth / 2 - e.pageX) / 50;
+            const y = (window.innerHeight / 2 - e.pageY) / 50;
+            heroes.forEach(h => {
+                h.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    }
+
+    const API_BASE_APP = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
 
     const colW = 160;
     const startX = 50;

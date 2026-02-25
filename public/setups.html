@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,15 +9,18 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
+
 <body class="fade-in">
   <nav class="navbar"></nav>
-  <div class="container" style="max-width: 960px;">
-    <div class="page-header">
-      <h1>Popular Setups</h1>
-      <p>Most liked and copied sensitivity setups from the community.</p>
+  <main class="main-content-area">
+    <div class="container">
+      <div class="page-header">
+        <h1>Popular Setups</h1>
+        <p>Most liked and copied sensitivity setups from the community.</p>
+      </div>
+      <div id="setupsList" style="display: grid; gap: 1rem;"></div>
     </div>
-    <div id="setupsList" style="display: grid; gap: 1rem;"></div>
-  </div>
+  </main>
   <nav class="bottom-nav"></nav>
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
@@ -25,4 +29,5 @@
   <script src="js/setups.js"></script>
 </body>
 <!-- End -->
+
 </html>

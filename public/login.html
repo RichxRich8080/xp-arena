@@ -12,74 +12,117 @@
 
 <body class="fade-in">
     <nav class="navbar"></nav>
-    <div class="auth-container">
-        <h1>Welcome Back</h1>
-        <div id="error-msg" class="error-msg"></div>
-        <form id="loginForm">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Enter username" required>
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="••••••••" required>
-            </div>
-            <div class="form-group" style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <input type="checkbox" id="remember" style="width: auto;">
-                    <label for="remember" style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Remember
-                        me</label>
-                </div>
-                <a href="#" onclick="showForgotPasswordModal(); return false;" class="text-neon"
-                    style="font-size: 0.85rem; text-decoration: underline;">Forgot
-                    Password?</a>
-            </div>
-            <button type="submit" class="btn-auth glow-neon">Login</button>
-        </form>
-        <div style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem;">
-            Don't have an account? <a href="signup.html" class="text-neon">Sign Up</a>
-        </div>
+    <!-- Cinematic Success Overlay -->
+    <div id="login-cinematic" class="cinematic-overlay">
+        <div class="cinematic-line" id="line1">ARRIVAL SUCCESSFUL...</div>
+        <div class="cinematic-line" id="line2">IDENTITY VERIFIED</div>
+        <div class="cinematic-line" id="line3" style="color: #fff; font-weight: 800; margin-top: 15px;">RELOCATING TO
+            THE ARENA</div>
+        <div class="cinematic-line" id="line4" style="margin-top: 10px;">[||||||||||||||||||||] 100%</div>
     </div>
-    <nav class="bottom-nav"></nav>
 
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const btn = document.querySelector('.btn-auth');
-            btn.textContent = 'Logging in...';
-            btn.disabled = true;
+    <main class="main-content-area auth-page-wrapper">
+        <div class="auth-card-premium">
+            <div class="auth-header">
+                <div class="auth-badge">Security Protocol</div>
+                <h1 class="text-neon">ARENA AUTHENTICATION</h1>
+                <p>Welcome back, Areni. Authenticate to sync your AXP and Clan data.</p>
+            </div>
 
-            const result = await Auth.login(user, pass);
-            if (result.success) {
-                window.location.href = 'profile.html';
-            } else {
-                const err = document.getElementById('error-msg');
-                err.textContent = result.message;
-                err.style.display = 'block';
-                btn.textContent = 'Login';
-                btn.disabled = false;
-            }
-        });
+            <div id="error-msg" class="error-msg"
+                style="display: none; background: rgba(255, 68, 68, 0.1); border: 1px solid var(--danger); padding: 1rem; border-radius: 12px; margin-bottom: 2rem; color: var(--danger); font-size: 0.9rem; text-align: center;">
+            </div>
 
-        function showForgotPasswordModal() {
-            const existing = document.getElementById('forgot-modal');
-            if (existing) existing.remove();
+            <form id="loginForm" class="auth-form-gamer">
+                <div class="form-group-glow">
+                    <label><i class="fas fa-id-badge"></i> Areni Username</label>
+                    <input type="text" id="username" placeholder="Username" required>
+                </div>
 
-            const modal = document.createElement('div');
-            modal.id = 'forgot-modal';
-            modal.style.cssText = `
+                <div class="form-group-glow">
+                    <label><i class="fas fa-key"></i> Data Key (Password)</label>
+                    <input type="password" id="password" placeholder="••••••••" required>
+                </div>
+
+                <div class="auth-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="remember">
+                        <span class="checkmark"></span>
+                        Save Session
+                    </label>
+                    <a href="#" onclick="showForgotPasswordModal(); return false;" class="forgot-link">Recover Key</a>
+                </div>
+
+                <button type="submit" class="btn-auth-premium">
+                    <span class="btn-text">INITIALIZE SESSION</span>
+                    <span class="btn-glow"></span>
+                </button>
+            </form>
+
+            <div class="auth-footer"
+                style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                <span style="color: var(--text-muted); font-size: 0.95rem;">New to the Arena?</span><br>
+                <a href="signup.html" class="signup-link"
+                    style="display: inline-block; margin-top: 0.8rem; color: var(--accent); font-weight: 900; font-size: 1.1rem; text-decoration: none; border-bottom: 2px solid var(--accent); letter-spacing: 1px; padding-bottom: 2px; text-shadow: 0 0 10px var(--accent-glow);">CREATE
+                    ACCOUNT (SIGN UP)</a>
+            </div>
+        </div>
+        </div>
+        <nav class="bottom-nav"></nav>
+
+        <script src="js/auth.js"></script>
+        <script src="js/user.js"></script>
+        <script src="js/layout.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const user = document.getElementById('username').value;
+                const pass = document.getElementById('password').value;
+                const btn = document.querySelector('.btn-auth-premium');
+                const btnText = btn.querySelector('.btn-text');
+
+                btnText.textContent = 'CONNECTING...';
+                btn.disabled = true;
+
+                const result = await Auth.login(user, pass);
+                if (result.success) {
+                    // Trigger Cinematic Overlay
+                    const cinematic = document.getElementById('login-cinematic');
+                    cinematic.classList.add('active');
+
+                    const lines = ['line1', 'line2', 'line3', 'line4'];
+                    for (let i = 0; i < lines.length; i++) {
+                        setTimeout(() => {
+                            document.getElementById(lines[i]).classList.add('show');
+                        }, i * 600);
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = 'profile.html';
+                    }, 3000);
+                } else {
+                    const err = document.getElementById('error-msg');
+                    err.textContent = result.message;
+                    err.style.display = 'block';
+                    btnText.textContent = 'INITIALIZE SESSION';
+                    btn.disabled = false;
+                }
+            });
+
+            function showForgotPasswordModal() {
+                const existing = document.getElementById('forgot-modal');
+                if (existing) existing.remove();
+
+                const modal = document.createElement('div');
+                modal.id = 'forgot-modal';
+                modal.style.cssText = `
                 position: fixed; inset: 0; z-index: 100000;
                 display: flex; align-items: center; justify-content: center;
                 background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
                 animation: fadeIn 0.3s ease;
             `;
-            modal.innerHTML = `
+                modal.innerHTML = `
                 <div style="background: var(--bg-dark); border: 1px solid var(--border); border-radius: 20px; width: 90%; max-width: 400px; padding: 2rem; position: relative;">
                     <button onclick="document.getElementById('forgot-modal').remove()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;"><i class="fas fa-times"></i></button>
                     <h2 style="margin-top: 0; color: #fff;">Reset Password</h2>
@@ -95,38 +138,38 @@
                     <button id="reset-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;">Reset Password</button>
                 </div>
             `;
-            document.body.appendChild(modal);
+                document.body.appendChild(modal);
 
-            document.getElementById('reset-btn').addEventListener('click', async () => {
-                const username = document.getElementById('reset-user').value;
-                const newPassword = document.getElementById('reset-pass').value;
-                if (!username || !newPassword) return;
+                document.getElementById('reset-btn').addEventListener('click', async () => {
+                    const username = document.getElementById('reset-user').value;
+                    const newPassword = document.getElementById('reset-pass').value;
+                    if (!username || !newPassword) return;
 
-                const btn = document.getElementById('reset-btn');
-                btn.textContent = 'Resetting...';
+                    const btn = document.getElementById('reset-btn');
+                    btn.textContent = 'Resetting...';
 
-                try {
-                    const res = await fetch(`${window.API_URL}/api/auth/reset`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ username, newPassword })
-                    });
-                    const data = await res.json();
-                    if (res.ok) {
-                        btn.style.background = 'var(--success)';
-                        btn.textContent = 'Success!';
-                        setTimeout(() => modal.remove(), 1000);
-                    } else {
-                        btn.style.background = 'var(--danger)';
-                        btn.textContent = data.error || 'Failed';
-                        setTimeout(() => { btn.style.background = ''; btn.textContent = 'Reset Password'; }, 2000);
+                    try {
+                        const res = await fetch(`${window.API_URL}/api/auth/reset`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username, newPassword })
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            btn.style.background = 'var(--success)';
+                            btn.textContent = 'Success!';
+                            setTimeout(() => modal.remove(), 1000);
+                        } else {
+                            btn.style.background = 'var(--danger)';
+                            btn.textContent = data.error || 'Failed';
+                            setTimeout(() => { btn.style.background = ''; btn.textContent = 'Reset Password'; }, 2000);
+                        }
+                    } catch (e) {
+                        btn.textContent = 'Network Error';
                     }
-                } catch (e) {
-                    btn.textContent = 'Network Error';
-                }
-            });
-        }
-    </script>
+                });
+            }
+        </script>
 </body>
 
 </html>

@@ -109,7 +109,21 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
         await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
         await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
+
+        // Record AXP History snapshot
+        const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+        await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
+
         res.json({ success: true, streak, axp: total, date: today });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+router.get('/axp-history', authenticateToken, async (req, res) => {
+    try {
+        const history = await db.all('SELECT axp, date FROM axp_history WHERE user_id = ? ORDER BY date ASC LIMIT 30', [req.user.id]);
+        res.json(history);
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }
@@ -245,6 +259,34 @@ router.delete('/history/:id', authenticateToken, async (req, res) => {
     try {
         await db.run('DELETE FROM history WHERE id = ? AND user_id = ?', [id, req.user.id]);
         res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'DB Error' });
+    }
+});
+
+router.post('/premium/buy', authenticateToken, async (req, res) => {
+    try {
+        const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
+        if (u && u.is_premium) return res.status(400).json({ error: 'Already Premium' });
+
+        await db.run('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Upgraded to Premium Areni Status']);
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'DB Error' });
+    }
+});
+
+router.post('/easter-egg', authenticateToken, async (req, res) => {
+    try {
+        const achievementId = 'easter_egg_hack';
+        const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
+        if (u) return res.status(400).json({ error: 'Reward already claimed' });
+
+        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
+        await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
+        res.json({ success: true, axp: 500 });
     } catch (err) {
         res.status(500).json({ error: 'DB Error' });
     }

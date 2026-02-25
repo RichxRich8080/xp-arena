@@ -18,63 +18,66 @@
         <!-- Injected by layout.js -->
     </nav>
 
-    <div class="container" style="max-width: 600px;">
-        <div class="page-header">
-            <h1>Enter Weekly Rankings</h1>
-            <p>Submit your best clip to get featured on the global leaderboard.</p>
-        </div>
-
-        <div
-            style="background: rgba(255, 68, 68, 0.05); border: 1px solid rgba(255, 68, 68, 0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-            <h3 style="color: #ff4444; font-size: 1rem; margin-bottom: 0.8rem;">⚠️ Submission Rules</h3>
-            <ul style="list-style-position: inside; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
-                <li>No background music (Game sound only)</li>
-                <li>Max clip length: 60 seconds</li>
-                <li>No cheats/hacks (Instant ban)</li>
-                <li>Respectful content only</li>
-            </ul>
-        </div>
-
-        <div class="form-card" id="submissionArea">
-            <div id="authGuard" style="display: none; text-align: center; padding: 2rem 1rem;">
-                <div style="font-size: 3rem; margin-bottom: 1.5rem;">🔒</div>
-                <h2 style="margin-bottom: 1rem;">Login Required</h2>
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">You must be logged in to participate in the
-                    weekly rankings and earn AXP.</p>
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <a href="login.html" class="btn-primary">LOGIN NOW</a>
-                    <a href="signup.html" class="btn-secondary">CREATE ACCOUNT</a>
-                </div>
+    <main class="main-content-area">
+        <div class="container">
+            <div class="page-header">
+                <h1>Enter Weekly Rankings</h1>
+                <p>Submit your best clip to get featured on the global leaderboard.</p>
             </div>
 
-            <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST" id="submissionForm">
-                <input type="hidden" name="_subject" value="New Gameplay Submission - XP ARENA">
-                <input type="hidden" name="_captcha" value="false">
+            <div
+                style="background: rgba(255, 68, 68, 0.05); border: 1px solid rgba(255, 68, 68, 0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+                <h3 style="color: #ff4444; font-size: 1rem; margin-bottom: 0.8rem;">⚠️ Submission Rules</h3>
+                <ul style="list-style-position: inside; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
+                    <li>No background music (Game sound only)</li>
+                    <li>Max clip length: 60 seconds</li>
+                    <li>No cheats/hacks (Instant ban)</li>
+                    <li>Respectful content only</li>
+                </ul>
+            </div>
 
-                <div class="form-group">
-                    <label>Gamer Tag (In-Game Name)</label>
-                    <input type="text" name="gamertag" id="form-gamertag" placeholder="e.g. ShadowSlayer" required>
+            <div class="form-card" id="submissionArea">
+                <div id="authGuard" style="display: none; text-align: center; padding: 2rem 1rem;">
+                    <div style="font-size: 3rem; margin-bottom: 1.5rem;">🔒</div>
+                    <h2 style="margin-bottom: 1rem;">Login Required</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 2rem;">You must be logged in to participate in
+                        the
+                        weekly rankings and earn AXP.</p>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <a href="login.html" class="btn-primary">LOGIN NOW</a>
+                        <a href="signup.html" class="btn-secondary">CREATE ACCOUNT</a>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Game UID</label>
-                    <input type="text" name="uid" placeholder="e.g. 12345678" required>
-                </div>
+                <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST" id="submissionForm">
+                    <input type="hidden" name="_subject" value="New Gameplay Submission - XP ARENA">
+                    <input type="hidden" name="_captcha" value="false">
 
-                <div class="form-group">
-                    <label>WhatsApp Number (For Prize Delivery)</label>
-                    <input type="tel" name="whatsapp" placeholder="+234..." required>
-                </div>
+                    <div class="form-group">
+                        <label>Gamer Tag (In-Game Name)</label>
+                        <input type="text" name="gamertag" id="form-gamertag" placeholder="e.g. ShadowSlayer" required>
+                    </div>
 
-                <div class="form-group">
-                    <label>Clip Link (YouTube/Drive/TikTok)</label>
-                    <input type="url" name="clip_url" placeholder="https://..." required>
-                </div>
+                    <div class="form-group">
+                        <label>Game UID</label>
+                        <input type="text" name="uid" placeholder="e.g. 12345678" required>
+                    </div>
 
-                <button type="submit" class="btn-primary">SUBMIT ENTRY</button>
-            </form>
+                    <div class="form-group">
+                        <label>WhatsApp Number (For Prize Delivery)</label>
+                        <input type="tel" name="whatsapp" placeholder="+234..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Clip Link (YouTube/Drive/TikTok)</label>
+                        <input type="url" name="clip_url" placeholder="https://..." required>
+                    </div>
+
+                    <button type="submit" class="btn-primary">SUBMIT ENTRY</button>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
 
     <!-- Success Message Overlay -->
     <div class="success-overlay" id="successOverlay">
@@ -142,7 +145,7 @@
                         form.reset();
                         if (typeof User !== 'undefined' && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
                             User.addClip({
-                                device: formData.get('gamertag') || 'Mobile Player',
+                                device: formData.get('gamertag') || 'Mobile Areni',
                                 url: formData.get('clip_url')
                             });
                         }

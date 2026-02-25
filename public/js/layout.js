@@ -31,11 +31,17 @@ document.addEventListener('DOMContentLoaded', () => {
         highlightActiveLinks();
         syncGlobalXP();
         trackPageVisit();
+        setupPageTransitions();
         window.addEventListener('statsChange', syncGlobalXP);
 
         // Initial user checks
         if (typeof User !== 'undefined' && Auth.isLoggedIn()) {
             User.checkDailyLogin();
+
+            // Ask for push notification permission (delayed slightly)
+            setTimeout(() => {
+                subscribeToPushNotifications();
+            }, 3000);
 
             // Check for signup success popup
             if (localStorage.getItem('xp_signup_success')) {
@@ -83,9 +89,12 @@ function injectLayout() {
             <button id="notifBtn" title="Notifications" style="background: rgba(255,255,255,0.08); border:1px solid var(--border); color:#fff; width:36px;height:36px;border-radius:8px; display:flex; align-items:center; justify-content:center;">
               <i class="fas fa-bell"></i>
             </button>
-            <div id="notifDropdown" style="display:none; position:absolute; right:56px; top:50px; width:260px; background: var(--card-dark); border:1px solid var(--border); border-radius:12px; box-shadow: 0 8px 20px rgba(0,0,0,0.4);">
-              <div style="padding:0.6rem 0.8rem; font-weight:800; border-bottom:1px solid var(--border);">Recent</div>
-              <div id="notifList" style="max-height:260px; overflow:auto;"></div>
+            <div id="notifDropdown" class="achievement-panel">
+                <div class="achievement-panel-header">
+                    <h3>Recent Activity</h3>
+                    <button id="clearNotifs" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; cursor:pointer;"><i class="fas fa-check-double"></i></button>
+                </div>
+                <ul id="notifList" class="achievement-list"></ul>
             </div>` : ``}
             ${isLoggedIn && typeof window.User !== 'undefined' && window.User.getStats() ? `<span class="level-badge-nav" id="globalLevelBadge">Lvl ${window.User.getStats().level}</span>` : ''}
             <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
@@ -99,7 +108,7 @@ function injectLayout() {
     // 2. Inject Sidebar
     const stats = isLoggedIn && typeof window.User !== 'undefined' ? window.User.getStats() : null;
     const premiumBadge = stats && stats.is_premium ? '<span style="font-size:0.7rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd700;padding:2px 6px;border-radius:6px;margin-left:6px;">PREMIUM</span>' : '';
-    const displayName = isLoggedIn ? (Auth.getCurrentUser().username || 'Player') : 'Guest';
+    const displayName = isLoggedIn ? (Auth.getCurrentUser().username || 'Areni') : 'Guest';
     const sidebarHTML = `
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="sidebar">
@@ -119,8 +128,10 @@ function injectLayout() {
             <a href="ranks.html" class="sidebar-link"><i class="fas fa-layer-group"></i> Ranks</a>
             <a href="clips.html" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
             <a href="quests.html" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
-            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: #0f0;"></i> Guilds</a>
-            <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Guild Wars</a>
+            <a href="daily-login.html" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
+            <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:#00ff88;"></i> Armory (Shop)</a>
+            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: #0f0;"></i> Clans</a>
+            <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
             <a href="submit.html" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
             <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
             <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:#bf00ff;"></i> Premium & Plans</a>
@@ -176,9 +187,17 @@ function injectLayout() {
             <span class="nav-icon"><i class="fas fa-tools"></i></span>
             <span class="nav-label">Tool</span>
         </a>
+        <a href="daily-login.html" class="nav-item ${currentPage === 'daily-login.html' ? 'active' : ''}" data-page="daily-login.html">
+            <span class="nav-icon"><i class="fas fa-gift"></i></span>
+            <span class="nav-label">Rewards</span>
+        </a>
+        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html">
+            <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
+            <span class="nav-label">Shop</span>
+        </a>
         <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html">
             <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
-            <span class="nav-label">Units</span>
+            <span class="nav-label">Clans</span>
         </a>
         <a href="leaderboard.html" class="nav-item ${currentPage === 'leaderboard.html' ? 'active' : ''}" data-page="leaderboard.html">
             <span class="nav-icon"><i class="fas fa-trophy"></i></span>
@@ -194,6 +213,43 @@ function injectLayout() {
 
     // 4. Wrap Content and Inject Footer
     wrapAndInjectFooter();
+
+    // 5. Daily Reward Reminder
+    checkDailyRewardReminder();
+}
+
+function checkDailyRewardReminder() {
+    if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return;
+    if (window.location.pathname.includes('daily-login.html') || window.location.pathname.includes('login.html')) return;
+
+    setTimeout(() => {
+        const stats = User.getStats();
+        const today = new Date().toDateString();
+        if (stats && stats.lastLoginDate !== today) {
+            const reminder = document.createElement('div');
+            reminder.innerHTML = `
+                <div style="position: fixed; top: 100px; right: 20px; z-index: 9999; background: rgba(18,24,38,0.95); border: 1px solid var(--accent); border-radius: 12px; padding: 1rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5); animation: sideSlide 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <div style="background: var(--accent); color:#000; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:900; color:#fff; font-size:0.9rem;">DAILY BOUNTY AVAILABLE</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">Sync now to maintain your streak.</div>
+                        </div>
+                        <button onclick="window.location.href='daily-login.html'" style="background:var(--accent); border:none; color:#000; font-weight:800; padding:6px 15px; border-radius:6px; cursor:pointer; font-size:0.75rem; margin-left:10px;">CLAIM</button>
+                    </div>
+                </div>
+                <style>
+                    @keyframes sideSlide {
+                        0% { transform: translateX(120%); opacity: 0; }
+                        100% { transform: translateX(0); opacity: 1; }
+                    }
+                </style>
+            `;
+            document.body.appendChild(reminder);
+        }
+    }, 2000);
 }
 
 function wrapAndInjectFooter() {
@@ -225,24 +281,10 @@ function wrapAndInjectFooter() {
             // Skip navbar, bottomNav, sidebar, overlay, and scripts
             if (child === navbar || child === bottomNav || child === sidebar || child === overlay) return;
             if (child.nodeName === 'SCRIPT' || child.nodeName === 'STYLE') return;
-            if (child.id === 'xpa-levelup-overlay' || child.className === 'axp-increment-popup') return;
+            if (child.id === 'xpa-levelup-overlay' || child.className === 'axp-increment-popup' || child.className === 'theme-fab' || child.className === 'theme-selector-overlay') return;
 
             wrapper.appendChild(child);
         });
-
-        // Inject Welcome Header into Wrapper
-        const welcomeHTML = `
-            <div class="commander-header">
-                <div class="commander-status">
-                    <span class="pulse"></span>
-                    ACTIVE PROTOCOL: ${stats && stats.rank ? stats.rank.name : 'GUEST'}
-                </div>
-                <div class="commander-name">
-                    Welcome back, ${user ? user.username.toUpperCase() : 'SOLDIER'}
-                </div>
-            </div>
-        `;
-        wrapper.insertAdjacentHTML('afterbegin', welcomeHTML);
 
         // Inject Wrapper into body
         // If bottomNav exists AND is a direct child of body, insert before it
@@ -251,6 +293,9 @@ function wrapAndInjectFooter() {
         } else {
             document.body.appendChild(wrapper);
         }
+
+        // 2. Inject Theme FAB & Overlay
+        injectThemeOverlay();
 
         // Inject Footer into Wrapper
         const footerHTML = `
@@ -261,15 +306,15 @@ function wrapAndInjectFooter() {
                             <img src="/assets/images/logo.png" style="height:32px;" alt="Logo">
                             <span style="font-weight:900; color:#fff; font-size:1.2rem; letter-spacing:1px;">XP ARENA</span>
                         </div>
-                        <p style="font-size:0.9rem; line-height:1.6;">The ultimate toolkit for Free Fire players. Precision sensitivity, device comparisons, and community rankings.</p>
+                        <p style="font-size:0.9rem; line-height:1.6;">The ultimate toolkit for Free Fire Arenis. Precision sensitivity, device comparisons, and community rankings.</p>
                     </div>
                     <div class="footer-col">
                         <h4>Quick Links</h4>
                         <ul class="footer-links">
                             <li><a href="index.html">Home</a></li>
-                            <li><a href="tool.html">Sensitivity Tool</a></li>
-                            <li><a href="leaderboard.html">Leaderboard</a></li>
-                            <li><a href="clips.html">Top Clips</a></li>
+                            <li><a href="shop.html">Armory (Shop)</a></li>
+                            <li><a href="guilds.html">Clans</a></li>
+                            <li><a href="daily-login.html">Daily Rewards</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
@@ -305,6 +350,46 @@ function wrapAndInjectFooter() {
     } catch (err) {
         console.error('Layout: Error in wrapAndInjectFooter:', err);
     }
+}
+
+function injectThemeOverlay() {
+    if (document.querySelector('.theme-fab')) return;
+
+    const fabHTML = `
+        <button class="theme-fab" id="themeFab" title="Customize Appearance">
+            <i class="fas fa-palette"></i>
+        </button>
+        <div class="theme-selector-overlay" id="themeOverlay">
+            <h4 style="margin-bottom:1rem; font-weight:800; color:var(--accent); letter-spacing:1px;">VISUAL OVERLAY</h4>
+            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:1.5rem;">
+                <div class="theme-dot" onclick="setTheme('theme-cyber')" style="background: linear-gradient(135deg, #0f0, #00e5ff); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 1px solid #0f0;" title="Cyber Neon"></div>
+                <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
+                <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>
+                <div class="theme-dot" onclick="setTheme('theme-gold')" style="background: #ffcc00; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Gold"></div>
+            </div>
+            <div style="margin-bottom: 1rem;">
+                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Custom Hue</div>
+                <input type="color" id="customColorPicker" onchange="setCustomColor(this.value)" style="width:100%; height:40px; border-radius:8px; border:none; background:none; cursor:pointer;">
+            </div>
+            <button class="btn-secondary" style="width:100%; font-size:0.8rem;" onclick="toggleDarkMode()">TOGGLE DARK/LIGHT</button>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', fabHTML);
+
+    const fab = document.getElementById('themeFab');
+    const overlay = document.getElementById('themeOverlay');
+
+    fab.addEventListener('click', () => {
+        const isVisible = overlay.style.display === 'block';
+        overlay.style.display = isVisible ? 'none' : 'block';
+    });
+
+    // Close on click outside
+    document.addEventListener('click', (e) => {
+        if (!fab.contains(e.target) && !overlay.contains(e.target)) {
+            overlay.style.display = 'none';
+        }
+    });
 }
 
 function toggleSidebar() {
@@ -365,7 +450,13 @@ if (window.location.hash === '#settings') {
     });
 }
 
-// Inject Toast / Effects Scripts
+// Inject Sound Engine & Toast / Effects Scripts
+if (!document.querySelector('script[src="js/sounds.js"]')) {
+    const sEng = document.createElement('script');
+    sEng.src = 'js/sounds.js';
+    document.head.appendChild(sEng);
+}
+
 if (!document.querySelector('script[src="js/toast.js"]')) {
     const toastScript = document.createElement('script');
     toastScript.src = 'js/toast.js';
@@ -505,11 +596,125 @@ document.addEventListener('click', (e) => {
             const stats = User.getStats();
             const list = document.getElementById('notifList');
             if (list) {
-                const items = (stats.activities || []).slice(0, 5).map(a => `<div style="padding:0.6rem 0.8rem; border-bottom:1px solid var(--border);">${a.text}<br><span style="font-size:0.75rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>`).join('');
-                list.innerHTML = items || '<div style="padding:0.6rem 0.8rem;">No recent activity</div>';
+                const items = (stats.activities || []).slice(0, 5).map(a => `
+                    <li class="achievement-item">
+                        <div class="achievement-icon">
+                            <i class="${a.text.includes('reward') || a.text.includes('AXP') ? 'fas fa-star' : 'fas fa-info-circle'}"></i>
+                        </div>
+                        <div class="achievement-content">
+                            <div class="achievement-title">${a.text}</div>
+                            <span class="achievement-time">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        </div>
+                    </li>
+                `).join('');
+                list.innerHTML = items || '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">No recent activity</div>';
             }
         }
-    } else if (!dd.contains(e.target)) {
+    } else if (!dd.contains(e.target) && e.target.id !== 'clearNotifs' && !e.target.closest('#clearNotifs')) {
         dd.style.display = 'none';
     }
 });
+
+document.addEventListener('click', (e) => {
+    const clearBtn = e.target.closest('#clearNotifs');
+    if (clearBtn && typeof User !== 'undefined' && Auth.isLoggedIn()) {
+        User.updateStatsLocally(s => s.activities = []);
+        const list = document.getElementById('notifList');
+        if (list) list.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">No recent activity</div>';
+    }
+});
+
+function setupPageTransitions() {
+    document.body.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+
+        const target = link.getAttribute('target');
+        const href = link.getAttribute('href');
+
+        // Skip for external, new tab, hash links, or javascript
+        if (target === '_blank' || !href || href.startsWith('#') || href.startsWith('javascript:')) return;
+
+        // Skip if it's the current page
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const linkPath = href.split('/').pop() || 'index.html';
+        if (currentPath === linkPath) return;
+
+        e.preventDefault();
+        if (window.Sounds) Sounds.play('click');
+        document.body.classList.add('page-transition-out');
+
+        // Wait for animation then navigate
+        setTimeout(() => {
+            window.location.href = href;
+        }, 300); // matches the 0.3s CSS transition
+    });
+}
+
+// Push Notifications Setup
+async function subscribeToPushNotifications() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.warn('Push notifications are not supported by the browser.');
+        return;
+    }
+
+    // Don't ask again if they recently denied or if already subscribed
+    const pushStatus = localStorage.getItem(`xp_push_${Auth.getCurrentUser().id}`);
+    if (pushStatus === 'denied' || pushStatus === 'subscribed') {
+        return;
+    }
+
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            const registration = await navigator.serviceWorker.ready;
+
+            // Fetch public key
+            const res = await fetch((window.API_URL || '') + '/api/push/public-key');
+            if (!res.ok) throw new Error('Could not fetch VAPID public key');
+            const { publicKey } = await res.json();
+
+            // Convert VAPID key
+            const convertedVapidKey = urlBase64ToUint8Array(publicKey);
+
+            // Subscribe
+            const subscription = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: convertedVapidKey
+            });
+
+            // Send to backend
+            await fetch((window.API_URL || '') + '/api/push/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + Auth.getToken()
+                },
+                body: JSON.stringify({ subscription })
+            });
+
+            // For now, save the permission state
+            localStorage.setItem(`xp_push_${Auth.getCurrentUser().id}`, 'subscribed');
+            console.log('Push notification permission granted and registered.');
+            if (window.Toast) Toast.show('Push notifications enabled!', 'success', 3000);
+        } else {
+            localStorage.setItem(`xp_push_${Auth.getCurrentUser().id}`, 'denied');
+        }
+    } catch (e) {
+        console.error('Push subscription failed:', e);
+    }
+}
+
+// Utility function to convert VAPID key
+function urlBase64ToUint8Array(base64String) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/\-/g, '+')
+        .replace(/_/g, '/');
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}

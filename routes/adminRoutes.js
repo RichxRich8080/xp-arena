@@ -40,6 +40,50 @@ router.get('/overview', async (req, res) => {
   }
 });
 
+router.get('/analytics', async (req, res) => {
+  try {
+    // 1. Registrations over last 30 days
+    const regs = await db.all(`
+      SELECT DATE(created_at) as date, COUNT(*) as count 
+      FROM users 
+      WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) 
+      GROUP BY DATE(created_at) 
+      ORDER BY date ASC
+    `, []);
+
+    // 2. AXP Distribution (bucketed)
+    const axpDist = await db.all(`
+      SELECT 
+        CASE 
+          WHEN axp < 500 THEN 'Bronze (0-499)'
+          WHEN axp < 1500 THEN 'Silver (500-1499)'
+          WHEN axp < 3000 THEN 'Gold (1500-2999)'
+          WHEN axp < 5000 THEN 'Platinum (3000-4999)'
+          WHEN axp < 8000 THEN 'Diamond (5000-7999)'
+          WHEN axp < 12000 THEN 'Master (8000-11999)'
+          ELSE 'Champion (12000+)'
+        END as rank_bucket,
+        COUNT(*) as count
+      FROM users
+      GROUP BY rank_bucket
+    `, []);
+
+    // 3. Daily Active Users (DAU) over last 14 days (approx from activity table)
+    const dau = await db.all(`
+      SELECT DATE(timestamp) as date, COUNT(DISTINCT user_id) as count
+      FROM activity
+      WHERE timestamp >= DATE_SUB(CURDATE(), INTERVAL 14 DAY)
+      GROUP BY DATE(timestamp)
+      ORDER BY date ASC
+    `, []);
+
+    res.json({ registrations: regs, axpDistribution: axpDist, dau });
+  } catch (e) {
+    console.error('Analytics error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.get('/activity', async (req, res) => {
   try {
     const logs = await db.all('SELECT a.id, a.user_id, u.username, a.text, a.timestamp FROM activity a JOIN users u ON u.id = a.user_id ORDER BY a.timestamp DESC LIMIT 200', []);
@@ -69,7 +113,12 @@ router.get('/guild-war-apps', async (req, res) => {
 
 router.get('/users', async (req, res) => {
   try {
-    const rows = await db.all('SELECT id, username, axp, is_premium, is_admin, banned, created_at FROM users ORDER BY axp DESC LIMIT 200', []);
+    const sort = String(req.query.sort || 'axp');
+    let orderBy = 'axp DESC';
+    if (sort === 'streak') orderBy = 'streak DESC';
+    if (sort === 'date') orderBy = 'created_at DESC';
+
+    const rows = await db.all(`SELECT id, username, axp, streak, is_premium, is_admin, banned, created_at FROM users ORDER BY ${orderBy} LIMIT 200`, []);
     res.json(rows);
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
@@ -94,7 +143,7 @@ router.post('/users/axp', async (req, res) => {
     const d = parseInt(delta, 10);
     if (!uid || isNaN(d)) return res.status(400).json({ error: 'Invalid input' });
     await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [d, uid]);
-    if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [uid, `Admin: ${reason} (${d>0?'+':''}${d} AXP)`]);
+    if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [uid, `Admin: ${reason} (${d > 0 ? '+' : ''}${d} AXP)`]);
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
@@ -134,7 +183,7 @@ router.post('/users/ban', async (req, res) => {
     const { user_id, reason } = req.body;
     const uid = parseInt(user_id, 10);
     if (!uid) return res.status(400).json({ error: 'Invalid input' });
-    await db.run('UPDATE users SET banned = 1, ban_reason = ? WHERE id = ?', [String(reason||'').slice(0,255), uid]);
+    await db.run('UPDATE users SET banned = 1, ban_reason = ? WHERE id = ?', [String(reason || '').slice(0, 255), uid]);
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });

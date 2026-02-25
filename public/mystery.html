@@ -177,10 +177,20 @@
             background: #0f0;
             color: #000;
         }
+
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            opacity: 0.15;
+            display: none;
+        }
     </style>
 </head>
 
 <body>
+    <canvas id="matrix-canvas"></canvas>
     <div class="scanline"></div>
     <div class="terminal-container" id="terminal">
         <div id="output"></div>
@@ -233,24 +243,86 @@
         cmdInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 const val = this.value.trim().toLowerCase();
+                if (window.Sounds) Sounds.play('mystery');
+
                 const div = document.createElement('div');
                 div.className = 'output-line';
                 div.textContent = `guest@xp-arena:~$ ${this.value}`;
                 output.appendChild(div);
                 this.value = '';
 
-                if (val === 'hack') {
-                    inputContainer.style.display = 'none';
-                    executeHack();
-                } else {
-                    const err = document.createElement('div');
-                    err.className = 'output-line';
-                    err.style.color = '#ff4d4d';
-                    err.textContent = `Command not found: ${val}`;
-                    output.appendChild(err);
-                }
+                processCommand(val);
+                terminal.scrollTop = terminal.scrollHeight;
             }
         });
+
+        function processCommand(cmd) {
+            const out = (text, color = '#0f0') => {
+                const d = document.createElement('div');
+                d.className = 'output-line';
+                d.style.color = color;
+                d.textContent = text;
+                output.appendChild(d);
+            };
+
+            if (cmd === 'hack') {
+                inputContainer.style.display = 'none';
+                executeHack();
+            } else if (cmd === 'help') {
+                out("AVAILABLE COMMANDS:");
+                out("  help     - Show this help menu");
+                out("  ls       - List directory contents");
+                out("  whoami   - Display current session info");
+                out("  clear    - Clear the terminal");
+                out("  matrix   - Initiate Neural-Link visualizer");
+                out("  system   - Kernel information");
+                out("  hack     - Execute protocol X-77");
+            } else if (cmd === 'ls') {
+                out("bin/  etc/  home/  logs/  secrets/  usr/");
+            } else if (cmd === 'whoami') {
+                const user = Auth.isLoggedIn() ? Auth.getCurrentUser().username : "Guest";
+                out(`USER: ${user}`);
+                out(`ACCESS_LEVEL: ${Auth.isLoggedIn() ? 'ARENI_VERIFIED' : 'GUEST_RESTRICTED'}`);
+            } else if (cmd === 'clear') {
+                output.innerHTML = '';
+            } else if (cmd === 'system') {
+                out("XP ARENA OS v4.0.2");
+                out("CPU: Neural-Cortex i9");
+                out("MEM: 512TB Virtual-RAM");
+                out("UPTIME: 1,337 days");
+            } else if (cmd === 'matrix') {
+                out("MATRIX INITIALIZED.", "#0f0");
+                startMatrix();
+            } else if (cmd !== '') {
+                out(`Command not found: ${cmd}`, '#ff4d4d');
+            }
+        }
+
+        function startMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            canvas.style.display = 'block';
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width = window.innerWidth;
+            const H = canvas.height = window.innerHeight;
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
+            const fontSize = 16;
+            const columns = W / fontSize;
+            const drops = Array(Math.floor(columns)).fill(1);
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, W, H);
+                ctx.fillStyle = '#0f0';
+                ctx.font = fontSize + 'px Share Tech Mono';
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    if (drops[i] * fontSize > H && Math.random() > 0.975) drops[i] = 0;
+                    drops[i]++;
+                }
+            }
+            setInterval(draw, 33);
+        }
 
         function executeHack() {
             const hackLines = [
@@ -278,16 +350,28 @@
             });
         }
 
-        function showReward() {
+        async function showReward() {
             const rewardDiv = document.getElementById('reward');
             rewardDiv.style.display = 'block';
 
-            // Add AXP
-            if (typeof User !== 'undefined' && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
-                const stats = User.getStats();
-                if (stats && !stats.hackedEasterEgg) {
-                    User.addAXP(500, 'Secret Server Hack Exploited');
-                    User.updateStats(s => s.hackedEasterEgg = true);
+            // Secure AXP claim via backend API
+            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+                try {
+                    const res = await fetch((window.API_URL || '') + '/api/user/easter-egg', {
+                        method: 'POST',
+                        headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+                    });
+                    const data = await res.json();
+                    if (res.ok) {
+                        if (typeof User !== 'undefined') {
+                            User.addAXPLocally(data.axp, 'Secret Server Hack Exploited');
+                            User.updateStatsLocally(s => s.hackedEasterEgg = true);
+                        }
+                    } else {
+                        console.log('Easter egg reward error or already claimed:', data.error);
+                    }
+                } catch (e) {
+                    console.error('Failed to claim easter egg:', e);
                 }
             }
         }

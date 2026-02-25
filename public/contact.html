@@ -18,52 +18,54 @@
         <!-- Injected by layout.js -->
     </nav>
 
-    <div class="container">
-        <div class="page-header" data-parallax="8">
-            <h1 class="text-neon">Contact Support</h1>
-            <p>We're here to help you level up.</p>
-        </div>
+    <main class="main-content-area">
+        <div class="container">
+            <div class="page-header" data-parallax="8">
+                <h1 class="text-neon">Contact Support</h1>
+                <p>We're here to help you level up.</p>
+            </div>
 
-        <div class="form-card">
-            <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST">
-                <input type="hidden" name="_subject" value="New Contact Message - XP ARENA">
-                <input type="hidden" name="_captcha" value="false">
+            <div class="form-card">
+                <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST">
+                    <input type="hidden" name="_subject" value="New Contact Message - XP ARENA">
+                    <input type="hidden" name="_captcha" value="false">
 
-                <div class="form-group">
-                    <label>Name</label>
-                    <input type="text" name="name" placeholder="Your Name" required>
+                    <div class="form-group">
+                        <label>Name</label>
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" placeholder="you@example.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Subject</label>
+                        <select name="topic">
+                            <option>General Inquiry</option>
+                            <option>Sponsorship</option>
+                            <option>Report a Bug</option>
+                            <option>Tournament Issue</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea name="message" placeholder="How can we help?" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-primary">SEND MESSAGE</button>
+                </form>
+
+                <div class="direct-links">
+                    <a href="https://wa.me/2348012345678" class="direct-link">WhatsApp Support</a>
+                    <a href="mailto:umarsa8080@gmail.com" class="direct-link">Email Us</a>
+                    <a href="help.html" class="direct-link">Help & FAQ</a>
                 </div>
-
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" name="email" placeholder="you@example.com" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Subject</label>
-                    <select name="topic">
-                        <option>General Inquiry</option>
-                        <option>Sponsorship</option>
-                        <option>Report a Bug</option>
-                        <option>Tournament Issue</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Message</label>
-                    <textarea name="message" placeholder="How can we help?" required></textarea>
-                </div>
-
-                <button type="submit" class="btn-primary">SEND MESSAGE</button>
-            </form>
-
-            <div class="direct-links">
-                <a href="https://wa.me/2348012345678" class="direct-link">WhatsApp Support</a>
-                <a href="mailto:umarsa8080@gmail.com" class="direct-link">Email Us</a>
-                <a href="help.html" class="direct-link">Help & FAQ</a>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Success Message Overlay -->
     <div class="success-overlay" id="successOverlay">

@@ -1,0 +1,58 @@
+/* Skeleton Loading States for XP Arena */
+
+.skeleton {
+    background: linear-gradient(90deg,
+            rgba(30, 41, 59, 1) 25%,
+            rgba(45, 60, 85, 1) 50%,
+            rgba(30, 41, 59, 1) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite linear;
+    border-radius: 4px;
+    opacity: 0.7;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton-text {
+    height: 1.2rem;
+    margin-bottom: 0.5rem;
+    width: 80%;
+}
+
+.skeleton-text.short {
+    width: 40%;
+}
+
+.skeleton-text.long {
+    width: 100%;
+}
+
+.skeleton-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+}
+
+.skeleton-card {
+    height: 120px;
+    border-radius: 12px;
+}
+
+.skeleton-row {
+    height: 50px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+}
+
+/* Base fade out for items replacing skeletons */
+.skeleton-replace {
+    animation: fadeIn 0.3s ease-in forwards;
+}

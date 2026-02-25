@@ -3,47 +3,41 @@ const router = express.Router();
 const { db } = require('../db');
 
 let leaderboardCache = { data: null, lastFetch: 0 };
-router.get('/leaderboard', async (req, res) => {
-    const now = Date.now();
-    if (leaderboardCache.data && now - leaderboardCache.lastFetch < 60000) {
-        return res.json(leaderboardCache.data);
-    }
-
+/**
+ * Global Live Activity Feed
+ */
+router.get('/activity/live', async (req, res) => {
     try {
-        if (typeof db.all !== 'function') throw new Error('db.all is not a function');
-        const users = await db.all('SELECT id, username, axp, level, avatar, socials, is_premium, vip_badge FROM users ORDER BY axp DESC LIMIT 200');
-        const result = [];
-        for (const u of users) {
-            let rank = 'Rookie';
-            if (u.axp >= 100000) rank = 'Legend';
-            if (u.axp >= 200000) rank = 'Arena Master';
-            else if (u.axp >= 50000) rank = 'Champion';
-            else if (u.axp >= 10000) rank = 'Elite';
-            else if (u.axp >= 1000) rank = 'Grinder';
-            const latest = await db.get('SELECT mode FROM setups WHERE user_id = ? AND is_private = 0 ORDER BY created_at DESC LIMIT 1', [u.id]);
-            const setupsCount = await db.get('SELECT COUNT(*) as c FROM setups WHERE user_id = ?', [u.id]);
-            const verifiedSetup = setupsCount && setupsCount.c >= 10;
-            const vBadge = u.vip_badge || u.axp >= 100000 ? true : false;
-            result.push({
-                id: u.id,
-                username: u.username,
-                axp: u.axp,
-                rank,
-                avatar: u.avatar,
-                setup_type: latest ? latest.mode : null,
-                badges: {
-                    verified_setup: verifiedSetup,
-                    v_badge: vBadge,
-                    premium: !!u.is_premium
-                }
-            });
-        }
-        leaderboardCache.data = result.slice(0, 100);
-        leaderboardCache.lastFetch = now;
-        res.json(leaderboardCache.data);
+        const activities = await db.all(`
+            SELECT a.text, a.timestamp, u.username, u.avatar 
+            FROM activity a 
+            JOIN users u ON a.user_id = u.id 
+            ORDER BY a.timestamp DESC 
+            LIMIT 20
+        `);
+        res.json(activities);
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        res.status(500).json({ error: 'Failed to fetch live feed' });
     }
 });
+
+/**
+ * Pro Player Database
+ */
+router.get('/pro-players', async (req, res) => {
+    try {
+        // For now, these are hardcoded verified pros
+        const pros = [
+            { id: 1, name: 'NOBRU', team: 'FLUXO', sensitivity: 'General: 95, RedDot: 80', device: 'iPhone 13 Pro', verified: true, avatar: '👑' },
+            { id: 2, name: 'THW2N', team: 'LOUD', sensitivity: 'General: 100, RedDot: 92', device: 'iPad Pro', verified: true, avatar: '🎯' },
+            { id: 3, name: 'BAK', team: 'NOISE', sensitivity: 'General: 98, RedDot: 85', device: 'Poco X3 Pro', verified: true, avatar: '🔥' }
+        ];
+        res.json(pros);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch pros' });
+    }
+});
+
+module.exports = router;
 
 module.exports = router;

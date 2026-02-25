@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamer Shop • XP ARENA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+
+    <nav class="navbar"></nav>
+
+    <main class="main-content-area">
+        <div class="container" style="padding-top: 2rem;">
+            <div class="page-header" style="text-align:center; margin-bottom: 3rem;">
+                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">ARENA ARMORY</h1>
+                <p style="color: var(--text-muted);">Exchange your earned AXP for tactical upgrades and cosmetic
+                    prestige.</p>
+                <div class="shop-balance-pill"
+                    style="display:inline-flex; align-items:center; gap:10px; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); padding: 0.5rem 1.5rem; border-radius: 50px; margin-top: 1.5rem;">
+                    <i class="fas fa-star" style="color: var(--accent);"></i>
+                    <span style="font-weight:900; color:#fff;"><span id="shop-balance">0</span> AXP AVAILABLE</span>
+                </div>
+            </div>
+
+            <div id="shop-items-grid" class="shop-grid">
+                <!-- Dynamic Items from shop.js -->
+                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
+                </div>
+                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
+                </div>
+                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
+                </div>
+            </div>
+
+            <div class="shop-footer-info"
+                style="margin-top: 4rem; text-align:center; padding: 2rem; background:rgba(0,0,0,0.2); border-radius:16px; border:1px solid var(--border);">
+                <i class="fas fa-info-circle" style="color: var(--accent); font-size: 1.5rem; margin-bottom: 1rem;"></i>
+                <p style="font-size:0.9rem; color:var(--text-muted); max-width:600px; margin: 0 auto;">AXP (Arena
+                    Experience Points) are earned by using the Sensitivity Tool, submitting clips, and participating in
+                    the community. Boosters activate immediately upon purchase.</p>
+            </div>
+        </div>
+    </main>
+
+    <style>
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .shop-item-card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            overflow: hidden;
+        }
+
+        .shop-item-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .shop-item-icon {
+            font-size: 3.5rem;
+            margin: 1.5rem 0;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .shop-item-rarity-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .rarity-legendary {
+            border: 1px solid #ffcc00;
+            box-shadow: inset 0 0 20px rgba(255, 204, 0, 0.1);
+        }
+
+        .rarity-epic {
+            border: 1px solid #bf00ff;
+            box-shadow: inset 0 0 20px rgba(191, 0, 255, 0.1);
+        }
+
+        .rarity-legendary .shop-item-rarity-badge {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        .rarity-epic .shop-item-rarity-badge {
+            background: #bf00ff;
+            color: #fff;
+        }
+
+        .shop-item-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .shop-item-price {
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: #fff;
+        }
+
+        .shop-buy-btn {
+            width: 100%;
+            padding: 0.8rem !important;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+    </style>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/shop.js"></script>
+    <script src="js/layout.js"></script>
+</body>
+
+</html>

@@ -24,6 +24,13 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin TINYINT(1) DEFAULT 0,
     banned TINYINT(1) DEFAULT 0,
     ban_reason VARCHAR(255),
+    email_verified TINYINT(1) DEFAULT 0,
+    verification_token VARCHAR(10),
+    verification_expires DATETIME,
+    reset_token VARCHAR(10),
+    reset_token_expires DATETIME,
+    referral_code VARCHAR(20) UNIQUE,
+    referred_by INT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- User Activity Logs
@@ -199,3 +206,64 @@ CREATE INDEX idx_setups_pop ON setups(likes, copies);
 CREATE INDEX idx_guild_members_user ON guild_members(user_id);
 CREATE INDEX idx_tournaments_time ON tournaments(created_at);
 CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
+-- Referrals Tracking
+CREATE TABLE IF NOT EXISTS referrals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referrer_id INT NOT NULL,
+    referred_id INT NOT NULL,
+    reward_claimed TINYINT(1) DEFAULT 0,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (referred_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_referral (referrer_id, referred_id)
+);
+-- Push Notification Subscriptions
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subscription_json TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+-- Premium Codes
+CREATE TABLE IF NOT EXISTS premium_codes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) UNIQUE NOT NULL,
+    duration_days INT DEFAULT 30,
+    used_by INT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME,
+    FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE
+    SET NULL
+);
+-- Shop Items
+CREATE TABLE IF NOT EXISTS shop_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price_axp INT NOT NULL DEFAULT 100,
+    type ENUM('avatar', 'badge', 'booster', 'cosmetic') NOT NULL,
+    icon VARCHAR(50),
+    rarity ENUM('common', 'rare', 'epic', 'legendary') DEFAULT 'common',
+    stock INT DEFAULT -1,
+    active TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+-- User Inventory
+CREATE TABLE IF NOT EXISTS user_inventory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_user_item (user_id, item_id)
+);
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subscription_json TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY (user_id)
+);

@@ -1,6 +1,12 @@
--- XP Arena Final TiDB Schema
--- Unified schema representing the full database structure
 -- Users Table
+CREATE TABLE IF NOT EXISTS axp_history (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    axp INT NOT NULL,
+    date DATE NOT NULL,
+    UNIQUE KEY user_date (user_id, date),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -12,7 +18,6 @@ CREATE TABLE IF NOT EXISTS users (
     streak INT DEFAULT 0,
     last_login DATETIME,
     socials TEXT,
-    -- JSON string
     name_changes INT DEFAULT 0,
     is_premium TINYINT(1) DEFAULT 0,
     premium_name_color VARCHAR(20),
@@ -23,6 +28,15 @@ CREATE TABLE IF NOT EXISTS users (
     is_admin TINYINT(1) DEFAULT 0,
     banned TINYINT(1) DEFAULT 0,
     ban_reason VARCHAR(255),
+    email_verified TINYINT(1) DEFAULT 0,
+    verification_token VARCHAR(10),
+    verification_expires DATETIME,
+    reset_token VARCHAR(10),
+    reset_token_expires DATETIME,
+    referral_code VARCHAR(20) UNIQUE,
+    referred_by INT,
+    login_attempts INT DEFAULT 0,
+    lockout_until DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- User Activity Logs
@@ -49,7 +63,6 @@ CREATE TABLE IF NOT EXISTS presets (
     user_id INT NOT NULL,
     name VARCHAR(255),
     settings_json TEXT,
-    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -58,7 +71,6 @@ CREATE TABLE IF NOT EXISTS vault (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     settings_json TEXT,
-    -- JSON string
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -187,6 +199,49 @@ CREATE TABLE IF NOT EXISTS creator_followers (
     FOREIGN KEY (creator_user_id) REFERENCES creators(user_id) ON DELETE CASCADE,
     FOREIGN KEY (follower_user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_creator_follower (creator_user_id, follower_user_id)
+);
+-- Referrals Tracking
+CREATE TABLE IF NOT EXISTS referrals (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    referrer_id INT NOT NULL,
+    referred_id INT NOT NULL,
+    reward_claimed TINYINT(1) DEFAULT 0,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (referred_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_referral (referrer_id, referred_id)
+);
+-- Push Notification Subscriptions
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subscription_json TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_push (user_id)
+);
+-- Shop Items
+CREATE TABLE IF NOT EXISTS shop_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price_axp INT NOT NULL DEFAULT 100,
+    type ENUM('avatar', 'badge', 'booster', 'cosmetic') NOT NULL,
+    icon VARCHAR(50),
+    rarity ENUM('common', 'rare', 'epic', 'legendary') DEFAULT 'common',
+    stock INT DEFAULT -1,
+    active TINYINT(1) DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+-- User Inventory
+CREATE TABLE IF NOT EXISTS user_inventory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    item_id INT NOT NULL,
+    purchased_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_user_item (user_id, item_id)
 );
 -- Indices for Optimization
 CREATE INDEX idx_users_axp ON users(axp);

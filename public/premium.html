@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,64 +9,89 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
+
 <body class="fade-in">
   <nav class="navbar"></nav>
-  <div class="container" style="max-width: 1000px;">
-    <div class="page-header">
-      <h1>Plans & Benefits</h1>
-      <p id="currentPlan" style="font-weight:800;"></p>
-    </div>
-
-    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem;">
-      <div class="form-card">
-        <h3>Basic</h3>
-        <ul style="color: var(--text-muted); line-height: 1.8;">
-          <li>Default avatars</li>
-          <li>Basic name color</li>
-          <li>Free tournaments participation</li>
-          <li>Manual setups (public)</li>
-          <li>Daily login rewards + streaks</li>
-        </ul>
-        <div style="margin-top:1rem;"><span class="stat-val">$0</span></div>
+  <main class="main-content-area">
+    <div class="container">
+      <div class="page-header">
+        <h1>Plans & Benefits</h1>
+        <p id="currentPlan" style="font-weight:800;"></p>
       </div>
 
-      <div class="form-card" style="border-color: rgba(191,0,255,0.4);">
-        <h3>Premium</h3>
-        <ul style="color: var(--text-muted); line-height: 1.8;">
-          <li>Upload avatar</li>
-          <li>Name color + glow</li>
-          <li>Private setup codes</li>
-          <li>Free tournament & guild creation</li>
-          <li>XP Doubler access</li>
-          <li>Early access features</li>
-        </ul>
-        <div style="margin-top:1rem;"><span class="stat-val">$3 / month</span></div>
-        <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap;">
-          <a class="btn-primary" style="width:auto;" href="support.html">Get Premium</a>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap: 1rem;">
+        <div class="form-card">
+          <h3>Basic</h3>
+          <ul style="color: var(--text-muted); line-height: 1.8;">
+            <li>Default avatars</li>
+            <li>Basic name color</li>
+            <li>Free tournaments participation</li>
+            <li>Manual setups (public)</li>
+            <li>Daily login rewards + streaks</li>
+          </ul>
+          <div style="margin-top:1rem;"><span class="stat-val">$0</span></div>
+        </div>
+
+        <div class="form-card" style="border-color: rgba(191,0,255,0.4);">
+          <h3>Premium</h3>
+          <ul style="color: var(--text-muted); line-height: 1.8;">
+            <li>Upload avatar</li>
+            <li>Name color + glow</li>
+            <li>Private setup codes</li>
+            <li>Free tournament & clan creation</li>
+            <li>XP Doubler access</li>
+            <li>Early access features</li>
+          </ul>
+          <div style="margin-top:1rem;"><span class="stat-val">$3 / month</span></div>
+          <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-primary" style="width:auto;" onclick="buyPremium()">Get Premium</button>
+          </div>
+        </div>
+
+        <div class="form-card" style="border-color: rgba(255,215,0,0.4);">
+          <h3>Creator</h3>
+          <ul style="color: var(--text-muted); line-height: 1.8;">
+            <li>Custom profile page (slug)</li>
+            <li>Followers</li>
+            <li>Featured setups</li>
+            <li>Analytics / stats</li>
+            <li>Verified badge (when eligible)</li>
+          </ul>
+          <div style="margin-top:1rem;"><span class="stat-val">Premium only</span></div>
+          <div style="margin-top:1rem; display:flex; gap:10px;">
+            <a class="btn-secondary" style="width:auto;" href="creators.html">Creator Dashboard</a>
+          </div>
         </div>
       </div>
-
-      <div class="form-card" style="border-color: rgba(255,215,0,0.4);">
-        <h3>Creator</h3>
-        <ul style="color: var(--text-muted); line-height: 1.8;">
-          <li>Custom profile page (slug)</li>
-          <li>Followers</li>
-          <li>Featured setups</li>
-          <li>Analytics / stats</li>
-          <li>Verified badge (when eligible)</li>
-        </ul>
-        <div style="margin-top:1rem;"><span class="stat-val">Premium only</span></div>
-        <div style="margin-top:1rem; display:flex; gap:10px;">
-          <a class="btn-secondary" style="width:auto;" href="creators.html">Creator Dashboard</a>
-        </div>
-      </div>
     </div>
-  </div>
+  </main>
   <nav class="bottom-nav"></nav>
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
   <script>
+    async function buyPremium() {
+      if (!Auth.isLoggedIn()) {
+        window.location.href = 'login.html';
+        return;
+      }
+      try {
+        const res = await fetch((window.API_URL || '') + '/api/user/premium/buy', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          alert('Successfully upgraded to Premium Areni Status!');
+          window.location.reload();
+        } else {
+          alert(data.error || 'Failed to upgrade to Premium');
+        }
+      } catch (e) {
+        alert('Network error');
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
       const planEl = document.getElementById('currentPlan');
       let plan = 'Basic';
@@ -73,15 +99,16 @@
         const stats = User.getStats();
         if (stats && stats.is_premium) plan = 'Premium';
         try {
-          const res = await fetch((window.API_URL||'') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() }});
+          const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
           if (res.ok) {
             const data = await res.json();
             if (data.creator) plan = 'Creator';
           }
-        } catch {}
+        } catch { }
       }
       planEl.textContent = 'Current plan: ' + plan;
     });
   </script>
 </body>
+
 </html>

@@ -4,21 +4,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guild Wars • XP ARENA</title>
+    <title>Clan Wars • XP ARENA</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         .coming-soon-container {
-            min-height: 80vh;
+            min-height: calc(100vh - 150px);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: flex-start;
             text-align: center;
-            padding: 2rem;
+            padding: 80px 1.5rem 3rem;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
         }
 
         .coming-soon-container::before {
@@ -44,7 +44,7 @@
         }
 
         .glitch-title::after {
-            content: 'GUILD WARS';
+            content: 'CLAN WARS';
             position: absolute;
             top: 0;
             left: 0;
@@ -152,62 +152,64 @@
 <body class="theme-cyber">
     <nav class="navbar"></nav>
 
-    <main class="coming-soon-container" style="align-items: stretch; padding-top: 1rem;">
-        <div class="page-header" style="text-align:center;">
-            <div
-                style="font-size: 0.8rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; margin-bottom: 0.5rem;">
-                [ TACTICAL BRIEFING ]</div>
-            <h1 class="glitch-title" style="margin-bottom: 0.5rem;">Unit Command</h1>
-            <p class="description" style="margin: 0 auto 3rem;">Establish your Faction or deploy into an existing squad.
-                Premium Commanders receive complimentary unit registration.</p>
-        </div>
-        <div id="guildActions"
-            style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
-            <div id="createBlock" class="feature-item tactical-dossier" data-id="UNIT_INIT_04">
-                <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
-                <input id="guildNameInput" class="settings-input" placeholder="Unit Designation (Name)" />
-                <button class="btn-primary" style="margin-top:10px; width: 100%;" onclick="createGuild()">ACTIVATE
-                    UNIT</button>
-                <div id="guildCreateMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+    <main class="main-content-area clans-page-wrapper">
+        <div class="container">
+            <div class="page-header" style="text-align:center;">
+                <div
+                    style="font-size: 0.8rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; margin-bottom: 0.5rem;">
+                    [ TACTICAL BRIEFING ]</div>
+                <h1 class="glitch-title" style="margin-bottom: 0.5rem;">Clan Command</h1>
+                <p class="description" style="margin: 0 auto 3rem;">Establish your Faction or deploy into an existing
+                    squad.
+                    Premium Arenis receive complimentary clan registration.</p>
             </div>
-            <div id="joinBlock" class="feature-item tactical-dossier" data-id="DEPLOY_REQ_09">
-                <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
-                <input id="guildIdInput" class="settings-input" placeholder="Unit ID" />
-                <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="joinGuild()">DEPLOY
-                    NOW</button>
-                <button class="btn-secondary"
-                    style="margin-top:10px; width: 100%; font-size: 0.7rem; border-color: rgba(255,0,0,0.2);"
-                    onclick="leaveGuild()">ABANDON POSITION</button>
-                <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
-            </div>
-            <div id="manageBlock" class="feature-item tactical-dossier" data-id="CMD_CENT_01" style="display:none">
-                <h3><i class="fas fa-cog"></i> Command Center</h3>
-                <div id="activeGuildName"
-                    style="font-weight:800; margin-bottom:12px; color: var(--accent); font-size: 1.2rem;"></div>
-                <div style="display:grid; gap:15px;">
-                    <div>
-                        <div
-                            style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px;">
-                            SET UNIT BADGE</div>
-                        <input id="guildBadgeInput" class="settings-input" placeholder="Badge (e.g. 🛡️, ⚡)" />
-                        <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
-                            onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
+            <div id="guildActions"
+                style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
+                <div id="createBlock" class="feature-item tactical-dossier" data-id="UNIT_INIT_04">
+                    <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
+                    <input id="guildNameInput" class="settings-input" placeholder="Clan Designation (Name)" />
+                    <button class="btn-primary" style="margin-top:10px; width: 100%;" onclick="createGuild()">ACTIVATE
+                        CLAN</button>
+                    <div id="guildCreateMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+                </div>
+                <div id="joinBlock" class="feature-item tactical-dossier" data-id="DEPLOY_REQ_09">
+                    <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
+                    <input id="guildIdInput" class="settings-input" placeholder="Clan ID" />
+                    <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="joinGuild()">DEPLOY
+                        NOW</button>
+                    <button class="btn-secondary"
+                        style="margin-top:10px; width: 100%; font-size: 0.7rem; border-color: rgba(255,0,0,0.2);"
+                        onclick="leaveGuild()">ABANDON POSITION</button>
+                    <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+                </div>
+                <div id="manageBlock" class="feature-item tactical-dossier" data-id="CMD_CENT_01" style="display:none">
+                    <h3><i class="fas fa-cog"></i> Command Center</h3>
+                    <div id="activeGuildName"
+                        style="font-weight:800; margin-bottom:12px; color: var(--accent); font-size: 1.2rem;"></div>
+                    <div style="display:grid; gap:15px;">
+                        <div>
+                            <div
+                                style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px;">
+                                SET CLAN BADGE</div>
+                            <input id="guildBadgeInput" class="settings-input" placeholder="Badge (e.g. 🛡️, ⚡)" />
+                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
+                                onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
+                        </div>
                     </div>
+                    <div style="margin-top:20px;">
+                        <div
+                            style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
+                            CLAN ROSTER</div>
+                        <div id="guildMembersList" style="display:grid; gap:8px;"></div>
+                    </div>
+                    <div id="manageMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
                 </div>
-                <div style="margin-top:20px;">
-                    <div
-                        style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
-                        UNIT ROSTER</div>
-                    <div id="guildMembersList" style="display:grid; gap:8px;"></div>
-                </div>
-                <div id="manageMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
             </div>
-        </div>
-        <div style="width:100%; max-width:1000px; margin: 2rem auto;">
-            <h3 style="text-align:center; margin-bottom: 1.5rem; letter-spacing: 2px; color: var(--accent);">FACTION
-                RANKINGS</h3>
-            <div id="guildLeaderboard" style="display:grid; gap:8px;"></div>
-        </div>
+            <div style="width:100%; max-width:1000px; margin: 2rem auto;">
+                <h3 style="text-align:center; margin-bottom: 1.5rem; letter-spacing: 2px; color: var(--accent);">CLAN
+                    RANKINGS</h3>
+                <div id="guildLeaderboard" style="display:grid; gap:8px;"></div>
+            </div>
     </main>
 
     <nav class="bottom-nav"></nav>
@@ -281,7 +283,7 @@
                 headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
             });
             const data = await res.json();
-            msg.textContent = res.ok ? 'Left guild.' : (data.error || 'Error');
+            msg.textContent = res.ok ? 'Left clan.' : (data.error || 'Error');
             if (res.ok) User.loadStats();
         }
         async function setGuildBadge() {
@@ -334,7 +336,7 @@
                 body: JSON.stringify({ guild_id: gid, note })
             });
             const data = await res.json();
-            msg.textContent = res.ok ? 'Applied for Guild War!' : (data.error || 'Error');
+            msg.textContent = res.ok ? 'Applied for Clan War!' : (data.error || 'Error');
         }
         async function loadGuildLeaderboard() {
             const el = document.getElementById('guildLeaderboard');

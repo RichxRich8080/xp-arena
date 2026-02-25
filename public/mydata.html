@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,30 +10,34 @@
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
+
 <body class="fade-in">
   <nav class="navbar"></nav>
-  <div class="container" style="max-width:900px">
-    <div class="page-header" data-parallax="8">
-      <h1 class="text-neon">My Data</h1>
-      <p>Review and export your Vault, Presets and History.</p>
-    </div>
+  <main class="main-content-area">
+    <div class="container">
+      <div class="page-header" data-parallax="8">
+        <h1 class="text-neon">My Data</h1>
+        <p>Review and export your Vault, Presets and History.</p>
+      </div>
 
-    <div class="form-card">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem">
-        <button class="btn-secondary" id="exportAllBtn" style="width:auto">Export All JSON</button>
-        <a class="btn-secondary" href="profile.html" style="width:auto">Go to Profile</a>
+      <div class="form-card">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem">
+          <button class="btn-secondary" id="exportAllBtn" style="width:auto">Export All JSON</button>
+          <a class="btn-secondary" href="profile.html" style="width:auto">Go to Profile</a>
+        </div>
+        <div id="dataSections">
+          <h3 style="margin:1rem 0">Vault</h3>
+          <div id="vaultList" style="display:grid;gap:10px"></div>
+          <h3 style="margin:1.5rem 0 1rem">Presets</h3>
+          <div id="presetsList" style="display:grid;gap:10px"></div>
+          <h3 style="margin:1.5rem 0 1rem">History</h3>
+          <div id="historyList" style="display:grid;gap:10px"></div>
+        </div>
+        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem">Note: deletion from this page will be added
+          soon. For now, export your data or manage items from your Profile.</p>
       </div>
-      <div id="dataSections">
-        <h3 style="margin:1rem 0">Vault</h3>
-        <div id="vaultList" style="display:grid;gap:10px"></div>
-        <h3 style="margin:1.5rem 0 1rem">Presets</h3>
-        <div id="presetsList" style="display:grid;gap:10px"></div>
-        <h3 style="margin:1.5rem 0 1rem">History</h3>
-        <div id="historyList" style="display:grid;gap:10px"></div>
-      </div>
-      <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem">Note: deletion from this page will be added soon. For now, export your data or manage items from your Profile.</p>
     </div>
-  </div>
+  </main>
 
   <nav class="bottom-nav"></nav>
   <script src="js/auth.js"></script>
@@ -130,4 +135,5 @@
     }
   </script>
 </body>
+
 </html>

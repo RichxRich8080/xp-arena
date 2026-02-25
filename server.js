@@ -15,6 +15,16 @@ if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
     throw new Error('JWT_SECRET is required in production');
 }
 app.set('trust proxy', 1);
+
+// HTTPS Enforcement in production
+app.use((req, res, next) => {
+    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] === 'http') {
+        const httpsUrl = 'https://' + req.hostname + req.url;
+        return res.redirect(301, httpsUrl);
+    }
+    next();
+});
+
 app.disable('x-powered-by');
 app.use(helmet({
     contentSecurityPolicy: false,
@@ -77,6 +87,8 @@ const guildRoutes = require('./routes/guildRoutes');
 const tournamentRoutes = require('./routes/tournamentRoutes');
 const creatorRoutes = require('./routes/creatorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const pushRoutes = require('./routes/pushRoutes');
+const shopRoutes = require('./routes/shopRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
@@ -86,6 +98,8 @@ app.use('/api/guilds', guildRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/creators', creatorRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/push', pushRoutes);
+app.use('/api/shop', shopRoutes);
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });

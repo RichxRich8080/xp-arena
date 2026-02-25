@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pro Database • XP ARENA</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+</head>
+
+<body class="fade-in">
+    <nav class="navbar"></nav>
+
+    <main class="main-content-area">
+        <div class="container" style="padding-top: 2rem;">
+            <div class="page-header" style="text-align:center; margin-bottom: 3rem;">
+                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">PRO PLAYER DATABASE</h1>
+                <p style="color: var(--text-muted);">Verified settings from the world's top-tier Arenis and tournament
+                    champions.</p>
+            </div>
+
+            <div id="pro-grid" class="shop-grid">
+                <!-- Data from API -->
+                <div class="skeleton-card" style="height:250px;"></div>
+                <div class="skeleton-card" style="height:250px;"></div>
+                <div class="skeleton-card" style="height:250px;"></div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+        async function loadPros() {
+            try {
+                const res = await fetch('/api/pro-players');
+                const data = await res.json();
+                const container = document.getElementById('pro-grid');
+                if (res.ok) {
+                    container.innerHTML = data.map(p => `
+                        <div class="form-card pro-card">
+                            <div class="pro-header">
+                                <span class="pro-avatar">${p.avatar}</span>
+                                <div class="pro-info">
+                                    <h3 style="margin:0; color:#fff;">${p.name} <span class="v-badge vip-glow" title="Verified Pro">V</span></h3>
+                                    <p style="margin:0; font-size:0.8rem; color:var(--accent); font-weight:800;">${p.team}</p>
+                                </div>
+                            </div>
+                            <div class="pro-body" style="margin-top:1.5rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px;">Sensitivity</div>
+                                <div style="font-weight:900; color:#fff;">${p.sensitivity}</div>
+                                <div style="margin-top:10px; font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px;">Primary Device</div>
+                                <div style="font-size:0.9rem;">${p.device}</div>
+                            </div>
+                            <button class="btn-primary" style="margin-top:1.5rem; font-size:0.8rem;" onclick="copyProSens('${p.name}', '${p.sensitivity}')">ADOPT SETTINGS</button>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function copyProSens(name, sens) {
+            navigator.clipboard.writeText(`PRO SETTINGS: ${name}\n${sens}`).then(() => {
+                if (window.Toast) Toast.show(`Adopted ${name}'s settings!`, 'success');
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPros);
+    </script>
+    <style>
+        .pro-card {
+            transition: transform 0.3s ease;
+        }
+
+        .pro-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .pro-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .pro-avatar {
+            font-size: 2.5rem;
+            background: rgba(0, 229, 255, 0.1);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid var(--accent);
+        }
+    </style>
+</body>
+
+</html>

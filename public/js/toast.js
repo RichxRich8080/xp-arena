@@ -23,6 +23,11 @@ const Toast = {
 
     show(message, type = 'info', duration = 3000) {
         this.init();
+        if (window.Sounds) {
+            if (type === 'success') Sounds.play('success');
+            else if (type === 'error') Sounds.play('error');
+            else Sounds.play('click');
+        }
         const container = document.getElementById('toast-container');
 
         const toast = document.createElement('div');

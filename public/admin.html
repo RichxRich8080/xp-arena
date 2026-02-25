@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,69 +9,72 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
+
 <body class="fade-in">
   <nav class="navbar"></nav>
-  <div class="container" style="max-width: 1100px;">
-    <div class="page-header">
-      <h1>Admin Dashboard</h1>
-      <p>Global metrics and recent logs</p>
-    </div>
-    <div id="metrics" class="stats-grid" style="margin-bottom:1rem;"></div>
-    <div class="form-card" style="margin-bottom:1rem;">
-      <h3 style="margin-bottom:0.8rem;">User Actions</h3>
-      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:10px;">
-        <div>
-          <div class="stat-label">Search User</div>
-          <input id="admSearch" class="settings-input" placeholder="username">
-          <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admSearch()">Search</button>
-        </div>
-        <div>
-          <div class="stat-label">Target User ID</div>
-          <input id="admUid" class="settings-input" placeholder="user id">
-        </div>
-        <div>
-          <div class="stat-label">AXP Delta</div>
-          <input id="admAxp" class="settings-input" placeholder="e.g. 500">
-          <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admGiveAXP()">Give AXP</button>
-        </div>
-        <div>
-          <div class="stat-label">Premium</div>
-          <button class="btn-secondary" style="width:auto" onclick="admSetPremium(1)">Enable</button>
-          <button class="btn-secondary" style="width:auto" onclick="admSetPremium(0)">Disable</button>
-        </div>
-        <div>
-          <div class="stat-label">VIP Badge</div>
-          <button class="btn-secondary" style="width:auto" onclick="admSetVIP(1)">Grant VIP</button>
-          <button class="btn-secondary" style="width:auto" onclick="admSetVIP(0)">Revoke VIP</button>
-        </div>
-        <div>
-          <div class="stat-label">Ban User</div>
-          <input id="admBanReason" class="settings-input" placeholder="reason">
-          <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admBan()">Ban</button>
-          <button class="btn-secondary" style="width:auto" onclick="admUnban()">Unban</button>
-        </div>
-        <div>
-          <div class="stat-label">Admin (owner only)</div>
-          <button class="btn-secondary" style="width:auto" onclick="admSetAdmin(1)">Make Admin</button>
-          <button class="btn-secondary" style="width:auto" onclick="admSetAdmin(0)">Remove Admin</button>
-        </div>
+  <main class="main-content-area">
+    <div class="container">
+      <div class="page-header">
+        <h1>Admin Dashboard</h1>
+        <p>Global metrics and recent logs</p>
       </div>
-      <div id="admMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
-      <div id="admSearchRes" style="margin-top:10px;"></div>
+      <div id="metrics" class="stats-grid" style="margin-bottom:1rem;"></div>
+      <div class="form-card" style="margin-bottom:1rem;">
+        <h3 style="margin-bottom:0.8rem;">User Actions</h3>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:10px;">
+          <div>
+            <div class="stat-label">Search User</div>
+            <input id="admSearch" class="settings-input" placeholder="username">
+            <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admSearch()">Search</button>
+          </div>
+          <div>
+            <div class="stat-label">Target User ID</div>
+            <input id="admUid" class="settings-input" placeholder="user id">
+          </div>
+          <div>
+            <div class="stat-label">AXP Delta</div>
+            <input id="admAxp" class="settings-input" placeholder="e.g. 500">
+            <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admGiveAXP()">Give AXP</button>
+          </div>
+          <div>
+            <div class="stat-label">Premium</div>
+            <button class="btn-secondary" style="width:auto" onclick="admSetPremium(1)">Enable</button>
+            <button class="btn-secondary" style="width:auto" onclick="admSetPremium(0)">Disable</button>
+          </div>
+          <div>
+            <div class="stat-label">VIP Badge</div>
+            <button class="btn-secondary" style="width:auto" onclick="admSetVIP(1)">Grant VIP</button>
+            <button class="btn-secondary" style="width:auto" onclick="admSetVIP(0)">Revoke VIP</button>
+          </div>
+          <div>
+            <div class="stat-label">Ban User</div>
+            <input id="admBanReason" class="settings-input" placeholder="reason">
+            <button class="btn-secondary" style="margin-top:6px;width:auto" onclick="admBan()">Ban</button>
+            <button class="btn-secondary" style="width:auto" onclick="admUnban()">Unban</button>
+          </div>
+          <div>
+            <div class="stat-label">Admin (owner only)</div>
+            <button class="btn-secondary" style="width:auto" onclick="admSetAdmin(1)">Make Admin</button>
+            <button class="btn-secondary" style="width:auto" onclick="admSetAdmin(0)">Remove Admin</button>
+          </div>
+        </div>
+        <div id="admMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+        <div id="admSearchRes" style="margin-top:10px;"></div>
+      </div>
+      <div class="form-card">
+        <h3 style="margin-bottom:0.8rem;">Recent Activity</h3>
+        <div id="activityLog" style="display:grid; gap:8px;"></div>
+      </div>
+      <div class="form-card" style="margin-top:1rem;">
+        <h3 style="margin-bottom:0.8rem;">Popular Setups</h3>
+        <div id="setupList" style="display:grid; gap:8px;"></div>
+      </div>
+      <div class="form-card" style="margin-top:1rem;">
+        <h3 style="margin-bottom:0.8rem;">Clan War Applications</h3>
+        <div id="warApps" style="display:grid; gap:8px;"></div>
+      </div>
     </div>
-    <div class="form-card">
-      <h3 style="margin-bottom:0.8rem;">Recent Activity</h3>
-      <div id="activityLog" style="display:grid; gap:8px;"></div>
-    </div>
-    <div class="form-card" style="margin-top:1rem;">
-      <h3 style="margin-bottom:0.8rem;">Popular Setups</h3>
-      <div id="setupList" style="display:grid; gap:8px;"></div>
-    </div>
-    <div class="form-card" style="margin-top:1rem;">
-      <h3 style="margin-bottom:0.8rem;">Guild War Applications</h3>
-      <div id="warApps" style="display:grid; gap:8px;"></div>
-    </div>
-  </div>
+  </main>
   <nav class="bottom-nav"></nav>
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
@@ -84,7 +88,7 @@
         await loadActivity();
         await loadSetups();
         await loadWars();
-      } catch {}
+      } catch { }
     }
     function getUid() { return parseInt(document.getElementById('admUid').value, 10); }
     function setMsg(t) { const el = document.getElementById('admMsg'); if (el) el.textContent = t; }
@@ -92,59 +96,59 @@
       const q = document.getElementById('admSearch').value.trim();
       const box = document.getElementById('admSearchRes');
       if (!q || q.length < 2) { box.innerHTML = 'Enter 2+ chars'; return; }
-      const res = await fetch((window.API_URL||'') + '/api/admin/search-users?q=' + encodeURIComponent(q), { headers:{ 'Authorization':'Bearer '+Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/admin/search-users?q=' + encodeURIComponent(q), { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const rows = res.ok ? await res.json() : [];
       box.innerHTML = rows.map(u => `<div class="form-card" style="padding:0.6rem 0.8rem; display:grid; grid-template-columns: 1fr auto; gap:8px;">
-        <div><b>${u.username}</b> • ID ${u.id} • AXP ${u.axp} ${u.is_premium? '• Premium':''} ${u.is_admin? '• Admin':''} ${u.banned? '• BANNED':''}</div>
+        <div><b>${u.username}</b> • ID ${u.id} • AXP ${u.axp} ${u.is_premium ? '• Premium' : ''} ${u.is_admin ? '• Admin' : ''} ${u.banned ? '• BANNED' : ''}</div>
         <button class="btn-secondary" style="width:auto" onclick="document.getElementById('admUid').value='${u.id}'">Use</button>
       </div>`).join('') || 'No results';
     }
     async function admGiveAXP() {
-      const uid = getUid(); const delta = parseInt(document.getElementById('admAxp').value,10)||0;
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/axp',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid, delta, reason: 'Admin grant' })});
+      const uid = getUid(); const delta = parseInt(document.getElementById('admAxp').value, 10) || 0;
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/axp', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid, delta, reason: 'Admin grant' }) });
       setMsg(res.ok ? 'AXP granted' : 'Error');
     }
-    async function admSetPremium(v){
+    async function admSetPremium(v) {
       const uid = getUid();
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/premium',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid, value: !!v })});
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/premium', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid, value: !!v }) });
       setMsg(res.ok ? 'Premium updated' : 'Error');
     }
-    async function admSetVIP(v){
+    async function admSetVIP(v) {
       const uid = getUid();
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/vip',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid, value: !!v })});
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/vip', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid, value: !!v }) });
       setMsg(res.ok ? 'VIP updated' : 'Error');
     }
-    async function admSetAdmin(v){
+    async function admSetAdmin(v) {
       const uid = getUid();
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/admin',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid, value: !!v })});
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/admin', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid, value: !!v }) });
       setMsg(res.ok ? 'Admin updated' : 'Error (owner only)');
     }
-    async function admBan(){
+    async function admBan() {
       const uid = getUid(); const reason = document.getElementById('admBanReason').value;
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/ban',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid, reason })});
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/ban', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid, reason }) });
       setMsg(res.ok ? 'User banned' : 'Error');
     }
-    async function admUnban(){
+    async function admUnban() {
       const uid = getUid();
-      const res = await fetch((window.API_URL||'')+'/api/admin/users/unban',{method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+Auth.getToken()}, body: JSON.stringify({ user_id: uid })});
+      const res = await fetch((window.API_URL || '') + '/api/admin/users/unban', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() }, body: JSON.stringify({ user_id: uid }) });
       setMsg(res.ok ? 'User unbanned' : 'Error');
     }
     async function loadMetrics() {
       const el = document.getElementById('metrics');
-      const res = await fetch((window.API_URL||'') + '/api/admin/overview', { headers: { 'Authorization':'Bearer ' + Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/admin/overview', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       if (!res.ok) { el.innerHTML = '<div class="form-card">Unauthorized or server error.</div>'; return; }
       const m = await res.json();
       el.innerHTML = [
-        {label:'Users', value:m.users},
-        {label:'Setups', value:m.setups},
-        {label:'Tournaments', value:m.tournaments},
-        {label:'Guilds', value:m.guilds},
-        {label:'Creators', value:m.creators}
+        { label: 'Users', value: m.users },
+        { label: 'Setups', value: m.setups },
+        { label: 'Tournaments', value: m.tournaments },
+        { label: 'Clans', value: m.guilds },
+        { label: 'Creators', value: m.creators }
       ].map(x => `<div><span class="stat-val">${x.value}</span><span class="stat-label">${x.label}</span></div>`).join('');
     }
     async function loadActivity() {
       const el = document.getElementById('activityLog');
-      const res = await fetch((window.API_URL||'') + '/api/admin/activity', { headers: { 'Authorization':'Bearer ' + Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/admin/activity', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       if (!res.ok) { el.innerHTML = '<div class="form-card">Unauthorized or server error.</div>'; return; }
       const rows = await res.json();
       el.innerHTML = rows.map(r => `
@@ -156,10 +160,10 @@
     }
     async function loadSetups() {
       const el = document.getElementById('setupList');
-      const res = await fetch((window.API_URL||'') + '/api/admin/popular-setups', { headers: { 'Authorization':'Bearer ' + Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/admin/popular-setups', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       if (!res.ok) { el.innerHTML = '<div class="form-card">Unauthorized or server error.</div>'; return; }
       const rows = await res.json();
-      el.innerHTML = rows.slice(0,50).map(s => `
+      el.innerHTML = rows.slice(0, 50).map(s => `
         <div class="form-card" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
           <div><b>${s.username}</b> • ${s.mode.toUpperCase()} — Gen ${s.general} / Red ${s.reddot} / 2x ${s.scope2x} / 4x ${s.scope4x} / 8x ${s.scope8x}</div>
           <div style="font-size:0.85rem; color: var(--text-muted);">❤️ ${s.likes} • 📋 ${s.copies}</div>
@@ -168,16 +172,17 @@
     }
     async function loadWars() {
       const el = document.getElementById('warApps');
-      const res = await fetch((window.API_URL||'') + '/api/admin/guild-war-apps', { headers: { 'Authorization':'Bearer ' + Auth.getToken() }});
+      const res = await fetch((window.API_URL || '') + '/api/admin/guild-war-apps', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       if (!res.ok) { el.innerHTML = '<div class="form-card">Unauthorized or server error.</div>'; return; }
       const rows = await res.json();
       el.innerHTML = rows.map(r => `
         <div class="form-card" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
           <div><b>${r.badge ? r.badge + ' ' : ''}${r.name}</b><br><span style="color: var(--text-muted); font-size:0.85rem;">${new Date(r.created_at).toLocaleString()}</span>${r.note ? `<div>${r.note}</div>` : ''}</div>
-          <div><a class="btn-secondary" style="width:auto" href="guilds.html">Guild</a></div>
+          <div><a class="btn-secondary" style="width:auto" href="guilds.html">Clan</a></div>
         </div>
       `).join('') || '<div class="form-card">No applications found.</div>';
     }
   </script>
 </body>
+
 </html>
