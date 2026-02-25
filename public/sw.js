@@ -57,13 +57,22 @@ self.addEventListener('fetch', (event) => {
 });
 
 async function staleWhileRevalidate(req) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(req);
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req);
 
-  const networkPromise = fetch(req).then(res => {
-    if (res && res.status === 200) cache.put(req, res.clone());
-    return res;
-  }).catch(() => null);
+    const networkPromise = fetch(req).then(res => {
+      if (res && res.status === 200) cache.put(req, res.clone());
+      return res;
+    }).catch(err => {
+      console.warn('[SW] Fetch failed:', err);
+      return null;
+    });
 
-  return cached || networkPromise || fetch(req);
+    // Return cached response if available, otherwise wait for network
+    return cached || networkPromise || fetch(req);
+  } catch (err) {
+    console.error('[SW] staleWhileRevalidate error:', err);
+    return fetch(req);
+  }
 }

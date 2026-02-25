@@ -278,6 +278,29 @@ async function run() {
     )
   `);
 
+  await ensureTable('axp_history', `
+    CREATE TABLE IF NOT EXISTS axp_history (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        axp INT NOT NULL,
+        date DATE NOT NULL,
+        UNIQUE KEY user_date_uniq (user_id, date),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('premium_codes', `
+    CREATE TABLE IF NOT EXISTS premium_codes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        duration_days INT DEFAULT 30,
+        used_by INT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        expires_at DATETIME,
+        FOREIGN KEY (used_by) REFERENCES users(id) ON DELETE SET NULL
+    )
+  `);
+
   // 2. Structural checks (columns that might be missing in older versions)
   await ensureColumn('users', 'is_premium', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'premium_name_color', 'VARCHAR(20)');
@@ -289,6 +312,16 @@ async function run() {
   await ensureColumn('users', 'banned', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'ban_reason', 'VARCHAR(255)');
   await ensureColumn('users', 'avatar', "VARCHAR(255) DEFAULT '👤'");
+  await ensureColumn('users', 'email_verified', 'TINYINT(1) DEFAULT 0');
+  await ensureColumn('users', 'verification_token', 'VARCHAR(10)');
+  await ensureColumn('users', 'verification_expires', 'DATETIME');
+  await ensureColumn('users', 'reset_token', 'VARCHAR(10)');
+  await ensureColumn('users', 'reset_token_expires', 'DATETIME');
+  await ensureColumn('users', 'referral_code', 'VARCHAR(20)');
+  await ensureColumn('users', 'referred_by', 'INT');
+  await ensureColumn('users', 'login_attempts', 'INT DEFAULT 0');
+  await ensureColumn('users', 'lockout_until', 'DATETIME');
+  await ensureColumn('users', 'last_protocol_date', 'DATE');
 
   // 3. Optimization checks (Indices)
   await ensureIndex('users', 'idx_users_axp', 'axp');
