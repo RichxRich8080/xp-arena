@@ -23,9 +23,16 @@ If you prefer to type them, here are the **Keys** you need:
 
 ### Database Providers
 Since Vercel is serverless, you need a cloud MySQL provider. Recommended options:
-- **TiDB Cloud**
+- **TiDB Cloud** (Recommended for performance and scale)
 - **Aiven**
 - **PlanetScale**
 
-Once these are set, go to the **Deployments** tab and redeploy!
+### Finalizing Database Setup
+I have created a final, unified schema and migration system for XP Arena:
+
+1. **Clean Setup**: Use `tidb-schema.sql` to initialize your database from scratch.
+2. **Auto-Migration**: Run `npm run migrate` to automatically update your existing database with any missing tables or columns.
+3. **Optimized Connection**: The `db.js` file is now pre-configured for TiDB Cloud SSL and connection pooling.
+
+Once these are set, go to the **Deployments** tab in Vercel and redeploy!
 

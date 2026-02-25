@@ -1,31 +1,142 @@
 const { pool } = require('./db');
 
+async function ensureTable(name, sql) {
+  try {
+    await pool.query(sql);
+    console.log(`✅ Table checked/created: ${name}`);
+  } catch (err) {
+    console.error(`❌ Error ensuring table ${name}:`, err.message);
+    throw err;
+  }
+}
+
 async function ensureColumn(table, column, definition) {
-  const [rows] = await pool.query(
-    'SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
-    [table, column]
-  );
-  if (rows[0].c === 0) {
-    await pool.query(`ALTER TABLE ${table} ADD ${column} ${definition}`);
+  try {
+    const [rows] = await pool.query(
+      'SELECT COUNT(*) AS c FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+      [table, column]
+    );
+    if (rows[0].c === 0) {
+      await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+      console.log(`✅ Column added: ${table}.${column}`);
+    }
+  } catch (err) {
+    console.error(`❌ Error ensuring column ${table}.${column}:`, err.message);
   }
 }
 
 async function ensureIndex(table, indexName, columns) {
-  const [rows] = await pool.query(
-    'SELECT COUNT(1) AS c FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND INDEX_NAME = ?',
-    [table, indexName]
-  );
-  if (rows[0].c === 0) {
-    await pool.query(`ALTER TABLE ${table} ADD INDEX ${indexName} (${columns})`);
+  try {
+    const [rows] = await pool.query(
+      'SELECT COUNT(1) AS c FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND INDEX_NAME = ?',
+      [table, indexName]
+    );
+    if (rows[0].c === 0) {
+      await pool.query(`ALTER TABLE ${table} ADD INDEX ${indexName} (${columns})`);
+      console.log(`✅ Index added: ${table}.${indexName}`);
+    }
+  } catch (err) {
+    console.error(`❌ Error ensuring index ${table}.${indexName}:`, err.message);
   }
 }
 
-async function ensureTable(sql) {
-  await pool.query(sql);
-}
-
 async function run() {
-  await ensureTable(`
+  console.log('🚀 Starting DB Migration...');
+
+  // 1. Core Tables
+  await ensureTable('users', `
+    CREATE TABLE IF NOT EXISTS users (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      username VARCHAR(255) UNIQUE NOT NULL,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      axp INT DEFAULT 0,
+      level INT DEFAULT 1,
+      avatar VARCHAR(255) DEFAULT '👤',
+      streak INT DEFAULT 0,
+      last_login DATETIME,
+      socials TEXT,
+      name_changes INT DEFAULT 0,
+      is_premium TINYINT(1) DEFAULT 0,
+      premium_name_color VARCHAR(20),
+      premium_glow TINYINT(1) DEFAULT 0,
+      vip_badge TINYINT(1) DEFAULT 0,
+      guild_id INT,
+      xp_doubler_until DATETIME,
+      is_admin TINYINT(1) DEFAULT 0,
+      banned TINYINT(1) DEFAULT 0,
+      ban_reason VARCHAR(255),
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await ensureTable('activity', `
+    CREATE TABLE IF NOT EXISTS activity (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      text VARCHAR(255) NOT NULL,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('history', `
+    CREATE TABLE IF NOT EXISTS history (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      device VARCHAR(255),
+      general_mid DOUBLE,
+      general_range VARCHAR(50),
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('presets', `
+    CREATE TABLE IF NOT EXISTS presets (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      name VARCHAR(255),
+      settings_json TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('vault', `
+    CREATE TABLE IF NOT EXISTS vault (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      settings_json TEXT,
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('clips', `
+    CREATE TABLE IF NOT EXISTS clips (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      url VARCHAR(255),
+      title VARCHAR(255),
+      device VARCHAR(255),
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('user_achievements', `
+    CREATE TABLE IF NOT EXISTS user_achievements (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      achievement_id VARCHAR(100),
+      timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      UNIQUE KEY (user_id, achievement_id)
+    )
+  `);
+
+  await ensureTable('setups', `
     CREATE TABLE IF NOT EXISTS setups (
       id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
@@ -45,7 +156,8 @@ async function run() {
       UNIQUE KEY uniq_user_checksum (user_id, checksum)
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('setup_likes', `
     CREATE TABLE IF NOT EXISTS setup_likes (
       id INT AUTO_INCREMENT PRIMARY KEY,
       setup_id INT NOT NULL,
@@ -56,7 +168,8 @@ async function run() {
       UNIQUE KEY uniq_like (setup_id, user_id)
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('setup_copies', `
     CREATE TABLE IF NOT EXISTS setup_copies (
       id INT AUTO_INCREMENT PRIMARY KEY,
       setup_id INT NOT NULL,
@@ -67,7 +180,8 @@ async function run() {
       UNIQUE KEY uniq_copy (setup_id, user_id)
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('guilds', `
     CREATE TABLE IF NOT EXISTS guilds (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100) UNIQUE NOT NULL,
@@ -78,7 +192,8 @@ async function run() {
       FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('guild_members', `
     CREATE TABLE IF NOT EXISTS guild_members (
       id INT AUTO_INCREMENT PRIMARY KEY,
       guild_id INT NOT NULL,
@@ -90,7 +205,8 @@ async function run() {
       UNIQUE KEY uniq_member (guild_id, user_id)
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('guild_war_applications', `
     CREATE TABLE IF NOT EXISTS guild_war_applications (
       id INT AUTO_INCREMENT PRIMARY KEY,
       guild_id INT NOT NULL,
@@ -99,7 +215,8 @@ async function run() {
       FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('tournaments', `
     CREATE TABLE IF NOT EXISTS tournaments (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -113,7 +230,8 @@ async function run() {
       FOREIGN KEY (winner_user_id) REFERENCES users(id) ON DELETE SET NULL
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('tournament_participants', `
     CREATE TABLE IF NOT EXISTS tournament_participants (
       id INT AUTO_INCREMENT PRIMARY KEY,
       tournament_id INT NOT NULL,
@@ -124,7 +242,8 @@ async function run() {
       UNIQUE KEY uniq_participant (tournament_id, user_id)
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('creators', `
     CREATE TABLE IF NOT EXISTS creators (
       user_id INT PRIMARY KEY,
       slug VARCHAR(100) UNIQUE NOT NULL,
@@ -135,7 +254,8 @@ async function run() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )
   `);
-  await ensureTable(`
+
+  await ensureTable('creator_followers', `
     CREATE TABLE IF NOT EXISTS creator_followers (
       id INT AUTO_INCREMENT PRIMARY KEY,
       creator_user_id INT NOT NULL,
@@ -147,6 +267,7 @@ async function run() {
     )
   `);
 
+  // 2. Structural checks (columns that might be missing in older versions)
   await ensureColumn('users', 'is_premium', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'premium_name_color', 'VARCHAR(20)');
   await ensureColumn('users', 'premium_glow', 'TINYINT(1) DEFAULT 0');
@@ -156,7 +277,9 @@ async function run() {
   await ensureColumn('users', 'is_admin', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'banned', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'ban_reason', 'VARCHAR(255)');
+  await ensureColumn('users', 'avatar', "VARCHAR(255) DEFAULT '👤'");
 
+  // 3. Optimization checks (Indices)
   await ensureIndex('users', 'idx_users_axp', 'axp');
   await ensureIndex('users', 'idx_users_guild', 'guild_id');
   await ensureIndex('activity', 'idx_activity_user_time', 'user_id, timestamp');
@@ -166,14 +289,13 @@ async function run() {
   await ensureIndex('guild_members', 'idx_guild_members_user', 'user_id');
   await ensureIndex('tournaments', 'idx_tournaments_time', 'created_at');
   await ensureIndex('creator_followers', 'idx_creator_followers_creator', 'creator_user_id');
+
+  console.log('✅ Migration finished successfully');
 }
 
 run()
-  .then(() => {
-    console.log('Migration complete');
-    process.exit(0);
-  })
+  .then(() => process.exit(0))
   .catch(err => {
-    console.error('Migration failed', err);
+    console.error('❌ Migration failed:', err);
     process.exit(1);
   });

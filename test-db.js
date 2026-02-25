@@ -1,13 +1,20 @@
-const { db } = require('./db');
+const { db, pool } = require('./db');
 
-console.log('Testing DB helper...');
-console.log('DB object:', db);
-if (db && typeof db.run === 'function') {
-    console.log('✅ db.run is a function');
-} else {
-    console.error('❌ db.run is NOT a function');
-    console.log('Type of db:', typeof db);
-    if (db) console.log('Keys of db:', Object.keys(db));
+async function testConnection() {
+    console.log('Testing DB helper...');
+    console.log('DB object:', Object.keys(db));
+
+    try {
+        console.log('Running query: SELECT 1...');
+        const result = await db.query('SELECT 1 as test');
+        console.log('✅ Query successful:', result);
+    } catch (err) {
+        console.error('❌ Query failed:', err.message);
+        console.error('Error Code:', err.code);
+    } finally {
+        await pool.end();
+        process.exit(0);
+    }
 }
 
-process.exit(0);
+testConnection();

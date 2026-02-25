@@ -1,6 +1,7 @@
 -- XP Arena MySQL Schema
 -- TIP: If you get "Unknown database", look at the top-right of TiDB 
 -- and select the "test" database instead of "xp_arena".
+-- Users Table
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -8,7 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     axp INT DEFAULT 0,
     level INT DEFAULT 1,
-    avatar VARCHAR(50) DEFAULT '👤',
+    avatar VARCHAR(255) DEFAULT '👤',
     streak INT DEFAULT 0,
     last_login DATETIME,
     socials TEXT,
@@ -25,6 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
     ban_reason VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+-- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -32,6 +34,7 @@ CREATE TABLE IF NOT EXISTS activity (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+-- Calculation History
 CREATE TABLE IF NOT EXISTS history (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -41,6 +44,7 @@ CREATE TABLE IF NOT EXISTS history (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+-- Tool Presets
 CREATE TABLE IF NOT EXISTS presets (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -50,6 +54,7 @@ CREATE TABLE IF NOT EXISTS presets (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+-- Secure Vault for Settings
 CREATE TABLE IF NOT EXISTS vault (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -58,6 +63,7 @@ CREATE TABLE IF NOT EXISTS vault (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+-- Upload clips
 CREATE TABLE IF NOT EXISTS clips (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -67,6 +73,7 @@ CREATE TABLE IF NOT EXISTS clips (
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+-- Achievements
 CREATE TABLE IF NOT EXISTS user_achievements (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
@@ -75,11 +82,11 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY (user_id, achievement_id)
 );
-
+-- Sensitivity Setups
 CREATE TABLE IF NOT EXISTS setups (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    mode ENUM('manual','auto') NOT NULL,
+    mode ENUM('manual', 'auto') NOT NULL,
     general INT NOT NULL,
     reddot INT NOT NULL,
     scope2x INT NOT NULL,
@@ -94,7 +101,7 @@ CREATE TABLE IF NOT EXISTS setups (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_checksum (user_id, checksum)
 );
-
+-- Setup Interactions
 CREATE TABLE IF NOT EXISTS setup_likes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     setup_id INT NOT NULL,
@@ -104,7 +111,6 @@ CREATE TABLE IF NOT EXISTS setup_likes (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_like (setup_id, user_id)
 );
-
 CREATE TABLE IF NOT EXISTS setup_copies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     setup_id INT NOT NULL,
@@ -114,7 +120,7 @@ CREATE TABLE IF NOT EXISTS setup_copies (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_copy (setup_id, user_id)
 );
-
+-- Guilds System
 CREATE TABLE IF NOT EXISTS guilds (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) UNIQUE NOT NULL,
@@ -124,18 +130,16 @@ CREATE TABLE IF NOT EXISTS guilds (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (owner_user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS guild_members (
     id INT AUTO_INCREMENT PRIMARY KEY,
     guild_id INT NOT NULL,
     user_id INT NOT NULL,
-    role ENUM('owner','admin','member') DEFAULT 'member',
+    role ENUM('owner', 'admin', 'member') DEFAULT 'member',
     joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_member (guild_id, user_id)
 );
-
 CREATE TABLE IF NOT EXISTS guild_war_applications (
     id INT AUTO_INCREMENT PRIMARY KEY,
     guild_id INT NOT NULL,
@@ -143,7 +147,7 @@ CREATE TABLE IF NOT EXISTS guild_war_applications (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE
 );
-
+-- Tournaments
 CREATE TABLE IF NOT EXISTS tournaments (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -154,9 +158,9 @@ CREATE TABLE IF NOT EXISTS tournaments (
     private_only TINYINT(1) DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (creator_user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (winner_user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (winner_user_id) REFERENCES users(id) ON DELETE
+    SET NULL
 );
-
 CREATE TABLE IF NOT EXISTS tournament_participants (
     id INT AUTO_INCREMENT PRIMARY KEY,
     tournament_id INT NOT NULL,
@@ -166,7 +170,7 @@ CREATE TABLE IF NOT EXISTS tournament_participants (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_participant (tournament_id, user_id)
 );
-
+-- Creators System
 CREATE TABLE IF NOT EXISTS creators (
     user_id INT PRIMARY KEY,
     slug VARCHAR(100) UNIQUE NOT NULL,
@@ -176,7 +180,6 @@ CREATE TABLE IF NOT EXISTS creators (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS creator_followers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     creator_user_id INT NOT NULL,
@@ -186,7 +189,7 @@ CREATE TABLE IF NOT EXISTS creator_followers (
     FOREIGN KEY (follower_user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_creator_follower (creator_user_id, follower_user_id)
 );
-
+-- Indices for Optimization
 CREATE INDEX idx_users_axp ON users(axp);
 CREATE INDEX idx_users_guild ON users(guild_id);
 CREATE INDEX idx_activity_user_time ON activity(user_id, timestamp);
