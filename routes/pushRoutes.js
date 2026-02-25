@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
-const { verifyToken } = require('../middleware/authMiddleware');
+const { authenticateToken } = require('../middleware/auth');
 const pushService = require('../services/pushService');
 
 // GET /api/push/public-key
@@ -12,7 +12,7 @@ router.get('/public-key', (req, res) => {
 
 // POST /api/push/subscribe
 // Save the user's push subscription
-router.post('/subscribe', verifyToken, async (req, res) => {
+router.post('/subscribe', authenticateToken, async (req, res) => {
     try {
         const { subscription } = req.body;
         const userId = req.user.id;
@@ -28,7 +28,7 @@ router.post('/subscribe', verifyToken, async (req, res) => {
             VALUES (?, ?)
             ON DUPLICATE KEY UPDATE subscription_json = ?
         `;
-        await db.execute(query, [userId, subscriptionJson, subscriptionJson]);
+        await db.run(query, [userId, subscriptionJson, subscriptionJson]);
 
         res.status(201).json({ success: true, message: 'Subscribed successfully' });
     } catch (err) {
@@ -39,7 +39,7 @@ router.post('/subscribe', verifyToken, async (req, res) => {
 
 // POST /api/push/send
 // Send a notification (Admin only or system triggered)
-router.post('/send', verifyToken, async (req, res) => {
+router.post('/send', authenticateToken, async (req, res) => {
     try {
         const { targetUserId, title, body, icon, url } = req.body;
 
