@@ -310,32 +310,54 @@ body.theme-cyber .sidebar-link.link-active {
 }
 
 body {
-  padding-top: 85px; /* fixed navbar space */
-  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
-  /* space for fixed bottom nav + device safe area */
   background-color: var(--bg-dark);
   color: var(--text-white);
   font-family: var(--font-main);
   line-height: 1.6;
-  min-height: 100vh;
+  height: 100vh !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  /* Lock body, use container for scroll */
+  display: flex;
+  flex-direction: column;
+}
+
+/* APP-LEVEL CONTENT AREA */
+.main-content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  margin-top: 70px;
+  /* Exact navbar height */
+  margin-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  position: relative;
+  z-index: 10;
   display: flex;
   flex-direction: column;
 }
 
 a {
-  text-decoration: none;
+  text-decoration: none !important;
   color: inherit;
+  outline: none;
+}
+
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none !important;
 }
 
 /* NAVBAR FIXED TOP LAYER */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
   /* Ensure it stretches fully */
-  width: 100%;
-  height: 70px;
+  width: 100% !important;
+  height: 70px !important;
   background: rgba(11, 15, 23, 0.95);
   backdrop-filter: blur(15px);
   -webkit-backdrop-filter: blur(15px);
@@ -344,7 +366,8 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 0 1.5rem;
-  z-index: 15000;
+  z-index: 20000 !important;
+  /* Higher than sidebar overlay */
   transition: all 0.3s ease;
 }
 
@@ -450,25 +473,149 @@ a {
   border-left-color: var(--accent);
 }
 
-/* BOTTOM NAV */
+/* FLOATING DRIBBBLE-STYLE BOTTOM NAV */
 .bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: rgba(18, 24, 38, 0.95);
-  backdrop-filter: blur(15px);
-  border-top: 1px solid var(--border);
+  position: fixed !important;
+  bottom: 25px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 90% !important;
+  max-width: 480px !important;
+  background: rgba(18, 24, 38, 0.85);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  border: 1px solid var(--border);
+  border-radius: 50px !important;
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
-  padding: 0 0.5rem;
-  z-index: 15000;
-  /* Same as Navbar */
-  box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.5);
-  /* iPhone safe area handled via height */
+  height: 68px !important;
+  padding: 0 1rem;
+  z-index: 25000 !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.bottom-nav:hover {
+  background: rgba(18, 24, 38, 0.95);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+}
+
+/* UNIVERSAL COMMANDER HEADER */
+.commander-header {
+  padding: 2.5rem 1.5rem 1.5rem;
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.commander-status {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.commander-status span.pulse {
+  width: 8px;
+  height: 8px;
+  background: var(--accent);
+  border-radius: 50%;
+  animation: pulse 1.5s infinite;
+}
+
+.commander-name {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+/* PREMIUM FOOTER */
+.site-footer {
+  margin-top: auto;
+  background: rgba(18, 24, 38, 0.5);
+  border-top: 1px solid var(--border);
+  padding: 4rem 1.5rem 2rem;
+  color: var(--text-muted);
+}
+
+.footer-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+.footer-col h4 {
+  color: #fff;
+  font-weight: 800;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 0.8rem;
+}
+
+.footer-links a {
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-links a {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  background: var(--accent);
+  color: #000;
+  transform: translateY(-3px);
 }
 
 .nav-item {
@@ -496,12 +643,62 @@ a {
   font-size: 1.2rem;
 }
 
-/* NAV LINKS (OLD DESKTOP) - Hidden for Mobile-First approach, or simplified */
-.nav-links {
-  display: none;
+/* TACTICAL HUD CARDS FOR GUILDS */
+.feature-item.tactical-dossier {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(0, 255, 0, 0.02));
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
 }
 
-/* CTA SMALL */
+.feature-item.tactical-dossier::before {
+  content: 'FILE_ID: ' attr(data-id);
+  position: absolute;
+  top: 5px;
+  right: 15px;
+  font-size: 0.6rem;
+  color: var(--accent);
+  opacity: 0.5;
+  font-family: monospace;
+}
+
+.settings-input {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid var(--border) !important;
+  color: #fff !important;
+  padding: 10px 15px !important;
+  border-radius: 8px !important;
+  font-family: inherit !important;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+.settings-input:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 10px var(--accent-glow);
+  outline: none;
+}
+
+/* Ensure no underlines anywhere */
+a,
+button,
+span,
+div,
+h1,
+h2,
+h3,
+h4,
+.nav-item,
+.sidebar-link {
+  text-decoration: none !important;
+}
+
+.hero-highlight::after {
+  display: none !important;
+  /* Remove the underline accent */
+}
+
 .cta-small {
   background: rgba(0, 229, 255, 0.1);
   color: var(--accent);

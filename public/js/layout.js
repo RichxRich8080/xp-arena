@@ -75,7 +75,7 @@ function injectLayout() {
         </div>
         <div class="nav-center" style="display: flex; justify-content: center; flex: 1;">
             <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 8px;">
-                <i class="fas fa-crosshairs" style="color: var(--accent); font-size: 1.2rem;"></i> XP ARENA
+                <img src="/assets/images/logo.png" alt="XP ARENA Logo" style="height: 24px; width: auto; border-radius: 4px;"> XP ARENA
             </a>
         </div>
         <div class="nav-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
@@ -166,34 +166,145 @@ function injectLayout() {
     }
 
     // 3. Inject Bottom Nav
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const bottomNavHTML = `
-        <a href="index.html" class="nav-item" data-page="index.html">
+        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html">
             <span class="nav-icon"><i class="fas fa-home"></i></span>
-            <span>Home</span>
+            <span class="nav-label">Home</span>
         </a>
-        <a href="tool.html" class="nav-item" data-page="tool.html">
+        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html">
             <span class="nav-icon"><i class="fas fa-tools"></i></span>
-            <span>Tool</span>
+            <span class="nav-label">Tool</span>
         </a>
-        <a href="setups.html" class="nav-item" data-page="setups.html">
-            <span class="nav-icon"><i class="fas fa-sliders-h"></i></span>
-            <span>Setups</span>
-        </a>
-        <a href="guilds.html" class="nav-item" data-page="guilds.html">
+        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html">
             <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
-            <span>Guilds</span>
+            <span class="nav-label">Units</span>
         </a>
-        <a href="leaderboard.html" class="nav-item" data-page="leaderboard.html">
+        <a href="leaderboard.html" class="nav-item ${currentPage === 'leaderboard.html' ? 'active' : ''}" data-page="leaderboard.html">
             <span class="nav-icon"><i class="fas fa-trophy"></i></span>
-            <span>Leaders</span>
+            <span class="nav-label">Leaders</span>
         </a>
-        <a href="profile.html" class="nav-item" data-page="profile.html">
+        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html">
             <span class="nav-icon"><i class="fas fa-user-circle"></i></span>
-            <span>Profile</span>
+            <span class="nav-label">Profile</span>
         </a>
     `;
     const bottomNav = document.querySelector('nav.bottom-nav');
     if (bottomNav) bottomNav.innerHTML = bottomNavHTML;
+
+    // 4. Wrap Content and Inject Footer
+    wrapAndInjectFooter();
+}
+
+function wrapAndInjectFooter() {
+    console.log('Layout: Starting wrapAndInjectFooter');
+    if (document.querySelector('.main-content-area')) {
+        console.log('Layout: Already wrapped');
+        return;
+    }
+
+    try {
+        // Use class selectors for better compatibility
+        const navbar = document.querySelector('.navbar');
+        const bottomNav = document.querySelector('.bottom-nav');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+
+        const user = Auth.getCurrentUser();
+        const isLoggedIn = !!user;
+        const stats = isLoggedIn && typeof window.User !== 'undefined' ? window.User.getStats() : null;
+
+        console.log('Layout: Wrapping content. isLoggedIn:', isLoggedIn);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'main-content-area';
+
+        // SAFETY: Only move direct children of body
+        const bodyChildren = Array.from(document.body.childNodes);
+        bodyChildren.forEach(child => {
+            // Skip navbar, bottomNav, sidebar, overlay, and scripts
+            if (child === navbar || child === bottomNav || child === sidebar || child === overlay) return;
+            if (child.nodeName === 'SCRIPT' || child.nodeName === 'STYLE') return;
+            if (child.id === 'xpa-levelup-overlay' || child.className === 'axp-increment-popup') return;
+
+            wrapper.appendChild(child);
+        });
+
+        // Inject Welcome Header into Wrapper
+        const welcomeHTML = `
+            <div class="commander-header">
+                <div class="commander-status">
+                    <span class="pulse"></span>
+                    ACTIVE PROTOCOL: ${stats && stats.rank ? stats.rank.name : 'GUEST'}
+                </div>
+                <div class="commander-name">
+                    Welcome back, ${user ? user.username.toUpperCase() : 'SOLDIER'}
+                </div>
+            </div>
+        `;
+        wrapper.insertAdjacentHTML('afterbegin', welcomeHTML);
+
+        // Inject Wrapper into body
+        // If bottomNav exists AND is a direct child of body, insert before it
+        if (bottomNav && bottomNav.parentNode === document.body) {
+            document.body.insertBefore(wrapper, bottomNav);
+        } else {
+            document.body.appendChild(wrapper);
+        }
+
+        // Inject Footer into Wrapper
+        const footerHTML = `
+            <footer class="site-footer">
+                <div class="footer-grid">
+                    <div class="footer-col">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
+                            <img src="/assets/images/logo.png" style="height:32px;" alt="Logo">
+                            <span style="font-weight:900; color:#fff; font-size:1.2rem; letter-spacing:1px;">XP ARENA</span>
+                        </div>
+                        <p style="font-size:0.9rem; line-height:1.6;">The ultimate toolkit for Free Fire players. Precision sensitivity, device comparisons, and community rankings.</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Quick Links</h4>
+                        <ul class="footer-links">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="tool.html">Sensitivity Tool</a></li>
+                            <li><a href="leaderboard.html">Leaderboard</a></li>
+                            <li><a href="clips.html">Top Clips</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Resources</h4>
+                        <ul class="footer-links">
+                            <li><a href="sponsors.html">Sponsors</a></li>
+                            <li><a href="support.html">Support Us</a></li>
+                            <li><a href="help.html">Help & FAQ</a></li>
+                            <li><a href="about.html">About XP Arena</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4>Community</h4>
+                        <div class="social-links">
+                            <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
+                            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+                            <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+                            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2026 XP ARENA. All rights reserved.</p>
+                    <div style="display:flex; gap:1.5rem;">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                    </div>
+                </div>
+            </footer>
+        `;
+        wrapper.insertAdjacentHTML('beforeend', footerHTML);
+        console.log('Layout: Successfully wrapped and injected footer');
+    } catch (err) {
+        console.error('Layout: Error in wrapAndInjectFooter:', err);
+    }
 }
 
 function toggleSidebar() {
@@ -385,20 +496,20 @@ function toggleDarkMode() {
 window.toggleDarkMode = toggleDarkMode;
 
 document.addEventListener('click', (e) => {
-  const btn = document.getElementById('notifBtn');
-  const dd = document.getElementById('notifDropdown');
-  if (!btn || !dd) return;
-  if (btn.contains(e.target)) {
-    dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
-    if (dd.style.display === 'block' && typeof Auth !== 'undefined' && Auth.isLoggedIn() && typeof User !== 'undefined') {
-      const stats = User.getStats();
-      const list = document.getElementById('notifList');
-      if (list) {
-        const items = (stats.activities || []).slice(0,5).map(a => `<div style="padding:0.6rem 0.8rem; border-bottom:1px solid var(--border);">${a.text}<br><span style="font-size:0.75rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span></div>`).join('');
-        list.innerHTML = items || '<div style="padding:0.6rem 0.8rem;">No recent activity</div>';
-      }
+    const btn = document.getElementById('notifBtn');
+    const dd = document.getElementById('notifDropdown');
+    if (!btn || !dd) return;
+    if (btn.contains(e.target)) {
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+        if (dd.style.display === 'block' && typeof Auth !== 'undefined' && Auth.isLoggedIn() && typeof User !== 'undefined') {
+            const stats = User.getStats();
+            const list = document.getElementById('notifList');
+            if (list) {
+                const items = (stats.activities || []).slice(0, 5).map(a => `<div style="padding:0.6rem 0.8rem; border-bottom:1px solid var(--border);">${a.text}<br><span style="font-size:0.75rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span></div>`).join('');
+                list.innerHTML = items || '<div style="padding:0.6rem 0.8rem;">No recent activity</div>';
+            }
+        }
+    } else if (!dd.contains(e.target)) {
+        dd.style.display = 'none';
     }
-  } else if (!dd.contains(e.target)) {
-    dd.style.display = 'none';
-  }
 });

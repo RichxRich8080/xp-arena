@@ -152,57 +152,60 @@
 <body class="theme-cyber">
     <nav class="navbar"></nav>
 
-    <main class="coming-soon-container" style="align-items: stretch;">
-        <div class="page-header" style="text-align:center; margin-top:1rem;">
-            <h1 class="glitch-title">Guilds</h1>
-            <p class="description">Create a guild (premium free, others pay AXP) or join one.</p>
+    <main class="coming-soon-container" style="align-items: stretch; padding-top: 1rem;">
+        <div class="page-header" style="text-align:center;">
+            <div
+                style="font-size: 0.8rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; margin-bottom: 0.5rem;">
+                [ TACTICAL BRIEFING ]</div>
+            <h1 class="glitch-title" style="margin-bottom: 0.5rem;">Unit Command</h1>
+            <p class="description" style="margin: 0 auto 3rem;">Establish your Faction or deploy into an existing squad.
+                Premium Commanders receive complimentary unit registration.</p>
         </div>
-        <div id="guildActions" style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1rem; width:100%; max-width:1000px; margin: 0 auto;">
-            <div id="createBlock" class="feature-item">
-                <h3><i class="fas fa-plus"></i> Create Guild</h3>
-                <input id="guildNameInput" class="settings-input" placeholder="Guild name" />
-                <button class="btn-primary" style="margin-top:10px;" onclick="createGuild()">Create</button>
+        <div id="guildActions"
+            style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
+            <div id="createBlock" class="feature-item tactical-dossier" data-id="UNIT_INIT_04">
+                <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
+                <input id="guildNameInput" class="settings-input" placeholder="Unit Designation (Name)" />
+                <button class="btn-primary" style="margin-top:10px; width: 100%;" onclick="createGuild()">ACTIVATE
+                    UNIT</button>
                 <div id="guildCreateMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
             </div>
-            <div id="joinBlock" class="feature-item">
-                <h3><i class="fas fa-sign-in-alt"></i> Join Guild</h3>
-                <input id="guildIdInput" class="settings-input" placeholder="Guild ID" />
-                <button class="btn-secondary" style="margin-top:10px;" onclick="joinGuild()">Join</button>
-                <button class="btn-secondary" style="margin-top:10px;" onclick="leaveGuild()">Leave Current</button>
+            <div id="joinBlock" class="feature-item tactical-dossier" data-id="DEPLOY_REQ_09">
+                <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
+                <input id="guildIdInput" class="settings-input" placeholder="Unit ID" />
+                <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="joinGuild()">DEPLOY
+                    NOW</button>
+                <button class="btn-secondary"
+                    style="margin-top:10px; width: 100%; font-size: 0.7rem; border-color: rgba(255,0,0,0.2);"
+                    onclick="leaveGuild()">ABANDON POSITION</button>
                 <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
             </div>
-            <div id="manageBlock" class="feature-item" style="display:none">
-                <h3><i class="fas fa-cog"></i> Manage Guild</h3>
-                <div id="activeGuildName" style="font-weight:800; margin-bottom:8px;"></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+            <div id="manageBlock" class="feature-item tactical-dossier" data-id="CMD_CENT_01" style="display:none">
+                <h3><i class="fas fa-cog"></i> Command Center</h3>
+                <div id="activeGuildName"
+                    style="font-weight:800; margin-bottom:12px; color: var(--accent); font-size: 1.2rem;"></div>
+                <div style="display:grid; gap:15px;">
                     <div>
-                        <div style="font-size:0.85rem; color: var(--text-muted);">Set Badge (Owner)</div>
-                        <input id="guildBadgeId" class="settings-input" placeholder="Guild ID" />
-                        <input id="guildBadgeInput" class="settings-input" placeholder="Badge (emoji / short)" />
-                        <button class="btn-secondary" onclick="setGuildBadge()">Save Badge</button>
-                    </div>
-                    <div>
-                        <div style="font-size:0.85rem; color: var(--text-muted);">Apply for Guild War (Owner)</div>
-                        <input id="warNote" class="settings-input" placeholder="Note (optional)" />
-                        <button class="btn-secondary" onclick="applyGuildWar()">Apply</button>
+                        <div
+                            style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px;">
+                            SET UNIT BADGE</div>
+                        <input id="guildBadgeInput" class="settings-input" placeholder="Badge (e.g. 🛡️, ⚡)" />
+                        <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
+                            onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
                     </div>
                 </div>
-                <div style="margin-top:12px;">
-                    <div style="font-weight:800; margin-bottom:6px;">Members</div>
+                <div style="margin-top:20px;">
+                    <div
+                        style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
+                        UNIT ROSTER</div>
                     <div id="guildMembersList" style="display:grid; gap:8px;"></div>
                 </div>
                 <div id="manageMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
             </div>
-            <div class="feature-item" id="badgeBlock">
-                <h3><i class="fas fa-shield-alt"></i> Set Guild Badge (Owner)</h3>
-                <input id="guildBadgeId" class="settings-input" placeholder="Guild ID" />
-                <input id="guildBadgeInput" class="settings-input" placeholder="Badge (e.g. 🛡️, ⚡, 3-10 chars)" />
-                <button class="btn-secondary" style="margin-top:10px;" onclick="setGuildBadge()">Save Badge</button>
-                <div id="guildBadgeMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
-            </div>
         </div>
         <div style="width:100%; max-width:1000px; margin: 2rem auto;">
-            <h3 style="text-align:center; margin-bottom: 1rem;">Guild Leaderboard</h3>
+            <h3 style="text-align:center; margin-bottom: 1.5rem; letter-spacing: 2px; color: var(--accent);">FACTION
+                RANKINGS</h3>
             <div id="guildLeaderboard" style="display:grid; gap:8px;"></div>
         </div>
     </main>
@@ -218,7 +221,7 @@
             loadGuildLeaderboard();
             if (Auth.isLoggedIn()) {
                 try {
-                    const res = await fetch((window.API_URL||'') + '/api/user/profile', { headers: { 'Authorization':'Bearer '+Auth.getToken() }});
+                    const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
                     if (res.ok) {
                         const data = await res.json();
                         const g = data.guild;
@@ -230,7 +233,7 @@
                             if (joinBlock) joinBlock.style.display = 'none';
                             if (manageBlock) {
                                 manageBlock.style.display = 'block';
-                                document.getElementById('activeGuildName').textContent = (g.badge ? g.badge+' ' : '') + g.name;
+                                document.getElementById('activeGuildName').textContent = (g.badge ? g.badge + ' ' : '') + g.name;
                                 document.getElementById('guildBadgeId').value = g.id;
                                 document.getElementById('guildIdInput').value = g.id;
                                 loadGuildMembers(g.id);
@@ -241,27 +244,27 @@
                             if (manageBlock) manageBlock.style.display = 'none';
                         }
                     }
-                } catch {}
+                } catch { }
             }
         }
         async function createGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
             const name = document.getElementById('guildNameInput').value.trim();
             const msg = document.getElementById('guildCreateMsg');
-            const res = await fetch((window.API_URL||'')+'/api/guilds/create', {
+            const res = await fetch((window.API_URL || '') + '/api/guilds/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
                 body: JSON.stringify({ name })
             });
             const data = await res.json();
-            msg.textContent = res.ok ? 'Created! ID: '+data.guild_id : (data.error || 'Error');
+            msg.textContent = res.ok ? 'Created! ID: ' + data.guild_id : (data.error || 'Error');
             if (res.ok) User.loadStats();
         }
         async function joinGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
             const gid = parseInt(document.getElementById('guildIdInput').value, 10);
             const msg = document.getElementById('guildJoinMsg');
-            const res = await fetch((window.API_URL||'')+'/api/guilds/join', {
+            const res = await fetch((window.API_URL || '') + '/api/guilds/join', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
                 body: JSON.stringify({ guild_id: gid })
@@ -273,7 +276,7 @@
         async function leaveGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
             const msg = document.getElementById('guildJoinMsg');
-            const res = await fetch((window.API_URL||'')+'/api/guilds/leave', {
+            const res = await fetch((window.API_URL || '') + '/api/guilds/leave', {
                 method: 'POST',
                 headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
             });
@@ -286,9 +289,9 @@
             const guild_id = parseInt(document.getElementById('guildBadgeId').value, 10);
             const badge = document.getElementById('guildBadgeInput').value;
             const msg = document.getElementById('guildBadgeMsg');
-            const res = await fetch((window.API_URL||'')+'/api/guilds/badge', {
-                method:'POST',
-                headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+Auth.getToken() },
+            const res = await fetch((window.API_URL || '') + '/api/guilds/badge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
                 body: JSON.stringify({ guild_id, badge })
             });
             const data = await res.json();
@@ -298,21 +301,21 @@
         async function loadGuildMembers(gid) {
             const el = document.getElementById('guildMembersList');
             try {
-                const res = await fetch((window.API_URL||'') + '/api/guilds/members?guild_id=' + gid, { headers: { 'Authorization':'Bearer ' + Auth.getToken() }});
+                const res = await fetch((window.API_URL || '') + '/api/guilds/members?guild_id=' + gid, { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
                 const rows = res.ok ? await res.json() : [];
                 el.innerHTML = rows.map(m => `
                     <div class="form-card" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; padding:0.8rem 1rem;">
-                        <div><b>${m.username}</b> <span style="font-size:0.75rem; color: var(--text-muted);">(${m.role})</span><br><span style="font-size:0.8rem; color: var(--text-muted);">AXP ${Number(m.axp||0).toLocaleString()}</span></div>
+                        <div><b>${m.username}</b> <span style="font-size:0.75rem; color: var(--text-muted);">(${m.role})</span><br><span style="font-size:0.8rem; color: var(--text-muted);">AXP ${Number(m.axp || 0).toLocaleString()}</span></div>
                         <button class="btn-secondary" style="width:auto" onclick="removeMember(${gid}, ${m.id})">Remove</button>
                     </div>
                 `).join('') || '<div class="form-card">No members.</div>';
             } catch { el.innerHTML = '<div class="form-card">Failed to load members.</div>'; }
         }
         async function removeMember(gid, uid) {
-            if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
-            const res = await fetch((window.API_URL||'') + '/api/guilds/remove-member', {
-                method:'POST',
-                headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + Auth.getToken() },
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const res = await fetch((window.API_URL || '') + '/api/guilds/remove-member', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
                 body: JSON.stringify({ guild_id: gid, user_id: uid })
             });
             const data = await res.json();
@@ -321,13 +324,13 @@
             if (res.ok) loadGuildMembers(gid);
         }
         async function applyGuildWar() {
-            if (!Auth.isLoggedIn()) { window.location.href='login.html'; return; }
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
             const gid = parseInt(document.getElementById('guildBadgeId').value, 10);
             const note = document.getElementById('warNote').value;
             const msg = document.getElementById('manageMsg');
-            const res = await fetch((window.API_URL||'') + '/api/guilds/war/apply', {
-                method:'POST',
-                headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + Auth.getToken() },
+            const res = await fetch((window.API_URL || '') + '/api/guilds/war/apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
                 body: JSON.stringify({ guild_id: gid, note })
             });
             const data = await res.json();
@@ -337,14 +340,14 @@
             const el = document.getElementById('guildLeaderboard');
             el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Loading...</div>';
             try {
-                const res = await fetch((window.API_URL||'')+'/api/guilds/leaderboard');
+                const res = await fetch((window.API_URL || '') + '/api/guilds/leaderboard');
                 const rows = res.ok ? await res.json() : [];
-                el.innerHTML = rows.map((g,i) => `
+                el.innerHTML = rows.map((g, i) => `
                     <div class="form-card" style="display:grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items:center;">
-                        <div style="text-align:center; font-weight:800;">#${i+1}</div>
+                        <div style="text-align:center; font-weight:800;">#${i + 1}</div>
                         <div>
                             <div style="font-weight:800; color:#fff;">${g.badge ? g.badge + ' ' : ''}${g.name}</div>
-                            <div style="font-size:0.8rem; color: var(--text-muted);">Members: ${g.members} • AXP: ${Number(g.axp||0).toLocaleString()}</div>
+                            <div style="font-size:0.8rem; color: var(--text-muted);">Members: ${g.members} • AXP: ${Number(g.axp || 0).toLocaleString()}</div>
                         </div>
                         <div style="text-align:right;"><a class="btn-secondary" style="width:auto;" onclick="document.getElementById('guildIdInput').value='${g.id}';">Use ID</a></div>
                     </div>
