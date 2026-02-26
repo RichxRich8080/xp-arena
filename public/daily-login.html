@@ -165,25 +165,20 @@
                     }
                 }
 
-                claimBtn.addEventListener('click', () => {
-                    const stats = User.getStats();
-                    const today = new Date().toDateString();
-
-                    // Rewards logic
-                    const dayIdx = (stats.streak % 7);
-                    const rewardAmount = parseInt(rewards[dayIdx].reward);
-
-                    User.addAXP(rewardAmount, `Daily Login (Day ${stats.streak + 1})`);
-
-                    User.updateStats(s => {
-                        s.streak = (s.streak || 0) + 1;
-                        s.lastLoginDate = today;
-                        s.lastLogin = new Date().toISOString();
-                    });
-
-                    if (window.Toast) Toast.show(`${rewardAmount} AXP Claimed!`, 'success');
-                    if (window.confetti) confetti(); // Trigger confetti if available
-
+                claimBtn.addEventListener('click', async () => {
+                    claimBtn.disabled = true;
+                    claimBtn.textContent = "CLAIMING...";
+                    try {
+                        const res = await User.claimDailyLogin();
+                        if (res && res.success) {
+                            if (window.Toast) Toast.show('Daily reward claimed!', 'success');
+                            if (window.confetti) confetti();
+                        } else if (window.Toast) {
+                            Toast.show(res.message || 'Already claimed today', 'info');
+                        }
+                    } catch (e) {
+                        if (window.Toast) Toast.show('Network error', 'danger');
+                    }
                     renderGrid();
                 });
 

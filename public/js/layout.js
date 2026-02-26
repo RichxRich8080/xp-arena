@@ -80,7 +80,7 @@ function injectLayout() {
 
     const navbarHTML = `
         <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
-            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
+            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" aria-label="Open menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
             </button>
         </div>
@@ -91,7 +91,7 @@ function injectLayout() {
         </div>
         <div class="nav-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
             ${isLoggedIn ? `
-            <button id="notifBtn" title="Notifications" style="background: rgba(255,255,255,0.08); border:1px solid var(--border); color:#fff; width:36px;height:36px;border-radius:8px; display:flex; align-items:center; justify-content:center;">
+            <button id="notifBtn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.08); border:1px solid var(--border); color:#fff; width:36px;height:36px;border-radius:8px; display:flex; align-items:center; justify-content:center;">
               <i class="fas fa-bell"></i>
             </button>
             <div id="notifDropdown" class="achievement-panel">
@@ -102,7 +102,7 @@ function injectLayout() {
                 <ul id="notifList" class="achievement-list"></ul>
             </div>` : ``}
             ${isLoggedIn && typeof window.User !== 'undefined' && window.User.getStats() ? `<span class="level-badge-nav" id="globalLevelBadge">Lvl ${window.User.getStats().level}</span>` : ''}
-            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
+            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
                 ${avatarHtml}
             </a>
         </div>

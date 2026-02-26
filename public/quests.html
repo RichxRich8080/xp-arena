@@ -128,7 +128,40 @@
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/confetti.js"></script>
+    <div id="questSheet" style="position:fixed; left:0; right:0; bottom:-100%; background: rgba(11,15,23,0.98); border-top: 1px solid var(--border); border-radius: 16px 16px 0 0; z-index: 99999; padding: 1rem 1.2rem; transition: bottom 0.3s ease;">
+        <div style="max-width: 780px; margin: 0 auto;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 0.8rem;">
+                <div style="font-weight:900; letter-spacing:1px;">Claim Reward</div>
+                <button id="qsClose" class="btn-secondary" style="width:auto">Close</button>
+            </div>
+            <div id="qsBody" class="form-card" style="margin-bottom:0.8rem;">
+                <div id="qsTitle" style="font-weight:800; margin-bottom:4px;"></div>
+                <div id="qsDesc" style="color: var(--text-muted); font-size:0.9rem;"></div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:flex-end;">
+                <button id="qsClaim" class="btn-primary" style="width:auto">Claim +AXP</button>
+            </div>
+        </div>
+    </div>
     <script>
+        let QS = { id: null, reward: 0, weekly: false, name: '', desc: '' };
+        function openQuestSheet(id, reward, name, desc, weekly) {
+            QS = { id, reward, weekly: !!weekly, name, desc };
+            const el = document.getElementById('questSheet');
+            document.getElementById('qsTitle').textContent = `${name}`;
+            document.getElementById('qsDesc').textContent = `${desc} • Reward: +${reward} AXP`;
+            el.style.bottom = '0';
+        }
+        function closeQuestSheet() {
+            const el = document.getElementById('questSheet');
+            el.style.bottom = '-100%';
+        }
+        document.getElementById('qsClose').addEventListener('click', closeQuestSheet);
+        document.getElementById('qsClaim').addEventListener('click', () => {
+            if (QS.weekly) claimWeeklyQuest(QS.id, QS.reward);
+            else claimQuest(QS.id, QS.reward);
+            closeQuestSheet();
+        });
         const QUESTS = [
             { id: 'explorer', name: 'Platform Explorer', desc: 'Visit 5 different pages today', reward: 100, goal: 5, type: 'visit' },
             { id: 'social_star', name: 'Social Star', desc: 'Link at least one social handle', reward: 150, goal: 1, type: 'social' },
@@ -246,7 +279,7 @@
                 const percent = Math.min((progress / q.goal) * 100, 100);
                 const canClaim = progress >= q.goal && !isCompleted;
 
-                return questCard(q, isCompleted, canClaim, progress, percent, 'claimQuest');
+                return questCard(q, isCompleted, canClaim, progress, percent, 'openQuestSheet');
             }).join('');
         }
 
@@ -277,7 +310,7 @@
                 const percent = Math.min((progress / goal) * 100, 100);
                 const canClaim = progress >= goal && !isCompleted;
 
-                return questCard({ ...q, goal }, isCompleted, canClaim, progress, percent, 'claimWeeklyQuest', '#bf00ff');
+                return questCard({ ...q, goal }, isCompleted, canClaim, progress, percent, 'openQuestSheet', '#bf00ff');
             }).join('');
         }
 
@@ -302,7 +335,7 @@
                     ${isCompleted ?
                     '<button disabled class="btn-secondary" style="margin-top: 1.2rem; width: auto; opacity: 0; pointer-events: none;">COMPLETED</button>' :
                     canClaim ?
-                        `<button onclick="${claimFn}('${q.id}', ${q.reward})" class="btn-primary" style="margin-top: 1.2rem; width: auto; animation: pulse-border 2s infinite; background: ${color}; color: #000; font-weight: 900;">🎁 CLAIM REWARD</button>` :
+                        `<button onclick="${claimFn}('${q.id}', ${q.reward}, '${q.name.replace(/'/g, "\\'")}', '${q.desc.replace(/'/g, "\\'")}', ${accentColor ? 'true' : 'false'})" class="btn-primary" style="margin-top: 1.2rem; width: auto; animation: pulse-border 2s infinite; background: ${color}; color: #000; font-weight: 900;">🎁 CLAIM REWARD</button>` :
                         '<button disabled class="btn-secondary" style="margin-top: 1.2rem; width: auto; cursor: not-allowed; opacity: 0.5; background: transparent; border-color: rgba(255,255,255,0.1);">IN PROGRESS...</button>'
                 }
                 </div>

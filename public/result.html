@@ -292,6 +292,11 @@
                 style="background: rgba(0,229,255,0.05); padding: 1.2rem; border-radius: 18px; border: 1px solid var(--border-glass); margin-bottom: 2rem; font-size: 0.8rem; line-height: 1.5; color: rgba(255,255,255,0.8);">
                 Hardware analysis complete. Sensitivity optimized for peak responsiveness.
             </div>
+            <div id="confidence-ribbon" style="margin-bottom: 1.2rem; text-align:center;">
+                <span id="confidence-pill" style="display:inline-block; padding:6px 12px; border-radius: 100px; font-size:0.7rem; font-weight:900; letter-spacing:1px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+                    CONFIDENCE: --
+                </span>
+            </div>
 
             <button class="btn-elite" onclick="exportImage()">
                 <i class="fas fa-id-card"></i> GEN ELITE OPERATOR CARD
@@ -380,6 +385,26 @@
                 </div>
                 ${results.ai_verdict || "Hardware analysis complete. Optimized for peak responsiveness."}
             `;
+
+            // Confidence score based on device factor proxies and AI
+            const dpi = results.dpi || 800;
+            let conf = 0.7; // base
+            if (results.ai_sync === 'ELITE BOOST') conf += 0.15;
+            if (results.ai_sync === 'AUTO-NERFED') conf -= 0.15;
+            if (dpi >= 800 && dpi <= 1200) conf += 0.05;
+            if (dpi > 2400 || dpi < 400) conf -= 0.05;
+            const rate = window.estimatedTouchSamplingRate || 120;
+            if (rate >= 180) conf += 0.05;
+            if (rate < 90) conf -= 0.05;
+            conf = Math.max(0.3, Math.min(0.95, conf));
+            const pct = Math.round(conf * 100);
+            const pill = document.getElementById('confidence-pill');
+            if (pill) {
+                pill.textContent = `CONFIDENCE: ${pct}%`;
+                if (pct >= 85) { pill.style.background = 'rgba(0,255,136,0.12)'; pill.style.borderColor = 'rgba(0,255,136,0.4)'; pill.style.color = '#00ff88'; }
+                else if (pct >= 70) { pill.style.background = 'rgba(0,229,255,0.1)'; pill.style.borderColor = 'rgba(0,229,255,0.3)'; pill.style.color = 'var(--accent)'; }
+                else { pill.style.background = 'rgba(255,68,68,0.12)'; pill.style.borderColor = 'rgba(255,68,68,0.3)'; pill.style.color = '#ff6666'; }
+            }
 
             // Animate transition
             document.getElementById('loading-container').style.opacity = '0';
