@@ -165,6 +165,19 @@
             </div>
             <div id="guildActions"
                 style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
+                <div id="homeBlock" class="feature-item tactical-dossier" data-id="HOME_CARD" style="display:none">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom: 10px;">
+                        <div id="homeBadge" style="font-size:1.6rem;">🛡️</div>
+                        <div>
+                            <div id="homeName" style="font-weight:900; letter-spacing:0.5px;"></div>
+                            <div id="homeStats" style="font-size:0.8rem; color: var(--text-muted);">Members — • AXP —</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap: 10px; flex-wrap: wrap;">
+                        <button class="btn-secondary" style="width:auto" onclick="applyGuildWar()">Apply for Clan War</button>
+                        <a href="#roster" class="btn-secondary" style="width:auto">View Roster</a>
+                    </div>
+                </div>
                 <div id="createBlock" class="feature-item tactical-dossier" data-id="UNIT_INIT_04">
                     <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
                     <input id="guildNameInput" class="settings-input" placeholder="Clan Designation (Name)" />
@@ -197,7 +210,7 @@
                                 onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
                         </div>
                     </div>
-                    <div style="margin-top:20px;">
+                    <div id="roster" style="margin-top:20px;">
                         <div
                             style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
                             CLAN ROSTER</div>
@@ -231,6 +244,7 @@
                         const createBlock = document.getElementById('createBlock');
                         const joinBlock = document.getElementById('joinBlock');
                         const manageBlock = document.getElementById('manageBlock');
+                        const homeBlock = document.getElementById('homeBlock');
                         if (g) {
                             if (createBlock) createBlock.style.display = 'none';
                             if (joinBlock) joinBlock.style.display = 'none';
@@ -241,10 +255,22 @@
                                 document.getElementById('guildIdInput').value = g.id;
                                 loadGuildMembers(g.id);
                             }
+                            if (homeBlock) {
+                                homeBlock.style.display = 'block';
+                                document.getElementById('homeBadge').textContent = g.badge || '🛡️';
+                                document.getElementById('homeName').textContent = g.name;
+                                const leaderRow = await fetch((window.API_URL || '') + '/api/guilds/members?guild_id=' + g.id, { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
+                                let members = [];
+                                if (leaderRow.ok) members = await leaderRow.json();
+                                let totalAXP = 0;
+                                members.forEach(m => totalAXP += (m.axp || 0));
+                                document.getElementById('homeStats').textContent = `Members ${members.length} • AXP ${Number(totalAXP).toLocaleString()}`;
+                            }
                         } else {
                             if (createBlock) createBlock.style.display = '';
                             if (joinBlock) joinBlock.style.display = '';
                             if (manageBlock) manageBlock.style.display = 'none';
+                            const hb = document.getElementById('homeBlock'); if (hb) hb.style.display = 'none';
                         }
                     }
                 } catch { }

@@ -189,14 +189,14 @@ const User = {
             this.logActivityLocally(`Submitted a gameplay clip on ${clipData.device}`);
         });
 
-        await fetch(`${API_BASE_USER}/api/user/clip`, {
+        await fetchWithRetry(`${API_BASE_USER}/api/user/clip`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify(clipData)
-        });
+        }, () => {});
     },
 
     async saveToVault(result) {
@@ -212,14 +212,14 @@ const User = {
             this.logActivityLocally(`Saved ${result.device} settings to Vault`);
         });
 
-        await fetch(`${API_BASE_USER}/api/user/vault`, {
+        await fetchWithRetry(`${API_BASE_USER}/api/user/vault`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify({ settings: result })
-        });
+        }, () => {});
 
         if (window.Toast) Toast.show('Saved to Vault!', 'success');
     },
@@ -237,14 +237,14 @@ const User = {
             if (stats.presets.length > 10) stats.presets.pop();
         });
 
-        await fetch(`${API_BASE_USER}/api/user/preset`, {
+        await fetchWithRetry(`${API_BASE_USER}/api/user/preset`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify({ name, settings: result })
-        });
+        }, () => {});
 
         if (window.Toast) Toast.show(`Preset "${name}" saved!`, 'success');
     },
@@ -589,6 +589,51 @@ const User = {
 
 window.User = User;
 window.RANKS = RANKS;
+
+// ==========================
+// OFFLINE RETRY QUEUE
+// ==========================
+function getQueue() {
+    try {
+        return JSON.parse(localStorage.getItem('xp_offline_queue') || '[]');
+    } catch { return []; }
+}
+function setQueue(arr) {
+    localStorage.setItem('xp_offline_queue', JSON.stringify(arr));
+}
+async function flushOfflineQueue() {
+    const q = getQueue();
+    if (!q.length) return;
+    const remaining = [];
+    for (const item of q) {
+        try {
+            const res = await fetch(item.url, item.options);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+        } catch (_) {
+            remaining.push(item);
+        }
+    }
+    setQueue(remaining);
+}
+async function fetchWithRetry(url, options, onSuccess) {
+    try {
+        const res = await fetch(url, options);
+        if (res && res.ok) {
+            if (onSuccess) onSuccess(await res.json().catch(() => null));
+            return true;
+        }
+        throw new Error('HTTP ' + (res ? res.status : ''));
+    } catch (e) {
+        const queued = getQueue();
+        queued.push({ url, options });
+        setQueue(queued);
+        window.addEventListener('online', flushOfflineQueue, { once: true });
+        return false;
+    }
+}
+window.flushOfflineQueue = flushOfflineQueue;
+if (navigator.onLine) setTimeout(flushOfflineQueue, 2000);
+window.addEventListener('online', flushOfflineQueue);
 
 // ==========================
 // SEASONAL BATTLE PASS SYSTEM
