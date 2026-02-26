@@ -591,17 +591,62 @@ window.User = User;
 window.RANKS = RANKS;
 
 // ==========================
-// SQUAD / CLAN SYSTEM MOCK
+// SEASONAL BATTLE PASS SYSTEM
 // ==========================
-const SquadSystem = {
-    getSquad(name) { return JSON.parse(localStorage.getItem(`xp_squad_${name.toUpperCase()}`)); },
-    saveSquad(squad) { localStorage.setItem(`xp_squad_${squad.name.toUpperCase()}`, JSON.stringify(squad)); },
-    promptCreate() { /* Mock removed for brevity to focus on Phase 3 and 4 */ },
-    promptJoin() { /* Mock removed */ },
-    leave() { /* Mock removed */ },
-    updateUI() { /* Mock removed */ }
+const SeasonSystem = {
+    getSeasonInfo() {
+        const seasonStart = new Date('2026-02-01').getTime();
+        const duration = 30 * 24 * 60 * 60 * 1000; // 30 days
+        const now = Date.now();
+        const elapsed = now - seasonStart;
+        const daysLeft = Math.max(0, Math.round((duration - elapsed) / (24 * 60 * 60 * 1000)));
+
+        const stats = User.getStats();
+        const seasonAXP = stats ? stats.axp % 10000 : 0; // Each season reset baseline mockup
+        const level = Math.floor(seasonAXP / 200) + 1;
+        const progress = (seasonAXP % 200) / 2; // percentage to next level
+
+        return {
+            name: 'Season 1: Neon Dawn',
+            daysLeft,
+            level,
+            progress,
+            isPremium: stats ? stats.is_premium : false
+        };
+    }
 };
-window.SquadSystem = SquadSystem;
+window.SeasonSystem = SeasonSystem;
+
+// ==========================
+// SOCIAL & COMMUNITY SYSTEM
+// ==========================
+const SocialSystem = {
+    async followCreator(creatorId) {
+        if (!Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+
+        try {
+            const res = await fetch(`${API_BASE_USER}/api/user/follow/${creatorId}`, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+            });
+            if (res.ok) {
+                if (window.Toast) Toast.show('Following Areni!', 'success');
+                User.logActivityLocally(`Started following creator #${creatorId}`);
+                return { success: true };
+            }
+        } catch (e) { console.error(e); }
+        return { success: false };
+    },
+
+    async rateSetup(setupId, rating) {
+        if (!Auth.isLoggedIn()) return { success: false, message: 'Login required' };
+        // Mock rating logic
+        if (window.Toast) Toast.show(`Rated setting: ${rating} Stars`, 'success');
+        User.addAXP(10, 'Rated a community setup');
+        return { success: true };
+    }
+};
+window.SocialSystem = SocialSystem;
 
 // Async Load Data On Initializing
 window.addEventListener('authChange', () => {

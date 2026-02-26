@@ -244,6 +244,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareImageBtn = document.getElementById('shareImageBtn');
         const savePresetBtn = document.getElementById('savePresetBtn');
 
+        // Robust device retrieval helper
+        const getEffectiveDevice = () => {
+            if (selectedDevice) return selectedDevice;
+            // Fallback to hidden inputs or search bar value
+            const b = selectedBrandInput.value;
+            const m = selectedModelInput.value;
+            const s = selectedSeriesInput.value;
+            if (b && m) {
+                return { brand: b, model: m, series: s, label: `${b} ${m}` };
+            }
+            if (deviceSearch.value.trim().length > 2) {
+                return { brand: "Generic", model: deviceSearch.value.trim(), series: "Auto-detected", label: deviceSearch.value.trim() };
+            }
+            return null;
+        };
+
         const getProVerdict = (speed, factor, ram) => {
             if (factor >= 1.08) return "ELITE GAMING RESPONSE: Tuned for high-refresh rate displays and low-latency input.";
             if (speed === 'fast') return "STUNT FLICK OPTIMIZED: High sensitivity ranges for 360-degree awareness and quick flicks.";
@@ -321,43 +337,33 @@ document.addEventListener('DOMContentLoaded', () => {
             if (handSelect) handSelect.value = p.hand;
             if (speedSelect) speedSelect.value = p.speed;
 
-            calculateBtn.classList.add('hidden');
-            if (loader) loader.classList.remove('hidden');
-            if (resultSection) resultSection.classList.add('hidden');
+            calculateBtn.textContent = "LOADING PRO FILE...";
+            calculateBtn.disabled = true;
 
             setTimeout(() => {
-                resGeneral.textContent = p.general;
-                resRedDot.textContent = p.reddot;
-                res2x.textContent = p.scope2x;
-                res4x.textContent = p.scope4x;
-                res8x.textContent = p.scope8x;
-
-                const proVerdictLabel = document.getElementById('proVerdict');
-                if (proVerdictLabel) proVerdictLabel.textContent = p.verdict;
-
-                lastResult = {
+                const resultData = {
                     device: p.device,
                     brand: p.brand, series: p.series, model: p.model, ram: p.ram, hand: p.hand, speed: p.speed,
                     general: p.general, reddot: p.reddot, scope2x: p.scope2x, scope4x: p.scope4x, scope8x: p.scope8x,
                     verdict: p.verdict
                 };
 
-                if (loader) loader.classList.add('hidden');
-                if (resultSection) {
-                    resultSection.classList.remove('hidden');
-                    resultSection.style.display = 'block';
-                }
-                calculateBtn.classList.remove('hidden');
-                calculateBtn.textContent = "Recalculate";
+                localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultData.device }));
+                localStorage.setItem('xp_calc_results', JSON.stringify(resultData));
 
-                if (window.Toast) Toast.show(`${p.name} Pro settings loaded!`, 'success');
-                resultSection.scrollIntoView({ behavior: 'smooth' });
+                if (window.Toast) Toast.show(`${proName.toUpperCase()} Pro settings loaded!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'result.html';
+                }, 400);
 
             }, 800);
         };
 
         calculateBtn.addEventListener('click', () => {
-            if (!selectedDevice) {
+            const currentDevice = getEffectiveDevice();
+
+            if (!currentDevice) {
                 if (deviceSearch) {
                     deviceSearch.style.borderColor = 'var(--danger)';
                     setTimeout(() => deviceSearch.style.borderColor = '', 2000);
@@ -372,125 +378,367 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const { brand, series, model } = selectedDevice;
+            const { brand, series, model } = currentDevice;
             const ram = parseInt(ramSlider ? ramSlider.value : 8);
             const handType = handSelect.value;
             const speedType = speedSelect.value;
 
-            calculateBtn.classList.add('hidden');
-            if (loader) loader.classList.remove('hidden');
-            resultSection.classList.add('hidden');
+            // Show simple loader before redirect
+            calculateBtn.textContent = "PREPARING ENGINES...";
+            calculateBtn.disabled = true;
 
+            // --- Calculation Logic (moved here to prepare for result page) ---
+            let baseGeneral = 95;
+            if (ram <= 4) baseGeneral = 99;
+            else if (ram <= 6) baseGeneral = 97;
+            else baseGeneral = 95;
+
+            const deviceFactor = getFactor(brand, series, model);
+            let adjustedSens = baseGeneral;
+
+            if (deviceFactor < 1.0) adjustedSens += (1.0 - deviceFactor) * 20;
+            else if (deviceFactor > 1.0) adjustedSens -= (deviceFactor - 1.0) * 10;
+
+            const speedMultipliers = { 'slow': 0.95, 'medium': 1.0, 'fast': 1.02 };
+            adjustedSens *= (speedMultipliers[speedType] || 1.0);
+
+            const handMultipliers = { 'hard': 0.98, 'normal': 1.00, 'fast': 1.00, 'gloves': 1.02, 'sweaty': 1.01 };
+            adjustedSens *= (handMultipliers[handType] || 1.0);
+
+            // --- DPI SCALING ---
+            const dpi = parseInt(document.getElementById('dpiInput')?.value || 800);
+            const dpiFactor = 800 / dpi;
+            adjustedSens *= dpiFactor;
+
+            // --- AI & DIAGNOSTIC ADJUSTMENTS V2 ---
+            let aiSyncStatus = "OPTIMIZED";
+            let aiVerdict = "Standard calibration active.";
+
+            if (window.aimAccuracyScore !== undefined) {
+                const acc = window.aimAccuracyScore;
+                const avgRT = window.aimAvgReactionTime || 600;
+
+                // Accuracy Impact (Stronger)
+                if (acc < 50) {
+                    adjustedSens -= 5;
+                    aiSyncStatus = "AUTO-NERFED";
+                    aiVerdict = "High error rate detected. Sensitivity reduced for stability.";
+                } else if (acc < 75) {
+                    adjustedSens -= 2;
+                    aiSyncStatus = "FINE-TUNED";
+                    aiVerdict = "Minor instability detected. Precision adjusted.";
+                } else if (acc > 92) {
+                    adjustedSens += 1.5;
+                    aiSyncStatus = "ELITE BOOST";
+                    aiVerdict = "Flawless tracking. Speed ceiling raised.";
+                }
+
+                // Reaction Time Impact
+                if (avgRT < 450) {
+                    adjustedSens += 1; // Pro reflexes can handle more speed
+                } else if (avgRT > 800) {
+                    adjustedSens -= 1; // Slower reflexes need more control
+                }
+            }
+
+            // Touch Sampling Integration (Estimated)
+            const samplingRate = window.estimatedTouchSamplingRate || 120;
+            if (samplingRate > 240) adjustedSens -= 1.5;
+            else if (samplingRate < 90) adjustedSens += 2.5;
+
+            if (adjustedSens > 200) adjustedSens = 200; // Cap higher for DPI variation
+            if (adjustedSens < 10) adjustedSens = 10;
+
+            let genMin = Math.floor(adjustedSens - 2);
+            let genMax = Math.ceil(adjustedSens + 2);
+            if (genMax > 100) genMax = 100;
+
+            const calcScope = (baseVal, percentage) => {
+                const center = baseVal * percentage;
+                let min = Math.floor(center - 3);
+                let max = Math.ceil(center + 3);
+                if (max > 100) max = 100;
+                if (min > max) min = max - 5;
+                return `${min}-${max}`;
+            };
+
+            const generalRange = `${genMin}-${genMax}`;
+            const redDotRange = calcScope(adjustedSens, 0.95);
+            const scope2xRange = calcScope(adjustedSens, 0.88);
+            const scope4xRange = calcScope(adjustedSens, 0.78);
+            const scope8xRange = calcScope(adjustedSens, 0.45);
+
+            const verdict = getProVerdict(speedType, deviceFactor, ram);
+
+            // Store for result page
+            const resultData = {
+                device: `${brand} ${model}`,
+                brand, series, model, ram, hand: handType, speed: speedType,
+                general: generalRange,
+                reddot: redDotRange,
+                scope2x: scope2xRange,
+                scope4x: scope4xRange,
+                scope8x: scope8xRange,
+                verdict: verdict,
+                ai_sync: aiSyncStatus,
+                ai_verdict: aiVerdict,
+                dpi: dpi
+            };
+
+            localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultData.device }));
+            localStorage.setItem('xp_calc_results', JSON.stringify(resultData));
+
+            // Track Event
+            if (window.trackEvent) {
+                window.trackEvent('Tool', 'Calculate', resultData.device);
+            }
+
+            // Redirection with a slight delay for "weight"
             setTimeout(() => {
-                let baseGeneral = 95;
-                if (ram <= 4) baseGeneral = 99;
-                else if (ram <= 6) baseGeneral = 97;
-                else baseGeneral = 95;
-
-                const deviceFactor = getFactor(brand, series, model);
-                let adjustedSens = baseGeneral;
-
-                if (deviceFactor < 1.0) adjustedSens += (1.0 - deviceFactor) * 20;
-                else if (deviceFactor > 1.0) adjustedSens -= (deviceFactor - 1.0) * 10;
-
-                const speedMultipliers = { 'slow': 0.95, 'medium': 1.0, 'fast': 1.02 };
-                adjustedSens *= (speedMultipliers[speedType] || 1.0);
-
-                const handMultipliers = { 'hard': 0.98, 'normal': 1.00, 'fast': 1.00, 'gloves': 1.02, 'sweaty': 1.01 };
-                adjustedSens *= (handMultipliers[handType] || 1.0);
-
-                if (adjustedSens > 100) adjustedSens = 100;
-                if (adjustedSens < 85) adjustedSens = 85;
-
-                let genMin = Math.floor(adjustedSens - 2);
-                let genMax = Math.ceil(adjustedSens + 2);
-                if (genMax > 100) genMax = 100;
-
-                const calcScope = (baseVal, percentage) => {
-                    const center = baseVal * percentage;
-                    let min = Math.floor(center - 3);
-                    let max = Math.ceil(center + 3);
-                    if (max > 100) max = 100;
-                    if (min > max) min = max - 5;
-                    return `${min}-${max}`;
-                };
-
-                const generalRange = `${genMin}-${genMax}`;
-                const redDotRange = calcScope(adjustedSens, 0.95);
-                const scope2xRange = calcScope(adjustedSens, 0.88);
-                const scope4xRange = calcScope(adjustedSens, 0.78);
-                const scope8xRange = calcScope(adjustedSens, 0.45);
-
-                resGeneral.textContent = generalRange;
-                resRedDot.textContent = redDotRange;
-                res2x.textContent = scope2xRange;
-                res4x.textContent = scope4xRange;
-                res8x.textContent = scope8xRange;
-
-                const proVerdictLabel = document.getElementById('proVerdict');
-                if (proVerdictLabel) {
-                    proVerdictLabel.textContent = getProVerdict(speedType, deviceFactor, ram);
-                }
-
-                // Store last result for sharing/saving
-                lastResult = {
-                    device: `${brand} ${model}`,
-                    brand, series, model, ram, hand: handType, speed: speedType,
-                    general: generalRange,
-                    reddot: redDotRange,
-                    scope2x: scope2xRange,
-                    scope4x: scope4xRange,
-                    scope8x: scope8xRange,
-                    verdict: proVerdictLabel ? proVerdictLabel.textContent : ''
-                };
-
-                if (loader) loader.classList.add('hidden');
-
-                if (resultSection) {
-                    resultSection.classList.remove('hidden');
-                    resultSection.style.display = 'block';
-                }
-
-                calculateBtn.classList.remove('hidden');
-                calculateBtn.textContent = "Recalculate";
-
-                if (window.Toast) {
-                    Toast.show('Sensitivity optimized for your device!', 'success');
-                }
-
-                resultSection.scrollIntoView({ behavior: 'smooth' });
-
-                // Award AXP + save history if logged in
-                if (typeof User !== 'undefined' && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
-                    const stats = User.getStats();
-                    const today = new Date().toDateString();
-                    if (stats.lastCalcDate !== today) {
-                        User.addAXP(10, 'Sensitivity Calculation');
-                        User.updateStats(s => s.lastCalcDate = today);
-                    }
-                    // Save to sensitivity history
-                    User.addSensitivityHistory({ device: lastResult.device, general: generalRange, general_mid: adjustedSens });
-                }
-
-                if (window.trackEvent) {
-                    window.trackEvent('Tool', 'Calculate', `${brand} ${model}`);
-                }
-            }, 1200);
+                window.location.href = 'result.html';
+            }, 600);
         });
 
-        // --- COPY ---
-        if (copyBtn) {
-            copyBtn.addEventListener('click', () => {
-                if (!lastResult) return;
-                const textToCopy = `XP ARENA PRO SETTINGS:\nDevice: ${lastResult.device}\nGen: ${lastResult.general}\nRed Dot: ${lastResult.reddot}\n2x: ${lastResult.scope2x}\n4x: ${lastResult.scope4x}\n8x: ${lastResult.scope8x}`;
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    const originalText = copyBtn.textContent;
-                    copyBtn.textContent = "Copied! ✅";
-                    if (window.Toast) Toast.show('Settings copied to clipboard!', 'success', 3000);
-                    setTimeout(() => { copyBtn.textContent = originalText; }, 2000);
+        // --- AI AIM LAB ENGINE ---
+        const AimLab = {
+            canvas: null,
+            ctx: null,
+            targets: [],
+            hits: 0,
+            misses: 0,
+            reactionTimes: [],
+            startTime: 0,
+            isPlaying: false,
+            maxTargets: 15,
+            lastTargetTime: 0,
+            accuracy: 0,
+
+            init() {
+                this.canvas = document.getElementById('aimCanvas');
+                if (!this.canvas) return;
+                this.ctx = this.canvas.getContext('2d');
+
+                const startBtn = document.getElementById('startAimBtn');
+                if (startBtn) {
+                    startBtn.addEventListener('click', () => this.startSession());
+                }
+
+                this.canvas.addEventListener('mousedown', (e) => this.handleClick(e));
+                this.canvas.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleClick(e.touches[0]);
                 });
-            });
-        }
+
+                // Check premium status for lock
+                this.checkLock();
+            },
+
+            checkLock() {
+                const stats = (typeof User !== 'undefined') ? User.getStats() : null;
+                const lockEl = document.getElementById('aimLabLocked');
+                if (lockEl) {
+                    if (stats && stats.is_premium) {
+                        lockEl.classList.add('hidden');
+                    } else {
+                        lockEl.classList.remove('hidden');
+                    }
+                }
+            },
+
+            startSession() {
+                if (this.isPlaying) return;
+
+                const trainerArea = document.getElementById('aimTrainerArea');
+                const countdown = document.getElementById('aimCountdown');
+                const startBtn = document.getElementById('startAimBtn');
+                const aimResult = document.getElementById('aimResult');
+
+                trainerArea.classList.remove('hidden');
+                aimResult.classList.add('hidden');
+                startBtn.textContent = "TRAINING...";
+                startBtn.disabled = true;
+
+                this.hits = 0;
+                this.misses = 0;
+                this.targets = [];
+                this.isPlaying = true;
+                this.accuracy = 0;
+                this.updateHUD();
+
+                // Countdown sequence
+                countdown.classList.remove('hidden');
+                let count = 3;
+                countdown.textContent = count;
+
+                const timer = setInterval(() => {
+                    count--;
+                    if (count > 0) {
+                        countdown.textContent = count;
+                    } else {
+                        clearInterval(timer);
+                        countdown.classList.add('hidden');
+                        this.startTime = Date.now();
+                        this.loop();
+                    }
+                }, 1000);
+            },
+
+            spawnTarget() {
+                const margin = 20;
+                const x = margin + Math.random() * (this.canvas.width - margin * 2);
+                const y = margin + Math.random() * (this.canvas.height - margin * 2);
+                const radius = 10 + Math.random() * 8;
+
+                this.targets.push({ x, y, r: radius, spawned: Date.now(), life: 1200 });
+                this.lastTargetTime = Date.now();
+            },
+
+            handleClick(e) {
+                if (!this.isPlaying) return;
+
+                const rect = this.canvas.getBoundingClientRect();
+                const mouseX = (e.clientX || e.pageX) - rect.left;
+                const mouseY = (e.clientY || e.pageY) - rect.top;
+
+                // Scale coordinates if canvas is resized by CSS
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                const x = mouseX * scaleX;
+                const y = mouseY * scaleY;
+
+                let hitAny = false;
+                for (let i = this.targets.length - 1; i >= 0; i--) {
+                    const t = this.targets[i];
+                    const dist = Math.sqrt((x - t.x) ** 2 + (y - t.y) ** 2);
+                    if (dist <= t.r) {
+                        const rt = Date.now() - t.spawned;
+                        this.reactionTimes.push(rt);
+                        this.targets.splice(i, 1);
+                        this.hits++;
+                        hitAny = true;
+                        this.createImpact(t.x, t.y);
+                        break;
+                    }
+                }
+
+                if (!hitAny) this.misses++;
+                this.updateHUD();
+            },
+
+            updateHUD() {
+                const acc = (this.hits + this.misses) === 0 ? 0 : Math.round((this.hits / (this.hits + this.misses)) * 100);
+                this.accuracy = acc;
+                document.getElementById('aimAcc').textContent = acc + '%';
+                document.getElementById('aimHits').textContent = this.hits;
+            },
+
+            createImpact(x, y) {
+                // Visual feedback
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, 30, 0, Math.PI * 2);
+                this.ctx.strokeStyle = 'rgba(0, 229, 255, 0.5)';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+            },
+
+            loop() {
+                if (!this.isPlaying) return;
+
+                this.ctx.fillStyle = '#0a0a0a';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Spawn targets
+                if (this.targets.length < 3 && Date.now() - this.lastTargetTime > 800) {
+                    if (this.hits + this.targets.length < this.maxTargets) {
+                        this.spawnTarget();
+                    }
+                }
+
+                // Draw targets
+                const now = Date.now();
+                for (let i = this.targets.length - 1; i >= 0; i--) {
+                    const t = this.targets[i];
+                    const age = now - t.spawned;
+
+                    if (age > t.life) {
+                        this.targets.splice(i, 1);
+                        this.misses++;
+                        this.updateHUD();
+                        continue;
+                    }
+
+                    // Target Pulse
+                    const pulse = Math.sin(age * 0.01) * 3;
+
+                    this.ctx.beginPath();
+                    this.ctx.arc(t.x, t.y, t.r + pulse, 0, Math.PI * 2);
+                    this.ctx.fillStyle = 'rgba(0, 229, 255, 0.2)';
+                    this.ctx.fill();
+                    this.ctx.strokeStyle = 'var(--accent)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+
+                    // Inner eye
+                    this.ctx.beginPath();
+                    this.ctx.arc(t.x, t.y, 5, 0, Math.PI * 2);
+                    this.ctx.fillStyle = '#fff';
+                    this.ctx.fill();
+                }
+
+                // Check end condition
+                if (this.hits >= 10 || (this.hits + this.misses) >= 20) {
+                    this.endSession();
+                } else {
+                    requestAnimationFrame(() => this.loop());
+                }
+            },
+
+            endSession() {
+                this.isPlaying = false;
+                const startBtn = document.getElementById('startAimBtn');
+                const aimResult = document.getElementById('aimResult');
+                const finalScore = document.getElementById('finalAimScore');
+
+                startBtn.textContent = "TEST AGAIN";
+                startBtn.disabled = false;
+                aimResult.classList.remove('hidden');
+                finalScore.textContent = this.accuracy + '%';
+
+                // Calculate Avg Reaction Time
+                const avgRT = this.reactionTimes.length > 0
+                    ? Math.round(this.reactionTimes.reduce((a, b) => a + b, 0) / this.reactionTimes.length)
+                    : 1000;
+
+                // Save to global for calculator
+                window.aimAccuracyScore = this.accuracy;
+                window.aimAvgReactionTime = avgRT;
+
+                const statusMsg = document.getElementById('aiStatusMsg');
+                if (statusMsg) {
+                    if (this.accuracy < 60) {
+                        statusMsg.textContent = "Sensitivity instability detected. Recalibrating...";
+                        statusMsg.style.color = "var(--danger)";
+                    } else if (this.accuracy > 90) {
+                        statusMsg.textContent = "Elite precision confirmed. Optimization ready.";
+                        statusMsg.style.color = "var(--success)";
+                    } else {
+                        statusMsg.textContent = "Neural data captured. ready for sync.";
+                        statusMsg.style.color = "#ffcc00";
+                    }
+                }
+
+                if (window.Toast) {
+                    Toast.show(`Diagnostics: ${this.accuracy}% Acc | ${avgRT}ms RT`, 'info');
+                }
+            }
+        };
+
+        // Initialize on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            if (document.getElementById('aimCanvas')) {
+                AimLab.init();
+            }
+        });
 
         // --- SAVE TO VAULT ---
         if (saveVaultBtn) {
@@ -596,137 +844,169 @@ document.addEventListener('DOMContentLoaded', () => {
 // =======================================
 function generateShareImage(result) {
     const canvas = document.createElement('canvas');
-    canvas.width = 900;
-    canvas.height = 520;
+    canvas.width = 1080;
+    canvas.height = 1350; // Instagram Portrait size for premium feel
     const ctx = canvas.getContext('2d');
 
-    // Background
-    const bg = ctx.createLinearGradient(0, 0, 900, 520);
-    bg.addColorStop(0, '#0b0f17');
-    bg.addColorStop(1, '#111827');
+    // --- Background Layer ---
+    const bg = ctx.createLinearGradient(0, 0, 0, 1350);
+    bg.addColorStop(0, '#06090f');
+    bg.addColorStop(0.5, '#0b0f17');
+    bg.addColorStop(1, '#06090f');
     ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 900, 520);
+    ctx.fillRect(0, 0, 1080, 1350);
 
-    // Accent glow (top-right)
-    const glow = ctx.createRadialGradient(750, 60, 10, 750, 60, 220);
-    glow.addColorStop(0, 'rgba(0,229,255,0.18)');
-    glow.addColorStop(1, 'rgba(0,229,255,0)');
-    ctx.fillStyle = glow;
-    ctx.fillRect(0, 0, 900, 520);
+    // --- Decorative Glows ---
+    function drawGlow(x, y, radius, color) {
+        const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
+        g.addColorStop(0, color);
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    }
+    drawGlow(1080, 0, 600, 'rgba(0, 229, 255, 0.15)');
+    drawGlow(0, 1350, 600, 'rgba(191, 0, 255, 0.1)');
 
-    // Border
-    ctx.strokeStyle = 'rgba(0,229,255,0.35)';
-    ctx.lineWidth = 2;
+    // --- Main Card Frame ---
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.3)';
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    ctx.roundRect(10, 10, 880, 500, 20);
+    ctx.roundRect(60, 60, 960, 1230, 40);
     ctx.stroke();
 
-    // Brand
-    ctx.font = 'bold 28px Inter, sans-serif';
-    ctx.fillStyle = '#00e5ff';
-    ctx.fillText('XP ARENA', 50, 65);
-
-    ctx.font = '16px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText('PRO SENSITIVITY CARD', 50, 92);
-
-    // Divider
-    ctx.strokeStyle = 'rgba(0,229,255,0.25)';
+    // Inner subtle border
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
     ctx.beginPath();
-    ctx.moveTo(50, 110);
-    ctx.lineTo(850, 110);
+    ctx.roundRect(80, 80, 920, 1190, 30);
     ctx.stroke();
 
-    // Device
-    ctx.font = 'bold 26px Inter, sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(`📱 ${result.device}`, 50, 150);
+    // --- Header ---
+    ctx.font = 'bold 46px Inter, sans-serif';
+    ctx.fillStyle = '#00e5ff';
+    ctx.textAlign = 'center';
+    ctx.fillText('XP ARENA', 540, 160);
 
-    // Settings grid
+    ctx.font = '800 24px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.letterSpacing = '4px';
+    ctx.fillText('PRO SENSITIVITY CARD', 540, 200);
+
+    // --- Device Info Box ---
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    ctx.beginPath();
+    ctx.roundRect(140, 260, 800, 180, 20);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0, 229, 255, 0.2)';
+    ctx.stroke();
+
+    ctx.font = 'bold 42px Inter, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(result.device || 'Unknown Device', 540, 340);
+
+    ctx.font = '600 22px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
+    ctx.fillText(`${result.ram || '8'}GB RAM • ${String(result.speed || 'Medium').toUpperCase()} SPEED`, 540, 385);
+
+    // --- Settings Grid ---
     const settings = [
         { label: 'GENERAL', value: result.general },
         { label: 'RED DOT', value: result.reddot },
         { label: '2X SCOPE', value: result.scope2x },
         { label: '4X SCOPE', value: result.scope4x },
-        { label: '8X SCOPE', value: result.scope8x },
+        { label: '8X SCOPE', value: result.scope8x || '45-50' },
     ];
 
-    const API_BASE_APP = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-        ? 'http://localhost:3000'
-        : '';
-
-    const colW = 160;
-    const startX = 50;
-    const startY = 220;
+    const startY = 520;
+    const rowHeight = 130;
 
     settings.forEach((s, i) => {
-        const x = startX + i * colW;
-        // Card bg
-        ctx.fillStyle = 'rgba(0,229,255,0.07)';
+        const y = startY + (i * rowHeight);
+
+        // Row Background
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
         ctx.beginPath();
-        ctx.roundRect(x, startY, colW - 15, 120, 12);
+        ctx.roundRect(140, y, 800, 100, 15);
         ctx.fill();
-        // Border
-        ctx.strokeStyle = 'rgba(0,229,255,0.25)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(x, startY, colW - 15, 120, 12);
-        ctx.stroke();
+
         // Label
-        ctx.font = 'bold 13px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(0,229,255,0.7)';
-        ctx.fillText(s.label, x + 15, startY + 35);
+        ctx.textAlign = 'left';
+        ctx.font = '800 22px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fillText(s.label, 180, y + 60);
+
         // Value
-        ctx.font = 'bold 30px Inter, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.font = 'bold 44px Inter, sans-serif';
         ctx.fillStyle = '#00e5ff';
-        ctx.fillText(s.value, x + 12, startY + 85);
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(0, 229, 255, 0.5)';
+        ctx.fillText(s.value, 900, y + 65);
+        ctx.shadowBlur = 0; // reset
     });
 
-    // Verdict (bottom)
+    // --- Verdict Area ---
     if (result.verdict) {
-        ctx.font = 'italic 15px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(0,229,255,0.7)';
-        const maxW = 800;
+        const vY = 1180;
+        ctx.textAlign = 'center';
+        ctx.font = 'italic 24px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+
+        // Wrap text
+        const maxWidth = 760;
         const words = result.verdict.split(' ');
         let line = '';
-        let y = 390;
+        let currY = vY;
+
         words.forEach(word => {
             const test = line + word + ' ';
-            if (ctx.measureText(test).width > maxW && line !== '') {
-                ctx.fillText(line, 50, y);
+            if (ctx.measureText(test).width > maxWidth) {
+                ctx.fillText(line, 540, currY);
                 line = word + ' ';
-                y += 22;
+                currY += 35;
             } else {
                 line = test;
             }
         });
-        ctx.fillText(line, 50, y);
+        ctx.fillText(line, 540, currY);
     }
 
-    // Footer
-    ctx.font = '14px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.25)';
-    ctx.fillText('xparena.net • Free Fire Sensitivity Tool', 50, 488);
-    ctx.fillText(new Date().toLocaleDateString(), 720, 488);
+    // --- Footer ---
+    ctx.textAlign = 'center';
+    ctx.font = '600 20px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillText('GENERATED AT XPARENA.NET', 540, 1260);
 
-    // Download / Share
+    // --- Final Export ---
     canvas.toBlob(blob => {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'xp-settings.png', { type: 'image/png' })] })) {
+        const filename = `XP-ARENA-${(result.device || 'Settings').replace(/\s+/g, '-')}.png`;
+        const file = new File([blob], filename, { type: 'image/png' });
+
+        if (navigator.share && navigator.canShare({ files: [file] })) {
             navigator.share({
-                title: 'My XP Arena Settings',
-                files: [new File([blob], 'xp-settings.png', { type: 'image/png' })]
+                title: 'My XP Arena Sensitivity',
+                text: `Optimized settings for ${result.device}`,
+                files: [file]
+            }).catch(e => {
+                // Fallback to download if share cancelled/failed
+                triggerDownload(blob, filename);
             });
         } else {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `xparena-${(result.device || 'settings').replace(/\s+/g, '-').toLowerCase()}.png`;
-            a.click();
-            URL.revokeObjectURL(url);
-            if (window.Toast) Toast.show('Image downloaded!', 'success');
+            triggerDownload(blob, filename);
         }
-    }, 'image/png');
+    }, 'image/png', 1.0);
+
+    function triggerDownload(blob, name) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        if (window.Toast) Toast.show('Premium Card Saved!', 'success');
+    }
 }
 
 async function SubmitManualSetup(payload) {
@@ -785,3 +1065,80 @@ async function CopySetup(id) {
     if (window.Toast) Toast.show(data.error || 'Error', 'error');
     return { success: false, message: data.error || 'Error' };
 }
+// --- PRO LAB HARDWARE SENSOR ---
+const ProLabDiagnostics = {
+    touchTimes: [],
+    estimatedRate: 120, // Default baseline
+    isDetecting: false,
+
+    init() {
+        // We listen globally for touch interactions to estimate responsiveness
+        window.addEventListener('touchstart', (e) => this.recordTouch(e), { passive: true });
+        window.addEventListener('touchmove', (e) => this.recordTouch(e), { passive: true });
+
+        // Initial detection phase
+        this.isDetecting = true;
+        setTimeout(() => this.calculateRate(), 5000); // Wait for some user interaction
+    },
+
+    recordTouch(e) {
+        if (!this.isDetecting) return;
+        this.touchTimes.push(performance.now());
+        if (this.touchTimes.length > 100) this.touchTimes.shift();
+    },
+
+    calculateRate() {
+        if (this.touchTimes.length < 10) {
+            // Not enough data, retry later
+            setTimeout(() => this.calculateRate(), 10000);
+            return;
+        }
+
+        const deltas = [];
+        for (let i = 1; i < this.touchTimes.length; i++) {
+            const d = this.touchTimes[i] - this.touchTimes[i - 1];
+            if (d > 0 && d < 100) deltas.push(d); // Filter out gaps
+        }
+
+        if (deltas.length === 0) return;
+
+        const avgDelta = deltas.reduce((a, b) => a + b, 0) / deltas.length;
+        this.estimatedRate = Math.round(1000 / avgDelta);
+
+        // Normalise to common rates (60, 90, 120, 180, 240, 300, 360)
+        const commonRates = [60, 90, 120, 180, 240, 300, 360, 480];
+        this.estimatedRate = commonRates.reduce((prev, curr) =>
+            Math.abs(curr - this.estimatedRate) < Math.abs(prev - this.estimatedRate) ? curr : prev
+        );
+
+        window.estimatedTouchSamplingRate = this.estimatedRate;
+        console.log(`[PRO LAB] Estimated Touch Sampling Rate: ${this.estimatedRate}Hz`);
+
+        // Update UI if on tool page
+        const hzDisplay = document.getElementById('hz-display');
+        const sensorDot = document.getElementById('sensor-dot');
+        if (hzDisplay) {
+            hzDisplay.textContent = `${this.estimatedRate}Hz`;
+            if (sensorDot) {
+                sensorDot.style.background = 'var(--accent)';
+                sensorDot.style.animation = 'none';
+            }
+        }
+
+        // Keep updating occasionally
+        this.touchTimes = [];
+        setTimeout(() => {
+            const dot = document.getElementById('sensor-dot');
+            if (dot) {
+                dot.style.background = '#ffcc00';
+                dot.style.animation = 'pulse 1.5s infinite';
+            }
+            this.calculateRate();
+        }, 30000);
+    }
+};
+
+// Initialize Diagnostics
+document.addEventListener('DOMContentLoaded', () => {
+    ProLabDiagnostics.init();
+});

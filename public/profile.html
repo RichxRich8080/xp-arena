@@ -158,6 +158,46 @@
                 </div>
             </div>
 
+            <!-- SEASON PASS (BATTLE PASS) -->
+            <div id="season-pass-section" class="form-card"
+                style="margin-top: 1.5rem; border: 1px solid var(--border-glass); background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(17,24,39,0.8));">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                    <div>
+                        <h3 id="season-name" style="margin: 0; color: #fff; font-family: 'Outfit';">Season 1: Neon Dawn
+                        </h3>
+                        <p id="season-timer"
+                            style="font-size: 0.75rem; color: var(--accent); margin-top: 2px; font-weight: 800;">24 DAYS
+                            LEFT</p>
+                    </div>
+                    <div id="season-tier"
+                        style="background: var(--accent); color: #000; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 1rem;">
+                        TIER 12</div>
+                </div>
+
+                <div
+                    style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 1rem;">
+                    <div id="season-progress-fill"
+                        style="height: 100%; background: var(--accent); width: 45%; box-shadow: 0 0 15px var(--accent-glow);">
+                    </div>
+                </div>
+
+                <div
+                    style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">
+                    <span>CURRENT REWARD: <span style="color: #fff;">Glow Badge</span></span>
+                    <span>NEXT: <span id="next-reward" style="color: var(--accent);">Elite Icon</span></span>
+                </div>
+
+                <div id="bp-premium-cta" class="hidden"
+                    style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px dashed var(--accent); font-size: 0.8rem; text-align: center;">
+                    <i class="fas fa-crown" style="color: #ffcc00; margin-right: 5px;"></i> Upgrade to <span
+                        style="color: var(--accent); font-weight: 800;">ELITE</span> to unlock special seasonal rewards!
+                    <a href="premium.html"
+                        style="display: block; margin-top: 8px; color: #fff; font-weight: 900; text-decoration: underline;">UPGRADE
+                        NOW</a>
+                </div>
+            </div>
+
             <!-- TABS -->
             <div class="tab-container">
                 <button class="tab-btn active" onclick="switchTab('overview')"><i class="fas fa-th-large"></i>
@@ -459,6 +499,21 @@
                             </div>
                         </div>
                     </details>
+                    <details>
+                        <summary>Push Protocol</summary>
+                        <div class="content">
+                            <div class="form-card"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
+                                <div>
+                                    <h4 style="margin: 0; color: #fff;">Operational Alerts</h4>
+                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Get notified when
+                                        your Pro Setup is liked or followed.</p>
+                                </div>
+                                <button class="btn-primary" style="width:auto; padding: 0.5rem 1rem;"
+                                    onclick="Notification.requestPermission()">Enable</button>
+                            </div>
+                        </div>
+                    </details>
                     <div class="settings-group" style="margin-top: 1rem;">
                         <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';"
                             style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -592,6 +647,25 @@
 
                 User.updateUI();
 
+                // Season / Battle Pass Update
+                if (typeof SeasonSystem !== 'undefined') {
+                    const si = SeasonSystem.getSeasonInfo();
+                    const sName = document.getElementById('season-name');
+                    const sTimer = document.getElementById('season-timer');
+                    const sTier = document.getElementById('season-tier');
+                    const sFill = document.getElementById('season-progress-fill');
+                    const sCta = document.getElementById('bp-premium-cta');
+
+                    if (sName) sName.textContent = si.name;
+                    if (sTimer) sTimer.textContent = `${si.daysLeft} DAYS LEFT`;
+                    if (sTier) sTier.textContent = `TIER ${si.level}`;
+                    if (sFill) sFill.style.width = `${si.progress}%`;
+                    if (sCta) {
+                        if (si.isPremium) sCta.classList.add('hidden');
+                        else sCta.classList.remove('hidden');
+                    }
+                }
+
                 // Referral (Disabled)
                 // const refDisplay = document.getElementById('referralCodeDisplay');
                 // const refCount = document.getElementById('referralCount');
@@ -697,6 +771,16 @@
                                 <div style="color: var(--text-muted);">Red: <span style="color: #fff; font-weight: 600;">${v.reddot}</span></div>
                                 <div style="color: var(--text-muted);">2x: <span style="color: #fff; font-weight: 600;">${v.scope2x}</span></div>
                                 <div style="color: var(--text-muted);">4x: <span style="color: #fff; font-weight: 600;">${v.scope4x}</span></div>
+                            </div>
+                            <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                                <div style="display: flex; gap: 4px; color: #ffcc00; font-size: 0.7rem;">
+                                    <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 5)" style="cursor:pointer;"></i>
+                                    <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 4)" style="cursor:pointer;"></i>
+                                    <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 3)" style="cursor:pointer;"></i>
+                                    <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 2)" style="cursor:pointer;"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Publish to Arena</span>
                             </div>
                         </div>
                     `).join('');
