@@ -22,6 +22,33 @@ router.get('/activity/live', async (req, res) => {
 });
 
 /**
+ * Global Leaderboard (Top Arenis)
+ */
+router.get('/leaderboard', async (req, res) => {
+    try {
+        const users = await db.all(`
+            SELECT id, username, axp, level, streak, avatar, is_premium, vip_badge
+            FROM users 
+            WHERE email_verified = 1
+            ORDER BY axp DESC 
+            LIMIT 100
+        `);
+        // Format for frontend expectations
+        const formatted = users.map(u => ({
+            ...u,
+            badges: {
+                premium: !!u.is_premium,
+                v_badge: !!u.vip_badge
+            }
+        }));
+        res.json(formatted);
+    } catch (err) {
+        console.error('[Leaderboard] Error:', err);
+        res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    }
+});
+
+/**
  * Pro Player Database
  */
 router.get('/pro-players', async (req, res) => {

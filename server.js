@@ -95,6 +95,7 @@ app.use('/api/user', userRoutes);
 app.use('/api', featureRoutes);
 app.use('/api/setups', setupRoutes);
 app.use('/api/guilds', guildRoutes);
+app.use('/api/guild', guildRoutes); // Alias for singular support
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/creators', creatorRoutes);
 app.use('/api/admin', adminRoutes);

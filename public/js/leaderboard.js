@@ -295,7 +295,7 @@ async function renderGuildLeaderboard() {
     if (!list) return;
 
     try {
-        const res = await fetch(`${API_BASE_LB}/api/guild/leaderboard`);
+        const res = await fetch(`${API_BASE_LB}/api/guilds/leaderboard`);
         if (res.ok) {
             const guilds = await res.json();
             if (guilds.length === 0) {
