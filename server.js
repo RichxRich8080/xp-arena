@@ -12,7 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('⚠️ [CRITICAL] JWT_SECRET is missing in production environment. Auth features will fail.');
+    console.error('⚠️ [CRITICAL] JWT_SECRET is missing in production environment. Shutting down for safety.');
+    process.exit(1);
 }
 app.set('trust proxy', 1);
 
@@ -32,27 +33,36 @@ app.use(helmet({
 app.use(compression());
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
 if (allowedOrigins.length > 0) {
-    if (allowedOrigins.includes('*')) {
-        app.use(cors({
+    const allowAll = allowedOrigins.includes('*');
+    const isProd = process.env.NODE_ENV === 'production';
+    const corsOptions = allowAll && !isProd
+        ? {
             origin: '*',
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization']
-        }));
-    } else {
-        app.use(cors({
+        }
+        : {
             origin: (origin, callback) => {
-                if (!origin || allowedOrigins.includes(origin)) {
-                    callback(null, true);
-                } else {
-                    callback(new Error('Not allowed by CORS'));
-                }
+                if (!origin) return callback(null, true);
+                if (allowAll && isProd) return callback(new Error('Wildcard CORS disabled in production'));
+                if (allowedOrigins.includes(origin)) return callback(null, true);
+                return callback(new Error('Not allowed by CORS'));
             },
             methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
             allowedHeaders: ['Content-Type', 'Authorization']
-        }));
-    }
+        };
+    app.use(cors(corsOptions));
 }
+    app.use(cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            return callback(null, true);
+        },
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+        allowedHeaders: ['Content-Type', 'Authorization']
+    }));
 app.use(express.json());
+
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,

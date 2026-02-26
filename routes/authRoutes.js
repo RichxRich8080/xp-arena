@@ -80,7 +80,7 @@ router.post('/register', authLimiter, async (req, res) => {
             requires_verification: true,
             username,
             email,
-            debugCode: emailRes.debugCode // Direct display for testing
+            ...(process.env.NODE_ENV !== 'production' && emailRes.debugCode ? { debugCode: emailRes.debugCode } : {})
         });
     } catch (err) {
         console.error('[Auth] Registration Error:', err);
@@ -166,7 +166,7 @@ router.post('/login', authLimiter, async (req, res) => {
                 username: user.username,
                 email: user.email,
                 error: 'Please verify your email to log in. A new code has been sent.',
-                debugCode: emailRes.debugCode // Direct display for testing
+                ...(process.env.NODE_ENV !== 'production' && emailRes.debugCode ? { debugCode: emailRes.debugCode } : {})
             });
         }
 
@@ -213,7 +213,7 @@ router.post('/forgot-password', strictLimiter, async (req, res) => {
         res.json({
             success: true,
             message: 'Recovery code sent to your email.',
-            debugCode: emailRes.debugCode // Direct display for testing
+            ...(process.env.NODE_ENV !== 'production' && emailRes.debugCode ? { debugCode: emailRes.debugCode } : {})
         });
     } catch (err) {
         console.error(err);

@@ -135,7 +135,7 @@ function injectLayout() {
             <a href="quests" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
             <a href="daily-login" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
             <a href="shop" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:#00ff88;"></i> Armory (Shop)</a>
-            <a href="guilds" class="sidebar-link"><i class="fas fa-shield-alt" style="color: #0f0;"></i> Clans</a>
+            <a href="guilds" class="sidebar-link"><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Clans</a>
             <a href="guild-wars" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
             <a href="submit" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
             <a href="tournaments" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
@@ -230,11 +230,12 @@ function checkDailyRewardReminder() {
     setTimeout(() => {
         const stats = User.getStats();
         const today = new Date().toDateString();
-        if (stats && stats.lastLoginDate !== today) {
+        const last = stats ? (stats.lastLoginDate || (stats.lastLogin ? new Date(stats.lastLogin).toDateString() : null)) : null;
+        if (stats && last !== today) {
             const reminder = document.createElement('div');
             reminder.id = 'daily-reminder-popup';
             reminder.innerHTML = `
-                <div class="reminder-card">
+                <div class="reminder-card" onclick="window.location.href='daily-login.html'">
                     <div class="reminder-glow"></div>
                     <div class="reminder-content">
                         <div class="reminder-icon">
@@ -245,7 +246,7 @@ function checkDailyRewardReminder() {
                             <div class="reminder-sub">Tap to Sync</div>
                         </div>
                         <button onclick="window.location.href='daily-login.html'" class="reminder-btn">CLAIM</button>
-                        <button onclick="this.closest('#daily-reminder-popup').remove()" class="reminder-close">&times;</button>
+                        <button onclick="event.stopPropagation(); this.closest('#daily-reminder-popup').remove()" class="reminder-close">&times;</button>
                     </div>
                 </div>
                 <style>
@@ -455,7 +456,8 @@ function injectThemeOverlay() {
         </button>
         <div class="theme-selector-overlay" id="themeOverlay">
             <h4 style="margin-bottom:1rem; font-weight:800; color:var(--accent); letter-spacing:1px;">VISUAL OVERLAY</h4>
-            <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:12px; margin-bottom:1.5rem;">
+            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:1.5rem;">
+                <div class="theme-dot" onclick="setTheme('default')" style="background: #00e5ff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;" title="Default Neon"></div>
                 <div class="theme-dot" onclick="setTheme('theme-cyber')" style="background: linear-gradient(135deg, #0f0, #00e5ff); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 1px solid #0f0;" title="Cyber Neon"></div>
                 <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
                 <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>

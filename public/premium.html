@@ -386,6 +386,7 @@
     .legal-links {
       display: flex;
       gap: 1.5rem;
+      flex-wrap: wrap;
       margin-top: 1rem;
       font-weight: 600;
     }
@@ -393,6 +394,40 @@
     .legal-links a {
       color: var(--accent);
       text-decoration: none;
+    }
+
+    @media (max-width: 600px) {
+      .premium-container {
+        padding: 1.5rem 1rem 6rem;
+      }
+      .hero-section {
+        height: 260px;
+        margin-bottom: 0.5rem;
+      }
+      .halo-container {
+        width: 220px;
+        height: 220px;
+      }
+      .ring-inner { width: 90px; height: 90px; }
+      .ring-mid { width: 150px; height: 150px; }
+      .ring-outer { width: 220px; height: 220px; }
+      .arena-core {
+        width: 70px; height: 70px; font-size: 2rem;
+      }
+      .main-title { font-size: 2rem; }
+      .benefits-grid { gap: 0.9rem; }
+      .plan-item { padding: 1.2rem; }
+      .btn-elite { padding: 1.1rem; }
+    }
+
+    @media (max-width: 380px) {
+      .hero-section { height: 220px; }
+      .halo-container { width: 190px; height: 190px; }
+      .ring-inner { width: 80px; height: 80px; }
+      .ring-mid { width: 130px; height: 130px; }
+      .ring-outer { width: 190px; height: 190px; }
+      .title-group { margin-top: 1rem; }
+      .main-title { font-size: 1.8rem; }
     }
   </style>
 </head>

@@ -178,6 +178,7 @@
                     User.updateStats(s => {
                         s.streak = (s.streak || 0) + 1;
                         s.lastLoginDate = today;
+                        s.lastLogin = new Date().toISOString();
                     });
 
                     if (window.Toast) Toast.show(`${rewardAmount} AXP Claimed!`, 'success');
