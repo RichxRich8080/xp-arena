@@ -70,7 +70,10 @@ router.post('/register', authLimiter, async (req, res) => {
         }
 
         // Send email
-        await emailService.sendVerificationEmail(email, verificationToken);
+        const emailRes = await emailService.sendVerificationEmail(email, verificationToken);
+        if (!emailRes.success) {
+            console.error('[Auth] Verification email delivery failed:', emailRes.reason);
+        }
 
         res.json({ success: true, requires_verification: true, username, email });
     } catch (err) {
@@ -148,7 +151,10 @@ router.post('/login', authLimiter, async (req, res) => {
             const code = Math.floor(100000 + Math.random() * 900000).toString();
             const expires = getFutureDateTime(15);
             await db.run('UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?', [code, expires, user.id]);
-            await emailService.sendVerificationEmail(user.email, code);
+            const emailRes = await emailService.sendVerificationEmail(user.email, code);
+            if (!emailRes.success) {
+                console.error('[Auth] Resend verification email failed:', emailRes.reason);
+            }
             return res.status(403).json({ requires_verification: true, username: user.username, email: user.email, error: 'Please verify your email to log in. A new code has been sent.' });
         }
 
@@ -187,7 +193,10 @@ router.post('/forgot-password', strictLimiter, async (req, res) => {
         const expires = getFutureDateTime(30);
 
         await db.run('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?', [token, expires, user.id]);
-        await emailService.sendResetEmail(user.email, token);
+        const emailRes = await emailService.sendResetEmail(user.email, token);
+        if (!emailRes.success) {
+            console.error('[Auth] Reset email delivery failed:', emailRes.reason);
+        }
 
         res.json({ success: true, message: 'Recovery code sent to your email.' });
     } catch (err) {

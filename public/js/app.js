@@ -495,7 +495,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirection with a slight delay for "weight"
             setTimeout(() => {
-                window.location.href = 'result.html';
+                window.location.href = 'result';
             }, 600);
         });
 

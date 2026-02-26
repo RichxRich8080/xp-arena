@@ -1,10 +1,11 @@
 const CACHE_NAME = 'xp-arena-v5';
 const ASSETS = [
   '/',
-  '/index.html',
-  '/tool.html',
-  '/leaderboard.html',
-  '/submit.html',
+  '/index',
+  '/tool',
+  '/leaderboard',
+  '/submit',
+  '/profile',
   '/css/main.css',
   '/js/auth.js',
   '/js/user.js',
@@ -48,12 +49,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets, use stale-while-revalidate
+  // For regular assets, use stale-while-revalidate
   if (ASSETS.some(a => req.url.includes(a)) || req.destination === 'style' || req.destination === 'script' || req.destination === 'image') {
     event.respondWith(staleWhileRevalidate(req));
-  } else {
-    event.respondWith(fetch(req).catch(() => caches.match(req)));
+    return;
   }
+
+  // Navigation fallback for Clean URLs (extensionless)
+  if (req.mode === 'navigate') {
+    event.respondWith(
+      fetch(req).catch(() => {
+        return caches.match(req).then(cached => {
+          return cached || caches.match('/index') || caches.match('/');
+        });
+      })
+    );
+    return;
+  }
+
+  // Default catch-all
+  event.respondWith(fetch(req).catch(() => caches.match(req)));
 });
 
 async function staleWhileRevalidate(req) {

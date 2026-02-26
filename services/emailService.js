@@ -5,11 +5,11 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: parseInt(process.env.SMTP_PORT || '587'),
-    secure: process.env.SMTP_SECURE === 'true',
+    host: process.env.SMTP_HOST || 'smtp.resend.com',
+    port: parseInt(process.env.SMTP_PORT || '465'),
+    secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
     auth: {
-        user: process.env.SMTP_USER,
+        user: process.env.SMTP_USER || 'resend',
         pass: process.env.SMTP_PASS,
     },
 });
@@ -21,11 +21,35 @@ const FROM_ADDRESS = process.env.SMTP_FROM || '"XP Arena" <noreply@xparena.com>'
  */
 async function sendEmail(to, subject, htmlBody) {
     if (!process.env.SMTP_USER) {
-        console.warn('[Email] SMTP not configured. Skipping email to:', to);
-        console.log('[Email] Subject:', subject);
-        return { success: false, reason: 'SMTP not configured' };
+        // --- DEVELOPMENT FALLBACK ---
+        console.log('\n' + '='.repeat(50));
+        console.log('📧 [DEVELOPMENT MODE] EMAIL SIMULATION');
+        console.log('To:', to);
+        console.log('Subject:', subject);
+        console.log('Content preview:');
+        // Extract code if it's a verification email
+        const codeMatch = htmlBody.match(/>\s*(\d{6})\s*</);
+        if (codeMatch) {
+            console.log('\n🔑 VERIFICATION CODE: ' + codeMatch[1]);
+        }
+        console.log('='.repeat(50) + '\n');
+
+        return { success: true, mode: 'simulated' };
     }
     try {
+        // --- PRE-LOG FOR SAFETY ---
+        if (FROM_ADDRESS.includes('resend.dev')) {
+            const codeMatch = htmlBody.match(/>\s*(\d{6})\s*</);
+            if (codeMatch) {
+                console.log('\n' + '!'.repeat(50));
+                console.log('🔑 LIVE SAFETY LOG (Resend Onboarding Restricted)');
+                console.log('recipient: ' + to);
+                console.log('code: ' + codeMatch[1]);
+                console.log('!'.repeat(50) + '\n');
+            }
+        }
+
+        // --- LIVE DISPATCH ---
         await transporter.sendMail({
             from: FROM_ADDRESS,
             to,
@@ -35,7 +59,7 @@ async function sendEmail(to, subject, htmlBody) {
         console.log(`[Email] Sent to ${to}: ${subject}`);
         return { success: true };
     } catch (err) {
-        console.error('[Email] Error:', err.message);
+        console.error('[Email] Delivery Error:', err.message);
         return { success: false, reason: err.message };
     }
 }
