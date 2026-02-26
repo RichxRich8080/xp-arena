@@ -101,6 +101,77 @@
                     setTimeout(() => {
                         window.location.href = 'profile.html';
                     }, 3000);
+                } else if (result.requires_verification) {
+                    // Show Verification Overlay
+                    const overlay = document.createElement('div');
+                    overlay.id = 'verification-overlay';
+                    overlay.style.cssText = `
+                        position: fixed; inset: 0; background: rgba(11, 15, 23, 0.95); z-index: 10000;
+                        display: flex; flex-direction: column; align-items: center; justify-content: center;
+                        backdrop-filter: blur(15px); animation: fadeIn 0.3s ease forwards;
+                    `;
+                    overlay.innerHTML = `
+                        <div class="auth-card-premium" style="max-width: 450px; text-align: center; background: rgba(18, 24, 38, 0.95);">
+                            <div class="auth-header">
+                                <div class="auth-badge">Security Protocol</div>
+                                <h2 class="text-neon" style="font-size: 2rem; margin-bottom: 0.5rem;">VERIFY IDENTITY</h2>
+                                <p style="color: var(--text-muted);">Confirm your residency in the Arena. Code sent to your inbox.</p>
+                                ${result.debugCode ? `
+                                    <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,229,255,0.1); border: 1px dashed var(--accent); border-radius: 8px;">
+                                        <div style="font-size: 0.7rem; color: var(--accent); font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">👨‍💻 Developer Notice</div>
+                                        <div style="font-size: 0.85rem; color: #fff;">Your code is: <strong style="font-size: 1.2rem; color: var(--accent); letter-spacing: 2px;">${result.debugCode}</strong></div>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div id="verify-error" style="display:none; color: var(--danger); margin-bottom: 1rem;"></div>
+                            <div class="form-group-glow" style="margin-bottom: 2rem;">
+                                <input type="text" id="verifyCode" placeholder="000000" maxlength="6" style="text-align: center; font-size: 2rem; letter-spacing: 0.5rem; font-weight: 800; font-family: 'Share Tech Mono', monospace;" autocomplete="off">
+                            </div>
+                            <button id="verifyBtn" class="btn-auth-premium">
+                                <span class="btn-text">AUTHENTICATE CODE</span>
+                                <span class="btn-glow"></span>
+                            </button>
+                        </div>
+                    `;
+                    document.body.appendChild(overlay);
+
+                    document.getElementById('verifyBtn').addEventListener('click', async () => {
+                        const code = document.getElementById('verifyCode').value;
+                        const vBtn = document.getElementById('verifyBtn');
+                        const vErr = document.getElementById('verify-error');
+
+                        if (code.length !== 6) {
+                            vErr.textContent = "Code must be 6 digits";
+                            vErr.style.display = 'block';
+                            return;
+                        }
+
+                        vBtn.disabled = true;
+                        vBtn.querySelector('.btn-text').textContent = 'VERIFYING...';
+                        vErr.style.display = 'none';
+
+                        try {
+                            const verifyRes = await fetch('/api/auth/verify-email', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username: user, code })
+                            });
+                            const verifyData = await verifyRes.json();
+
+                            if (verifyRes.ok && verifyData.success) {
+                                localStorage.setItem('xp_token', verifyData.token);
+                                localStorage.setItem('xp_current_user', JSON.stringify(verifyData.user));
+                                window.location.href = 'profile.html';
+                            } else {
+                                throw new Error(verifyData.error || 'Verification failed');
+                            }
+                        } catch (e) {
+                            vErr.textContent = e.message;
+                            vErr.style.display = 'block';
+                            vBtn.disabled = false;
+                            vBtn.querySelector('.btn-text').textContent = 'AUTHENTICATE CODE';
+                        }
+                    });
                 } else {
                     const err = document.getElementById('error-msg');
                     err.textContent = result.message;

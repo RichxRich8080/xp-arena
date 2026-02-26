@@ -17,7 +17,7 @@ const Auth = {
             const data = await res.json();
             if (res.ok) {
                 if (data.requires_verification) {
-                    return { success: true, requires_verification: true, username: data.username };
+                    return { success: true, requires_verification: true, username: data.username, debugCode: data.debugCode };
                 }
                 localStorage.setItem('xp_token', data.token);
                 localStorage.setItem('xp_current_user', JSON.stringify(data.user));
@@ -43,7 +43,7 @@ const Auth = {
 
             // Handle HTTP 403 Forbidden with verification requirement
             if (res.status === 403 && data.requires_verification) {
-                return { success: false, requires_verification: true, message: data.error, username: data.username };
+                return { success: false, requires_verification: true, message: data.error, username: data.username, debugCode: data.debugCode };
             }
 
             if (res.ok) {

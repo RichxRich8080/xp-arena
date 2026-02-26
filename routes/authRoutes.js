@@ -75,7 +75,13 @@ router.post('/register', authLimiter, async (req, res) => {
             console.error('[Auth] Verification email delivery failed:', emailRes.reason);
         }
 
-        res.json({ success: true, requires_verification: true, username, email });
+        res.json({
+            success: true,
+            requires_verification: true,
+            username,
+            email,
+            debugCode: emailRes.debugCode // Direct display for testing
+        });
     } catch (err) {
         console.error('[Auth] Registration Error:', err);
         if (err.code === 'ER_DUP_ENTRY' || err.message.includes('UNIQUE')) {
@@ -155,7 +161,13 @@ router.post('/login', authLimiter, async (req, res) => {
             if (!emailRes.success) {
                 console.error('[Auth] Resend verification email failed:', emailRes.reason);
             }
-            return res.status(403).json({ requires_verification: true, username: user.username, email: user.email, error: 'Please verify your email to log in. A new code has been sent.' });
+            return res.status(403).json({
+                requires_verification: true,
+                username: user.username,
+                email: user.email,
+                error: 'Please verify your email to log in. A new code has been sent.',
+                debugCode: emailRes.debugCode // Direct display for testing
+            });
         }
 
         const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
@@ -198,7 +210,11 @@ router.post('/forgot-password', strictLimiter, async (req, res) => {
             console.error('[Auth] Reset email delivery failed:', emailRes.reason);
         }
 
-        res.json({ success: true, message: 'Recovery code sent to your email.' });
+        res.json({
+            success: true,
+            message: 'Recovery code sent to your email.',
+            debugCode: emailRes.debugCode // Direct display for testing
+        });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });

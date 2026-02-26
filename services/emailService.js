@@ -29,22 +29,26 @@ async function sendEmail(to, subject, htmlBody) {
         console.log('Content preview:');
         // Extract code if it's a verification email
         const codeMatch = htmlBody.match(/>\s*(\d{6})\s*</);
+        let debugCode = null;
         if (codeMatch) {
-            console.log('\n🔑 VERIFICATION CODE: ' + codeMatch[1]);
+            debugCode = codeMatch[1];
+            console.log('\n🔑 VERIFICATION CODE: ' + debugCode);
         }
         console.log('='.repeat(50) + '\n');
 
-        return { success: true, mode: 'simulated' };
+        return { success: true, mode: 'simulated', debugCode };
     }
     try {
         // --- PRE-LOG FOR SAFETY ---
+        let debugCode = null;
         if (FROM_ADDRESS.includes('resend.dev')) {
             const codeMatch = htmlBody.match(/>\s*(\d{6})\s*</);
             if (codeMatch) {
+                debugCode = codeMatch[1];
                 console.log('\n' + '!'.repeat(50));
                 console.log('🔑 LIVE SAFETY LOG (Resend Onboarding Restricted)');
                 console.log('recipient: ' + to);
-                console.log('code: ' + codeMatch[1]);
+                console.log('code: ' + debugCode);
                 console.log('!'.repeat(50) + '\n');
             }
         }
@@ -57,7 +61,7 @@ async function sendEmail(to, subject, htmlBody) {
             html: htmlBody,
         });
         console.log(`[Email] Sent to ${to}: ${subject}`);
-        return { success: true };
+        return { success: true, debugCode };
     } catch (err) {
         console.error('[Email] Delivery Error:', err.message);
         return { success: false, reason: err.message };

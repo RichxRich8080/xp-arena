@@ -141,6 +141,12 @@
                             <div class="auth-badge">Security Protocol</div>
                             <h2 class="text-neon" style="font-size: 2rem; margin-bottom: 0.5rem;">VERIFY IDENTITY</h2>
                             <p style="color: var(--text-muted);">A 6-digit code has been sent to <strong>${email}</strong></p>
+                            ${result.debugCode ? `
+                                <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,229,255,0.1); border: 1px dashed var(--accent); border-radius: 8px;">
+                                    <div style="font-size: 0.7rem; color: var(--accent); font-weight: 800; text-transform: uppercase; margin-bottom: 5px;">👨‍💻 Developer Notice</div>
+                                    <div style="font-size: 0.85rem; color: #fff;">Your code is: <strong style="font-size: 1.2rem; color: var(--accent); letter-spacing: 2px;">${result.debugCode}</strong></div>
+                                </div>
+                            ` : ''}
                         </div>
                         <div id="verify-error" style="display:none; color: var(--danger); margin-bottom: 1rem;"></div>
                         <div class="form-group-glow" style="margin-bottom: 2rem;">
