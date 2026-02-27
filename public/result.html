@@ -304,6 +304,9 @@
                     CONFIDENCE: --
                 </span>
             </div>
+            <button class="btn-elite" onclick="downloadVideo()">
+                <i class="fas fa-video"></i> DOWNLOAD VIDEO
+            </button>
 
             <button class="btn-elite" onclick="exportImage()">
                 <i class="fas fa-id-card"></i> GEN ELITE OPERATOR CARD
@@ -442,6 +445,89 @@
             } else {
                 if (window.Toast) Toast.show('Generating operator card...', 'info');
             }
+        }
+
+        async function downloadVideo() {
+            const results = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+            const w = 720, h = 1280;
+            const canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext('2d');
+            let t = 0;
+
+            function drawFrame() {
+                // Background
+                const grad = ctx.createLinearGradient(0, 0, w, h);
+                grad.addColorStop(0, '#0b0f17'); grad.addColorStop(1, '#111827');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
+
+                // Accents
+                ctx.strokeStyle = 'rgba(0,229,255,0.3)';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(40, 40, w - 80, h - 80);
+
+                // Title
+                ctx.fillStyle = '#00e5ff';
+                ctx.font = 'bold 48px Outfit, Inter, sans-serif';
+                ctx.fillText('XP ARENA • ELITE', 60, 120);
+
+                // Device
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 42px Outfit, Inter, sans-serif';
+                ctx.fillText(results.device || 'Your Device', 60, 190);
+
+                // Values
+                ctx.font = '32px Inter, sans-serif';
+                const y0 = 280, lh = 70;
+                const rows = [
+                    ['GENERAL', results.general || '--'],
+                    ['RED DOT', results.reddot || '--'],
+                    ['2X SCOPE', results.scope2x || '--'],
+                    ['4X SCOPE', results.scope4x || '--'],
+                    ['DPI', (results.dpi || 800) + ' DPI']
+                ];
+                rows.forEach((r, i) => {
+                    ctx.fillStyle = 'rgba(148,163,184,1)';
+                    ctx.fillText(r[0], 60, y0 + i * lh);
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(r[1], 360, y0 + i * lh);
+                });
+
+                // Animated accent bar
+                const barW = 560, barH = 10, bx = 60, by = y0 + rows.length * lh + 40;
+                ctx.fillStyle = 'rgba(0,229,255,0.2)';
+                ctx.fillRect(bx, by, barW, barH);
+                ctx.fillStyle = '#00e5ff';
+                const prog = ((t % 100) / 100) * barW;
+                ctx.fillRect(bx, by, prog, barH);
+                t += 2;
+            }
+
+            const stream = canvas.captureStream(30);
+            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+            const chunks = [];
+            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+            recorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'xp-arena-sensitivity.webm';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                URL.revokeObjectURL(url);
+            };
+
+            let rafId;
+            function loop() { drawFrame(); rafId = requestAnimationFrame(loop); }
+            loop();
+            recorder.start();
+            // Record ~3 seconds
+            setTimeout(() => {
+                recorder.stop();
+                cancelAnimationFrame(rafId);
+            }, 3200);
         }
     </script>
 </body>

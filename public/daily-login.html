@@ -86,6 +86,7 @@
                     <span class="btn-text">CLAIM TODAY'S REWARD</span>
                     <span class="btn-glow"></span>
                 </button>
+                <div id="streakNote" style="margin-top: 0.8rem; font-size:0.8rem; color: var(--text-muted);"></div>
             </div>
         </section>
         </div>
@@ -116,8 +117,17 @@
                 const claimBtn = document.getElementById('claimBtn');
                 function renderGrid() {
                     const stats = User.getStats();
-                    const streak = stats.streak || 0;
-                    const today = new Date().toDateString(); // e.g., "Mon Jan 01 2024"
+                    const today = new Date().toDateString();
+                    let streak = stats.streak || 0;
+                    let missedReset = false;
+                    if (stats.lastLogin) {
+                        const lastDate = new Date(stats.lastLogin);
+                        const diffDays = Math.floor((new Date().setHours(0,0,0,0) - new Date(lastDate).setHours(0,0,0,0)) / 86400000);
+                        if (diffDays > 1) {
+                            missedReset = true;
+                            streak = 0;
+                        }
+                    }
 
                     let canClaim = true; // Assume can claim by default
                     if (stats.lastLogin) {
@@ -128,6 +138,10 @@
                     document.getElementById('dashStreak').innerHTML = `${streak} <span style="font-size: 1rem; color: var(--text-muted);">DAYS</span>`;
                     document.getElementById('dashAXP').textContent = Number(stats.axp || 0).toLocaleString();
                     document.getElementById('dashRankXP').textContent = Number(stats.axp % 500).toLocaleString();
+                    const noteEl = document.getElementById('streakNote');
+                    if (noteEl) {
+                        noteEl.textContent = missedReset ? 'You missed a day — streak resets on next claim.' : '';
+                    }
 
                     const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);
                     document.getElementById('dashNextReward').textContent = `${rewards[nextDayIdx || 0].reward}`;

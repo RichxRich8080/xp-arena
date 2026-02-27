@@ -30,15 +30,8 @@ function updateMetaTitle() {
 }
 
 function initFloatEffects() {
-    window.addEventListener('mousemove', (e) => {
-        const heroes = document.querySelectorAll('.hero-content, .page-header');
-        if (heroes.length === 0) return;
-        const x = (window.innerWidth / 2 - e.pageX) / 50;
-        const y = (window.innerHeight / 2 - e.pageY) / 50;
-        heroes.forEach(h => {
-            h.style.transform = `translate(${x}px, ${y}px)`;
-        });
-    });
+    // Mouse movement/parallax effect disabled per request
+    return;
 }
 
 document.addEventListener('DOMContentLoaded', () => {

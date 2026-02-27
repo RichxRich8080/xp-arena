@@ -205,67 +205,9 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT COLUMN: Pro Laboratory -->
+                    <!-- RIGHT COLUMN: Pro Laboratory (disabled) -->
                     <div class="tool-col">
-                        <!-- AI AIM LAB -->
-                        <div id="aimLabSection"
-                            style="background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(17,24,39,0.8)); border: 1px solid var(--border-glass); border-radius: 20px; padding: 1.5rem; text-align: center; position: relative; overflow: hidden; height: 100%;">
-                            <div id="aimLabLocked" class="premium-lock hidden"
-                                style="position: absolute; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 20px;">
-                                <i class="fas fa-lock"
-                                    style="color: #ffcc00; font-size: 1.5rem; margin-bottom: 10px;"></i>
-                                <span
-                                    style="font-weight: 800; font-size: 0.8rem; color: #fff; text-transform: uppercase; letter-spacing: 1px;">Pro
-                                    Only</span>
-                                <a href="premium.html"
-                                    style="color: var(--accent); font-size: 0.75rem; text-decoration: underline; margin-top: 5px;">Upgrade</a>
-                            </div>
-
-                            <h3
-                                style="margin-bottom: 0.5rem; font-family: 'Outfit'; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1rem;">
-                                <i class="fas fa-crosshairs" style="color: var(--accent);"></i> AI AIM LAB
-                            </h3>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem;">Performance
-                                feedback for 4x accuracy.</p>
-
-                            <div id="aimTrainerArea" class="hidden"
-                                style="position: relative; width: 100%; height: 200px; background: #000; border-radius: 12px; margin-bottom: 1rem; cursor: crosshair; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
-                                <canvas id="aimCanvas" width="400" height="200"
-                                    style="width: 100%; height: 100%;"></canvas>
-                                <div id="aimStats"
-                                    style="position: absolute; top: 10px; left: 10px; text-align: left; font-size: 0.6rem; color: var(--accent); font-weight: 800; pointer-events: none;">
-                                    ACCURACY: <span id="aimAcc">0%</span><br>
-                                    TARGETS: <span id="aimHits">0</span>/10
-                                </div>
-                                <div id="aimCountdown"
-                                    style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: 900; color: #fff; pointer-events: none; background: rgba(0,0,0,0.5);"
-                                    class="hidden">3</div>
-                            </div>
-
-                            <button id="startAimBtn" class="btn-secondary"
-                                style="width: auto; padding: 0.5rem 1.5rem; font-size: 0.75rem; border-color: var(--accent); color: var(--accent); margin-bottom: 1rem;">START
-                                ACCURACY TEST</button>
-
-                            <div id="aimResult" class="hidden"
-                                style="margin-top: 0.5rem; font-weight: 800; font-size: 0.8rem; color: var(--accent);">
-                                SCORE: <span id="finalAimScore">0%</span>
-                                <div id="aiStatusMsg"
-                                    style="font-size: 0.6rem; color: #ffcc00; margin-top: 4px; font-weight: 400;">Neural
-                                    data captured. ready for sync.</div>
-                            </div>
-
-                            <!-- PRO LAB DIAGNOSTICS Integrated -->
-                            <div id="diagSection"
-                                style="margin-top: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);">
-                                <div id="sensor-dot"
-                                    style="width: 6px; height: 6px; background: #ffcc00; border-radius: 50%; animation: pulse 1.5s infinite;">
-                                </div>
-                                <span
-                                    style="font-size: 0.6rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">SENSOR:</span>
-                                <span id="hz-display"
-                                    style="font-size: 0.65rem; color: var(--accent); font-weight: 950;">READY</span>
-                            </div>
-                        </div>
+                        <div id="aimLabSection" style="display:none;"></div>
                     </div>
                 </div>
 
