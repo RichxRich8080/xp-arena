@@ -221,6 +221,23 @@ function injectLayout() {
 
     // 5. Daily Reward Reminder
     checkDailyRewardReminder();
+
+    // 6. Premium Hint Banner (non-premium users only, skip on premium pages)
+    try {
+        const page = (window.location.pathname.split('/').pop() || '').toLowerCase();
+        const skip = ['premium.html', 'premium-dashboard.html'].includes(page);
+        if (!skip && Auth.isLoggedIn()) {
+            const stats = window.User && window.User.getStats ? window.User.getStats() : null;
+            if (stats && !stats.is_premium && !localStorage.getItem('xp_premium_hint_dismiss')) {
+                const banner = document.createElement('div');
+                banner.id = 'premium-hint-banner';
+                banner.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(11,15,23,0.95); border:1px solid var(--accent); color:#fff; padding:10px 14px; border-radius:12px; z-index:30000; display:flex; gap:10px; align-items:center;';
+                banner.innerHTML = '<span style=\"font-weight:900; letter-spacing:1px; font-size:0.8rem;\">Go Premium</span><a href=\"premium.html\" class=\"btn-secondary\" style=\"width:auto\">Compare</a><button id=\"phDismiss\" style=\"background:none;border:none;color:var(--text-muted);font-size:1.2rem;\">&times;</button>';
+                document.body.appendChild(banner);
+                document.getElementById('phDismiss').addEventListener('click', () => { localStorage.setItem('xp_premium_hint_dismiss', '1'); banner.remove(); });
+            }
+        }
+    } catch {}
 }
 
 function checkDailyRewardReminder() {

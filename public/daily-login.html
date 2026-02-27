@@ -87,6 +87,7 @@
                     <span class="btn-glow"></span>
                 </button>
                 <div id="streakNote" style="margin-top: 0.8rem; font-size:0.8rem; color: var(--text-muted);"></div>
+                <div id="nextBonus" style="margin-top: 0.3rem; font-size:0.75rem; color: var(--accent); font-weight:800;"></div>
             </div>
         </section>
         </div>
@@ -141,6 +142,12 @@
                     const noteEl = document.getElementById('streakNote');
                     if (noteEl) {
                         noteEl.textContent = missedReset ? 'You missed a day — streak resets on next claim.' : '';
+                    }
+                    const bonusEl = document.getElementById('nextBonus');
+                    if (bonusEl) {
+                        const nextDay = (streak % 7) + 1;
+                        if (nextDay === 7) bonusEl.textContent = 'Next bonus: Day 7 — 2× AXP';
+                        else bonusEl.textContent = `Next up: Day ${nextDay} reward ${rewards[(nextDay-1)].reward}`;
                     }
 
                     const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);

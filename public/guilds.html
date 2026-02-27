@@ -188,6 +188,7 @@
                 <div id="joinBlock" class="feature-item tactical-dossier" data-id="DEPLOY_REQ_09">
                     <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
                     <input id="guildIdInput" class="settings-input" placeholder="Clan ID" />
+                    <input id="inviteCodeInput" class="settings-input" placeholder="Invite Code (e.g., G123)" />
                     <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="joinGuild()">DEPLOY
                         NOW</button>
                     <button class="btn-secondary"
@@ -215,6 +216,13 @@
                             style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
                             CLAN ROSTER</div>
                         <div id="guildMembersList" style="display:grid; gap:8px;"></div>
+                    </div>
+                    <div style="margin-top:12px;">
+                        <div style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 4px;">INVITE CODE</div>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input id="guildInviteCode" class="settings-input" readonly value="" />
+                            <button class="btn-secondary" style="width:auto" onclick="copyInviteCode()">Copy</button>
+                        </div>
                     </div>
                     <div id="manageMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
                 </div>
@@ -265,6 +273,7 @@
                                 let totalAXP = 0;
                                 members.forEach(m => totalAXP += (m.axp || 0));
                                 document.getElementById('homeStats').textContent = `Members ${members.length} • AXP ${Number(totalAXP).toLocaleString()}`;
+                                const inv = document.getElementById('guildInviteCode'); if (inv) inv.value = 'G' + g.id;
                             }
                         } else {
                             if (createBlock) createBlock.style.display = '';
@@ -275,6 +284,13 @@
                     }
                 } catch { }
             }
+        function copyInviteCode() {
+            const inv = document.getElementById('guildInviteCode');
+            if (!inv) return;
+            navigator.clipboard.writeText(inv.value).then(() => {
+                if (window.Toast) Toast.show('Invite code copied!', 'success');
+            });
+        }
         }
         async function createGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
@@ -291,7 +307,12 @@
         }
         async function joinGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const gid = parseInt(document.getElementById('guildIdInput').value, 10);
+            let gid = parseInt(document.getElementById('guildIdInput').value, 10);
+            const code = (document.getElementById('inviteCodeInput')?.value || '').trim();
+            if (!gid && code) {
+                const m = code.match(/G(\d+)/i) || code.match(/(\d+)/);
+                if (m) gid = parseInt(m[1], 10);
+            }
             const msg = document.getElementById('guildJoinMsg');
             const res = await fetch((window.API_URL || '') + '/api/guilds/join', {
                 method: 'POST',

@@ -318,7 +318,19 @@
                     onclick="copySettings()">COPY</button>
                 <button class="btn-elite"
                     style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);"
-                    onclick="window.location.href='tool.html'">RETRY</button>
+                    onclick="shareLink()">SHARE LINK</button>
+            </div>
+            <button class="btn-elite"
+                style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); margin-top:10px;"
+                onclick="window.location.href='tool.html'">RETRY</button>
+
+            <div style="margin-top:1.2rem; text-align:left;">
+                <div style="font-size:0.8rem; color: var(--text-muted); margin-bottom:6px; font-weight:800; letter-spacing:1px;">RECOMMENDED STEPS</div>
+                <ul style="margin:0; padding-left: 1rem; line-height:1.7; color: rgba(255,255,255,0.8);">
+                    <li>Set General, then Red Dot, then 2x and 4x scopes in game</li>
+                    <li>Play 2–3 matches to acclimate; avoid rapid changes</li>
+                    <li>Re-run calibration after device updates or accessories change</li>
+                </ul>
             </div>
         </div>
     </div>
@@ -332,14 +344,22 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const hash = (location.hash || '').replace(/^#/, '');
+            let resultsFromHash = null;
+            if (hash.startsWith('data=')) {
+                try {
+                    const b64 = decodeURIComponent(hash.slice(5));
+                    resultsFromHash = JSON.parse(atob(b64));
+                    localStorage.setItem('xp_calc_results', JSON.stringify(resultsFromHash));
+                    localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultsFromHash.device }));
+                } catch {}
+            }
             const params = JSON.parse(localStorage.getItem('xp_calc_params') || '{}');
             if (!params.device) {
                 window.location.href = 'tool.html';
                 return;
             }
-
             document.getElementById('status-device').textContent = params.device;
-
             startSequence(params);
         });
 
@@ -347,11 +367,10 @@
             const statusMsg = document.getElementById('status-msg');
 
             const steps = [
-                { msg: "SYNCING NEURAL...", time: 0 },
-                { msg: "AIM LAB EVAL...", time: 1200 },
-                { msg: "POLLING HZ SPEED...", time: 2400 },
-                { msg: "ELITE OPTIMIZING...", time: 3600 },
-                { msg: "PROFILE READY", time: 4800 }
+                { msg: "SYNCING...", time: 0 },
+                { msg: "ANALYZING DEVICE...", time: 800 },
+                { msg: "OPTIMIZING...", time: 1600 },
+                { msg: "READY", time: 2200 }
             ];
 
             steps.forEach(step => {
@@ -365,7 +384,7 @@
 
             setTimeout(() => {
                 revealResult(params);
-            }, 5500);
+            }, 2500);
         }
 
         function revealResult(params) {
@@ -436,6 +455,25 @@
             navigator.clipboard.writeText(text).then(() => {
                 if (window.Toast) Toast.show('Elite settings copied!', 'success');
             });
+        }
+        function shareLink() {
+            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+            try {
+                const b64 = btoa(JSON.stringify({
+                    device: res.device,
+                    general: res.general,
+                    reddot: res.reddot,
+                    scope2x: res.scope2x,
+                    scope4x: res.scope4x,
+                    dpi: res.dpi || 800
+                }));
+                const url = `${location.origin}${location.pathname}#data=${encodeURIComponent(b64)}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    if (window.Toast) Toast.show('Share link copied!', 'success');
+                });
+            } catch {
+                if (window.Toast) Toast.show('Could not create share link.', 'danger');
+            }
         }
 
         function exportImage() {
