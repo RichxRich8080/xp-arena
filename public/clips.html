@@ -13,26 +13,30 @@
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         :root {
-            --bg: #050508;
+            --bg: #030305;
             --surface: rgba(15, 15, 25, 0.7);
             --border: rgba(255, 255, 255, 0.08);
-            --border-active: rgba(var(--accent-rgb, 139, 92, 246), 0.4);
             --radius-lg: 24px;
+            --hud-glow: rgba(var(--accent-rgb), 0.15);
         }
 
         body {
-            background: var(--bg);
-            color: #f8fafc;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 50% -20%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50% 50%, 40px 40px, 40px 40px;
+            background-attachment: fixed;
+            color: var(--text-white);
         }
 
-        /* ─── AMBIENT ─── */
         .ambient-bg {
             position: fixed;
             inset: 0;
             z-index: 0;
             pointer-events: none;
+            overflow: hidden;
         }
 
         .orb {
@@ -40,64 +44,80 @@
             width: 800px;
             height: 800px;
             background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            filter: blur(140px);
-            opacity: 0.08;
-            top: -300px;
+            filter: blur(160px);
+            opacity: 0.1;
+            top: -200px;
             right: -200px;
         }
 
-        /* ─── LAYOUT ─── */
         .page-wrapper {
             position: relative;
             z-index: 1;
-            max-width: 1200px;
+            max-width: 1300px;
             margin: 0 auto;
-            padding: 4rem 1.5rem 8rem;
+            padding: 5rem 1.5rem 8rem;
         }
 
         .clips-hero {
             text-align: center;
-            margin-bottom: 5rem;
+            margin-bottom: 6rem;
+        }
+
+        .clips-hero .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            letter-spacing: 6px;
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
         }
 
         .clips-hero h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(3rem, 10vw, 5rem);
+            font-size: clamp(3rem, 10vw, 6rem);
             font-weight: 900;
-            letter-spacing: -3px;
-            line-height: 0.9;
-            margin-bottom: 1.5rem;
-            text-transform: uppercase;
+            letter-spacing: -4px;
+            line-height: 0.85;
+            margin-bottom: 2rem;
+            background: linear-gradient(to bottom, #fff 40%, rgba(255, 255, 255, 0.4));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .clips-hero p {
             color: #94a3b8;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             max-width: 600px;
             margin: 0 auto;
+            line-height: 1.6;
         }
 
-        /* ─── CLIP GRID ─── */
+        /* GRID */
         .clip-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
             gap: 2.5rem;
+            margin-bottom: 6rem;
         }
 
+        /* CARD */
         .clip-card {
             background: var(--surface);
+            backdrop-filter: blur(24px) saturate(160%);
+            -webkit-backdrop-filter: blur(24px) saturate(160%);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
             overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            backdrop-filter: blur(10px);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
             position: relative;
         }
 
         .clip-card:hover {
-            transform: translateY(-12px) scale(1.02);
-            border-color: var(--border-active);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            transform: translateY(-12px);
+            border-color: rgba(var(--accent-rgb), 0.4);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
         }
 
         .thumb-wrap {
@@ -112,28 +132,22 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.7;
-            transition: all 0.5s ease;
+            opacity: 0.8;
+            transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         .clip-card:hover .thumb-wrap img {
-            opacity: 1;
             transform: scale(1.1);
-        }
-
-        .play-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
+            opacity: 1;
         }
 
         .play-icon {
-            width: 60px;
-            height: 60px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            width: 70px;
+            height: 70px;
             background: var(--accent);
             border-radius: 50%;
             display: flex;
@@ -141,144 +155,185 @@
             justify-content: center;
             color: #000;
             font-size: 1.5rem;
-            box-shadow: 0 0 30px var(--accent-glow);
-            transform: scale(0.8);
             opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 30px var(--accent-glow);
+            z-index: 2;
         }
 
         .clip-card:hover .play-icon {
-            transform: scale(1);
+            transform: translate(-50%, -50%) scale(1.1);
             opacity: 1;
         }
 
         .duration-tag {
             position: absolute;
-            bottom: 12px;
-            right: 12px;
-            padding: 4px 10px;
+            bottom: 15px;
+            right: 15px;
+            padding: 5px 12px;
             background: rgba(0, 0, 0, 0.8);
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            color: #fff;
             backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            color: #fff;
+            z-index: 2;
         }
 
-        .clip-body {
-            padding: 1.5rem;
+        .clip-info {
+            padding: 1.8rem;
         }
 
-        .clip-body h3 {
+        .clip-info h3 {
             font-family: 'Outfit', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-            margin-bottom: 0.8rem;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
             color: #fff;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
 
-        .author-info {
-            display: flex;
+        .author-tag {
+            display: inline-flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.2rem;
-        }
-
-        .author-meta {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            gap: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
             font-size: 0.85rem;
-            font-weight: 600;
-            color: #94a3b8;
-        }
-
-        .author-meta i {
             color: var(--accent);
-        }
-
-        .rank-badge {
-            font-size: 0.65rem;
-            font-weight: 900;
-            padding: 2px 8px;
-            border-radius: 100px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
         }
 
         .clip-foot {
             display: flex;
             align-items: center;
-            gap: 20px;
-            padding-top: 1.2rem;
+            justify-content: space-between;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border);
         }
 
         .stat-group {
             display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #64748b;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            font-weight: 600;
         }
 
         .stat-group i {
-            font-size: 0.9rem;
-            color: #475569;
+            font-size: 1rem;
         }
 
-        .stat-group.liked i {
+        .stat-group.liked {
             color: #ef4444;
         }
 
-        /* ─── CTA ─── */
+        /* HUD CORNERS */
+        .card-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border: 1.5px solid var(--accent);
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        .tl {
+            top: 12px;
+            left: 12px;
+            border-right: 0;
+            border-bottom: 0;
+        }
+
+        .tr {
+            top: 12px;
+            right: 12px;
+            border-left: 0;
+            border-bottom: 0;
+        }
+
+        .bl {
+            bottom: 12px;
+            left: 12px;
+            border-right: 0;
+            border-top: 0;
+        }
+
+        .br {
+            bottom: 12px;
+            right: 12px;
+            border-left: 0;
+            border-top: 0;
+        }
+
+        /* THEATER MODAL OVERRIDE */
+        #theaterModal {
+            background: rgba(3, 3, 5, 0.98);
+            backdrop-filter: blur(30px);
+        }
+
         .submit-cta {
-            margin-top: 6rem;
             text-align: center;
-            padding: 4rem 2rem;
-            background: linear-gradient(135deg, rgba(var(--accent-rgb, 139, 92, 246), 0.1), rgba(0, 0, 0, 0.4));
-            border: 1px solid var(--border-active);
+            background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.1), transparent);
+            border: 1px solid rgba(var(--accent-rgb), 0.2);
             border-radius: var(--radius-lg);
-            backdrop-filter: blur(20px);
+            padding: 4rem 2rem;
+            margin-top: 4rem;
         }
 
         .submit-cta h2 {
             font-family: 'Outfit', sans-serif;
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 900;
             margin-bottom: 1rem;
-        }
-
-        .submit-cta p {
-            color: #94a3b8;
-            margin-bottom: 2rem;
+            color: #fff;
         }
 
         .btn-submit {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             background: var(--accent);
             color: #000;
-            padding: 1.2rem 2.5rem;
+            padding: 1.5rem 3.5rem;
             border-radius: 100px;
-            font-weight: 900;
-            font-size: 1.1rem;
-            text-decoration: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 800;
+            font-size: 1.3rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            box-shadow: 0 10px 30px var(--accent-glow);
+            letter-spacing: 2px;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 10px 40px var(--accent-glow);
+            border: none;
+            cursor: pointer;
+            margin-top: 2.5rem;
         }
 
         .btn-submit:hover {
-            transform: scale(1.05);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 20px 60px var(--accent-glow);
             filter: brightness(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .clip-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .clips-hero h1 {
+                font-size: 3.5rem;
+            }
+
+            .page-wrapper {
+                padding-top: 3rem;
+            }
         }
     </style>
 </head>
@@ -295,31 +350,30 @@
         <div class="page-wrapper">
 
             <div class="clips-hero reveal">
+                <div class="subtitle">Field Archives</div>
                 <h1 class="text-neon">Hall of Fame</h1>
-                <p>Legendary snapshots of pure skill. Witness the greatest moments captured in the XP ARENA battlefield.
+                <p>Legendary snapshots of pure skill. Witness the greatest moments captured on the digital battlefield.
                 </p>
             </div>
 
             <div class="clip-grid">
                 <!-- Clip 1 -->
                 <div class="clip-card reveal">
+                    <div class="card-corner tl"></div>
+                    <div class="card-corner tr"></div>
+                    <div class="card-corner bl"></div>
+                    <div class="card-corner br"></div>
                     <div class="thumb-wrap"
                         onclick="openTheater('assets/images/featured-clip.jpg', 'Neon Executioner 1v4', 'Shadow_Protocol')">
                         <img src="assets/images/featured-clip.jpg" alt="Clip">
-                        <div class="play-overlay">
-                            <div class="play-icon"><i class="fas fa-play"></i></div>
-                        </div>
                         <div class="duration-tag">0:42</div>
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
                     </div>
-                    <div class="clip-body">
+                    <div class="clip-info">
                         <h3>Neon Executioner 1v4</h3>
-                        <div class="author-info">
-                            <div class="author-meta">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Shadow_Protocol</span>
-                            </div>
-                            <div class="rank-badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">Legend
-                            </div>
+                        <div class="author-tag">
+                            <i class="fas fa-user-shield"></i>
+                            Shadow_Protocol
                         </div>
                         <div class="clip-foot">
                             <div class="stat-group"><i class="fas fa-eye"></i> 42.1K</div>
@@ -330,24 +384,21 @@
 
                 <!-- Clip 2 -->
                 <div class="clip-card reveal">
+                    <div class="card-corner tl"></div>
+                    <div class="card-corner tr"></div>
+                    <div class="card-corner bl"></div>
+                    <div class="card-corner br"></div>
                     <div class="thumb-wrap"
                         onclick="openTheater('assets/images/video-guide.jpg', 'Zenith One-Tap Montage', 'Nova_Strike')">
                         <img src="assets/images/video-guide.jpg" alt="Clip">
-                        <div class="play-overlay">
-                            <div class="play-icon"><i class="fas fa-play"></i></div>
-                        </div>
                         <div class="duration-tag">3:15</div>
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
                     </div>
-                    <div class="clip-body">
+                    <div class="clip-info">
                         <h3>Zenith One-Tap Montage</h3>
-                        <div class="author-info">
-                            <div class="author-meta">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Nova_Strike</span>
-                            </div>
-                            <div class="rank-badge"
-                                style="background: rgba(var(--accent-rgb, 139, 92, 246), 0.1); color: var(--accent);">
-                                Elite</div>
+                        <div class="author-tag">
+                            <i class="fas fa-bolt"></i>
+                            Nova_Strike
                         </div>
                         <div class="clip-foot">
                             <div class="stat-group"><i class="fas fa-eye"></i> 18.5K</div>
@@ -358,23 +409,21 @@
 
                 <!-- Clip 3 -->
                 <div class="clip-card reveal">
+                    <div class="card-corner tl"></div>
+                    <div class="card-corner tr"></div>
+                    <div class="card-corner bl"></div>
+                    <div class="card-corner br"></div>
                     <div class="thumb-wrap"
                         onclick="openTheater('assets/images/logo.png', 'Perfect Predator Scrims', 'Ghost_FF')">
                         <img src="assets/images/logo.png" alt="Clip">
-                        <div class="play-overlay">
-                            <div class="play-icon"><i class="fas fa-play"></i></div>
-                        </div>
                         <div class="duration-tag">1:02</div>
+                        <div class="play-icon"><i class="fas fa-play"></i></div>
                     </div>
-                    <div class="clip-body">
+                    <div class="clip-info">
                         <h3>Perfect Predator Scrims</h3>
-                        <div class="author-info">
-                            <div class="author-meta">
-                                <i class="fas fa-user-circle"></i>
-                                <span>Ghost_FF</span>
-                            </div>
-                            <div class="rank-badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">Master
-                            </div>
+                        <div class="author-tag">
+                            <i class="fas fa-crosshairs"></i>
+                            Ghost_FF
                         </div>
                         <div class="clip-foot">
                             <div class="stat-group"><i class="fas fa-eye"></i> 9.2K</div>

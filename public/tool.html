@@ -12,177 +12,261 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #080808;
-            --surface: rgba(18, 18, 24, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --radius-lg: 20px;
+            --bg: #030305;
+            --surface: rgba(15, 15, 25, 0.6);
+            --border: rgba(255, 255, 255, 0.06);
+            --radius-lg: 24px;
+            --hud-glow: rgba(var(--accent-rgb), 0.15);
         }
 
         body {
             background-color: var(--bg);
             background-image:
-                radial-gradient(circle at 0% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%);
+                radial-gradient(circle at 50% -20%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%),
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50% 50%, 40px 40px, 40px 40px;
             background-attachment: fixed;
+            color: var(--text-white);
         }
 
-        .main-content-area {
-            padding-bottom: 100px !important;
-        }
-
-        .tool-section {
-            padding: 2rem 0;
-            width: 100%;
+        .ambient-orb {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            filter: blur(140px);
+            opacity: 0.05;
+            z-index: 0;
+            pointer-events: none;
         }
 
         .page-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 4rem;
+            position: relative;
+            z-index: 1;
         }
 
         .page-header h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
             font-weight: 900;
-            letter-spacing: -1.5px;
+            letter-spacing: -3px;
+            text-transform: uppercase;
             margin-bottom: 0.5rem;
-            background: linear-gradient(to bottom, #fff, #888);
+            background: linear-gradient(to bottom, #fff 30%, rgba(255, 255, 255, 0.5));
             -webkit-background-clip: text;
-            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .page-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+        .page-header .subtitle {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            letter-spacing: 4px;
+            color: var(--accent);
+            font-size: 0.9rem;
+            text-transform: uppercase;
         }
 
-        /* Glass Cards */
-        .form-card {
+        /* Tactical HUD Card */
+        .hud-card {
             background: var(--surface);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(20px) saturate(160%);
+            -webkit-backdrop-filter: blur(20px) saturate(160%);
             border: 1px solid var(--border);
             border-radius: var(--radius-lg);
-            padding: 1.8rem;
-            transition: transform 0.3s ease, border-color 0.3s ease;
+            padding: 2.5rem;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        .form-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .form-card:hover {
-            transform: translateY(-4px);
+        .hud-card:hover {
             border-color: rgba(var(--accent-rgb), 0.3);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 20px var(--hud-glow);
         }
 
-        .form-card:hover::before {
-            opacity: 1;
+        .hud-corner {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--accent);
+            opacity: 0.5;
+        }
+
+        .tl {
+            top: 15px;
+            left: 15px;
+            border-right: 0;
+            border-bottom: 0;
+        }
+
+        .tr {
+            top: 15px;
+            right: 15px;
+            border-left: 0;
+            border-bottom: 0;
+        }
+
+        .bl {
+            bottom: 15px;
+            left: 15px;
+            border-right: 0;
+            border-top: 0;
+        }
+
+        .br {
+            bottom: 15px;
+            right: 15px;
+            border-left: 0;
+            border-top: 0;
         }
 
         .form-label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-family: 'Rajdhani', sans-serif;
             font-weight: 700;
             font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-white);
-            margin-bottom: 1.2rem;
-        }
-
-        .form-label i {
             color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
         }
 
-        /* Inputs */
-        #deviceSearch,
-        .settings-input,
-        input[type="number"] {
+        /* Precision Inputs */
+        .glass-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1rem;
+            border-radius: 14px;
+            padding: 1.2rem;
             color: #fff;
             font-family: inherit;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
-        #deviceSearch:focus,
-        .settings-input:focus {
+        .glass-input:focus {
+            outline: none;
             border-color: var(--accent);
-            background: rgba(0, 0, 0, 0.5);
-            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.1);
+            background: rgba(var(--accent-rgb), 0.05);
+            box-shadow: 0 0 15px var(--hud-glow);
+        }
+
+        /* Precision Sliders */
+        .slider-group {
+            margin-bottom: 2rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .slider-val {
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: #fff;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
             outline: none;
         }
 
-        /* Suggestions */
-        #deviceSuggestions {
-            background: #111;
-            border: 1px solid var(--accent);
-            border-radius: 12px;
-            margin-top: 5px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .suggestion-item:hover {
-            background: rgba(var(--accent-rgb), 0.1);
-        }
-
-        /* Sliders */
-        input[type="range"] {
+        input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            appearance: none;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            accent-color: var(--accent);
+            width: 20px;
+            height: 20px;
+            background: var(--accent);
+            border: 4px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-glow);
+            transition: transform 0.2s ease;
         }
 
-        /* Buttons */
-        .btn-primary {
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* Tactical Button */
+        .btn-calculate {
+            width: 100%;
             background: var(--accent);
             color: #000;
+            font-family: 'Rajdhani', sans-serif;
             font-weight: 800;
-            letter-spacing: 1px;
-            padding: 1.2rem;
-            border-radius: 14px;
-            box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.3);
-            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-transform: uppercase;
+            box-shadow: 0 10px 40px var(--accent-glow);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.5);
+        .btn-calculate:hover {
+            transform: translateY(-5px) scale(1.02);
             filter: brightness(1.1);
+            box-shadow: 0 20px 60px var(--accent-glow);
         }
 
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 0.8rem 1.2rem;
-            border-radius: 10px;
-            font-weight: 600;
-            transition: all 0.2s;
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            animation: scan 4s linear infinite;
+            z-index: 2;
+            opacity: 0.3;
+            pointer-events: none;
         }
 
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(var(--accent-rgb), 0.5);
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 768px) {
+            .tool-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h1 {
+                font-size: 3rem;
+            }
         }
     </style>
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
@@ -190,185 +274,134 @@
 
 <body class="fade-in">
 
-    <!-- NAVBAR -->
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
+    <nav class="navbar"></nav>
+
+    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
+    <div class="ambient-orb" style="bottom: -100px; right: -100px;"></div>
 
     <main class="main-content-area">
         <section class="tool-section">
-            <div class="container">
+            <div class="container" style="padding: 0 1.5rem;">
 
-                <div class="page-header">
-                    <h1>Sensitivity Lab</h1>
-                    <p>Algorithm-driven calibration for zero-shot accuracy.</p>
+                <div class="page-header reveal">
+                    <div class="subtitle">Tactical Lab Sub-System</div>
+                    <h1 class="text-neon">Precision Calibration</h1>
                 </div>
 
-                <div class="tool-grid"
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 2rem;">
+                <div class="tool-grid">
+                    <!-- LEFT COLUMN: Input Params -->
+                    <div class="tool-col reveal">
+                        <div class="hud-card">
+                            <div class="hud-corner tl"></div>
+                            <div class="hud-corner tr"></div>
+                            <div class="hud-corner bl"></div>
+                            <div class="hud-corner br"></div>
+                            <div class="scan-line"></div>
 
-                    <!-- LEFT COLUMN: Standard Calibration -->
-                    <div class="tool-col">
-                        <div class="form-card" style="margin-bottom: 1.5rem;">
-                            <label class="form-label"><i class="fas fa-search"></i> Phone Model</label>
-                            <div class="device-search-wrap">
-                                <input type="text" id="deviceSearch" placeholder="Search e.g. iPhone 15 Pro, ROG 8..."
-                                    autocomplete="off">
-                                <div id="deviceSuggestions"></div>
+                            <div class="field-item" style="margin-bottom: 2rem;">
+                                <label class="form-label"><i class="fas fa-search"></i> Hardware Identifier</label>
+                                <div class="device-search-wrap">
+                                    <input type="text" id="deviceSearch" class="glass-input"
+                                        placeholder="Search Device Matrix...">
+                                    <div id="deviceSuggestions"></div>
+                                </div>
+                                <div id="selectedDeviceDisplay"></div>
                             </div>
-                            <div id="selectedDeviceDisplay"></div>
+
+                            <div class="slider-group">
+                                <div class="slider-header">
+                                    <label class="form-label"><i class="fas fa-memory"></i> Volatile Memory
+                                        (RAM)</label>
+                                    <span class="slider-val"><span id="ramVal">8</span>GB</span>
+                                </div>
+                                <input type="range" id="ramSlider" min="2" max="16" step="2" value="8">
+                            </div>
+
+                            <div class="field-item" style="margin-bottom: 2rem;">
+                                <label class="form-label"><i class="fas fa-hand-pointer"></i> Friction Matrix
+                                    (Grip)</label>
+                                <select id="handSelect" class="glass-input">
+                                    <option value="normal">Standard Protocol</option>
+                                    <option value="hard">High Pressure (Glass)</option>
+                                    <option value="fast">Zero Friction (Liquid)</option>
+                                    <option value="gloves">External Sleeve</option>
+                                    <option value="sweaty">High Micro-Resistance</option>
+                                </select>
+                            </div>
+
+                            <div class="field-item">
+                                <label class="form-label"><i class="fas fa-running"></i> Velocity Profile</label>
+                                <select id="speedSelect" class="glass-input">
+                                    <option value="medium">Balanced Response</option>
+                                    <option value="slow">Low-Sens Precision</option>
+                                    <option value="fast">Aggressive Maneuvers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT COLUMN: Presets & Manual -->
+                    <div class="tool-col reveal">
+                        <div class="hud-card" style="margin-bottom: 2rem;">
+                            <div class="hud-corner tl"></div>
+                            <div class="hud-corner tr"></div>
+                            <div class="hud-corner bl"></div>
+                            <div class="hud-corner br"></div>
+
+                            <label class="form-label"><i class="fas fa-crown"></i> Elite Presets</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                <button class="btn-secondary" onclick="loadProPreset('white444')"
+                                    style="padding:1rem; font-family:'Rajdhani';">WHITE444</button>
+                                <button class="btn-secondary" onclick="loadProPreset('nobru')"
+                                    style="padding:1rem; font-family:'Rajdhani';">NOBRU</button>
+                                <button class="btn-secondary" onclick="loadProPreset('ruok')"
+                                    style="padding:1rem; font-family:'Rajdhani';">RUOK FF</button>
+                                <button class="btn-secondary" onclick="loadProPreset('vincenzo')"
+                                    style="padding:1rem; font-family:'Rajdhani';">VINCENZO</button>
+                            </div>
                         </div>
 
-                        <div class="form-card" style="margin-bottom: 1.5rem;">
-                            <label class="form-label"><i class="fas fa-memory"></i> Device RAM: <span id="ramVal"
-                                    style="color: var(--accent);">8</span>GB</label>
-                            <input type="range" id="ramSlider" min="2" max="16" step="2" value="8"
-                                style="width: 100%; margin: 10px 0;">
+                        <div class="hud-card">
+                            <div class="hud-corner tl"></div>
+                            <div class="hud-corner tr"></div>
+                            <div class="hud-corner bl"></div>
+                            <div class="hud-corner br"></div>
+
+                            <label class="form-label"><i class="fas fa-pen"></i> Community Entry</label>
                             <div
-                                style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">
-                                <span>2GB</span>
-                                <span>16GB+</span>
+                                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem;">
+                                <input type="number" id="manGen" placeholder="GEN" class="glass-input"
+                                    style="padding:0.8rem; text-align:center;">
+                                <input type="number" id="manRed" placeholder="RED" class="glass-input"
+                                    style="padding:0.8rem; text-align:center;">
+                                <input type="number" id="man2x" placeholder="2X" class="glass-input"
+                                    style="padding:0.8rem; text-align:center;">
+                                <input type="number" id="man4x" placeholder="4X" class="glass-input"
+                                    style="padding:0.8rem; text-align:center;">
+                                <input type="number" id="man8x" placeholder="8X" class="glass-input"
+                                    style="padding:0.8rem; text-align:center;">
                             </div>
-                        </div>
-
-                        <div class="form-card" style="margin-bottom: 1.5rem;">
-                            <label class="form-label"><i class="fas fa-hand-pointer"></i> Hand Type & Grip</label>
-                            <select id="handSelect" class="settings-input">
-                                <option value="normal">Normal / Standard</option>
-                                <option value="hard">Hard Pressure (Glass)</option>
-                                <option value="fast">Fast Fingers (Liquid)</option>
-                                <option value="gloves">Sleeve / Gloves</option>
-                                <option value="sweaty">High Friction (Sweaty)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-card" style="margin-bottom: 1.5rem;">
-                            <label class="form-label"><i class="fas fa-running"></i> Playstyle Speed</label>
-                            <select id="speedSelect" class="settings-input">
-                                <option value="medium">Balanced (Standard)</option>
-                                <option value="slow">Precision (Low Sens)</option>
-                                <option value="fast">Aggressive (High Sens)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-card">
-                            <label class="form-label"><i class="fas fa-fingerprint"></i> DPI / Sensitivity
-                                Profile</label>
-                            <input type="number" id="dpiInput" placeholder="400, 800, 1200..." class="settings-input"
-                                value="800">
-                            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
-                                <button class="btn-secondary" style="width:auto"
-                                    onclick="setDPIPreset(400)">400</button>
-                                <button class="btn-secondary" style="width:auto"
-                                    onclick="setDPIPreset(800)">800</button>
-                                <button class="btn-secondary" style="width:auto"
-                                    onclick="setDPIPreset(1200)">1200</button>
-                                <button class="btn-secondary" style="width:auto"
-                                    onclick="setDPIPreset(1600)">1600</button>
-                                <button class="btn-secondary" style="width:auto"
-                                    onclick="setDPIPreset(3200)">3200</button>
-                            </div>
-                            <div id="dpiInfo"
-                                style="font-size: 0.75rem; color: var(--accent); margin-top: 6px; font-weight: 800;">
-                            </div>
-                            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 5px;">Used to scale
-                                settings relative to your input device resolution.</div>
-                        </div>
-                    </div>
-
-                    <!-- Right column removed (Aim Lab disabled) -->
-                </div>
-
-                <div id="loader" class="loader hidden"></div>
-                <button id="calculateBtn" class="btn-primary" style="margin-top: 1rem;">CALCULATE SENSITIVITY</button>
-
-                <!-- MANUAL MODE -->
-                <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-                    <h3 style="margin-bottom: 0.6rem;"><i class="fas fa-pen"></i> Manual Mode</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Enter your own
-                        sensitivity and publish to the community leaderboard. Values capped at 200. Add a short
-                        comment
-                        explaining your setup.</p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px;">
-                        <input type="number" id="manGen" placeholder="General" min="0" max="200" class="settings-input">
-                        <input type="number" id="manRed" placeholder="Red Dot" min="0" max="200" class="settings-input">
-                        <input type="number" id="man2x" placeholder="2x Scope" min="0" max="200" class="settings-input">
-                        <input type="number" id="man4x" placeholder="4x Scope" min="0" max="200" class="settings-input">
-                        <input type="number" id="man8x" placeholder="8x Scope" min="0" max="200" class="settings-input">
-                    </div>
-                    <textarea id="manComment" class="settings-input"
-                        placeholder="Why does this setup work for you? (min 10 chars)"
-                        style="margin-top: 10px;"></textarea>
-                    <label
-                        style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted); margin: 8px 0;">
-                        <input type="checkbox" id="manPrivate"> Private (Premium only)
-                    </label>
-                    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                        <button class="btn-secondary" style="width:auto;" onclick="manualSubmit()">Submit Manual
-                            Setup</button>
-                        <a href="setups.html" class="btn-secondary" style="width:auto;">View Popular Setups</a>
-                    </div>
-                </div>
-
-                <!-- PRO PRESETS -->
-                <div style="margin-top: 2.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
-                    <h3 style="margin-bottom: 1rem; color: #ffcc00; font-size: 1.1rem;"><i class="fas fa-crown"></i>
-                        Verified Pro Presets</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">Instantly load
-                        exact
-                        settings used by legends.</p>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                        <button class="btn-secondary" onclick="loadProPreset('white444')"
-                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">White444</button>
-                        <button class="btn-secondary" onclick="loadProPreset('nobru')"
-                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Nobru</button>
-                        <button class="btn-secondary" onclick="loadProPreset('ruok')"
-                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Ruok
-                            FF</button>
-                        <button class="btn-secondary" onclick="loadProPreset('vincenzo')"
-                            style="background: rgba(255,204,0,0.1); color: #ffcc00; border: 1px solid rgba(255,204,0,0.3);">Vincenzo</button>
-                    </div>
-                </div>
-
-                <!-- PRO FEATURES HIGHLIGHT -->
-                <div
-                    style="margin-top: 2rem; background: linear-gradient(145deg, rgba(0,255,163,0.05), rgba(0,0,0,0.4)); border-radius: 20px; border: 1px solid rgba(0,255,163,0.2); padding: 2rem; text-align: center;">
-                    <h3 style="margin-bottom: 1.5rem; color: #fff; font-family: 'Outfit', sans-serif;"><i
-                            class="fas fa-microchip" style="color: var(--accent); margin-right: 10px;"></i> Advanced
-                        Analysis Engines</h3>
-                    <div
-                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1.5rem;">
-                        <div style="text-align: center;">
-                            <div style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;"><i
-                                    class="fas fa-bullseye"></i></div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #fff; text-transform: uppercase;">
-                                Accuracy</div>
-                            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">99.9% Match
-                                Rate</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;"><i
-                                    class="fas fa-bolt"></i></div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #fff; text-transform: uppercase;">
-                                Speed</div>
-                            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">Instant
-                                Results</div>
-                        </div>
-                        <div style="text-align: center;">
-                            <div style="font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem;"><i
-                                    class="fas fa-shield-alt"></i></div>
-                            <div style="font-size: 0.75rem; font-weight: 700; color: #fff; text-transform: uppercase;">
-                                Secure</div>
-                            <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 4px;">Hardware
-                                Safe</div>
+                            <textarea id="manComment" class="glass-input"
+                                placeholder="Tactical notes for the community..." style="height: 100px;"></textarea>
+                            <label
+                                style="display:flex; align-items:center; gap:10px; margin: 1rem 0; font-family:'Rajdhani'; font-weight:700; color:rgba(255,255,255,0.5);">
+                                <input type="checkbox" id="manPrivate"> SECURE UPLOAD (PRIVATE)
+                            </label>
+                            <button class="btn-secondary"
+                                style="width:100%; padding:1.2rem; border-color:var(--accent); color:var(--accent);"
+                                onclick="manualSubmit()">TRANSMIT TO LEADERBOARD</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- RESULTS WILL NOW APPEAR ON RESULT.HTML -->
+                <div style="max-width: 1200px; margin: 2rem auto;">
+                    <button id="calculateBtn" class="btn-calculate">Initiate Calibration Sequence</button>
+                </div>
+
             </div>
         </section>
     </main>
+
 
     <!-- BOTTOM NAV -->
     <nav class="bottom-nav">

@@ -117,43 +117,40 @@ function injectLayout() {
     const sidebarHTML = `
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; display:flex; align-items:center; gap:12px;">
-                <a href="profile.html" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff;">
-                    <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(var(--accent-rgb, 255,85,0),0.15);border:1px solid rgba(var(--accent-rgb, 255,85,0),0.3);border-radius:50%;">${avatarHtml}</div>
-                    <div style="display:flex;align-items:center;gap:6px;font-weight:800;">
-                        <span>${displayName}</span>${premiumBadge}
+            <div class="sidebar-header" style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; display:flex; flex-direction:column; align-items:center; gap:15px; position:relative; overflow:hidden;">
+                <div class="hud-corner tl" style="position:absolute; top:10px; left:10px; width:15px; height:15px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); opacity:0.3;"></div>
+                <div class="hud-corner tr" style="position:absolute; top:10px; right:10px; width:15px; height:15px; border-top:2px solid var(--accent); border-right:2px solid var(--accent); opacity:0.3;"></div>
+                <div class="hud-corner bl" style="position:absolute; bottom:10px; left:10px; width:15px; height:15px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent); opacity:0.3;"></div>
+                <div class="hud-corner br" style="position:absolute; bottom:10px; right:10px; width:15px; height:15px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); opacity:0.3;"></div>
+                <a href="profile.html" style="display:flex; flex-direction:column; align-items:center; gap:12px; text-decoration:none; color:#fff; position:relative; z-index:1;">
+                    <div style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;background:rgba(var(--accent-rgb, 139, 92, 246),0.1);border:1px solid rgba(var(--accent-rgb, 139, 92, 246),0.3);border-radius:50%; box-shadow:0 0 20px rgba(var(--accent-rgb), 0.2);">${avatarHtml}</div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
+                        <span style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">${displayName}</span>
+                        ${premiumBadge ? `<span style="font-family:'Rajdhani', sans-serif; font-size:0.7rem; background:linear-gradient(90deg, #ffd700, #ff8c00); color:#000; padding:2px 8px; border-radius:4px; font-weight:800; letter-spacing:1px;">ELITE STATUS</span>` : ''}
                     </div>
                 </a>
             </div>
-            <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
-            <a href="tool.html" class="sidebar-link"><i class="fas fa-tools"></i> Sensitivity Tool</a>
-            <a href="compare.html" class="sidebar-link"><i class="fas fa-balance-scale"></i> Compare Devices</a>
-            <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Leaderboard</a>
-            <a href="setups.html" class="sidebar-link"><i class="fas fa-sliders-h"></i> Popular Setups</a>
-            <a href="ranks.html" class="sidebar-link"><i class="fas fa-layer-group"></i> Ranks</a>
-            <a href="clips.html" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
-            <a href="quests.html" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
-            <a href="daily-login.html" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
-            <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:var(--success);"></i> Armory (Shop)</a>
-            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Clans</a>
-            <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
-            <a href="submit.html" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
-            <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
-            <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:var(--accent);"></i> Premium & Plans</a>
-            <a href="premium-dashboard.html" class="sidebar-link"><i class="fas fa-crown"></i> Premium Hub</a>
-            <a href="creators.html" class="sidebar-link"><i class="fas fa-user-astronaut"></i> Creator</a>
-            ${stats && stats.is_admin ? `<a href="admin.html" class="sidebar-link"><i class="fas fa-shield-virus"></i> Admin</a>` : ``}
-            <a href="sponsors.html" class="sidebar-link"><i class="fas fa-handshake"></i> Sponsors</a>
-            <a href="support.html" class="sidebar-link"><i class="fas fa-heart"></i> Support XP Arena</a>
-            <a href="help.html" class="sidebar-link"><i class="fas fa-question-circle"></i> Help & FAQ</a>
-            <a href="mydata.html" class="sidebar-link"><i class="fas fa-database"></i> My Data</a>
-            <a href="profile#settings" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
+            <div class="sidebar-scroll" style="padding-bottom: 100px;">
+                <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home Panel</a>
+                <a href="tool.html" class="sidebar-link"><i class="fas fa-microchip"></i> Sensitivity Engine</a>
+                <a href="compare.html" class="sidebar-link"><i class="fas fa-analytics"></i> Precision Lab</a>
+                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-skull"></i> Global Ranks</a>
+                <a href="clips.html" class="sidebar-link"><i class="fas fa-video"></i> Tactical Clips</a>
+                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-halved"></i> Clan Hub</a>
+                <a href="premium.html" class="sidebar-link" style="color:var(--accent); font-weight:800; background:rgba(var(--accent-rgb), 0.05); border-left:3px solid var(--accent);"><i class="fas fa-crown"></i> ELITE ACCESS</a>
+                <div style="padding: 1.5rem 1.5rem 0.5rem; font-family:'Rajdhani', sans-serif; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; font-weight:700;">Navigation Matrix</div>
+                <a href="tournaments.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Operations</a>
+                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite"></i> Mission Data</a>
+                <a href="shop.html" class="sidebar-link"><i class="fas fa-box-open"></i> Armory</a>
+                <a href="profile.html" class="sidebar-link"><i class="fas fa-user-gear"></i> Interface Config</a>
+                <a href="help.html" class="sidebar-link"><i class="fas fa-signal"></i> Support Link</a>
+            </div>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 1rem 0;">
             ${user ? `
-                <a href="profile" class="sidebar-link" id="nav-profile"><i class="fas fa-user-circle"></i> Profile (${user.username})</a>
-                <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="profile.html" class="sidebar-link" id="nav-profile"><i class="fas fa-terminal"></i> User Profile [${user.username}]</a>
+                <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();" style="color: #ef4444;"><i class="fas fa-power-off"></i> Terminate Session</a>
             ` : `
-                <a href="login" class="sidebar-link" id="nav-login"><i class="fas fa-key"></i> Login / Signup</a>
+                <a href="login.html" class="sidebar-link" id="nav-login"><i class="fas fa-code-merge"></i> Initialize Access</a>
             `}
             <hr style="border: 0; border-top: 1px solid var(--border); margin: auto 0 0.5rem 0;">
             <a href="about" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
@@ -184,33 +181,25 @@ function injectLayout() {
     // 3. Inject Bottom Nav
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const bottomNavHTML = `
-        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html">
-            <span class="nav-icon"><i class="fas fa-home"></i></span>
-            <span class="nav-label">Home</span>
+        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
+            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-home"></i></span>
+            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Hub</span>
         </a>
-        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html">
-            <span class="nav-icon"><i class="fas fa-tools"></i></span>
-            <span class="nav-label">Tool</span>
+        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
+            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-microchip"></i></span>
+            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Engine</span>
         </a>
-        <a href="daily-login.html" class="nav-item ${currentPage === 'daily-login.html' ? 'active' : ''}" data-page="daily-login.html">
-            <span class="nav-icon"><i class="fas fa-gift"></i></span>
-            <span class="nav-label">Rewards</span>
+        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
+            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-box-open"></i></span>
+            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Armory</span>
         </a>
-        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html">
-            <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
-            <span class="nav-label">Shop</span>
+        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
+            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-shield-halved"></i></span>
+            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Clans</span>
         </a>
-        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html">
-            <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
-            <span class="nav-label">Clans</span>
-        </a>
-        <a href="leaderboard.html" class="nav-item ${currentPage === 'leaderboard.html' ? 'active' : ''}" data-page="leaderboard.html">
-            <span class="nav-icon"><i class="fas fa-trophy"></i></span>
-            <span class="nav-label">Leaders</span>
-        </a>
-        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html">
-            <span class="nav-icon"><i class="fas fa-user-circle"></i></span>
-            <span class="nav-label">Profile</span>
+        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
+            <span class="nav-icon" style="font-size:1.2rem;">${avatarHtml}</span>
+            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">User</span>
         </a>
     `;
     const bottomNav = document.querySelector('nav.bottom-nav');
