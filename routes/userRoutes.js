@@ -114,6 +114,30 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
         const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
         await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
 
+        // Perfect Week auto-bonus (server-confirmed)
+        // Compute week start (Monday)
+        const d = new Date(now);
+        const day = d.getDay(); // 0=Sun..6=Sat
+        const diffToMonday = (day === 0 ? -6 : 1) - day;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() + diffToMonday);
+        const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+        // Ensure weekly_bonus table exists
+        await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
+            user_id INT NOT NULL,
+            week_start DATE NOT NULL,
+            awarded TINYINT DEFAULT 1,
+            PRIMARY KEY (user_id, week_start)
+        )`);
+        const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
+        if (!wb && streak >= 7) {
+            const weekBonus = total; // 2× today by adding +total again
+            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
+            await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
+            return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
+        }
+
         res.json({ success: true, streak, axp: total, date: today });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });

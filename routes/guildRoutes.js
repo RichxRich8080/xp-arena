@@ -32,6 +32,35 @@ router.post('/create', authenticateToken, async (req, res) => {
   }
 });
 
+// Set recruitment filters (owner only)
+router.post('/filters', authenticateToken, async (req, res) => {
+  try {
+    const { guild_id, min_level, min_axp } = req.body;
+    const gid = parseInt(guild_id, 10);
+    if (!gid) return res.status(400).json({ error: 'Invalid id' });
+    const g = await db.get('SELECT id, owner_user_id FROM guilds WHERE id = ?', [gid]);
+    if (!g) return res.status(404).json({ error: 'Not found' });
+    if (g.owner_user_id !== req.user.id) return res.status(403).json({ error: 'Not allowed' });
+    // Create table on first use
+    await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
+      guild_id INT PRIMARY KEY,
+      min_level INT DEFAULT 0,
+      min_axp INT DEFAULT 0
+    )`);
+    const ml = Math.max(0, parseInt(min_level || 0, 10));
+    const ma = Math.max(0, parseInt(min_axp || 0, 10));
+    const exists = await db.get('SELECT guild_id FROM guild_rules WHERE guild_id = ?', [gid]);
+    if (exists) {
+      await db.run('UPDATE guild_rules SET min_level = ?, min_axp = ? WHERE guild_id = ?', [ml, ma, gid]);
+    } else {
+      await db.run('INSERT INTO guild_rules (guild_id, min_level, min_axp) VALUES (?,?,?)', [gid, ml, ma]);
+    }
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.post('/join', authenticateToken, async (req, res) => {
   try {
     const { guild_id } = req.body;
@@ -39,6 +68,21 @@ router.post('/join', authenticateToken, async (req, res) => {
     if (!gid) return res.status(400).json({ error: 'Invalid id' });
     const g = await db.get('SELECT id FROM guilds WHERE id = ?', [gid]);
     if (!g) return res.status(404).json({ error: 'Not found' });
+    // Enforce recruitment filters
+    try {
+      await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
+        guild_id INT PRIMARY KEY,
+        min_level INT DEFAULT 0,
+        min_axp INT DEFAULT 0
+      )`);
+    } catch {}
+    const rules = await db.get('SELECT min_level, min_axp FROM guild_rules WHERE guild_id = ?', [gid]);
+    if (rules) {
+      const u = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+      const level = u ? Math.floor((u.axp || 0) / 500) + 1 : 1;
+      if (rules.min_level && level < rules.min_level) return res.status(403).json({ error: `Requires level ${rules.min_level}+` });
+      if (rules.min_axp && (u.axp || 0) < rules.min_axp) return res.status(403).json({ error: `Requires ${Number(rules.min_axp).toLocaleString()}+ AXP` });
+    }
     const mem = await db.get('SELECT id FROM guild_members WHERE guild_id = ? AND user_id = ?', [gid, req.user.id]);
     if (mem) return res.json({ success: true });
     await db.run('INSERT INTO guild_members (guild_id, user_id, role) VALUES (?,?,?)', [gid, req.user.id, 'member']);

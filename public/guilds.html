@@ -210,6 +210,16 @@
                             <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
                                 onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
                         </div>
+                        <div>
+                            <div style="font-size:0.75rem; color: var(--text-muted); margin: 10px 0 5px; letter-spacing: 1px;">
+                                RECRUITMENT FILTERS</div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
+                                <input id="minLevelInput" class="settings-input" placeholder="Min Level (e.g. 5)" />
+                                <input id="minAXPInput" class="settings-input" placeholder="Min AXP (e.g. 5000)" />
+                            </div>
+                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="setGuildRules()">SAVE FILTERS</button>
+                            <div id="guildRulesMsg" style="margin-top:6px; font-size:0.85rem; color: var(--text-muted);"></div>
+                        </div>
                     </div>
                     <div id="roster" style="margin-top:20px;">
                         <div
@@ -347,6 +357,20 @@
             const data = await res.json();
             msg.textContent = res.ok ? 'Badge updated!' : (data.error || 'Error');
             if (res.ok) loadGuildLeaderboard();
+        }
+        async function setGuildRules() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const guild_id = parseInt(document.getElementById('guildBadgeId').value, 10);
+            const min_level = parseInt(document.getElementById('minLevelInput').value || '0', 10);
+            const min_axp = parseInt(document.getElementById('minAXPInput').value || '0', 10);
+            const msg = document.getElementById('guildRulesMsg');
+            const res = await fetch((window.API_URL || '') + '/api/guilds/filters', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+                body: JSON.stringify({ guild_id, min_level, min_axp })
+            });
+            const data = await res.json();
+            msg.textContent = res.ok ? 'Filters saved!' : (data.error || 'Error');
         }
         async function loadGuildMembers(gid) {
             const el = document.getElementById('guildMembersList');
