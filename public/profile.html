@@ -514,6 +514,18 @@
                             </div>
                         </div>
                     </details>
+                    <details id="adminTools" class="hidden">
+                        <summary>Admin Tools</summary>
+                        <div class="content">
+                            <div class="settings-group" style="display:grid; gap:10px;">
+                                <div style="font-size:0.8rem; color: var(--text-muted);">Reset Weekly Bonus (testing)</div>
+                                <input type="number" id="adminUserId" class="settings-input" placeholder="User ID">
+                                <input type="date" id="adminWeekStart" class="settings-input" placeholder="Week Start (optional)">
+                                <button class="btn-secondary" style="width:auto" onclick="resetWeekBonus()">Reset Bonus</button>
+                                <div id="adminToolsMsg" style="font-size:0.8rem; color: var(--text-muted);"></div>
+                            </div>
+                        </div>
+                    </details>
                     <div class="settings-group" style="margin-top: 1rem;">
                         <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';"
                             style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
@@ -552,6 +564,11 @@
                     }
 
                     if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                const stats = User.getStats();
+                if (stats && stats.is_admin) {
+                    const at = document.getElementById('adminTools');
+                    if (at) at.classList.remove('hidden');
+                }
                 }
 
                 window.addEventListener('statsChange', () => {
@@ -632,6 +649,46 @@
                 document.getElementById('avatarSelectGrid').scrollIntoView({ behavior: 'smooth' });
             }
 
+            function resetWeekBonus() {
+                const uid = parseInt(document.getElementById('adminUserId').value, 10);
+                const ws = document.getElementById('adminWeekStart').value;
+                const msg = document.getElementById('adminToolsMsg');
+                fetch((window.API_URL || '') + '/api/user/admin/reset-week-bonus', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+                    body: JSON.stringify({ user_id: uid, week_start: ws || undefined })
+                }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+                    msg.textContent = ok ? 'Reset completed.' : (d.error || 'Error');
+                }).catch(() => { msg.textContent = 'Network error'; });
+            }
+
+            function sparkleBadge(container) {
+                const spark = document.createElement('div');
+                spark.style.position = 'fixed';
+                spark.style.inset = '0';
+                spark.style.pointerEvents = 'none';
+                spark.style.zIndex = '40000';
+                document.body.appendChild(spark);
+                const count = 60;
+                for (let i = 0; i < count; i++) {
+                    const s = document.createElement('span');
+                    s.style.position = 'absolute';
+                    s.style.left = Math.random() * window.innerWidth + 'px';
+                    s.style.top = Math.random() * window.innerHeight + 'px';
+                    s.style.width = s.style.height = (Math.random() * 4 + 2) + 'px';
+                    s.style.background = 'radial-gradient(circle, #00e5ff, transparent)';
+                    s.style.borderRadius = '50%';
+                    s.style.opacity = '0.9';
+                    s.style.transform = 'translateY(0)';
+                    s.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+                    spark.appendChild(s);
+                    requestAnimationFrame(() => {
+                        s.style.transform = 'translateY(-60px)';
+                        s.style.opacity = '0';
+                    });
+                }
+                setTimeout(() => spark.remove(), 1200);
+            }
             function copyReferralLink() {
                 const stats = User.getStats();
                 const code = stats.referralCode || '';
@@ -733,6 +790,11 @@
                         </div>
                     `;
                     }).join('');
+                    if (stats.achievements.includes('perfect_week') && !localStorage.getItem('xp_pw_celebrated')) {
+                        localStorage.setItem('xp_pw_celebrated', '1');
+                        sparkleBadge(achListEl);
+                        if (window.Toast) Toast.show('Perfect Week unlocked!', 'success');
+                    }
                 }
 
                 // Presets

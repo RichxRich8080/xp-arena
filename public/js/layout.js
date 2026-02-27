@@ -125,28 +125,28 @@ function injectLayout() {
                     </div>
                 </a>
             </div>
-            <a href="index" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
-            <a href="tool" class="sidebar-link"><i class="fas fa-tools"></i> Sensitivity Tool</a>
-            <a href="compare" class="sidebar-link"><i class="fas fa-balance-scale"></i> Compare Devices</a>
-            <a href="leaderboard" class="sidebar-link"><i class="fas fa-trophy"></i> Leaderboard</a>
-            <a href="setups" class="sidebar-link"><i class="fas fa-sliders-h"></i> Popular Setups</a>
-            <a href="ranks" class="sidebar-link"><i class="fas fa-layer-group"></i> Ranks</a>
-            <a href="clips" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
-            <a href="quests" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
-            <a href="daily-login" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
-            <a href="shop" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:#00ff88;"></i> Armory (Shop)</a>
-            <a href="guilds" class="sidebar-link"><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Clans</a>
-            <a href="guild-wars" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
-            <a href="submit" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
-            <a href="tournaments" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
-            <a href="premium" class="sidebar-link"><i class="fas fa-gem" style="color:#bf00ff;"></i> Premium & Plans</a>
-            <a href="premium-dashboard" class="sidebar-link"><i class="fas fa-crown"></i> Premium Hub</a>
-            <a href="creators" class="sidebar-link"><i class="fas fa-user-astronaut"></i> Creator</a>
-            ${stats && stats.is_admin ? `<a href="admin" class="sidebar-link"><i class="fas fa-shield-virus"></i> Admin</a>` : ``}
-            <a href="sponsors" class="sidebar-link"><i class="fas fa-handshake"></i> Sponsors</a>
-            <a href="support" class="sidebar-link"><i class="fas fa-heart"></i> Support XP Arena</a>
-            <a href="help" class="sidebar-link"><i class="fas fa-question-circle"></i> Help & FAQ</a>
-            <a href="mydata" class="sidebar-link"><i class="fas fa-database"></i> My Data</a>
+            <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home</a>
+            <a href="tool.html" class="sidebar-link"><i class="fas fa-tools"></i> Sensitivity Tool</a>
+            <a href="compare.html" class="sidebar-link"><i class="fas fa-balance-scale"></i> Compare Devices</a>
+            <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Leaderboard</a>
+            <a href="setups.html" class="sidebar-link"><i class="fas fa-sliders-h"></i> Popular Setups</a>
+            <a href="ranks.html" class="sidebar-link"><i class="fas fa-layer-group"></i> Ranks</a>
+            <a href="clips.html" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
+            <a href="quests.html" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
+            <a href="daily-login.html" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
+            <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:#00ff88;"></i> Armory (Shop)</a>
+            <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Clans</a>
+            <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
+            <a href="submit.html" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
+            <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
+            <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:#bf00ff;"></i> Premium & Plans</a>
+            <a href="premium-dashboard.html" class="sidebar-link"><i class="fas fa-crown"></i> Premium Hub</a>
+            <a href="creators.html" class="sidebar-link"><i class="fas fa-user-astronaut"></i> Creator</a>
+            ${stats && stats.is_admin ? `<a href="admin.html" class="sidebar-link"><i class="fas fa-shield-virus"></i> Admin</a>` : ``}
+            <a href="sponsors.html" class="sidebar-link"><i class="fas fa-handshake"></i> Sponsors</a>
+            <a href="support.html" class="sidebar-link"><i class="fas fa-heart"></i> Support XP Arena</a>
+            <a href="help.html" class="sidebar-link"><i class="fas fa-question-circle"></i> Help & FAQ</a>
+            <a href="mydata.html" class="sidebar-link"><i class="fas fa-database"></i> My Data</a>
             <a href="profile#settings" class="sidebar-link"><i class="fas fa-cog"></i> Settings</a>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 1rem 0;">
             ${user ? `
@@ -184,31 +184,31 @@ function injectLayout() {
     // 3. Inject Bottom Nav
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const bottomNavHTML = `
-        <a href="index" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html">
+        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html">
             <span class="nav-icon"><i class="fas fa-home"></i></span>
             <span class="nav-label">Home</span>
         </a>
-        <a href="tool" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html">
+        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html">
             <span class="nav-icon"><i class="fas fa-tools"></i></span>
             <span class="nav-label">Tool</span>
         </a>
-        <a href="daily-login" class="nav-item ${currentPage === 'daily-login.html' ? 'active' : ''}" data-page="daily-login.html">
+        <a href="daily-login.html" class="nav-item ${currentPage === 'daily-login.html' ? 'active' : ''}" data-page="daily-login.html">
             <span class="nav-icon"><i class="fas fa-gift"></i></span>
             <span class="nav-label">Rewards</span>
         </a>
-        <a href="shop" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html">
+        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html">
             <span class="nav-icon"><i class="fas fa-shopping-cart"></i></span>
             <span class="nav-label">Shop</span>
         </a>
-        <a href="guilds" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html">
+        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html">
             <span class="nav-icon"><i class="fas fa-shield-alt"></i></span>
             <span class="nav-label">Clans</span>
         </a>
-        <a href="leaderboard" class="nav-item ${currentPage === 'leaderboard.html' ? 'active' : ''}" data-page="leaderboard.html">
+        <a href="leaderboard.html" class="nav-item ${currentPage === 'leaderboard.html' ? 'active' : ''}" data-page="leaderboard.html">
             <span class="nav-icon"><i class="fas fa-trophy"></i></span>
             <span class="nav-label">Leaders</span>
         </a>
-        <a href="profile" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html">
+        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html">
             <span class="nav-icon"><i class="fas fa-user-circle"></i></span>
             <span class="nav-label">Profile</span>
         </a>
@@ -423,19 +423,19 @@ function wrapAndInjectFooter() {
                     <div class="footer-col">
                         <h4>Quick Links</h4>
                         <ul class="footer-links">
-                            <li><a href="index">Home</a></li>
-                            <li><a href="shop">Armory (Shop)</a></li>
-                            <li><a href="guilds">Clans</a></li>
-                            <li><a href="daily-login">Daily Rewards</a></li>
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="shop.html">Armory (Shop)</a></li>
+                            <li><a href="guilds.html">Clans</a></li>
+                            <li><a href="daily-login.html">Daily Rewards</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">
                         <h4>Resources</h4>
                         <ul class="footer-links">
-                            <li><a href="sponsors">Sponsors</a></li>
-                            <li><a href="support">Support Us</a></li>
-                            <li><a href="help">Help & FAQ</a></li>
-                            <li><a href="about">About XP Arena</a></li>
+                            <li><a href="sponsors.html">Sponsors</a></li>
+                            <li><a href="support.html">Support Us</a></li>
+                            <li><a href="help.html">Help & FAQ</a></li>
+                            <li><a href="about.html">About XP Arena</a></li>
                         </ul>
                     </div>
                     <div class="footer-col">

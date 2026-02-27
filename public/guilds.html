@@ -350,7 +350,16 @@
                     const parts = [];
                     if (data.min_level) parts.push(`Level ${data.min_level}+`);
                     if (data.min_axp) parts.push(`${Number(data.min_axp).toLocaleString()}+ AXP`);
-                    el.textContent = parts.length ? `Requirements: ${parts.join(' • ')}` : 'Requirements: None';
+                    let suffix = '';
+                    try {
+                        const stats = User.getStats();
+                        if (stats) {
+                            const lvl = Math.floor((stats.axp || 0) / 500) + 1;
+                            const meet = (!data.min_level || lvl >= data.min_level) && (!data.min_axp || (stats.axp || 0) >= data.min_axp);
+                            suffix = meet ? ' • You meet the requirements' : ' • You do not meet the requirements';
+                        }
+                    } catch {}
+                    el.textContent = (parts.length ? `Requirements: ${parts.join(' • ')}` : 'Requirements: None') + suffix;
                 })
                 .catch(() => { el.textContent=''; });
         }

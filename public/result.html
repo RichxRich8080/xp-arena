@@ -245,7 +245,8 @@
 
 <body>
 
-    <div id="loading-container">
+    <canvas id="particlesCanvas" style="position:fixed; inset:0; z-index:0; pointer-events:none;"></canvas>
+    <div id="loading-container" style="position:relative; z-index:1;">
         <div class="gear-wrapper">
             <div class="halo halo-1"></div>
             <div class="halo halo-2"></div>
@@ -256,8 +257,8 @@
         </p>
     </div>
 
-    <div id="result-container">
-        <div class="elite-card">
+    <div id="result-container" style="position:relative; z-index:1;">
+        <div class="elite-card" style="box-shadow: 0 40px 120px rgba(0,255,255,0.08), 0 0 60px rgba(0,229,255,0.06) inset;">
             <div class="rarity-tag">LEGENDARY CALIBRATION</div>
             <div class="diag-pill" id="ai-sync-pill">
                 <i class="fas fa-atom"></i> <span id="ai-sync-text">AI TARGETING SYNCED</span>
@@ -360,6 +361,7 @@
                 return;
             }
             document.getElementById('status-device').textContent = params.device;
+            initParticles();
             startSequence(params);
         });
 
@@ -566,6 +568,54 @@
                 recorder.stop();
                 cancelAnimationFrame(rafId);
             }, 3200);
+        }
+
+        function initParticles() {
+            const canvas = document.getElementById('particlesCanvas');
+            const ctx = canvas.getContext('2d');
+            const DPR = Math.max(1, window.devicePixelRatio || 1);
+            let w = canvas.clientWidth = window.innerWidth;
+            let h = canvas.clientHeight = window.innerHeight;
+            canvas.width = w * DPR;
+            canvas.height = h * DPR;
+            ctx.scale(DPR, DPR);
+            const particles = [];
+            const colors = ['#00e5ff', '#80ffff', '#00ffff', '#b3f5ff'];
+            for (let i = 0; i < 80; i++) {
+                particles.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    r: Math.random() * 2 + 0.5,
+                    c: colors[Math.floor(Math.random() * colors.length)],
+                    a: Math.random() * 0.6 + 0.2
+                });
+            }
+            function step() {
+                ctx.clearRect(0, 0, w, h);
+                for (const p of particles) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+                    if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                    ctx.fillStyle = p.c;
+                    ctx.globalAlpha = p.a;
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+                requestAnimationFrame(step);
+            }
+            window.addEventListener('resize', () => {
+                w = canvas.clientWidth = window.innerWidth;
+                h = canvas.clientHeight = window.innerHeight;
+                canvas.width = w * DPR;
+                canvas.height = h * DPR;
+                ctx.scale(DPR, DPR);
+            });
+            step();
         }
     </script>
 </body>
