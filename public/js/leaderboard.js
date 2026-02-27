@@ -103,7 +103,7 @@ async function renderLeaderboard() {
                 padding: 1rem 1.2rem;
                 border-radius: 14px;
                 margin-bottom: 0.6rem;
-                background: ${p.isMe ? 'rgba(0,229,255,0.08)' : isTop3 ? 'rgba(255,255,255,0.03)' : 'transparent'};
+                background: ${p.isMe ? 'rgba(var(--accent-rgb, 255, 85, 0), 0.08)' : isTop3 ? 'rgba(255,255,255,0.03)' : 'transparent'};
                 border: 1px solid ${p.isMe ? 'var(--accent)' : isTop3 ? 'rgba(255,255,255,0.1)' : 'var(--border)'};
                 transition: all 0.2s;
                 cursor: pointer;
@@ -150,7 +150,7 @@ async function renderLeaderboard() {
                     gap: 1rem;
                     padding: 1rem 1.2rem;
                     border-radius: 14px;
-                    background: rgba(0,229,255,0.08);
+                    background: rgba(var(--accent-rgb, 255, 85, 0), 0.08);
                     border: 1px solid var(--accent);
                 ">
                     <div style="font-size: 1rem; font-weight: 800; color: var(--accent); text-align: center;">#${myPosition + 1}</div>
@@ -186,7 +186,7 @@ window.showPlayerCard = function (username, axp, avatar, rankName, level, streak
     modal.innerHTML = `
         <div style="background: var(--card-dark); border: 1px solid var(--border); border-radius: 20px; width: 90%; max-width: 350px; overflow: hidden; position: relative; animation: slideUp 0.3s ease;">
             <button onclick="document.getElementById('player-card-modal').remove()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;"><i class="fas fa-times"></i></button>
-            <div style="padding: 2rem; text-align: center; background: radial-gradient(circle at top, rgba(0,229,255,0.1), transparent 70%);">
+            <div style="padding: 2rem; text-align: center; background: radial-gradient(circle at top, rgba(var(--accent-rgb, 255, 85, 0), 0.1), transparent 70%);">
                 <div style="font-size: 4rem; margin-bottom: 1rem;">${avatar}</div>
                 <h3 style="font-size: 1.5rem; color: #fff; margin-bottom: 0.2rem;">${username}</h3>
                 <div style="color: var(--accent); font-weight: 800; font-size: 0.9rem;">${rankName} • Level ${level}</div>

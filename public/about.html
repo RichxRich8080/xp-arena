@@ -4,12 +4,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>About • XP ARENA</title>
-    <meta name="description"
-        content="Learn more about XP ARENA, the ultimate esports ecosystem for competitive mobile gaming.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        :root {
+            --bg: #080808;
+            --surface: rgba(18, 18, 24, 0.75);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 24px;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(var(--accent-rgb), 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.08) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .main-content-area {
+            padding-bottom: 120px !important;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .mission-tag {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 900;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 950;
+            letter-spacing: -3px;
+            color: #fff;
+            line-height: 0.95;
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .form-card {
+            background: var(--surface);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 4rem;
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at top right, rgba(var(--accent-rgb), 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .form-card p {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            color: var(--text-white);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 4rem 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 30px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+
+        .text-neon {
+            color: var(--accent);
+            font-weight: 800;
+            text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+        }
+
+        .cta-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            font-weight: 800;
+            text-decoration: none;
+            transition: gap 0.3s ease;
+        }
+
+        .cta-link:hover {
+            gap: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 2rem;
+            }
+
+            .page-header h1 {
+                font-size: 3rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="fade-in">
@@ -19,35 +146,36 @@
     </nav>
 
     <main class="main-content-area">
-        <div class="container" style="max-width: 800px;">
+        <div class="container" style="max-width: 900px;">
             <div class="page-header">
-                <h1>Our goal</h1>
-                <p>Empowering the next generation of mobile athletes.</p>
+                <span class="mission-tag">Operational Goal</span>
+                <h1>Precision Architecture.</h1>
+                <p>Empowering the next generation of mobile athletes with data-driven tactical tools.</p>
             </div>
 
             <article class="form-card">
                 <p>
-                    XP ARENA isn't just a website; it's a <span class="text-neon">movement</span>. We started with a
-                    simple
-                    goal: to help gamers eliminate the guesswork and find their potential.
+                    XP ARENA isn't just a platform; it's a <span class="text-neon">tactical necessity</span>. We
+                    emerged with a singularity of purpose: to eliminate guesswork and reveal true competitive potential
+                    through algorithmic analysis.
                 </p>
                 <p>
-                    Whether you're playing on a budget device or the latest flagship, we believe skill shouldn't be
-                    limited
-                    by settings. Our tools are designed to bridge the hardware gap.
+                    Whether deploying on a legacy budget device or the latest specialized mobile hardware, we believe
+                    raw skill should be the only variable. Our systems are engineered to bridge the performance gap.
                 </p>
 
-                <h2 style="color: white; margin: 2rem 0 1rem;">Community Focus</h2>
+                <h2 class="section-title">Community Protocol</h2>
                 <p>
-                    We are built by gamers, for gamers. Every feature on this platform—from the sensitivity calculator
+                    Built by high-tier competitors, for the global arena. Every module—from the Sensitivity Lab to our
+                    Clan Infrastructure—is optimized for a competitive ecosystem where talent is the primary currency.
+                </p>
+
+                <h2 class="section-title">Deployment Support</h2>
+                <p>
+                    We rely on community contribution to maintain low-latency infrastructure. Explore our <a
+                        href="support.html" class="cta-link">Support Repository <i class="fas fa-arrow-right"></i></a>
                     to
-                    the weekly tournaments—is designed to foster a competitive ecosystem where talent thrives.
-                </p>
-
-                <h2 style="color: white; margin: 2rem 0 1rem;">Fan Support</h2>
-                <p>
-                    We rely on our community to keep the servers running. Check out our <a href="support.html"
-                        class="text-neon">Support Page</a> to see how you can contribute.
+                    see how you can sustain the arena.
                 </p>
             </article>
         </div>

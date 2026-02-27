@@ -4,190 +4,397 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Top Clips • XP ARENA</title>
+    <title>Elite Clips • XP ARENA</title>
     <meta name="description" content="Watch the best Free Fire gameplay clips submitted by the XP ARENA community.">
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&family=Rajdhani:wght@600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
+        :root {
+            --bg: #050508;
+            --surface: rgba(15, 15, 25, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(var(--accent-rgb, 139, 92, 246), 0.4);
+            --radius-lg: 24px;
+        }
+
+        body {
+            background: var(--bg);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ─── AMBIENT ─── */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+            filter: blur(140px);
+            opacity: 0.08;
+            top: -300px;
+            right: -200px;
+        }
+
+        /* ─── LAYOUT ─── */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem 8rem;
+        }
+
+        .clips-hero {
+            text-align: center;
+            margin-bottom: 5rem;
+        }
+
+        .clips-hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(3rem, 10vw, 5rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        .clips-hero p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ─── CLIP GRID ─── */
         .clip-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2.5rem;
         }
 
         .clip-card {
-            background: var(--card-dark);
-            border-radius: 16px;
-            overflow: hidden;
+            background: var(--surface);
             border: 1px solid var(--border);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            position: relative;
         }
 
         .clip-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-            border-color: var(--accent);
+            transform: translateY(-12px) scale(1.02);
+            border-color: var(--border-active);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .clip-thumbnail {
+        .thumb-wrap {
             position: relative;
-            height: 200px;
+            aspect-ratio: 16/9;
             background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            overflow: hidden;
             cursor: pointer;
         }
 
-        .clip-thumbnail img {
+        .thumb-wrap img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            opacity: 0.8;
-            transition: opacity 0.2s;
+            opacity: 0.7;
+            transition: all 0.5s ease;
         }
 
-        .clip-card:hover .clip-thumbnail img {
+        .clip-card:hover .thumb-wrap img {
             opacity: 1;
+            transform: scale(1.1);
         }
 
-        .play-btn {
+        .play-overlay {
             position: absolute;
-            background: rgba(0, 0, 0, 0.6);
-            width: 50px;
-            height: 50px;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .play-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--accent);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            font-size: 1.5rem;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            transition: all 0.2s;
-        }
-
-        .clip-card:hover .play-btn {
-            background: var(--accent);
             color: #000;
-            border-color: var(--accent);
-            transform: scale(1.1);
+            font-size: 1.5rem;
+            box-shadow: 0 0 30px var(--accent-glow);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .clip-info {
-            padding: 1rem;
+        .clip-card:hover .play-icon {
+            transform: scale(1);
+            opacity: 1;
         }
 
-        .clip-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
+        .duration-tag {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            padding: 4px 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #fff;
+            backdrop-filter: blur(4px);
         }
 
-        .clip-author {
-            color: var(--text-muted);
-            font-size: 0.85rem;
+        .clip-body {
+            padding: 1.5rem;
+        }
+
+        .clip-body h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .author-info {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 1.2rem;
         }
 
-        .clip-stats {
+        .author-meta {
             display: flex;
-            gap: 15px;
-            margin-top: 10px;
-            font-size: 0.8rem;
-            color: var(--text-muted);
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #94a3b8;
         }
 
-        .clip-stats i {
+        .author-meta i {
             color: var(--accent);
-            margin-right: 5px;
+        }
+
+        .rank-badge {
+            font-size: 0.65rem;
+            font-weight: 900;
+            padding: 2px 8px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .clip-foot {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-top: 1.2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #64748b;
+        }
+
+        .stat-group i {
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .stat-group.liked i {
+            color: #ef4444;
+        }
+
+        /* ─── CTA ─── */
+        .submit-cta {
+            margin-top: 6rem;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, rgba(var(--accent-rgb, 139, 92, 246), 0.1), rgba(0, 0, 0, 0.4));
+            border: 1px solid var(--border-active);
+            border-radius: var(--radius-lg);
+            backdrop-filter: blur(20px);
+        }
+
+        .submit-cta h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+
+        .submit-cta p {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+        }
+
+        .btn-submit {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--accent);
+            color: #000;
+            padding: 1.2rem 2.5rem;
+            border-radius: 100px;
+            font-weight: 900;
+            font-size: 1.1rem;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.05);
+            filter: brightness(1.1);
         }
     </style>
 </head>
 
 <body class="fade-in">
+
     <nav class="navbar"></nav>
+
+    <div class="ambient-bg">
+        <div class="orb"></div>
+    </div>
+
     <main class="main-content-area">
-        <div class="container">
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">TOP CLIPS</h1>
-                <p style="color: var(--text-muted);">Watch legendary moments from our community.</p>
+        <div class="page-wrapper">
+
+            <div class="clips-hero reveal">
+                <h1 class="text-neon">Hall of Fame</h1>
+                <p>Legendary snapshots of pure skill. Witness the greatest moments captured in the XP ARENA battlefield.
+                </p>
             </div>
 
             <div class="clip-grid">
                 <!-- Clip 1 -->
-                <div class="clip-card">
-                    <div class="clip-thumbnail"
-                        onclick="openTheater('assets/images/featured-clip.jpg', 'Insane 1v4 Squad Wipe', 'White444_Fan')">
-                        <img src="assets/images/featured-clip.jpg" alt="Clip 1">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <div class="clip-title">Insane 1v4 Squad Wipe</div>
-                        <div class="clip-author">
-                            <span><i class="fas fa-user-circle"></i> White444_Fan</span>
-                            <span class="badge"
-                                style="background: rgba(0, 229, 255, 0.1); color: var(--accent); border: 1px solid var(--accent);">Master</span>
+                <div class="clip-card reveal">
+                    <div class="thumb-wrap"
+                        onclick="openTheater('assets/images/featured-clip.jpg', 'Neon Executioner 1v4', 'Shadow_Protocol')">
+                        <img src="assets/images/featured-clip.jpg" alt="Clip">
+                        <div class="play-overlay">
+                            <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
-                        <div class="clip-stats">
-                            <span><i class="fas fa-eye"></i> 12.4K</span>
-                            <span><i class="fas fa-heart"></i> 3.2K</span>
+                        <div class="duration-tag">0:42</div>
+                    </div>
+                    <div class="clip-body">
+                        <h3>Neon Executioner 1v4</h3>
+                        <div class="author-info">
+                            <div class="author-meta">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Shadow_Protocol</span>
+                            </div>
+                            <div class="rank-badge" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">Legend
+                            </div>
+                        </div>
+                        <div class="clip-foot">
+                            <div class="stat-group"><i class="fas fa-eye"></i> 42.1K</div>
+                            <div class="stat-group liked"><i class="fas fa-heart"></i> 12.4K</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Clip 2 -->
-                <div class="clip-card">
-                    <div class="clip-thumbnail"
-                        onclick="openTheater('assets/images/video-guide.jpg', '1 Tap Only Montage', 'Ruok_God')">
-                        <img src="assets/images/video-guide.jpg" alt="Clip 2">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <div class="clip-title">1 Tap Only Montage</div>
-                        <div class="clip-author">
-                            <span><i class="fas fa-user-circle"></i> Ruok_God</span>
-                            <span class="badge"
-                                style="background: rgba(191, 0, 255, 0.1); color: #bf00ff; border: 1px solid #bf00ff;">Grandmaster</span>
+                <div class="clip-card reveal">
+                    <div class="thumb-wrap"
+                        onclick="openTheater('assets/images/video-guide.jpg', 'Zenith One-Tap Montage', 'Nova_Strike')">
+                        <img src="assets/images/video-guide.jpg" alt="Clip">
+                        <div class="play-overlay">
+                            <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
-                        <div class="clip-stats">
-                            <span><i class="fas fa-eye"></i> 8.9K</span>
-                            <span><i class="fas fa-heart"></i> 2.1K</span>
+                        <div class="duration-tag">3:15</div>
+                    </div>
+                    <div class="clip-body">
+                        <h3>Zenith One-Tap Montage</h3>
+                        <div class="author-info">
+                            <div class="author-meta">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Nova_Strike</span>
+                            </div>
+                            <div class="rank-badge"
+                                style="background: rgba(var(--accent-rgb, 139, 92, 246), 0.1); color: var(--accent);">
+                                Elite</div>
+                        </div>
+                        <div class="clip-foot">
+                            <div class="stat-group"><i class="fas fa-eye"></i> 18.5K</div>
+                            <div class="stat-group"><i class="fas fa-heart"></i> 4.2K</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Clip 3 -->
-                <div class="clip-card">
-                    <div class="clip-thumbnail"
-                        onclick="openTheater('assets/images/logo.png', 'Tournament Finals Highlight', 'Pro_Sniper')">
-                        <img src="assets/images/logo.png" alt="Clip 3">
-                        <div class="play-btn"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <div class="clip-title">Tournament Finals Highlight</div>
-                        <div class="clip-author">
-                            <span><i class="fas fa-user-circle"></i> Pro_Sniper</span>
-                            <span class="badge"
-                                style="background: rgba(255, 204, 0, 0.1); color: #ffcc00; border: 1px solid #ffcc00;">Champion</span>
+                <div class="clip-card reveal">
+                    <div class="thumb-wrap"
+                        onclick="openTheater('assets/images/logo.png', 'Perfect Predator Scrims', 'Ghost_FF')">
+                        <img src="assets/images/logo.png" alt="Clip">
+                        <div class="play-overlay">
+                            <div class="play-icon"><i class="fas fa-play"></i></div>
                         </div>
-                        <div class="clip-stats">
-                            <span><i class="fas fa-eye"></i> 45K</span>
-                            <span><i class="fas fa-heart"></i> 12K</span>
+                        <div class="duration-tag">1:02</div>
+                    </div>
+                    <div class="clip-body">
+                        <h3>Perfect Predator Scrims</h3>
+                        <div class="author-info">
+                            <div class="author-meta">
+                                <i class="fas fa-user-circle"></i>
+                                <span>Ghost_FF</span>
+                            </div>
+                            <div class="rank-badge" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">Master
+                            </div>
+                        </div>
+                        <div class="clip-foot">
+                            <div class="stat-group"><i class="fas fa-eye"></i> 9.2K</div>
+                            <div class="stat-group"><i class="fas fa-heart"></i> 1.1K</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div style="text-align: center; margin-top: 3rem;">
-                <a href="submit.html" class="btn-primary glow-neon" style="width: auto; padding: 1rem 2rem;">SUBMIT YOUR
-                    CLIP</a>
+            <div class="submit-cta reveal">
+                <h2>Recorded a Masterpiece?</h2>
+                <p>Upload your greatest plays and get featured in the XP ARENA Hall of Fame.</p>
+                <a href="submit.html" class="btn-submit">
+                    <i class="fas fa-cloud-upload-alt"></i> Upload Archive
+                </a>
             </div>
+
         </div>
     </main>
+
     <nav class="bottom-nav"></nav>
 
     <script src="js/auth.js"></script>
@@ -195,7 +402,6 @@
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
 
-    <!-- THEATER MODAL -->
     <script>
         window.openTheater = function (imgSrc, title, author) {
             const existing = document.getElementById('theater-overlay');
@@ -206,53 +412,51 @@
             modal.style.cssText = `
                 position: fixed; inset: 0; z-index: 100000;
                 display: flex; align-items: center; justify-content: center;
-                background: rgba(0,0,0,0.9); backdrop-filter: blur(15px);
-                animation: fadeIn 0.3s ease;
+                background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
+                animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             `;
 
             modal.innerHTML = `
-                <div style="width: 100%; max-width: 1000px; padding: 2rem; position: relative;">
-                    <!-- Close btn -->
-                    <button onclick="document.getElementById('theater-overlay').remove()" style="position: absolute; top: -30px; right: 2rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; transition: color 0.2s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='#fff'"><i class="fas fa-times"></i></button>
+                <div style="width: 100%; max-width: 1100px; padding: 2rem; position: relative;" class="reveal visible">
+                    <button onclick="document.getElementById('theater-overlay').remove()" style="position: absolute; top: -30px; right: 2rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;"><i class="fas fa-times"></i></button>
                     
-                    <!-- Video Container -->
-                    <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.8);">
-                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;">
-                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 3rem; color: var(--accent);"></i>
+                    <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; position: relative;">
+                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
+                        <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
+                            <p style="font-family: 'Rajdhani'; font-weight: 700; letter-spacing: 2px; color: #fff;">SECURE STREAM INITIALIZING...</p>
                         </div>
                     </div>
                     
-                    <!-- Info Bar -->
-                    <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <h2 style="font-size: 1.8rem; font-weight: 900; color: #fff; margin-bottom: 0.3rem;">${title}</h2>
-                            <p style="color: var(--accent); font-weight: 600; font-size: 1rem;"><i class="fas fa-user-circle"></i> ${author}</p>
+                            <h2 style="font-family:'Outfit'; font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem;">${title}</h2>
+                            <p style="color: var(--accent); font-weight: 800; font-size: 1.1rem; display:flex; align-items:center; gap:10px;">
+                                <i class="fas fa-user-circle"></i> ${author}
+                            </p>
                         </div>
                         <div style="display:flex; gap: 15px;">
-                            <button class="btn-secondary" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 0.5rem 1rem; color: #fff;" onclick="this.style.color='var(--accent)'; if(window.Toast) Toast.show('Added to favorites!', 'success')"><i class="fas fa-heart"></i> Like</button>
+                            <button class="btn-primary" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color:#fff;" onclick="this.innerHTML='<i class=\'fas fa-heart\'></i> LIKED'; this.style.color='var(--accent)'"><i class="fas fa-heart"></i> Like Clip</button>
                         </div>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
-
-            // Simulate "loading" video
-            setTimeout(() => {
-                const spinner = modal.querySelector('.fa-spinner');
-                if (spinner) {
-                    spinner.className = 'fas fa-play';
-                    spinner.classList.remove('fa-spin');
-                    spinner.parentElement.parentElement.innerHTML = `
-                        <div style="width: 100%; height: 100%; display: flex; align-items:center; justify-content:center; flex-direction: column; background: #0b0f17;">
-                            <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-                            <p style="color: var(--text-muted); font-size: 1.1rem;">Video stream requires backend API connection.</p>
-                        </div>
-                    `;
-                }
-            }, 1000);
         }
+
+        // Scroll Reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, i) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => entry.target.classList.add('visible'), i * 150);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
+
+</html>
 
 </html>

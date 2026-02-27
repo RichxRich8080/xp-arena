@@ -111,7 +111,7 @@
       const slug = document.getElementById('crSlug').value.trim();
       const bio = document.getElementById('crBio').value.trim();
       const banner_url = document.getElementById('crBanner').value.trim();
-      
+
       try {
         const res = await fetch((window.API_URL || '') + '/api/creators/enable', {
           method: 'POST',
@@ -120,10 +120,10 @@
         });
         const data = await res.json();
         if (res.ok) {
-           if (window.Toast) Toast.show('Creator Protocol Updated!', 'success');
-           checkMe();
+          if (window.Toast) Toast.show('Creator Protocol Updated!', 'success');
+          checkMe();
         } else {
-           if (window.Toast) Toast.show(data.error || 'Error updating profile', 'error');
+          if (window.Toast) Toast.show(data.error || 'Error updating profile', 'error');
         }
       } catch (e) {
         console.error(e);
@@ -134,21 +134,21 @@
       if (!Auth.isLoggedIn()) return;
       const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const data = await res.json();
-      
+
       const idStatus = document.getElementById('identityStatus');
       const idBio = document.getElementById('identityBio');
       const publicLink = document.getElementById('publicLink');
-      
+
       if (data && data.creator) {
         const c = data.creator;
         idStatus.innerHTML = `${c.username.toUpperCase()} <span style="color: var(--accent);">@${c.slug}</span> ${c.verified ? ' <i class="fas fa-check-circle" style="color:#00ff88;"></i>' : ''}`;
         idBio.textContent = c.bio || 'No bio set.';
         publicLink.textContent = window.location.origin + '/creator-profile.html?slug=' + c.slug;
-        
+
         document.getElementById('crSlug').value = c.slug;
         document.getElementById('crBio').value = c.bio || '';
         document.getElementById('crBanner').value = c.banner_url || '';
-        
+
         document.getElementById('statFollowers').textContent = data.followers || 0;
         document.getElementById('statLikes').textContent = (data.setups || []).reduce((acc, s) => acc + (s.likes || 0), 0);
         document.getElementById('statCopies').textContent = (data.setups || []).reduce((acc, s) => acc + (s.copies || 0), 0);

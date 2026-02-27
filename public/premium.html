@@ -4,587 +4,1257 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Upgrade to Elite • XP ARENA</title>
+  <title>Go Elite • XP ARENA Premium</title>
+  <meta name="description"
+    content="Unlock the full XP Arena experience. Pro Laboratory, AI Aim Lab, custom themes, ad-free gaming.">
   <link rel="stylesheet" href="css/main.css">
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@500;800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@400;700;800;900&family=Rajdhani:wght@600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
   <style>
     :root {
-      --accent: #00e5ff;
-      --accent-glow: rgba(0, 229, 255, 0.4);
-      --bg-deep: #06090f;
-      --glass: rgba(17, 24, 39, 0.7);
-      --border-glass: rgba(0, 229, 255, 0.2);
+      --bg: #0a0a0f;
+      --surface: rgba(20, 20, 35, 0.7);
+      --surface-solid: #14141f;
+      --border: rgba(255, 255, 255, 0.06);
+      --border-active: rgba(var(--accent-rgb, 139, 92, 246), 0.5);
+      --violet: var(--accent);
+      --violet-glow: var(--accent-glow);
+      --violet-dark: var(--border-active);
+      --cyan: var(--accent2);
+      --cyan-glow: rgba(var(--accent-rgb, 255, 85, 0), 0.3);
+      --lime: #84CC16;
+      --orange: #F97316;
+      --text: #F8FAFC;
+      --muted: #6B7280;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
-      background: var(--bg-deep);
-      color: #fff;
+      background: var(--bg);
+      color: var(--text);
       font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-    }
-
-    .premium-container {
-      max-width: 500px;
-      margin: 0 auto;
-      padding: 2rem 1.5rem 6rem;
       min-height: 100vh;
-      position: relative;
+      overflow-x: hidden;
+      overflow-y: auto !important;
+      height: auto !important;
     }
 
-    /* Hero / Header Section */
-    .hero-section {
-      position: relative;
-      height: 320px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
-    .halo-container {
-      position: absolute;
-      width: 280px;
-      height: 280px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .halo-ring {
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid var(--border-glass);
-      animation: halo-pulse 4s infinite ease-in-out;
-    }
-
-    .ring-inner {
-      width: 120px;
-      height: 120px;
-      animation-delay: 0s;
-    }
-
-    .ring-mid {
-      width: 200px;
-      height: 200px;
-      animation-delay: 1s;
-    }
-
-    .ring-outer {
-      width: 280px;
-      height: 280px;
-      animation-delay: 2s;
-    }
-
-    @keyframes halo-pulse {
-
-      0%,
-      100% {
-        transform: scale(0.95);
-        opacity: 0.2;
-      }
-
-      50% {
-        transform: scale(1.05);
-        opacity: 0.5;
-        box-shadow: 0 0 30px var(--accent-glow);
-      }
-    }
-
-    .arena-core {
-      width: 90px;
-      height: 90px;
-      background: var(--glass);
-      border: 2px solid var(--accent);
-      border-radius: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.5rem;
-      color: var(--accent);
-      box-shadow: 0 0 40px var(--accent-glow);
-      z-index: 5;
-      backdrop-filter: blur(10px);
-      animation: core-float 6s infinite ease-in-out;
-    }
-
-    @keyframes core-float {
-
-      0%,
-      100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    .tech-particle {
-      position: absolute;
-      color: var(--accent);
-      font-size: 1.1rem;
-      opacity: 0.6;
-      filter: drop-shadow(0 0 8px var(--accent));
-      animation: particle-twinkle 3s infinite alternate;
-    }
-
-    @keyframes particle-twinkle {
-      from {
-        opacity: 0.3;
-        transform: scale(0.8);
-      }
-
-      to {
-        opacity: 0.8;
-        transform: scale(1.1);
-      }
-    }
-
-    .title-group {
-      z-index: 10;
-      margin-top: 1.5rem;
-    }
-
-    .main-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2.4rem;
-      font-weight: 800;
-      margin: 0;
-      letter-spacing: -1px;
-    }
-
-    .main-title span {
-      background: linear-gradient(90deg, #fff, var(--accent));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .tagline {
-      color: var(--accent);
-      text-transform: uppercase;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      margin-top: 0.5rem;
-      opacity: 0.8;
-    }
-
-    /* Features / Benefits */
-    .benefits-grid {
-      margin: 3rem 0;
-      display: grid;
-      gap: 1.2rem;
-    }
-
-    .benefit-card {
-      background: var(--glass);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      padding: 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      transition: all 0.3s;
-      backdrop-filter: blur(8px);
-    }
-
-    .benefit-card:hover {
-      border-color: var(--border-glass);
-      transform: translateX(5px);
-    }
-
-    .benefit-icon {
-      width: 44px;
-      height: 44px;
-      background: rgba(0, 229, 255, 0.1);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--accent);
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
-
-    .benefit-info h4 {
-      margin: 0;
-      font-size: 0.95rem;
-      font-weight: 700;
-    }
-
-    .benefit-info p {
-      margin: 2px 0 0;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    /* Plan Selection */
-    .plans-container {
-      margin-top: 3rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    .plan-item {
-      background: var(--glass);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 20px;
-      padding: 1.5rem;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.3s;
-      position: relative;
+    /* ─── AMBIENT BACKGROUND ─── */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       overflow: hidden;
     }
 
-    .plan-item.selected {
-      border-color: var(--accent);
-      background: rgba(0, 229, 255, 0.05);
-      box-shadow: 0 0 20px rgba(0, 229, 255, 0.1);
+    .ambient-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.15;
     }
 
-    .plan-radio {
-      width: 20px;
-      height: 20px;
-      border: 2px solid rgba(255, 255, 255, 0.2);
+    .orb-violet {
+      width: 600px;
+      height: 600px;
+      background: var(--violet);
+      top: -200px;
+      left: -100px;
+      animation: orb-drift 20s ease-in-out infinite alternate;
+    }
+
+    .orb-cyan {
+      width: 500px;
+      height: 500px;
+      background: var(--cyan);
+      bottom: -150px;
+      right: -100px;
+      animation: orb-drift 25s ease-in-out infinite alternate-reverse;
+    }
+
+    .orb-violet2 {
+      width: 300px;
+      height: 300px;
+      background: var(--violet);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      opacity: 0.08;
+      animation: orb-drift 15s ease-in-out infinite alternate;
+    }
+
+    @keyframes orb-drift {
+      from {
+        transform: translate(0, 0) scale(1);
+      }
+
+      to {
+        transform: translate(40px, 30px) scale(1.1);
+      }
+    }
+
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--accent-glow) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.15;
+    }
+
+    /* ─── MAIN LAYOUT ─── */
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 120px 1.5rem 120px;
+      /* Increased padding to clear navbar and bottom nav */
+    }
+
+    /* ─── BACK BUTTON ─── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      margin-bottom: 3rem;
+      padding: 0.5rem 0;
+      background: none;
+      border: none;
+    }
+
+    .back-btn:hover {
+      color: var(--text);
+    }
+
+    .back-btn i {
+      font-size: 0.8rem;
+    }
+
+    /* ─── HERO SECTION ─── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 4rem;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(var(--accent-rgb, 255, 85, 0), 0.1);
+      border: 1px solid rgba(var(--accent-rgb, 255, 85, 0), 0.3);
+      border-radius: 100px;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      animation: badge-pulse 3s ease-in-out infinite;
+    }
+
+    @keyframes badge-pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 255, 85, 0), 0);
+      }
+
+      50% {
+        box-shadow: 0 0 20px 0 var(--accent-glow);
+      }
+    }
+
+    .hero-badge .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--violet);
       border-radius: 50%;
-      margin-right: 1.2rem;
+      animation: dot-blink 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dot-blink {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.3;
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.07;
+      letter-spacing: -2px;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 .gradient-text {
+      background: linear-gradient(135deg, #fff 0%, var(--violet) 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200% auto;
+      animation: gradient-shift 4s linear infinite;
+    }
+
+    @keyframes gradient-shift {
+      0% {
+        background-position: 0% center;
+      }
+
+      100% {
+        background-position: 200% center;
+      }
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    /* ─── BILLING TOGGLE ─── */
+    .billing-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 0.4rem;
+      margin-bottom: 3rem;
+      backdrop-filter: blur(20px);
+    }
+
+    .toggle-option {
+      padding: 0.5rem 1.2rem;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: var(--muted);
+      position: relative;
+    }
+
+    .toggle-option.active {
+      background: var(--violet);
+      color: #fff;
+      box-shadow: 0 0 20px var(--violet-glow);
+    }
+
+    .save-pill {
+      background: var(--lime);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 900;
+      padding: 2px 7px;
+      border-radius: 100px;
+      position: absolute;
+      top: -8px;
+      right: -8px;
+    }
+
+    /* ─── PRICING GRID ─── */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+      align-items: start;
+    }
+
+    .plan-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      cursor: default;
+    }
+
+    .plan-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* FEATURED CARD (Pro) */
+    .plan-card.featured {
+      border-color: var(--accent);
+      background: linear-gradient(160deg, rgba(var(--accent-rgb, 139, 92, 246), 0.12) 0%, rgba(20, 20, 35, 0.9) 60%);
+      transform: scale(1.04);
+      box-shadow: 0 0 60px var(--accent-glow), 0 30px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .plan-card.featured::after {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 28px 28px 0 0;
+    }
+
+    .plan-card.featured:hover {
+      transform: scale(1.04) translateY(-6px);
+      box-shadow: 0 0 80px rgba(var(--accent-rgb, 139, 92, 246), 0.3), 0 40px 80px rgba(0, 0, 0, 0.5);
+    }
+
+    .plan-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: var(--violet);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
     }
 
-    .plan-item.selected .plan-radio {
-      border-color: var(--accent);
+    .icon-free {
+      background: rgba(107, 114, 128, 0.15);
+      color: #9CA3AF;
     }
 
-    .plan-item.selected .plan-radio::after {
-      content: '';
-      width: 10px;
-      height: 10px;
-      background: var(--accent);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--accent);
+    .icon-pro {
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.15);
+      color: var(--accent);
+      box-shadow: 0 0 20px var(--accent-glow);
     }
 
-    .plan-details {
-      flex-grow: 1;
+    .icon-legend {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.2);
     }
 
     .plan-name {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+    }
+
+    .plan-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+
+    .plan-price-block {
+      margin-bottom: 1.8rem;
+      padding-bottom: 1.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .price-amount {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    .price-currency {
+      font-size: 1.3rem;
+      vertical-align: super;
+      font-weight: 700;
+    }
+
+    .price-period {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 500;
+      margin-top: 4px;
+    }
+
+    .price-yearly-note {
+      display: none;
+      font-size: 0.75rem;
+      color: var(--lime);
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    body.yearly .price-weekly {
+      display: none;
+    }
+
+    body.yearly .price-yearly {
+      display: block;
+    }
+
+    body.yearly .price-yearly-note {
+      display: block;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+    }
+
+    .plan-features li .check {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+    }
+
+    .check-yes {
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.15);
+      color: var(--accent);
+    }
+
+    .check-yes-orange {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+    }
+
+    .check-no {
+      background: rgba(107, 114, 128, 0.1);
+      color: var(--muted);
+    }
+
+    .plan-features li.dimmed {
+      color: var(--muted);
+    }
+
+    /* ─── PLAN BUTTONS ─── */
+    .btn-plan {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 14px;
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+    }
+
+    .btn-free {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .btn-free:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+    }
+
+    .btn-pro {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      box-shadow: 0 8px 30px var(--accent-glow);
+    }
+
+    .btn-pro:hover {
+      box-shadow: 0 12px 40px rgba(var(--accent-rgb, 139, 92, 246), 0.5);
+      transform: translateY(-2px);
+    }
+
+    .btn-pro:active {
+      transform: scale(0.98);
+    }
+
+    .btn-legend {
+      background: linear-gradient(135deg, var(--orange), #EF4444);
+      color: #fff;
+      box-shadow: 0 8px 30px rgba(249, 115, 22, 0.3);
+    }
+
+    .btn-legend:hover {
+      box-shadow: 0 12px 40px rgba(249, 115, 22, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* ─── FEATURE COMPARISON TABLE ─── */
+    .compare-section {
+      margin-bottom: 4rem;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.6rem;
       display: flex;
       align-items: center;
       gap: 8px;
     }
 
-    .plan-price {
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
       font-family: 'Outfit', sans-serif;
-      font-size: 1.3rem;
+      font-size: 2rem;
       font-weight: 800;
-      margin-top: 4px;
+      margin-bottom: 2rem;
     }
 
-    .plan-price span {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 400;
+    .compare-table {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      backdrop-filter: blur(20px);
     }
 
-    .popular-tag {
-      background: var(--accent);
-      color: #000;
-      font-size: 0.65rem;
-      font-weight: 950;
-      padding: 4px 10px;
-      border-radius: 100px;
-      text-transform: uppercase;
-      position: absolute;
-      top: 15px;
-      right: 15px;
+    .compare-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      transition: background 0.2s;
     }
 
-    /* Action Footer */
-    .payment-footer {
-      margin-top: 3rem;
-      text-align: center;
+    .compare-row:last-child {
+      border-bottom: none;
     }
 
-    .btn-elite {
-      background: var(--accent);
-      color: #000;
-      border: none;
-      width: 100%;
-      padding: 1.3rem;
-      border-radius: 18px;
-      font-weight: 900;
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      cursor: pointer;
-      box-shadow: 0 15px 35px var(--accent-glow);
-      transition: all 0.3s;
-      text-transform: uppercase;
+    .compare-row:hover {
+      background: rgba(255, 255, 255, 0.02);
     }
 
-    .btn-elite:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 20px 45px rgba(0, 229, 255, 0.4);
-    }
-
-    .btn-elite:active {
-      transform: scale(0.98);
-    }
-
-    .cancel-anytime {
-      margin-top: 1.5rem;
+    .compare-row.header {
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.06);
       font-size: 0.75rem;
-      color: var(--text-muted);
+      font-weight: 800;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .compare-row.header .col-pro {
+      color: var(--violet);
+    }
+
+    .compare-row.header .col-legend {
+      color: var(--orange);
+    }
+
+    .compare-feature {
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    .compare-val {
+      text-align: center;
+      font-size: 0.85rem;
+    }
+
+    .val-yes {
+      color: var(--violet);
+    }
+
+    .val-yes-legend {
+      color: var(--orange);
+    }
+
+    .val-no {
+      color: rgba(255, 255, 255, 0.15);
+      font-size: 1rem;
+    }
+
+    .val-free {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    /* ─── TESTIMONIALS ─── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 4rem;
+    }
+
+    .testimonial-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      transition: all 0.3s ease;
+    }
+
+    .testimonial-card:hover {
+      border-color: rgba(var(--accent-rgb, 139, 92, 246), 0.3);
+      transform: translateY(-3px);
+    }
+
+    .testimonial-stars {
+      color: #FBBF24;
+      font-size: 0.8rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    .testimonial-text {
+      font-size: 0.88rem;
+      color: #CBD5E1;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .author-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      font-size: 1rem;
     }
 
-    .close-action {
-      position: absolute;
-      top: 2rem;
-      left: 1.5rem;
-      font-size: 1.5rem;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: color 0.2s;
-      z-index: 100;
+    .author-name {
+      font-size: 0.82rem;
+      font-weight: 700;
     }
 
-    .close-action:hover {
-      color: #fff;
-    }
-
-    /* Terms Area */
-    .legal-block {
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      color: var(--text-muted);
-      font-size: 0.7rem;
-      line-height: 1.8;
-      text-align: left;
-    }
-
-    .legal-links {
-      display: flex;
-      gap: 1.5rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-      font-weight: 600;
-    }
-
-    .legal-links a {
+    .author-rank {
+      font-size: 0.72rem;
       color: var(--accent);
-      text-decoration: none;
     }
 
-    @media (max-width: 600px) {
-      .premium-container {
+    /* ─── FAQ ─── */
+    .faq-section {
+      margin-bottom: 4rem;
+    }
+
+    .faq-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 0.8rem;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.2s;
+    }
+
+    .faq-item.open {
+      border-color: rgba(var(--accent-rgb, 139, 92, 246), 0.3);
+    }
+
+    .faq-question {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.92rem;
+      gap: 1rem;
+    }
+
+    .faq-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.1);
+      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--accent);
+      font-size: 0.75rem;
+      transition: transform 0.3s ease;
+    }
+
+    .faq-item.open .faq-icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      padding: 0 1.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+      padding-bottom: 1.2rem;
+    }
+
+    /* ─── CTA FOOTER ─── */
+    .cta-footer {
+      text-align: center;
+      background: linear-gradient(135deg, rgba(var(--accent-rgb, 139, 92, 246), 0.1), rgba(var(--accent-rgb, 6, 182, 212), 0.08));
+      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
+      border-radius: var(--radius-xl);
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-footer::before {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-footer h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin-bottom: 0.8rem;
+    }
+
+    .cta-footer p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .btn-cta-main {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      padding: 1rem 2.5rem;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 10px 40px var(--accent-glow);
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn-cta-main:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 16px 50px rgba(var(--accent-rgb, 139, 92, 246), 0.5);
+    }
+
+    .trust-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .trust-item i {
+      color: var(--lime);
+    }
+
+    /* ─── SCROLL ANIMATIONS ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .plan-card.featured {
+        transform: scale(1);
+      }
+
+      .plan-card.featured:hover {
+        transform: translateY(-6px);
+      }
+
+      .testimonials-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-row {
+        grid-template-columns: 2fr 1fr 1fr;
+        font-size: 0.8rem;
+        padding: 0.8rem 1rem;
+      }
+
+      /* Hide free column on mobile for compare table */
+      .compare-row .col-free {
+        display: none;
+      }
+
+      .compare-row.header .col-free {
+        display: none;
+      }
+
+      .hero h1 {
+        letter-spacing: -1px;
+      }
+
+      .page-wrapper {
         padding: 1.5rem 1rem 6rem;
       }
-      .hero-section {
-        height: 260px;
-        margin-bottom: 0.5rem;
-      }
-      .halo-container {
-        width: 220px;
-        height: 220px;
-      }
-      .ring-inner { width: 90px; height: 90px; }
-      .ring-mid { width: 150px; height: 150px; }
-      .ring-outer { width: 220px; height: 220px; }
-      .arena-core {
-        width: 70px; height: 70px; font-size: 2rem;
-      }
-      .main-title { font-size: 2rem; }
-      .benefits-grid { gap: 0.9rem; }
-      .plan-item { padding: 1.2rem; }
-      .btn-elite { padding: 1.1rem; }
     }
 
-    @media (max-width: 380px) {
-      .hero-section { height: 220px; }
-      .halo-container { width: 190px; height: 190px; }
-      .ring-inner { width: 80px; height: 80px; }
-      .ring-mid { width: 130px; height: 130px; }
-      .ring-outer { width: 190px; height: 190px; }
-      .title-group { margin-top: 1rem; }
-      .main-title { font-size: 1.8rem; }
+    @media (max-width: 480px) {
+      .billing-toggle {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .cta-footer {
+        padding: 2.5rem 1.2rem;
+      }
+
+      .cta-footer h2 {
+        font-size: 1.6rem;
+      }
     }
   </style>
 </head>
 
-<body>
+<body class="fade-in">
 
-  <div class="premium-container">
-    <div class="close-action" onclick="history.back()"><i class="fas fa-times"></i></div>
+  <nav class="navbar"></nav>
 
-    <!-- HERO -->
-    <div class="hero-section">
-      <div class="halo-container">
-        <div class="halo-ring ring-inner"></div>
-        <div class="halo-ring ring-mid"></div>
-        <div class="halo-ring ring-outer"></div>
+  <div class="ambient-bg">
+    <div class="ambient-orb orb-violet"></div>
+    <div class="ambient-orb orb-cyan"></div>
+    <div class="ambient-orb orb-violet2"></div>
+  </div>
 
-        <!-- Tech Particles (Floating) -->
-        <i class="fas fa-microchip tech-particle" style="top: 10%; left: 15%;"></i>
-        <i class="fas fa-bolt tech-particle" style="top: 20%; right: 10%;"></i>
-        <i class="fas fa-shield-alt tech-particle" style="bottom: 25%; left: 5%;"></i>
-        <i class="fas fa-satellite-dish tech-particle" style="bottom: 15%; right: 20%;"></i>
-        <i class="fas fa-crosshairs tech-particle" style="top: 45%; right: 5%;"></i>
+  <div class="page-wrapper">
 
-        <div class="arena-core">
-          <i class="fas fa-crown"></i>
-        </div>
+    <button class="back-btn" onclick="window.history.back()">
+      <i class="fas fa-arrow-left"></i> BACK TO ARENA
+    </button>
+
+    <!-- ─── HERO SECTION ─── -->
+    <div class="hero">
+      <div class="hero-badge">
+        <div class="dot"></div>
+        ELITE PROTOCOL ACTIVE
       </div>
+      <h1>
+        Compete at the<br>
+        <span class="gradient-text">Highest Level</span>
+      </h1>
+      <p>Unlock Pro Laboratory, AI Aim Lab, unlimited presets, custom themes, and zero ads. Your edge over every other
+        Areni.</p>
 
-      <div class="title-group">
-        <div class="tagline">Unlock the Arena</div>
-        <h1 class="main-title">ELITE <span>PRO</span></h1>
-      </div>
-    </div>
-
-    <!-- BENEFITS -->
-    <div class="benefits-grid">
-      <div class="benefit-card">
-        <div class="benefit-icon"><i class="fas fa-flask"></i></div>
-        <div class="benefit-info">
-          <h4>Pro Laboratory Access</h4>
-          <p>Unlock custom engines & private AI algorithms.</p>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon"><i class="fas fa-bullseye"></i></div>
-        <div class="benefit-info">
-          <h4>AI Aim Lab Pro</h4>
-          <p>Unlimited accuracy sessions & diagnostic reports.</p>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon"><i class="fas fa-cloud-download-alt"></i></div>
-        <div class="benefit-info">
-          <h4>Ultra-HQ Exports</h4>
-          <p>Save setting cards in 4K with cinematic themes.</p>
-        </div>
-      </div>
-      <div class="benefit-card">
-        <div class="benefit-icon"><i class="fas fa-star"></i></div>
-        <div class="benefit-info">
-          <h4>No Advertisements</h4>
-          <p>Zero interruptions. Pure performance.</p>
+      <!-- Billing Toggle -->
+      <div class="billing-toggle" id="billingToggle">
+        <div class="toggle-option active" data-plan="weekly" onclick="setBilling('weekly')">Weekly</div>
+        <div class="toggle-option" data-plan="yearly" onclick="setBilling('yearly')">
+          Yearly
+          <span class="save-pill">SAVE 80%</span>
         </div>
       </div>
     </div>
 
-    <!-- PLANS -->
-    <div class="plans-container">
-      <div class="plan-item selected" onclick="selectPlan(this, 'weekly')">
-        <div class="plan-radio"></div>
-        <div class="plan-details">
-          <div class="plan-name">Weekly Elite <span style="font-size: 0.7rem; color: var(--accent);">FULL ACCESS</span>
+    <!-- ── PRICING CARDS ── -->
+    <div class="pricing-grid reveal">
+
+      <!-- FREE -->
+      <div class="plan-card">
+        <div class="plan-icon icon-free"><i class="fas fa-crosshairs"></i></div>
+        <div class="plan-name">Areni</div>
+        <div class="plan-desc">For casual players getting started with XP Arena.</div>
+        <div class="plan-price-block">
+          <div class="price-amount price-weekly"><span class="price-currency">₦</span>0</div>
+          <div class="price-amount price-yearly" style="display:none;"><span class="price-currency">₦</span>0</div>
+          <div class="price-period">Free forever</div>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Sensitivity Calculator</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Basic XP Tracking</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Public Leaderboard</li>
+          <li class="dimmed"><span class="check check-no"><i class="fas fa-times"></i></span> Pro Laboratory</li>
+          <li class="dimmed"><span class="check check-no"><i class="fas fa-times"></i></span> AI Aim Lab Pro</li>
+          <li class="dimmed"><span class="check check-no"><i class="fas fa-times"></i></span> Custom Themes</li>
+        </ul>
+        <button class="btn-plan btn-free" onclick="window.location.href='login.html'">Current Plan</button>
+      </div>
+
+      <!-- PRO (FEATURED) -->
+      <div class="plan-card featured">
+        <div class="plan-tag"><i class="fas fa-bolt"></i> Most Popular</div>
+        <div class="plan-icon icon-pro"><i class="fas fa-gem"></i></div>
+        <div class="plan-name" style="color: var(--accent);">Elite Pro</div>
+        <div class="plan-desc">For serious players who want every advantage.</div>
+        <div class="plan-price-block">
+          <div class="price-amount price-weekly"><span class="price-currency">₦</span>3,280<span
+              style="font-size:1rem;font-weight:500;color:var(--muted);">/wk</span></div>
+          <div class="price-amount price-yearly" style="display:none;"><span class="price-currency">₦</span>638<span
+              style="font-size:1rem;font-weight:500;color:var(--muted);">/wk</span></div>
+          <div class="price-period price-yearly-note">₦33,200/year — billed annually</div>
+          <div class="price-period">Cancel anytime</div>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Everything in Free</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Pro Laboratory Access</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> AI Aim Lab Pro</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Ultra-HQ 4K Exports</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> Ad-Free Platform</li>
+          <li><span class="check check-yes"><i class="fas fa-check"></i></span> XP Doubler (2×)</li>
+        </ul>
+        <button class="btn-plan btn-pro" onclick="handleUpgrade('weekly')">Upgrade to Elite</button>
+      </div>
+
+      <!-- LEGEND -->
+      <div class="plan-card">
+        <div class="plan-icon icon-legend"><i class="fas fa-fire"></i></div>
+        <div class="plan-name" style="color: var(--orange);">Legend</div>
+        <div class="plan-desc">For content creators and top-tier tournament players.</div>
+        <div class="plan-price-block">
+          <div class="price-amount price-weekly"><span class="price-currency">₦</span>19,900<span
+              style="font-size:1rem;font-weight:500;color:var(--muted);">/yr</span></div>
+          <div class="price-amount price-yearly" style="display:none;"><span class="price-currency">₦</span>19,900<span
+              style="font-size:1rem;font-weight:500;color:var(--muted);">/yr</span></div>
+          <div class="price-period price-yearly-note" style="color: var(--orange);">Best value — save over 80%</div>
+          <div class="price-period">One payment, one year</div>
+        </div>
+        <ul class="plan-features">
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> Everything in Elite Pro</li>
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> Creator Profile Page</li>
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> Free Clan Registration</li>
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> VIP Badge + Gold Name</li>
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> Priority Tournament Slots</li>
+          <li><span class="check check-yes-orange"><i class="fas fa-check"></i></span> 4× AXP Multiplier</li>
+        </ul>
+        <button class="btn-plan btn-legend" onclick="handleUpgrade('yearly')">Go Legend</button>
+      </div>
+    </div>
+
+    <!-- ── FEATURE COMPARISON ── -->
+    <div class="compare-section reveal">
+      <div class="section-label">Compare Plans</div>
+      <h2 class="section-title">Everything you get</h2>
+
+      <div class="compare-table">
+        <div class="compare-row header">
+          <div>Feature</div>
+          <div class="col-free">Free</div>
+          <div class="col-pro">Elite Pro</div>
+          <div class="col-legend">Legend</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">Sensitivity Calculator</div>
+          <div class="compare-val col-free val-free">Basic</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">XP & Level Tracking</div>
+          <div class="compare-val col-free val-free">Basic</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">Pro Laboratory Engine</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">AI Aim Lab Diagnostics</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">Ad-Free Experience</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">4K Export Cards</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-yes"><i class="fas fa-check"></i></div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">XP Multiplier</div>
+          <div class="compare-val col-free val-free">1×</div>
+          <div class="compare-val val-yes" style="font-size:0.82rem; font-weight:700;">2×</div>
+          <div class="compare-val val-yes-legend" style="font-size:0.82rem; font-weight:700;">4×</div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">Creator Profile</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-no">—</div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">Free Clan Creation</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-no">—</div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+        <div class="compare-row">
+          <div class="compare-feature">VIP Badge + Gold Name</div>
+          <div class="compare-val col-free val-no">—</div>
+          <div class="compare-val val-no">—</div>
+          <div class="compare-val val-yes-legend"><i class="fas fa-check"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── TESTIMONIALS ── -->
+    <div class="reveal">
+      <div class="section-label">Community</div>
+      <h2 class="section-title" style="margin-bottom: 1.5rem;">Players love Elite</h2>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The Pro Laboratory completely changed how I tune my sensitivity. I went from
+            Silver to Diamond in 3 weeks."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">🎯</div>
+            <div>
+              <div class="author-name">FragKing99</div>
+              <div class="author-rank">Diamond IV • Elite Pro</div>
+            </div>
           </div>
-          <div class="plan-price">₦3,280.00 <span>/ week</span></div>
         </div>
-        <div class="popular-tag">Popular</div>
-      </div>
-
-      <div class="plan-item" onclick="selectPlan(this, 'yearly')">
-        <div class="plan-radio"></div>
-        <div class="plan-details">
-          <div class="plan-name">Yearly Legend <i class="fas fa-gem" style="color: #ffcc00; font-size: 0.8rem;"></i>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Ad-free alone was worth it. The XP doubler means I climbed the leaderboard twice
+            as fast. Absolutely worth every naira."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">⚡</div>
+            <div>
+              <div class="author-name">VoltAreni</div>
+              <div class="author-rank">Master • Legend</div>
+            </div>
           </div>
-          <div class="plan-price">₦19,900.00 <span>/ year</span></div>
-          <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 4px;">Save over 80% vs weekly</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The 4K setting card exports are insane. My creator page gets views because my
+            setups look so professional."</p>
+          <div class="testimonial-author">
+            <div class="author-avatar">🔥</div>
+            <div>
+              <div class="author-name">CreatorFlow</div>
+              <div class="author-rank">Champion • Legend</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- FEATURE MATRIX -->
-    <div style="margin-top:2rem;">
-      <h3 style="margin-bottom: 0.8rem;">Compare Benefits</h3>
-      <div style="display:grid; grid-template-columns: 1fr 100px 100px; gap: 10px; text-align:center;">
-        <div></div>
-        <div style="font-weight:900;">Weekly</div>
-        <div style="font-weight:900;">Yearly</div>
-        <div style="text-align:left;">Pro Laboratory</div>
-        <div>✔️</div><div>✔️</div>
-        <div style="text-align:left;">AI Aim Lab Pro</div>
-        <div>✔️</div><div>✔️</div>
-        <div style="text-align:left;">Ultra-HQ Exports</div>
-        <div>✔️</div><div>✔️</div>
-        <div style="text-align:left;">Ad-Free</div>
-        <div>✔️</div><div>✔️</div>
-        <div style="text-align:left;">Clan Registration Free</div>
-        <div>—</div><div>✔️</div>
+    <!-- ── FAQ ── -->
+    <div class="faq-section reveal">
+      <div class="section-label" style="margin-top:2rem;">FAQ</div>
+      <h2 class="section-title">Common Questions</h2>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Can I cancel my Elite Pro subscription anytime?
+          <div class="faq-icon"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="faq-answer">Yes, absolutely. You can cancel anytime from your profile settings. If you cancel, your
+          Elite access continues until the end of your current billing period.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          What payment methods are accepted?
+          <div class="faq-icon"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="faq-answer">We accept all major payment methods including cards, bank transfers, and mobile money.
+          All transactions are processed securely.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          What is the Pro Laboratory?
+          <div class="faq-icon"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="faq-answer">The Pro Laboratory gives you access to advanced sensitivity tuning engines, including
+          device-specific calibration algorithms, cross-device conversion, and detailed accuracy reports not available
+          to free users.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          Is there a free trial?
+          <div class="faq-icon"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="faq-answer">The free Areni plan gives you access to core features forever. Elite Pro and Legend
+          tiers unlock advanced features. We're working on a limited trial option — stay tuned.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFaq(this)">
+          What's the difference between Elite Pro and Legend?
+          <div class="faq-icon"><i class="fas fa-plus"></i></div>
+        </div>
+        <div class="faq-answer">Elite Pro gives you all the performance tools (Lab, AI, 2× XP, ad-free). Legend adds
+          creator tools (public creator profile, free clan creation, VIP badge, gold name colour, 4× XP multiplier, and
+          priority tournament slots).</div>
       </div>
     </div>
 
-    <div class="payment-footer">
-      <button class="btn-elite" onclick="handlePay()">Upgrade to Elite</button>
-      <div class="cancel-anytime">
-        <i class="fas fa-check-circle" style="color: var(--accent);"></i>
-        Cancel anytime. Secure checkout.
+    <!-- ── CTA FOOTER ── -->
+    <div class="cta-footer reveal">
+      <h2>Ready to level up?</h2>
+      <p>Join thousands of players already competing at the Elite level.</p>
+      <button class="btn-cta-main" onclick="handleUpgrade('weekly')">
+        <i class="fas fa-bolt"></i>
+        Start Elite Pro
+      </button>
+      <div class="trust-row">
+        <div class="trust-item"><i class="fas fa-lock"></i> Secure checkout</div>
+        <div class="trust-item"><i class="fas fa-undo"></i> Cancel anytime</div>
+        <div class="trust-item"><i class="fas fa-headset"></i> 24/7 Support</div>
       </div>
     </div>
 
-    <!-- LEGAL -->
-    <div class="legal-block">
-      <strong>SUBSCRIPTION DETAILS</strong><br><br>
-      Your XP Arena Elite subscription will automatically renew unless auto-renew is turned off at least 24 hours before
-      the end of the current period. Payment will be charged to your Google Play or App Store account at confirmation of
-      purchase. <br><br>
-      Elite features like custom AI Engines and high-speed diagnostics require a stable internet connection.
-      Advertisements are removed across the entire platform during active subscription.
-
-      <div class="legal-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-      </div>
-    </div>
   </div>
 
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
   <script>
-    let currentPlan = 'weekly';
+    let currentBilling = 'weekly';
 
-    function selectPlan(el, planId) {
-      document.querySelectorAll('.plan-item').forEach(p => p.classList.remove('selected'));
-      el.classList.add('selected');
-      currentPlan = planId;
+    // ── Billing Toggle ──
+    function setBilling(mode) {
+      currentBilling = mode;
+      const opts = document.querySelectorAll('.toggle-option');
+      opts.forEach(o => o.classList.toggle('active', o.dataset.plan === mode));
 
-      // Haptic-like effect or sound could go here
-      if (window.trackEvent) window.trackEvent('Premium', 'SelectPlan', planId);
+      if (mode === 'yearly') {
+        document.body.classList.add('yearly');
+      } else {
+        document.body.classList.remove('yearly');
+      }
     }
 
-    async function handlePay() {
-      if (!Auth.isLoggedIn()) {
+    // ── Upgrade Handler ──
+    async function handleUpgrade(plan) {
+      if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
         window.location.href = 'login.html?redirect=premium.html';
         return;
       }
 
-      const btn = document.querySelector('.btn-elite');
-      const originalText = btn.textContent;
-      btn.textContent = "PROCESSING...";
-      btn.disabled = true;
+      const buttons = document.querySelectorAll('.btn-pro, .btn-legend, .btn-cta-main');
+      buttons.forEach(b => { b.disabled = true; b.style.opacity = '0.7'; });
 
       try {
         const res = await fetch((window.API_URL || '') + '/api/user/premium/buy', {
@@ -593,31 +1263,47 @@
             'Authorization': 'Bearer ' + Auth.getToken(),
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify({ plan: currentPlan })
+          body: JSON.stringify({ plan: plan === 'weekly' ? 'weekly' : 'yearly' })
         });
 
         if (res.ok) {
-          if (window.Toast) Toast.show('Welcome to ELITE, Areni!', 'success');
-
-          // Award AXP for joining elite?
+          if (window.Toast) Toast.show('🎉 Welcome to ELITE! Enjoy your new powers.', 'success');
           if (window.User) User.addAXP(500, 'Upgraded to Elite');
-
-          setTimeout(() => {
-            window.location.href = 'profile.html';
-          }, 1500);
+          setTimeout(() => { window.location.href = 'profile.html'; }, 1800);
         } else {
           const data = await res.json();
           if (window.Toast) Toast.show(data.error || 'Upgrade failed', 'danger');
-          btn.textContent = originalText;
-          btn.disabled = false;
+          buttons.forEach(b => { b.disabled = false; b.style.opacity = '1'; });
         }
       } catch (e) {
-        if (window.Toast) Toast.show('Connection error', 'danger');
-        btn.textContent = originalText;
-        btn.disabled = false;
+        if (window.Toast) Toast.show('Connection error. Please try again.', 'danger');
+        buttons.forEach(b => { b.disabled = false; b.style.opacity = '1'; });
       }
     }
+
+    // ── FAQ Toggle ──
+    function toggleFaq(el) {
+      const item = el.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    // ── Scroll Reveal ──
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    revealEls.forEach(el => observer.observe(el));
   </script>
+
+  <nav class="bottom-nav"></nav>
 </body>
 
 </html>

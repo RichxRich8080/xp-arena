@@ -9,142 +9,162 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        .coming-soon-container {
-            min-height: calc(100vh - 150px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            text-align: center;
-            padding: 80px 1.5rem 3rem;
-            position: relative;
-            overflow-y: auto;
+        :root {
+            --bg: #09090b;
+            --surface: rgba(20, 20, 28, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 18px;
         }
 
-        .coming-soon-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at center, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
-            z-index: -1;
+        body {
+            background-color: var(--bg);
+            background-image:
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)),
+                url('assets/images/grid-bg.png');
+            /* If available, or just colors */
+            background-attachment: fixed;
+        }
+
+        .clans-page-wrapper {
+            padding: 2rem 0 100px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .tactical-badge {
+            font-size: 0.75rem;
+            color: var(--accent);
+            letter-spacing: 4px;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            display: inline-block;
+            background: rgba(var(--accent-rgb), 0.1);
+            padding: 0.5rem 1.5rem;
+            border-radius: 4px;
+            border-left: 3px solid var(--accent);
         }
 
         .glitch-title {
-            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
             font-weight: 900;
             color: #fff;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: -2px;
             margin-bottom: 1rem;
-            position: relative;
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .glitch-title::after {
-            content: 'CLANS';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            color: var(--accent);
-            opacity: 0.3;
-            transform: translate(2px, 2px);
-            z-index: -1;
-        }
-
-        .status-badge {
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
-            font-weight: 900;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            margin-bottom: 2rem;
-            box-shadow: 0 0 15px var(--accent-glow);
-            animation: pulse 2s infinite;
+            line-height: 1;
         }
 
         .description {
-            max-width: 600px;
+            max-width: 650px;
             color: var(--text-muted);
-            line-height: 1.8;
-            margin-bottom: 3rem;
+            line-height: 1.7;
+            margin: 0 auto 3rem;
             font-size: 1.1rem;
         }
 
-        .features-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            width: 100%;
-            max-width: 900px;
-        }
-
-        .feature-item {
-            background: rgba(255, 255, 255, 0.03);
+        /* Tactical Dossier Cards */
+        .feature-item.tactical-dossier {
+            background: var(--surface);
+            backdrop-filter: blur(15px);
             border: 1px solid var(--border);
-            padding: 1.5rem;
-            border-radius: 16px;
-            text-align: left;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
 
-        .feature-item:hover {
-            border-color: var(--accent);
-            background: rgba(0, 229, 255, 0.02);
+        .feature-item.tactical-dossier:hover {
+            border-color: rgba(var(--accent-rgb), 0.4);
             transform: translateY(-5px);
-        }
-
-        .feature-item i {
-            font-size: 1.5rem;
-            color: var(--accent);
-            margin-bottom: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
         }
 
         .feature-item h3 {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .feature-item p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.5;
+        .feature-item h3 i {
+            color: var(--accent);
         }
 
-        @keyframes pulse {
-            0% {
-                opacity: 1;
-            }
-
-            50% {
-                opacity: 0.6;
-            }
-
-            100% {
-                opacity: 1;
-            }
+        /* Inputs & Controls */
+        .settings-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            color: #fff;
+            font-family: inherit;
+            transition: border-color 0.2s;
         }
 
-        @media (max-width: 600px) {
-            .glitch-title {
-                font-size: 2.5rem;
-            }
+        .settings-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
 
-            .description {
-                font-size: 1rem;
-            }
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            font-weight: 900;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
 
-            .status-badge {
-                font-size: 0.7rem;
-            }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb), 0.1);
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 4rem auto;
+        }
+
+        .rankings-title {
+            text-align: center;
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+        }
+
+        /* Scrollbar Fix */
+        .main-content-area {
+            overflow-y: auto !important;
+            height: 100% !important;
         }
     </style>
 </head>
@@ -170,11 +190,13 @@
                         <div id="homeBadge" style="font-size:1.6rem;">🛡️</div>
                         <div>
                             <div id="homeName" style="font-weight:900; letter-spacing:0.5px;"></div>
-                            <div id="homeStats" style="font-size:0.8rem; color: var(--text-muted);">Members — • AXP —</div>
+                            <div id="homeStats" style="font-size:0.8rem; color: var(--text-muted);">Members — • AXP —
+                            </div>
                         </div>
                     </div>
                     <div style="display:flex; gap: 10px; flex-wrap: wrap;">
-                        <button class="btn-secondary" style="width:auto" onclick="applyGuildWar()">Apply for Clan War</button>
+                        <button class="btn-secondary" style="width:auto" onclick="applyGuildWar()">Apply for Clan
+                            War</button>
                         <a href="#roster" class="btn-secondary" style="width:auto">View Roster</a>
                     </div>
                 </div>
@@ -212,14 +234,17 @@
                                 onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
                         </div>
                         <div>
-                            <div style="font-size:0.75rem; color: var(--text-muted); margin: 10px 0 5px; letter-spacing: 1px;">
+                            <div
+                                style="font-size:0.75rem; color: var(--text-muted); margin: 10px 0 5px; letter-spacing: 1px;">
                                 RECRUITMENT FILTERS</div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
                                 <input id="minLevelInput" class="settings-input" placeholder="Min Level (e.g. 5)" />
                                 <input id="minAXPInput" class="settings-input" placeholder="Min AXP (e.g. 5000)" />
                             </div>
-                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;" onclick="setGuildRules()">SAVE FILTERS</button>
-                            <div id="guildRulesMsg" style="margin-top:6px; font-size:0.85rem; color: var(--text-muted);"></div>
+                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
+                                onclick="setGuildRules()">SAVE FILTERS</button>
+                            <div id="guildRulesMsg"
+                                style="margin-top:6px; font-size:0.85rem; color: var(--text-muted);"></div>
                         </div>
                     </div>
                     <div id="roster" style="margin-top:20px;">
@@ -295,13 +320,13 @@
                     }
                 } catch { }
             }
-        function copyInviteCode() {
-            const inv = document.getElementById('guildInviteCode');
-            if (!inv) return;
-            navigator.clipboard.writeText(inv.value).then(() => {
-                if (window.Toast) Toast.show('Invite code copied!', 'success');
-            });
-        }
+            function copyInviteCode() {
+                const inv = document.getElementById('guildInviteCode');
+                if (!inv) return;
+                navigator.clipboard.writeText(inv.value).then(() => {
+                    if (window.Toast) Toast.show('Invite code copied!', 'success');
+                });
+            }
         }
         async function createGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
@@ -342,11 +367,11 @@
                 if (m) gid = parseInt(m[1], 10);
             }
             const el = document.getElementById('rulesDisplay');
-            if (!gid || !el) { if (el) el.textContent=''; return; }
+            if (!gid || !el) { if (el) el.textContent = ''; return; }
             fetch((window.API_URL || '') + '/api/guilds/filters?guild_id=' + gid)
                 .then(r => r.ok ? r.json() : null)
                 .then(data => {
-                    if (!data) { el.textContent=''; return; }
+                    if (!data) { el.textContent = ''; return; }
                     const parts = [];
                     if (data.min_level) parts.push(`Level ${data.min_level}+`);
                     if (data.min_axp) parts.push(`${Number(data.min_axp).toLocaleString()}+ AXP`);
@@ -358,10 +383,10 @@
                             const meet = (!data.min_level || lvl >= data.min_level) && (!data.min_axp || (stats.axp || 0) >= data.min_axp);
                             suffix = meet ? ' • You meet the requirements' : ' • You do not meet the requirements';
                         }
-                    } catch {}
+                    } catch { }
                     el.textContent = (parts.length ? `Requirements: ${parts.join(' • ')}` : 'Requirements: None') + suffix;
                 })
-                .catch(() => { el.textContent=''; });
+                .catch(() => { el.textContent = ''; });
         }
         document.getElementById('guildIdInput').addEventListener('input', updateRulesPreview);
         document.getElementById('inviteCodeInput').addEventListener('input', updateRulesPreview);

@@ -11,37 +11,155 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="css/skeleton.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        :root {
+            --bg: #09090b;
+            --surface: rgba(20, 20, 28, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 50% 0%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%),
+                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .main-content-area {
+            padding-bottom: 120px !important;
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 5rem 1rem !important;
+            background: transparent !important;
+            position: relative;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 10vw, 5rem);
+            font-weight: 950;
+            letter-spacing: -3px;
+            color: #fff;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Countdown Timer */
+        .countdown-container {
+            display: inline-flex;
+            gap: 2rem;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            padding: 1.5rem 3rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .timer-unit {
+            text-align: center;
+        }
+
+        .timer-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--accent);
+            line-height: 1;
+        }
+
+        .timer-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+        }
+
+        /* Leaderboard Table */
+        .leaderboard-container {
+            background: var(--surface);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        #leaderboard-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 120px;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-size: 0.75rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 120px;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            align-items: center;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .leaderboard-row:hover {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--border);
+            transform: scale(1.01);
+        }
+
+        .rank-num {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+        }
+
+        .leaderboard-row:nth-child(-n+3) .rank-num {
+            color: var(--accent);
+        }
+    </style>
 </head>
 
 <body class="fade-in">
 
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
+    <nav class="navbar"></nav>
 
     <main class="main-content-area">
-        <div class="page-header"
-            style="background: radial-gradient(circle at top, rgba(0, 229, 255, 0.1), transparent 70%);">
+        <div class="page-header">
             <h1>Global Rankings</h1>
-            <p>See how you compare against the world's best.</p>
+            <p style="color:var(--text-muted);">See how you compare against the world's best Arenis.</p>
 
-            <div
-                style="display: inline-flex; gap: 1rem; background: rgba(0, 0, 0, 0.3); padding: 1rem 2rem; border-radius: 16px; margin-top: 2rem; border: 1px solid var(--border);">
-                <div style="text-align: center;">
-                    <div id="days" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">00</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Days</div>
+            <div class="countdown-container">
+                <div class="timer-unit">
+                    <div id="days" class="timer-val">00</div>
+                    <div class="timer-label">Days</div>
                 </div>
-                <div style="text-align: center;">
-                    <div id="hours" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">00</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Hrs</div>
+                <div class="timer-unit">
+                    <div id="hours" class="timer-val">00</div>
+                    <div class="timer-label">Hrs</div>
                 </div>
-                <div style="text-align: center;">
-                    <div id="mins" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">00</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Mins</div>
+                <div class="timer-unit">
+                    <div id="mins" class="timer-val">00</div>
+                    <div class="timer-label">Mins</div>
                 </div>
-                <div style="text-align: center;">
-                    <div id="secs" style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">00</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">Secs</div>
+                <div class="timer-unit">
+                    <div id="secs" class="timer-val">00</div>
+                    <div class="timer-label">Secs</div>
                 </div>
             </div>
         </div>
@@ -53,8 +171,7 @@
                 <button class="tab-btn" id="tab-guilds" onclick="switchLeaderboard('guilds')">Clan Race</button>
             </div>
 
-            <div id="leaderboard-header"
-                style="display: grid; grid-template-columns: 0.5fr 2fr 1.5fr 1fr; padding: 1rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">
+            <div id="leaderboard-header">
                 <span>#</span>
                 <span id="col-name">Areni</span>
                 <span id="col-extra">Device</span>
@@ -62,7 +179,6 @@
             </div>
 
             <div id="leaderboardList">
-                <!-- Skeletons shown initially -->
                 <div class="skeleton skeleton-row"></div>
                 <div class="skeleton skeleton-row"></div>
                 <div class="skeleton skeleton-row"></div>
@@ -71,25 +187,23 @@
             </div>
 
             <div
-                style="text-align: center; margin-top: 3rem; padding: 3rem; background: rgba(255, 255, 255, 0.02); border-radius: 20px; border: 1px solid var(--border);">
-                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Think you have what it takes? Enter the
-                    weekly
-                    rankings!</p>
+                style="text-align: center; margin-top: 4rem; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 20px; border: 1px solid var(--border);">
+                <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.1rem;">Think you have what it
+                    takes? Climb the global rankings!</p>
                 <a href="submit.html" class="btn-primary"
-                    style="display: inline-block; width: auto; padding: 0.8rem 2.5rem;">SUBMIT CLIP</a>
+                    style="display: inline-flex; width: auto; padding: 1.2rem 3rem; gap:12px; border-radius: 12px; text-decoration: none;">
+                    <i class="fas fa-trophy"></i> SUBMIT CLIP
+                </a>
             </div>
         </div>
     </main>
 
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
+    <nav class="bottom-nav"></nav>
 
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
     <script src="js/leaderboard.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/layout.js"></script>
 </body>
 
 </html>

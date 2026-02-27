@@ -102,7 +102,7 @@ function injectLayout() {
                 <ul id="notifList" class="achievement-list"></ul>
             </div>` : ``}
             ${isLoggedIn && typeof window.User !== 'undefined' && window.User.getStats() ? `<span class="level-badge-nav" id="globalLevelBadge">Lvl ${window.User.getStats().level}</span>` : ''}
-            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3); border-radius: 50%;">
+            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(var(--accent-rgb, 255,85,0), 0.15); border: 1px solid rgba(var(--accent-rgb, 255,85,0), 0.3); border-radius: 50%;">
                 ${avatarHtml}
             </a>
         </div>
@@ -119,7 +119,7 @@ function injectLayout() {
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header" style="padding: 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; display:flex; align-items:center; gap:12px;">
                 <a href="profile.html" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#fff;">
-                    <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.3);border-radius:50%;">${avatarHtml}</div>
+                    <div style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(var(--accent-rgb, 255,85,0),0.15);border:1px solid rgba(var(--accent-rgb, 255,85,0),0.3);border-radius:50%;">${avatarHtml}</div>
                     <div style="display:flex;align-items:center;gap:6px;font-weight:800;">
                         <span>${displayName}</span>${premiumBadge}
                     </div>
@@ -134,12 +134,12 @@ function injectLayout() {
             <a href="clips.html" class="sidebar-link"><i class="fas fa-film"></i> Top Clips</a>
             <a href="quests.html" class="sidebar-link"><i class="fas fa-star"></i> Daily Quests</a>
             <a href="daily-login.html" class="sidebar-link"><i class="fas fa-gift" style="color:#ffcc00;"></i> Daily Rewards</a>
-            <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:#00ff88;"></i> Armory (Shop)</a>
+            <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-cart" style="color:var(--success);"></i> Armory (Shop)</a>
             <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt" style="color: var(--accent);"></i> Clans</a>
             <a href="guild-wars.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Clan Wars</a>
             <a href="submit.html" class="sidebar-link"><i class="fas fa-gamepad"></i> Join Rankings</a>
             <a href="tournaments.html" class="sidebar-link"><i class="fas fa-bullseye"></i> Tournaments</a>
-            <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:#bf00ff;"></i> Premium & Plans</a>
+            <a href="premium.html" class="sidebar-link"><i class="fas fa-gem" style="color:var(--accent);"></i> Premium & Plans</a>
             <a href="premium-dashboard.html" class="sidebar-link"><i class="fas fa-crown"></i> Premium Hub</a>
             <a href="creators.html" class="sidebar-link"><i class="fas fa-user-astronaut"></i> Creator</a>
             ${stats && stats.is_admin ? `<a href="admin.html" class="sidebar-link"><i class="fas fa-shield-virus"></i> Admin</a>` : ``}
@@ -237,7 +237,7 @@ function injectLayout() {
                 document.getElementById('phDismiss').addEventListener('click', () => { localStorage.setItem('xp_premium_hint_dismiss', '1'); banner.remove(); });
             }
         }
-    } catch {}
+    } catch { }
 }
 
 function checkDailyRewardReminder() {
@@ -468,41 +468,199 @@ function injectThemeOverlay() {
     if (document.querySelector('.theme-fab')) return;
 
     const fabHTML = `
-        <button class="theme-fab" id="themeFab" title="Customize Appearance">
+        <button class="theme-fab" id="themeFab" title="Color Palette" aria-label="Change color theme">
             <i class="fas fa-palette"></i>
         </button>
-        <div class="theme-selector-overlay" id="themeOverlay">
-            <h4 style="margin-bottom:1rem; font-weight:800; color:var(--accent); letter-spacing:1px;">VISUAL OVERLAY</h4>
-            <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:12px; margin-bottom:1.5rem;">
-                <div class="theme-dot" onclick="setTheme('default')" style="background: #00e5ff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;" title="Default Neon"></div>
-                <div class="theme-dot" onclick="setTheme('theme-cyber')" style="background: linear-gradient(135deg, #0f0, #00e5ff); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 1px solid #0f0;" title="Cyber Neon"></div>
-                <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
-                <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>
-                <div class="theme-dot" onclick="setTheme('theme-gold')" style="background: #ffcc00; width: 32px; height: 32px; border-radius: 50%; cursor: pointer;" title="Gold"></div>
+        <div class="theme-panel" id="themePanel">
+            <div class="theme-panel-header">
+                <div class="theme-panel-title">
+                    <i class="fas fa-palette"></i>
+                    Color Palette
+                </div>
+                <button class="theme-panel-close" id="themePanelClose">&times;</button>
             </div>
-            <div style="margin-bottom: 1rem;">
-                <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px; text-transform:uppercase;">Custom Hue</div>
-                <input type="color" id="customColorPicker" onchange="setCustomColor(this.value)" style="width:100%; height:40px; border-radius:8px; border:none; background:none; cursor:pointer;">
+
+            <div class="theme-panel-section-label">GAMER THEMES</div>
+            <div class="theme-grid">
+                <button class="theme-swatch" data-theme="default" onclick="setTheme('default')">
+                    <div class="theme-swatch-dot" style="background:#FF5500"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">🔥 Blaze</div>
+                        <div class="theme-swatch-hex">#FF5500</div>
+                    </div>
+                </button>
+                <button class="theme-swatch" data-theme="theme-volt" onclick="setTheme('theme-volt')">
+                    <div class="theme-swatch-dot" style="background:#AAFF00"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">⚡ Volt</div>
+                        <div class="theme-swatch-hex">#AAFF00</div>
+                    </div>
+                </button>
+                <button class="theme-swatch" data-theme="theme-phantom" onclick="setTheme('theme-phantom')">
+                    <div class="theme-swatch-dot" style="background:#8B5CF6"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">💜 Phantom</div>
+                        <div class="theme-swatch-hex">#8B5CF6</div>
+                    </div>
+                </button>
+                <button class="theme-swatch" data-theme="theme-frost" onclick="setTheme('theme-frost')">
+                    <div class="theme-swatch-dot" style="background:#00D4FF"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">🩵 Frost</div>
+                        <div class="theme-swatch-hex">#00D4FF</div>
+                    </div>
+                </button>
+                <button class="theme-swatch" data-theme="theme-crimson" onclick="setTheme('theme-crimson')">
+                    <div class="theme-swatch-dot" style="background:#FF1744"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">❤️ Crimson</div>
+                        <div class="theme-swatch-hex">#FF1744</div>
+                    </div>
+                </button>
+                <button class="theme-swatch" data-theme="theme-champion" onclick="setTheme('theme-champion')">
+                    <div class="theme-swatch-dot" style="background:#FFD700"></div>
+                    <div class="theme-swatch-info">
+                        <div class="theme-swatch-name">🏆 Champion</div>
+                        <div class="theme-swatch-hex">#FFD700</div>
+                    </div>
+                </button>
             </div>
-            <button class="btn-secondary" style="width:100%; font-size:0.8rem;" onclick="toggleDarkMode()">TOGGLE DARK/LIGHT</button>
+
+            <div class="theme-panel-section-label" style="margin-top:1rem;">CUSTOM COLOR</div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <input type="color" id="customColorPicker" onchange="setCustomColor(this.value)"
+                    style="width:44px;height:44px;border:none;background:none;cursor:pointer;border-radius:10px;padding:0;flex-shrink:0;">
+                <div style="font-size:0.8rem;color:#5a5a6a;line-height:1.4;">Pick any color to use as your accent across all pages</div>
+            </div>
+
+            <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);">
+                <button onclick="toggleDarkMode()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:#f0f0f0;padding:0.65rem;border-radius:10px;cursor:pointer;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;"><i class="fas fa-moon"></i> TOGGLE DARK / LIGHT</button>
+            </div>
         </div>
+
+        <style>
+        .theme-fab {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height, 68px) + 16px);
+            right: 16px;
+            z-index: 40000;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 20px rgba(var(--accent-rgb, 255,85,0), 0.45), 0 2px 8px rgba(0,0,0,0.6);
+            transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .theme-fab:hover { transform: scale(1.1) rotate(15deg); }
+        .theme-fab:active { transform: scale(0.95); }
+
+        .theme-panel {
+            position: fixed;
+            bottom: calc(var(--bottom-nav-height, 68px) + 72px);
+            right: 16px;
+            z-index: 39999;
+            width: 280px;
+            background: rgba(10,10,10,0.97);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            padding: 1.2rem;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+            display: none;
+            animation: panelSlideUp 0.35s cubic-bezier(0.165,0.84,0.44,1) forwards;
+            transform-origin: bottom right;
+        }
+        .theme-panel.open { display: block; }
+
+        @keyframes panelSlideUp {
+            from { opacity:0; transform: scale(0.88) translateY(12px); }
+            to   { opacity:1; transform: scale(1) translateY(0); }
+        }
+
+        .theme-panel-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        .theme-panel-title {
+            font-weight: 900; font-size: 0.9rem; letter-spacing: 0.5px;
+            color: #f0f0f0; display: flex; align-items: center; gap: 8px;
+        }
+        .theme-panel-title i { color: var(--accent); }
+        .theme-panel-close {
+            background: rgba(255,255,255,0.06); border: none; color: #5a5a6a;
+            width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+            font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .theme-panel-close:hover { background: rgba(255,255,255,0.12); color: #f0f0f0; }
+
+        .theme-panel-section-label {
+            font-size: 0.67rem; font-weight: 800; letter-spacing: 2px;
+            color: #5a5a6a; margin-bottom: 0.7rem;
+        }
+
+        .theme-grid {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .theme-swatch {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
+            padding: 0.6rem 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+        .theme-swatch:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.15);
+            transform: translateY(-1px);
+        }
+        .theme-swatch.active {
+            border-color: var(--accent);
+            background: rgba(var(--accent-rgb,255,85,0), 0.08);
+            box-shadow: 0 0 0 1px var(--accent);
+        }
+        .theme-swatch-dot {
+            width: 22px; height: 22px; border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .theme-swatch-info { flex: 1; min-width: 0; }
+        .theme-swatch-name { font-size: 0.78rem; font-weight: 800; color: #f0f0f0; line-height: 1.2; }
+        .theme-swatch-hex { font-size: 0.65rem; color: #5a5a6a; font-family: monospace; }
+        </style>
     `;
     document.body.insertAdjacentHTML('beforeend', fabHTML);
 
     const fab = document.getElementById('themeFab');
-    const overlay = document.getElementById('themeOverlay');
+    const panel = document.getElementById('themePanel');
+    const closeBtn = document.getElementById('themePanelClose');
 
-    fab.addEventListener('click', () => {
-        const isVisible = overlay.style.display === 'block';
-        overlay.style.display = isVisible ? 'none' : 'block';
+    fab.addEventListener('click', (e) => {
+        e.stopPropagation();
+        panel.classList.toggle('open');
     });
 
-    // Close on click outside
+    closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+
     document.addEventListener('click', (e) => {
-        if (!fab.contains(e.target) && !overlay.contains(e.target)) {
-            overlay.style.display = 'none';
+        if (panel.classList.contains('open') && !fab.contains(e.target) && !panel.contains(e.target)) {
+            panel.classList.remove('open');
         }
     });
+
+    // Mark active swatch
+    _updateActiveThemeSwatch();
 }
 
 function toggleSidebar() {
@@ -621,9 +779,11 @@ function trackPageVisit() {
 }
 
 function setTheme(theme) {
-    document.body.classList.remove('theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber');
+    const ALL_THEMES = ['theme-volt', 'theme-phantom', 'theme-frost', 'theme-crimson', 'theme-champion', 'theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber'];
+    ALL_THEMES.forEach(t => document.body.classList.remove(t));
     document.documentElement.style.removeProperty('--accent');
     document.documentElement.style.removeProperty('--accent-glow');
+    document.documentElement.style.removeProperty('--accent-rgb');
     localStorage.removeItem('xp_custom_color');
 
     if (theme !== 'default') {
@@ -633,51 +793,42 @@ function setTheme(theme) {
         localStorage.removeItem('xp_theme');
     }
 
-    // Highlight active dot
-    document.querySelectorAll('.theme-dot').forEach(dot => {
-        dot.style.border = 'none';
-        if (dot.getAttribute('onclick').includes(theme)) {
-            dot.style.border = '2px solid #fff';
-        }
+    _updateActiveThemeSwatch();
+
+    if (window.Toast) Toast.show('Theme updated!', 'info', 1500);
+}
+
+function _updateActiveThemeSwatch() {
+    const saved = localStorage.getItem('xp_theme') || 'default';
+    document.querySelectorAll('.theme-swatch').forEach(s => {
+        s.classList.toggle('active', (s.dataset.theme || 'default') === saved);
     });
-
-    const colorPicker = document.getElementById('customColorPicker');
-    if (colorPicker) colorPicker.style.border = 'none';
-
-    if (window.Toast) {
-        Toast.show(`Theme updated!`, 'info');
-    }
 }
 
 window.setTheme = setTheme;
 
 function setCustomColor(color, showToast = true) {
-    document.body.classList.remove('theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber');
+    const ALL_THEMES = ['theme-volt', 'theme-phantom', 'theme-frost', 'theme-crimson', 'theme-champion', 'theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber'];
+    ALL_THEMES.forEach(t => document.body.classList.remove(t));
     localStorage.removeItem('xp_theme');
 
     document.documentElement.style.setProperty('--accent', color);
 
-    // Hex to RGB for glow
     const hex = color.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16) || 0;
-    const g = parseInt(hex.substring(2, 4), 16) || 229;
-    const b = parseInt(hex.substring(4, 6), 16) || 255;
-    document.documentElement.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.4)`);
+    const r = parseInt(hex.substring(0, 2), 16) || 255;
+    const g = parseInt(hex.substring(2, 4), 16) || 85;
+    const b = parseInt(hex.substring(4, 6), 16) || 0;
+    document.documentElement.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.3)`);
+    document.documentElement.style.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
 
     localStorage.setItem('xp_custom_color', color);
 
-    document.querySelectorAll('.theme-dot').forEach(dot => dot.style.border = 'none');
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
 
     const colorPicker = document.getElementById('customColorPicker');
-    if (colorPicker) {
-        colorPicker.value = color;
-        colorPicker.style.border = '2px solid #fff';
-        colorPicker.style.borderRadius = '50%';
-    }
+    if (colorPicker) colorPicker.value = color;
 
-    if (showToast && window.Toast) {
-        Toast.show('Custom color applied!', 'success');
-    }
+    if (showToast && window.Toast) Toast.show('Custom color applied!', 'success', 1500);
 }
 window.setCustomColor = setCustomColor;
 

@@ -6,212 +6,848 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>XP Arena – Free Fire Sensitivity, Rankings & Tournaments</title>
   <meta name="description"
-    content="XP Arena – Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
+    content="XP Arena – Track your Free Fire sensitivity, earn XP, climb the ranks. Pro-grade sensitivity tool for competitive Arenis.">
   <link rel="manifest" href="manifest.json">
-
-  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="/">
-  <meta property="og:title" content="XP Arena – Free Fire Sensitivity, Rankings & Tournaments">
-  <meta property="og:description"
-    content="Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
+  <meta property="og:title" content="XP Arena – Compete at the Highest Level">
+  <meta property="og:description" content="Track your Free Fire sensitivity, earn XP, and rise in the rankings.">
   <meta property="og:image" content="/assets/images/logo.png">
-
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="/">
-  <meta property="twitter:title" content="XP Arena – Free Fire Sensitivity, Rankings & Tournaments">
-  <meta property="twitter:description"
-    content="Track your Free Fire sensitivity, submit gameplay, earn XP, and rise in the rankings! Optimize your gameplay with our precision tool.">
-  <meta property="twitter:image" content="/assets/images/logo.png">
-  <meta name="theme-color" content="#00e5ff">
-  <link rel="canonical" href="/">
+  <meta name="theme-color" content="#FF5500">
   <link rel="icon" href="/assets/images/logo.png">
-
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/onboarding.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
   <link rel="prefetch" href="tool.html">
   <link rel="prefetch" href="result.html">
+  <style>
+    /* ─── Ambient Background ─── */
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(130px);
+      opacity: 0.12;
+    }
+
+    .orb-1 {
+      width: 700px;
+      height: 700px;
+      background: var(--accent);
+      top: -200px;
+      left: -150px;
+      animation: orb-float 20s ease-in-out infinite alternate;
+    }
+
+    .orb-2 {
+      width: 500px;
+      height: 500px;
+      background: var(--accent2);
+      bottom: -100px;
+      right: -100px;
+      animation: orb-float 25s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes orb-float {
+      from {
+        transform: translate(0, 0) scale(1);
+      }
+
+      to {
+        transform: translate(30px, 20px) scale(1.08);
+      }
+    }
+
+    .grid-bg {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--accent-glow) 1px, transparent 1px),
+        linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
+      background-size: 60px 60px;
+      opacity: 0.15;
+    }
+
+    /* ─── Hero ─── */
+    .hero {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 1.5rem 3rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(var(--accent-rgb, 255, 85, 0), 0.1);
+      border: 1px solid rgba(var(--accent-rgb, 255, 85, 0), 0.25);
+      border-radius: 100px;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 2rem;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      background: #84cc16;
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(132, 204, 22, 0.5);
+      }
+
+      50% {
+        opacity: 0.7;
+        box-shadow: 0 0 0 5px rgba(132, 204, 22, 0);
+      }
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero-title .line2 {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-size: 200%;
+      animation: grad-shift 5s ease-in-out infinite alternate;
+    }
+
+    @keyframes grad-shift {
+      from {
+        background-position: 0% center;
+      }
+
+      to {
+        background-position: 100% center;
+      }
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-sub em {
+      color: var(--accent);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 4rem;
+    }
+
+    .btn-hero-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 14px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 30px var(--accent-glow);
+      transition: all 0.3s ease;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-hero-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 40px rgba(var(--accent-rgb, 255, 85, 0), 0.5);
+    }
+
+    .btn-hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.9rem 2rem;
+      border-radius: 14px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .btn-hero-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-active);
+      transform: translateY(-2px);
+    }
+
+    /* ─── Stats ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 5rem;
+    }
+
+    .stat-cell {
+      background: var(--glass);
+      backdrop-filter: blur(20px);
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+
+    .stat-number span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ─── Section Labels ─── */
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-label::before,
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(1.7rem, 4vw, 2.6rem);
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .section-sub {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    /* ─── Features Section ─── */
+    .features-section {
+      position: relative;
+      z-index: 1;
+      padding: 0 1.5rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+    }
+
+    .feature-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.8rem;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      display: block;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-6px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-glow);
+    }
+
+    .feature-icon-wrap {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .fi-violet {
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.12);
+      color: var(--accent);
+    }
+
+    .fi-cyan {
+      background: rgba(var(--accent-rgb, 6, 182, 212), 0.12);
+      color: var(--accent2);
+    }
+
+    .fi-green {
+      background: rgba(132, 204, 22, 0.12);
+      color: #84cc16;
+    }
+
+    .fi-orange {
+      background: rgba(249, 115, 22, 0.12);
+      color: #f97316;
+    }
+
+    .fi-yellow {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+    }
+
+    .fi-red {
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+
+    .feature-card h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(var(--accent-rgb, 139, 92, 246), 0.1);
+      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
+      border-radius: 100px;
+      padding: 2px 8px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-top: 0.8rem;
+    }
+
+    .feature-tag.new {
+      background: rgba(132, 204, 22, 0.1);
+      border-color: rgba(132, 204, 22, 0.2);
+      color: #84cc16;
+    }
+
+    .feature-tag.hot {
+      background: rgba(249, 115, 22, 0.1);
+      border-color: rgba(249, 115, 22, 0.2);
+      color: #f97316;
+    }
+
+    /* ─── Top Players ─── */
+    .players-section {
+      position: relative;
+      z-index: 1;
+      padding: 0 1.5rem 5rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .players-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+    }
+
+    .player-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.5rem;
+      backdrop-filter: blur(20px);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .player-card:hover {
+      border-color: var(--border-active);
+      transform: translateY(-4px);
+    }
+
+    .player-card.rank-1 {
+      border-color: rgba(251, 191, 36, 0.3);
+    }
+
+    .player-card.rank-1:hover {
+      border-color: rgba(251, 191, 36, 0.5);
+      box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
+    }
+
+    .player-rank-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .rank-1-badge {
+      background: linear-gradient(135deg, #FBBF24, #D97706);
+    }
+
+    .rank-2-badge {
+      background: linear-gradient(135deg, #94A3B8, #64748B);
+    }
+
+    .rank-3-badge {
+      background: linear-gradient(135deg, #CD7F32, #92400E);
+    }
+
+    .player-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      margin: 0 auto 0.8rem;
+      border: 2px solid rgba(var(--accent-rgb, 139, 92, 246), 0.3);
+    }
+
+    .player-name {
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .player-rank-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+
+    .player-axp {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* ─── CTA Banner ─── */
+    .cta-banner {
+      position: relative;
+      z-index: 1;
+      padding: 0 1.5rem 6rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(var(--accent-rgb, 139, 92, 246), 0.12), rgba(var(--accent-rgb, 6, 182, 212), 0.08));
+      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.22);
+      border-radius: 24px;
+      padding: 3.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .cta-inner h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      margin-bottom: 0.8rem;
+    }
+
+    .cta-inner p {
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      font-size: 1rem;
+    }
+
+    /* ─── Scroll Reveal ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 768px) {
+      .features-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .players-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 4rem 1rem 2rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn-hero-primary,
+      .btn-hero-secondary {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 
 <body class="fade-in">
 
-  <nav class="navbar">
-    <!-- Injected by layout.js -->
-  </nav>
+  <!-- Ambient BG -->
+  <div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-bg"></div>
+  </div>
+
+  <nav class="navbar"><!-- Injected by layout.js --></nav>
 
   <main class="main-content-area">
+
+    <!-- ── HERO ── -->
     <section class="hero fade-in-up">
-      <div class="hero-content" data-parallax="8">
-        <h1 class="text-neon" data-parallax="12">LEVEL UP<br><span class="hero-highlight">YOUR GAMEPLAY</span></h1>
-        <p style="font-size: 1.2rem; margin-bottom: 2.5rem; opacity: 0.9;">
-          Optimize your Free Fire experience with <span class="hero-highlight">pro-grade</span> sensitivity settings
-          tailored for your device.
-        </p>
+      <div class="live-pill">
+        <div class="live-dot"></div>
+        <span id="ticker-text">Areni AimBot_Pro just reached Master Rank!</span>
+      </div>
 
-        <div class="live-feed" data-parallax="6"
-          style="background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 30px; padding: 0.5rem 1.5rem; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; font-size: 0.9rem;">
-          <span style="color: var(--accent); font-weight: 800; display: flex; align-items: center; gap: 5px;">
-            <span
-              style="width: 8px; height: 8px; background: var(--accent); border-radius: 50%; display: inline-block; animation: pulse 1.5s infinite;"></span>
-            LIVE:
-          </span>
-          <span id="ticker-text" style="color: var(--text-muted);">Areni AimBot_Pro just reached Master Rank!</span>
+      <h1 class="hero-title">
+        LEVEL UP<br>
+        <span class="line2">YOUR GAMEPLAY</span>
+      </h1>
+
+      <p class="hero-sub">
+        The <em>arena</em> for serious Free Fire players. Master your sensitivity,
+        earn AXP, crush the leaderboard — and never miss your shot again.
+      </p>
+
+      <div class="hero-actions">
+        <a href="tool.html" class="btn-hero-primary">
+          <i class="fas fa-crosshairs"></i>
+          Sensitivity Tool
+        </a>
+        <a href="signup.html" class="btn-hero-secondary">
+          <i class="fas fa-user-plus"></i>
+          Join the Arena
+        </a>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row" id="homeStats">
+        <div class="stat-cell">
+          <div class="stat-number"><span id="stat-devices">0</span></div>
+          <div class="stat-label">Devices Supported</div>
         </div>
-
-        <div class="hero-actions" data-parallax="10">
-          <a href="tool.html" class="btn-primary glow-neon">GET STARTED <i class="fas fa-arrow-right"
-              style="margin-left: 10px;"></i></a>
-          <a href="submit.html" class="btn-secondary">JOIN RANKINGS</a>
+        <div class="stat-cell">
+          <div class="stat-number"><span id="stat-players">0</span></div>
+          <div class="stat-label">Registered Arenis</div>
         </div>
-
-        <div class="stats-grid" id="homeStats" data-parallax="4">
-          <div>
-            <span class="stat-val" id="stat-devices">1,000</span>
-            <span class="stat-label">Devices Supported</span>
-          </div>
-          <div>
-            <span class="stat-val" id="stat-players">0</span>
-            <span class="stat-label">Registered Arenis</span>
-          </div>
-          <div>
-            <span class="stat-val">24/7</span>
-            <span class="stat-label">Active Community</span>
-          </div>
-          <div>
-            <span class="stat-val" id="stat-axp">0</span>
-            <span class="stat-label">Total AXP Earned</span>
-          </div>
+        <div class="stat-cell">
+          <div class="stat-number"><span>24/7</span></div>
+          <div class="stat-label">Active Community</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-number"><span id="stat-axp">0</span></div>
+          <div class="stat-label">Total AXP Earned</div>
         </div>
       </div>
     </section>
 
-    <section class="top-players" style="padding: 4rem 1.5rem; text-align: center;">
-      <h2 class="text-neon" style="margin-bottom: 2rem;">TOP PERFORMERS</h2>
-      <div class="carousel-container">
-        <div class="carousel-track">
-          <div class="carousel-slide rank-1">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">👑</div>
-            <h3 style="color: #FFD700;">PRO_PLAYER_77 <span class="v-badge vip-glow">V</span></h3>
-            <p style="color: var(--text-muted);">Legendary Rank</p>
-            <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 45 • 22.5k AXP</div>
-          </div>
-          <div class="carousel-slide rank-2">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🥈</div>
-            <h3 style="color: #C0C0C0;">Shadow_Slayer</h3>
-            <p style="color: var(--text-muted);">Elite Areni</p>
-            <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 42 • 21.0k AXP</div>
-          </div>
-          <div class="carousel-slide rank-3">
-            <div style="font-size: 3rem; margin-bottom: 1rem;">🥉</div>
-            <h3 style="color: #CD7F32;">Ghost_Aim</h3>
-            <p style="color: var(--text-muted);">Diamond Ace</p>
-            <div style="margin-top: 1rem; font-weight: 800; color: var(--accent);">Level 39 • 19.8k AXP</div>
-          </div>
+    <!-- ── FEATURES ── -->
+    <section class="features-section reveal">
+      <div class="section-label">Platform</div>
+      <h2 class="section-title">Everything you need to dominate</h2>
+      <p class="section-sub">Tools, rankings, guilds, and rewards — built for the serious Areni.</p>
+
+      <div class="features-grid">
+        <a href="tool.html" class="feature-card">
+          <div class="feature-icon-wrap fi-violet"><i class="fas fa-crosshairs"></i></div>
+          <h3>Sensitivity Calculator</h3>
+          <p>Device-specific sensitivity tuning with cross-device conversion and accuracy reports.</p>
+          <div class="feature-tag"><i class="fas fa-star"></i> Core Feature</div>
+        </a>
+
+        <a href="leaderboard.html" class="feature-card">
+          <div class="feature-icon-wrap fi-cyan"><i class="fas fa-trophy"></i></div>
+          <h3>Global Leaderboard</h3>
+          <p>Real-time rankings. Compete for the top spot and earn your place in the Hall of Champions.</p>
+          <div class="feature-tag hot"><i class="fas fa-fire"></i> Hot</div>
+        </a>
+
+        <a href="guilds.html" class="feature-card">
+          <div class="feature-icon-wrap fi-orange"><i class="fas fa-users"></i></div>
+          <h3>Guilds & Clans</h3>
+          <p>Create or join a guild, participate in Guild Wars, and earn collective rewards.</p>
+          <div class="feature-tag new"><i class="fas fa-bolt"></i> New</div>
+        </a>
+
+        <a href="quests.html" class="feature-card">
+          <div class="feature-icon-wrap fi-green"><i class="fas fa-tasks"></i></div>
+          <h3>Quests & Rewards</h3>
+          <p>Daily, weekly, and seasonal quests that earn you AXP, badges, and exclusive cosmetics.</p>
+        </a>
+
+        <a href="tournaments.html" class="feature-card">
+          <div class="feature-icon-wrap fi-yellow"><i class="fas fa-gamepad"></i></div>
+          <h3>Tournaments</h3>
+          <p>Join or host competitive AXP-staked tournaments. Prize pools, brackets, and glory.</p>
+          <div class="feature-tag hot"><i class="fas fa-fire"></i> Hot</div>
+        </a>
+
+        <a href="premium.html" class="feature-card">
+          <div class="feature-icon-wrap fi-red"><i class="fas fa-gem"></i></div>
+          <h3>Go Elite & Legend</h3>
+          <p>Unlock Pro Laboratory, 4× AXP, ad-free platform, VIP badge, and creator tools.</p>
+          <div class="feature-tag"><i class="fas fa-crown"></i> Premium</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- ── TOP PLAYERS ── -->
+    <section class="players-section reveal">
+      <div class="section-label">Leaderboard</div>
+      <h2 class="section-title">Top Performers</h2>
+      <p class="section-sub">The best Arenis in the arena right now.</p>
+
+      <div class="players-grid">
+        <div class="player-card rank-1">
+          <div class="player-rank-badge rank-1-badge">👑</div>
+          <div class="player-avatar">🎯</div>
+          <div class="player-name">PRO_PLAYER_77 <span style="font-size:0.75rem;color:#FBBF24;">VIP</span></div>
+          <div class="player-rank-label">Legendary Rank</div>
+          <div class="player-axp">22,500 AXP</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 45</div>
+        </div>
+        <div class="player-card">
+          <div class="player-rank-badge rank-2-badge">🥈</div>
+          <div class="player-avatar">⚡</div>
+          <div class="player-name">Shadow_Slayer</div>
+          <div class="player-rank-label">Elite Areni</div>
+          <div class="player-axp">21,000 AXP</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 42</div>
+        </div>
+        <div class="player-card">
+          <div class="player-rank-badge rank-3-badge">🥉</div>
+          <div class="player-avatar">🔥</div>
+          <div class="player-name">Ghost_Aim</div>
+          <div class="player-rank-label">Diamond Ace</div>
+          <div class="player-axp">19,800 AXP</div>
+          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 39</div>
         </div>
       </div>
     </section>
 
-    <section class="featured-creators" style="padding: 2rem 1.5rem 4rem; text-align:center;">
-      <h2 class="text-neon" style="margin-bottom: 1.2rem;">FEATURED PROS</h2>
-      <div id="featuredCreators" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; max-width: 1000px; margin: 0 auto;"></div>
-    </section>
-
-    <section class="featured-section" style="text-align: center; padding-bottom: 4rem;">
-      <h2 class="text-neon" style="margin-bottom: 2rem;">FEATURED CLIP</h2>
-      <div style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
-        <div class="clip-card" style="position: relative; cursor: pointer;">
-          <div class="clip-thumbnail"
-            style="height: 400px; background: linear-gradient(45deg, rgba(11,15,23,0.5), rgba(26,35,50,0.8)), url('assets/images/featured-clip.jpg') center/cover;">
-            <i class="fas fa-play play-icon"></i>
-            <div style="position: absolute; bottom: 20px; left: 20px; text-align: left;">
-              <h3 style="margin: 0; color: white;">Quadra Kill • Master Rank</h3>
-              <p style="margin: 5px 0 0; color: var(--text-muted);">by Areni_Elite</p>
-            </div>
-          </div>
+    <!-- ── CTA BANNER ── -->
+    <div class="cta-banner reveal">
+      <div class="cta-inner">
+        <h2>Ready to compete?</h2>
+        <p>Join thousands of Arenis earning XP and climbing the ranks every day.</p>
+        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="signup.html" class="btn-hero-primary">
+            <i class="fas fa-bolt"></i> Join Free
+          </a>
+          <a href="premium.html" class="btn-hero-secondary">
+            <i class="fas fa-gem"></i> Go Elite
+          </a>
         </div>
       </div>
-    </section>
+    </div>
+
   </main>
 
-  <nav class="bottom-nav">
-    <!-- Injected by layout.js -->
-  </nav>
+  <nav class="bottom-nav"><!-- Injected by layout.js --></nav>
 
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/onboarding.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/app.js"></script>
-
   <script>
-    // Count real players + AXP from localStorage
-    function getLiveStats() {
-      let players = 0, totalAxp = 0, devices = 0;
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith('xp_stats_')) {
-          players++;
-          try {
-            const d = JSON.parse(localStorage.getItem(key));
-            totalAxp += d.axp || 0;
-          } catch (e) { }
-        }
-        if (key && key.startsWith('xp_user_')) players = Math.max(players, 1);
-      }
-      return {
-        devices: 1000, // Fixed baseline
-        players: Math.max(players, 1200),
-        axp: Math.max(totalAxp, 2375240)
-      };
-    }
-
-    function animateCounter(el, target, duration, suffix) {
+    // ─── Animated Counters ───
+    function animateCounter(el, target, duration, suffix = '') {
       if (!el) return;
       const start = performance.now();
-      const format = (n) => suffix ? n.toLocaleString() + suffix : n.toLocaleString();
       const step = (now) => {
-        const elapsed = now - start;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3); // ease-out cubic
-        el.textContent = format(Math.round(eased * target));
-        if (progress < 1) requestAnimationFrame(step);
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 4);
+        const val = Math.round(eased * target);
+        el.textContent = val.toLocaleString() + suffix;
+        if (p < 1) requestAnimationFrame(step);
       };
       requestAnimationFrame(step);
     }
 
     window.addEventListener('load', () => {
       setTimeout(() => {
-        const stats = getLiveStats();
-        animateCounter(document.getElementById('stat-devices'), stats.devices, 1800, '+');
-        animateCounter(document.getElementById('stat-players'), stats.players, 2200, '+');
-        animateCounter(document.getElementById('stat-axp'), stats.axp, 2500, '+');
-      }, 500);
-      // Load featured pros as creators
-      fetch((window.API_URL || '') + '/api/pro-players')
-        .then(r => r.ok ? r.json() : [])
-        .then(list => {
-          const el = document.getElementById('featuredCreators');
-          if (!el || !Array.isArray(list)) return;
-          el.innerHTML = list.slice(0, 6).map(p => `
-            <div class="form-card hover-glow" style="text-align:left; padding: 1rem; display:grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items:center;">
-              <div style="font-size:2rem; line-height:1;">${p.avatar || '🎮'}</div>
-              <div>
-                <div style="font-weight:900; display:flex; gap:8px; align-items:center;">
-                  ${p.name} ${p.verified ? '<span class="v-badge" style="font-size:0.7rem; background:rgba(255,255,255,0.08); padding:2px 6px; border-radius:6px;">V</span>' : ''}
-                </div>
-                <div style="font-size:0.8rem; color: var(--text-muted);">${p.team || ''} • ${p.device || ''}</div>
-              </div>
-              <div style="text-align:right;">
-                <a href="creators.html" class="btn-secondary" style="width:auto;">View</a>
-              </div>
-            </div>
-          `).join('');
-        })
-        .catch(() => {});
+        animateCounter(document.getElementById('stat-devices'), 1000, 1800, '+');
+        animateCounter(document.getElementById('stat-players'), 1247, 2200, '+');
+        animateCounter(document.getElementById('stat-axp'), 2375240, 2600, '+');
+      }, 400);
     });
+
+    // ─── Ticker ───
+    const tickers = [
+      'FragKing99 just hit Diamond rank! 🎯',
+      'VoltAreni earned 500 AXP from daily quests! ⚡',
+      'Ghost_Aim topped the weekly leaderboard! 🔥',
+      'Shadow_Slayer joined Guild "Apex Wolves" 🐺',
+      'PRO_PLAYER_77 unlocked the Legend badge! 👑',
+    ];
+    let tickIdx = 0;
+    const tickEl = document.getElementById('ticker-text');
+    if (tickEl) {
+      setInterval(() => {
+        tickIdx = (tickIdx + 1) % tickers.length;
+        tickEl.style.opacity = '0';
+        tickEl.style.transform = 'translateY(5px)';
+        setTimeout(() => {
+          tickEl.textContent = tickers[tickIdx];
+          tickEl.style.transition = 'all 0.4s ease';
+          tickEl.style.opacity = '1';
+          tickEl.style.transform = 'translateY(0)';
+        }, 300);
+      }, 4000);
+    }
+
+    // ─── Scroll Reveal ───
+    const revealEls = document.querySelectorAll('.reveal');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 60);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+    revealEls.forEach(el => obs.observe(el));
   </script>
 </body>
 

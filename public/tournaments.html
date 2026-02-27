@@ -4,105 +4,617 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournaments • XP ARENA</title>
+    <title>Championship Hub • XP ARENA</title>
     <meta name="description"
         content="View active and upcoming tournaments at XP ARENA. Compete for cash prizes and global recognition.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&family=Rajdhani:wght@600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        :root {
+            --bg: #09090f;
+            --surface: rgba(20, 20, 32, 0.6);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(var(--accent-rgb, 139, 92, 246), 0.4);
+            --radius-lg: 20px;
+            --radius-xl: 28px;
+        }
+
+        body {
+            background: var(--bg);
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ─── AMBIENT BACKGROUND ─── */
+        .ambient-bg {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.12;
+            animation: orb-drift 20s ease-in-out infinite alternate;
+        }
+
+        .orb-v {
+            width: 600px;
+            height: 600px;
+            background: var(--accent);
+            top: -200px;
+            right: -100px;
+        }
+
+        .orb-c {
+            width: 500px;
+            height: 500px;
+            background: var(--accent2);
+            bottom: -150px;
+            left: -100px;
+            animation-duration: 25s;
+        }
+
+        @keyframes orb-drift {
+            from {
+                transform: translate(0, 0) scale(1);
+            }
+
+            to {
+                transform: translate(40px, 30px) scale(1.1);
+            }
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--accent-glow) 1px, transparent 1px),
+                linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
+            background-size: 60px 60px;
+            opacity: 0.12;
+        }
+
+        /* ─── LAYOUT ─── */
+        .page-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 6rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding-top: 2rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(var(--accent-rgb, 139, 92, 246), 0.1);
+            border: 1px solid var(--border-active);
+            border-radius: 100px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-section h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ─── CREATE TOURNAMENT PANEL ─── */
+        .create-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-xl);
+            padding: 2.5rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            margin-bottom: 4rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .create-panel h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .create-panel h3 i {
+            color: var(--accent);
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .t-input-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .t-input-wrap label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+        }
+
+        .t-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .t-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.06);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .checkbox-wrap {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            padding-top: 1.5rem;
+        }
+
+        .checkbox-wrap input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+        }
+
+        .btn-create {
+            background: var(--accent);
+            color: #000;
+            border: none;
+            border-radius: 12px;
+            padding: 0 2rem;
+            height: 46px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            align-self: flex-end;
+            margin-bottom: 2px;
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px var(--accent-glow);
+            filter: brightness(1.1);
+        }
+
+        /* ─── TOURNAMENT GRID ─── */
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .t-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .t-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--border-active);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .t-card-header {
+            height: 140px;
+            background: linear-gradient(45deg, #1e293b, #0f172a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.2);
+            letter-spacing: 4px;
+        }
+
+        .t-status-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 12px;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-open {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .status-private {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .t-card-body {
+            padding: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .t-card-body h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .t-prize {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent2);
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .t-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #e2e8f0;
+        }
+
+        .btn-join {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.8rem;
+            color: #fff;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-join:hover {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 992px) {
+            .input-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .checkbox-wrap {
+                padding-top: 0;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-section h1 {
+                font-size: 2.8rem;
+            }
+        }
+    </style>
 </head>
 
 <body class="fade-in">
 
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
+    <nav class="navbar"></nav>
+
+    <div class="ambient-bg">
+        <div class="orb orb-v"></div>
+        <div class="orb orb-c"></div>
+        <div class="grid-overlay"></div>
+    </div>
 
     <main class="main-content-area">
-        <div class="container">
-            <div class="page-header">
-                <h1>Tournaments</h1>
-                <p>Create and join community tournaments.</p>
+        <div class="page-wrapper">
+
+            <div class="hero-section reveal">
+                <div class="hero-badge">CHAMPIONSHIP HUB</div>
+                <h1>Glorious Victories<br><span class="text-neon">Await the Worthy</span></h1>
+                <p>Host local tournaments or join community-driven battles to win massive AXP prize pools and climb the
+                    world ranks.</p>
             </div>
-            <div class="form-card" style="margin-bottom:1rem;">
-                <h3 style="margin-bottom:0.5rem;">Create Tournament</h3>
-                <div style="display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:10px;">
-                    <input id="tName" class="settings-input" placeholder="Name">
-                    <input id="tEntry" class="settings-input" type="number" min="0" placeholder="Entry AXP">
-                    <input id="tPrize" class="settings-input" type="number" min="0" placeholder="Prize AXP">
-                    <label style="display:flex;align-items:center;gap:6px;font-size:0.9rem;color:var(--text-muted)">
-                        <input id="tPrivate" type="checkbox"> Private
-                    </label>
+
+            <!-- CREATE PANEL -->
+            <div class="create-panel reveal">
+                <h3><i class="fas fa-plus-circle"></i> Create New Tournament</h3>
+                <div class="input-grid">
+                    <div class="t-input-wrap">
+                        <label>Tournament Name</label>
+                        <input id="tName" class="t-input" placeholder="e.g. Neon Dawn Invitational">
+                    </div>
+                    <div class="t-input-wrap">
+                        <label>Entry Fee (AXP)</label>
+                        <input id="tEntry" class="t-input" type="number" min="0" placeholder="0">
+                    </div>
+                    <div class="t-input-wrap">
+                        <label>Prize Pool (AXP)</label>
+                        <input id="tPrize" class="t-input" type="number" min="0" placeholder="500">
+                    </div>
+                    <div class="checkbox-wrap" onclick="document.getElementById('tPrivate').click()">
+                        <input id="tPrivate" type="checkbox">
+                        <span style="font-size: 0.9rem; font-weight: 700; color: #cbd5e1;">Private Only</span>
+                    </div>
+                    <button class="btn-create" onclick="createTournament()">
+                        <i class="fas fa-hammer"></i> FORGE ARENA
+                    </button>
                 </div>
-                <button class="btn-primary" style="margin-top:10px;width:auto;"
-                    onclick="createTournament()">Create</button>
-                <div id="tCreateMsg" style="margin-top:8px;font-size:0.85rem;color:var(--text-muted)"></div>
+                <div id="tCreateMsg"
+                    style="margin-top: 1.5rem; font-size: 0.9rem; font-weight: 700; text-align: center; border-radius: 8px;">
+                </div>
             </div>
-            <div id="tList" class="tournament-grid"></div>
+
+            <!-- TOURNAMENT LIST -->
+            <div class="section-header reveal" style="margin-bottom: 2rem;">
+                <h2 style="font-family: 'Outfit'; font-weight: 900; font-size: 2rem;">Active Tournaments</h2>
+            </div>
+            <div id="tList" class="tournament-grid reveal">
+                <!-- Injected via JS -->
+            </div>
         </div>
     </main>
 
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
+    <nav class="bottom-nav"></nav>
 
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => { loadTournaments(); });
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTournaments();
+            setupScrollReveal();
+        });
+
         async function loadTournaments() {
             const el = document.getElementById('tList');
-            el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Loading...</div>';
+            el.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: var(--surface); border-radius: 20px; border: 1px dashed var(--border);">
+                    <i class="fas fa-sync fa-spin" style="font-size: 2rem; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <p style="font-weight: 700; color: #64748b;">SOLICITING ARENAS...</p>
+                </div>
+            `;
+
             try {
                 const res = await fetch((window.API_URL || '') + '/api/tournaments/list');
                 const rows = res.ok ? await res.json() : [];
+
+                if (rows.length === 0) {
+                    el.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 4rem; background: var(--surface); border-radius: 20px; border: 1px dashed var(--border);">
+                            <i class="fas fa-ghost" style="font-size: 2rem; color: var(--muted); margin-bottom: 1rem;"></i>
+                            <p style="font-weight: 700; color: #64748b;">NO ACTIVE TOURNAMENTS FOUND.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
                 el.innerHTML = rows.map(t => `
-                    <div class="tournament-card">
-                        <div class="card-image-placeholder">${t.private_only ? 'PRIVATE' : 'OPEN'}</div>
-                        <div class="card-content">
-                            <h3>${t.name}</h3>
-                            <span class="prize-pool">Prize: ${Number(t.prize_pool_axp || 0).toLocaleString()} AXP</span>
-                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">
-                                Entry: ${Number(t.entry_fee_axp || 0).toLocaleString()} AXP • Participants: ${t.participants}
-                            </p>
-                            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 1rem;">
-                                <button class="btn-primary" style="width:auto;" onclick="joinTournament(${t.id})">Join</button>
+                    <div class="t-card">
+                        <div class="t-card-header">
+                            ARENA #${t.id}
+                            <div class="t-status-tag ${t.private_only ? 'status-private' : 'status-open'}">
+                                ${t.private_only ? '<i class="fas fa-lock"></i> PRIVATE' : '<i class="fas fa-globe"></i> OPEN'}
                             </div>
+                        </div>
+                        <div class="t-card-body">
+                            <h3>${t.name}</h3>
+                            <div class="t-prize">
+                                <i class="fas fa-trophy"></i>
+                                ${Number(t.prize_pool_axp || 0).toLocaleString()} AXP
+                            </div>
+                            
+                            <div class="t-stats">
+                                <div class="stat-item">
+                                    <span class="stat-label">Entry Fee</span>
+                                    <span class="stat-value">${Number(t.entry_fee_axp || 0).toLocaleString()} AXP</span>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-label">Participants</span>
+                                    <span class="stat-value">${t.participants || 0} PLAYERS</span>
+                                </div>
+                            </div>
+
+                            <button class="btn-join" onclick="joinTournament(${t.id})">
+                                <i class="fas fa-sign-in-alt"></i> ENTER ARENA
+                            </button>
                         </div>
                     </div>
                 `).join('');
-            } catch {
-                el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
+            } catch (err) {
+                el.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #ef4444; font-weight: 700; padding: 2rem;">CRITICAL ERROR: Failed to link with Tournament Protocol.</div>';
             }
         }
+
         async function createTournament() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const name = document.getElementById('tName').value;
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html?redirect=tournaments.html'; return; }
+
+            const btn = document.querySelector('.btn-create');
+            const msg = document.getElementById('tCreateMsg');
+
+            const name = document.getElementById('tName').value.trim();
             const entry_fee_axp = parseInt(document.getElementById('tEntry').value || 0, 10);
             const prize_pool_axp = parseInt(document.getElementById('tPrize').value || 0, 10);
             const private_only = document.getElementById('tPrivate').checked;
-            const msg = document.getElementById('tCreateMsg');
-            const res = await fetch((window.API_URL || '') + '/api/tournaments/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ name, entry_fee_axp, prize_pool_axp, private_only })
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Created!' : (data.error || 'Error');
-            if (res.ok) loadTournaments();
+
+            if (!name) {
+                showMsg('Arena designation required', 'danger');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> FORGING...';
+
+            try {
+                const res = await fetch((window.API_URL || '') + '/api/tournaments/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+                    body: JSON.stringify({ name, entry_fee_axp, prize_pool_axp, private_only })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    showMsg('✅ Tournament protocols established!', 'success');
+                    document.getElementById('tName').value = '';
+                    loadTournaments();
+                } else {
+                    showMsg('❌ Error: ' + (data.error || 'Protocol rejection'), 'danger');
+                }
+            } catch (err) {
+                showMsg('❌ Connection lost during forge process', 'danger');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-hammer"></i> FORGE ARENA';
+            }
         }
+
         async function joinTournament(id) {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const res = await fetch((window.API_URL || '') + '/api/tournaments/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ tournament_id: id })
-            });
-            const data = await res.json();
-            if (res.ok && window.Toast) Toast.show('Joined tournament!', 'success');
-            if (!res.ok && window.Toast) Toast.show(data.error || 'Error', 'error');
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html?redirect=tournaments.html'; return; }
+
+            if (window.Toast) Toast.show('Attempting to enter Arena...', 'info');
+
+            try {
+                const res = await fetch((window.API_URL || '') + '/api/tournaments/join', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+                    body: JSON.stringify({ tournament_id: id })
+                });
+
+                const data = await res.json();
+
+                if (res.ok) {
+                    if (window.Toast) Toast.show('✅ Arena entrance authorized!', 'success');
+                    loadTournaments();
+                } else {
+                    if (window.Toast) Toast.show(data.error || 'Access denied', 'danger');
+                }
+            } catch (err) {
+                if (window.Toast) Toast.show('Connection error', 'danger');
+            }
+        }
+
+        function showMsg(text, type) {
+            const msg = document.getElementById('tCreateMsg');
+            msg.textContent = text;
+            msg.style.padding = '1rem';
+            msg.style.background = type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+            msg.style.color = type === 'success' ? '#10b981' : '#ef4444';
+            setTimeout(() => {
+                msg.textContent = '';
+                msg.style.padding = '0';
+                msg.style.background = 'none';
+            }, 5000);
+        }
+
+        function setupScrollReveal() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, i) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => entry.target.classList.add('visible'), i * 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
         }
     </script>
 </body>

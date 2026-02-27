@@ -91,26 +91,20 @@ router.post('/register', authLimiter, async (req, res) => {
     }
 });
 
-// Verify Email
+// Verify Email — any code is accepted (verification is effectively disabled)
 router.post('/verify-email', strictLimiter, async (req, res) => {
     const { username, code } = req.body;
     if (!username || !code) return res.status(400).json({ error: 'Username and code required' });
 
     try {
-        const user = await db.get('SELECT id, verification_token, verification_expires FROM users WHERE username = ? OR email = ?', [username, username]);
+        const user = await db.get('SELECT id, username FROM users WHERE username = ? OR email = ?', [username, username]);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        if (user.verification_token !== code) return res.status(400).json({ error: 'Invalid verification code' });
-
-        const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        if (user.verification_expires < now) return res.status(400).json({ error: 'Verification code expired' });
-
-        // Verify successful
+        // Accept any code — mark as verified
         await db.run('UPDATE users SET email_verified = 1, verification_token = NULL, verification_expires = NULL WHERE id = ?', [user.id]);
 
-        // Generate initial login token
-        const token = jwt.sign({ id: user.id, username }, JWT_SECRET, { expiresIn: '7d' });
-        res.json({ success: true, token, user: { id: user.id, username } });
+        const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
+        res.json({ success: true, token, user: { id: user.id, username: user.username } });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
@@ -152,22 +146,9 @@ router.post('/login', authLimiter, async (req, res) => {
         // Success - Reset attempts
         await db.run('UPDATE users SET login_attempts = 0, lockout_until = NULL WHERE id = ?', [user.id]);
 
+        // Auto-verify on login (verification effectively disabled)
         if (user.email_verified === 0) {
-            // Re-generate and resend code if expired or requested
-            const code = Math.floor(100000 + Math.random() * 900000).toString();
-            const expires = getFutureDateTime(15);
-            await db.run('UPDATE users SET verification_token = ?, verification_expires = ? WHERE id = ?', [code, expires, user.id]);
-            const emailRes = await emailService.sendVerificationEmail(user.email, code);
-            if (!emailRes.success) {
-                console.error('[Auth] Resend verification email failed:', emailRes.reason);
-            }
-            return res.status(403).json({
-                requires_verification: true,
-                username: user.username,
-                email: user.email,
-                error: 'Please verify your email to log in. A new code has been sent.',
-                ...(process.env.NODE_ENV !== 'production' && emailRes.debugCode ? { debugCode: emailRes.debugCode } : {})
-            });
+            await db.run('UPDATE users SET email_verified = 1 WHERE id = ?', [user.id]);
         }
 
         const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });

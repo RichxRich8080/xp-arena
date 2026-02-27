@@ -47,83 +47,134 @@
     </main>
 
     <style>
+        :root {
+            --bg: #09090b;
+            --surface: rgba(20, 20, 28, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(var(--accent-rgb), 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .main-content-area {
+            padding-bottom: 120px !important;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 950;
+            letter-spacing: -2px;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .shop-balance-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid var(--accent);
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            margin-top: 1rem;
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+        }
+
+        /* Shop Grid & Cards */
         .shop-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            gap: 2rem;
         }
 
         .shop-item-card {
+            background: var(--surface);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
             position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease, border-color 0.3s ease;
-            overflow: hidden;
+            align-items: center;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
         .shop-item-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
+            transform: translateY(-8px);
+            border-color: rgba(var(--accent-rgb), 0.4);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
         }
 
         .shop-item-icon {
-            font-size: 3.5rem;
-            margin: 1.5rem 0;
+            font-size: 4rem;
+            margin-bottom: 2rem;
             color: var(--accent);
-            text-shadow: 0 0 20px var(--accent-glow);
+            filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.4));
         }
 
         .shop-item-rarity-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 3px 8px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
+            top: 20px;
+            right: 20px;
+            font-size: 0.7rem;
+            font-weight: 900;
+            padding: 4px 12px;
+            border-radius: 50px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .rarity-legendary {
             border: 1px solid #ffcc00;
-            box-shadow: inset 0 0 20px rgba(255, 204, 0, 0.1);
+            background: rgba(255, 204, 0, 0.1);
+            color: #ffcc00;
         }
 
         .rarity-epic {
             border: 1px solid #bf00ff;
-            box-shadow: inset 0 0 20px rgba(191, 0, 255, 0.1);
-        }
-
-        .rarity-legendary .shop-item-rarity-badge {
-            background: #ffcc00;
-            color: #000;
-        }
-
-        .rarity-epic .shop-item-rarity-badge {
-            background: #bf00ff;
-            color: #fff;
+            background: rgba(191, 0, 255, 0.1);
+            color: #bf00ff;
         }
 
         .shop-item-footer {
-            margin-top: auto;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 2rem;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 1.5rem;
         }
 
         .shop-item-price {
-            font-weight: 900;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
+            font-weight: 950;
             color: #fff;
         }
 
-        .shop-buy-btn {
-            width: 100%;
-            padding: 0.8rem !important;
-            font-weight: 800;
-            font-size: 0.85rem;
+        .btn-primary.shop-buy-btn {
+            background: var(--accent);
+            color: #000;
+            font-weight: 900;
+            padding: 1rem;
+            border-radius: 12px;
+            letter-spacing: 1px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
         }
     </style>
 

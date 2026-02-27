@@ -8,18 +8,57 @@
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #09090b;
+            --surface: rgba(20, 20, 28, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 100%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%);
+            background-attachment: fixed;
+        }
+
+        .main-content-area {
+            padding-bottom: 120px !important;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 950;
+            letter-spacing: -2px;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+
+        /* Rank Cards */
         .rank-card {
-            background: var(--card-dark);
+            background: var(--surface);
+            backdrop-filter: blur(15px);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
-            transition: var(--transition);
-            margin-bottom: 1rem;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
             position: relative;
             overflow: hidden;
+        }
+
+        .rank-card:hover {
+            transform: translateX(10px);
+            border-color: rgba(var(--accent-rgb), 0.4);
+            background: rgba(var(--accent-rgb), 0.05);
         }
 
         .rank-card::before {
@@ -30,28 +69,32 @@
             width: 4px;
             height: 100%;
             background: var(--border);
-            transition: var(--transition);
-        }
-
-        .rank-card.active {
-            border-color: var(--accent);
-            background: rgba(0, 229, 255, 0.05);
+            transition: background 0.3s;
         }
 
         .rank-card.active::before {
             background: var(--accent);
-            box-shadow: 0 0 10px var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent);
         }
 
         .rank-icon {
             font-size: 2.5rem;
-            width: 60px;
-            height: 60px;
+            width: 70px;
+            height: 70px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .rank-card:hover .rank-icon {
+            transform: scale(1.1) rotate(-5deg);
+            border-color: var(--accent);
+            color: var(--accent);
         }
 
         .rank-info {
@@ -59,27 +102,50 @@
         }
 
         .rank-info h3 {
-            font-size: 1.25rem;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
             font-weight: 800;
-            margin-bottom: 0.25rem;
+            color: #fff;
+            margin-bottom: 0.4rem;
         }
 
         .rank-info p {
             color: var(--text-muted);
-            font-size: 0.9rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
 
         .rank-requirement {
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 950;
             color: var(--accent);
-            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 600px) {
+            .rank-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+                padding: 2.5rem 1.5rem;
+            }
+
+            .rank-card:hover {
+                transform: translateY(-5px);
+            }
+
+            .rank-requirement {
+                font-size: 0.9rem;
+            }
         }
 
         .v-badge-info {
-            background: rgba(0, 229, 255, 0.1);
-            border: 1px dashed var(--accent);
-            padding: 1rem;
-            border-radius: 12px;
+            background: rgba(var(--accent-rgb, 139, 92, 246), 0.06);
+            border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
+            padding: 1.2rem 1.5rem;
+            border-radius: 16px;
             margin-top: 2rem;
             display: flex;
             align-items: center;
@@ -87,12 +153,51 @@
         }
 
         .player-status {
-            background: var(--secondary);
-            padding: 2rem;
+            background: rgba(17, 17, 32, 0.7);
+            backdrop-filter: blur(20px);
+            padding: 1.8rem 2rem;
             border-radius: 20px;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             text-align: center;
-            border: 1px solid var(--accent-glow);
+            border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .player-status::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        }
+
+        #currentRankDisplay {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        #axp-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            box-shadow: 0 0 10px rgba(var(--accent-rgb, 139, 92, 246), 0.4);
+            transition: width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
     </style>
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
@@ -129,10 +234,11 @@
             <div class="v-badge-info">
                 <div style="font-size: 2rem;">🛡️</div>
                 <div>
-                    <h4 style="color: var(--accent); margin-bottom: 0.2rem;">The Champion's Proof</h4>
+                    <h4
+                        style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; margin-bottom: 0.2rem;">
+                        The Champion's Proof</h4>
                     <p style="font-size: 0.85rem; color: var(--text-muted);">Reach the Champion rank (100,000 AXP) to
-                        unlock
-                        your exclusive Verified Badge and special profile effects.</p>
+                        unlock your exclusive Verified Badge and special profile effects.</p>
                 </div>
             </div>
         </div>

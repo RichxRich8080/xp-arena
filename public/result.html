@@ -234,11 +234,24 @@
             margin-bottom: 1.5rem;
             letter-spacing: 1px;
         }
+
         @media (max-width: 600px) {
-            #loading-container { padding: 3rem 1rem; }
-            .elite-card { padding: 1.5rem; }
-            .res-grid { grid-template-columns: 1fr; gap: 1rem; }
-            .res-val { font-size: 1.8rem; }
+            #loading-container {
+                padding: 3rem 1rem;
+            }
+
+            .elite-card {
+                padding: 1.5rem;
+            }
+
+            .res-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .res-val {
+                font-size: 1.8rem;
+            }
         }
     </style>
 </head>
@@ -258,7 +271,8 @@
     </div>
 
     <div id="result-container" style="position:relative; z-index:1;">
-        <div class="elite-card" style="box-shadow: 0 40px 120px rgba(0,255,255,0.08), 0 0 60px rgba(0,229,255,0.06) inset;">
+        <div class="elite-card"
+            style="box-shadow: 0 40px 120px rgba(0,255,255,0.08), 0 0 60px rgba(0,229,255,0.06) inset;">
             <div class="rarity-tag">LEGENDARY CALIBRATION</div>
             <div class="diag-pill" id="ai-sync-pill">
                 <i class="fas fa-atom"></i> <span id="ai-sync-text">AI TARGETING SYNCED</span>
@@ -301,7 +315,8 @@
                 Hardware analysis complete. Sensitivity optimized for peak responsiveness.
             </div>
             <div id="confidence-ribbon" style="margin-bottom: 1.2rem; text-align:center;">
-                <span id="confidence-pill" style="display:inline-block; padding:6px 12px; border-radius: 100px; font-size:0.7rem; font-weight:900; letter-spacing:1px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">
+                <span id="confidence-pill"
+                    style="display:inline-block; padding:6px 12px; border-radius: 100px; font-size:0.7rem; font-weight:900; letter-spacing:1px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">
                     CONFIDENCE: --
                 </span>
             </div>
@@ -326,7 +341,9 @@
                 onclick="window.location.href='tool.html'">RETRY</button>
 
             <div style="margin-top:1.2rem; text-align:left;">
-                <div style="font-size:0.8rem; color: var(--text-muted); margin-bottom:6px; font-weight:800; letter-spacing:1px;">RECOMMENDED STEPS</div>
+                <div
+                    style="font-size:0.8rem; color: var(--text-muted); margin-bottom:6px; font-weight:800; letter-spacing:1px;">
+                    RECOMMENDED STEPS</div>
                 <ul style="margin:0; padding-left: 1rem; line-height:1.7; color: rgba(255,255,255,0.8);">
                     <li>Set General, then Red Dot, then 2x and 4x scopes in game</li>
                     <li>Play 2–3 matches to acclimate; avoid rapid changes</li>
@@ -341,6 +358,7 @@
 
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
     <script src="js/app.js"></script> <!-- To get generateShareImage logic -->
 
     <script>
@@ -353,7 +371,7 @@
                     resultsFromHash = JSON.parse(atob(b64));
                     localStorage.setItem('xp_calc_results', JSON.stringify(resultsFromHash));
                     localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultsFromHash.device }));
-                } catch {}
+                } catch { }
             }
             const params = JSON.parse(localStorage.getItem('xp_calc_params') || '{}');
             if (!params.device) {

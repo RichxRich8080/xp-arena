@@ -1,34 +1,50 @@
 :root {
-  --primary: #0b0f17;
-  --secondary: #121822;
-  /* Slightly lighter for depth */
-  /* Refined Hyper Cyan Default */
-  --accent: #00e5ff;
-  --accent-glow: rgba(0, 229, 255, 0.25);
-  --text-white: #f8fafc;
-  --text-muted: #94a3b8;
-  --border: rgba(255, 255, 255, 0.08);
-  --card-dark: #121826;
-  --bg-dark: #0b0f17;
-  --font-main: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
-  --radius: 16px;
-  --shadow: 0 15px 45px -10px rgba(0, 0, 0, 0.6);
-  --glass: rgba(18, 24, 38, 0.7);
+  /* ─── Backgrounds ─── */
+  --primary: #080808;
+  --secondary: #111111;
+  --bg-dark: #080808;
+  --card-dark: #111111;
+
+  /* ─── Accent (Gamer Default: Neon Orange) ─── */
+  --accent: #FF5500;
+  --accent-glow: rgba(255, 85, 0, 0.28);
+  --accent-rgb: 255, 85, 0;
+
+  /* ─── Secondary Accent ─── */
+  --accent2: #FF8C00;
+  --accent2-glow: rgba(255, 140, 0, 0.2);
+
+  /* ─── Text ─── */
+  --text-white: #f0f0f0;
+  --text-muted: #5a5a6a;
+
+  /* ─── Borders & Surfaces ─── */
+  --border: rgba(255, 255, 255, 0.07);
+  --border-active: rgba(255, 85, 0, 0.5);
+  --glass: rgba(14, 14, 14, 0.82);
   --glass-border: rgba(255, 255, 255, 0.05);
 
-  /* Semantic Colors */
-  --success: #00ff88;
-  --warning: #ffcc00;
-  --danger: #ff4444;
+  /* ─── Typography ─── */
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', 'Inter', system-ui, sans-serif;
 
-  /* Animation Speeds */
+  /* ─── Shape & Motion ─── */
+  --radius: 14px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow: 0 20px 60px -10px rgba(0, 0, 0, 0.8);
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Scrollbar */
-  --scrollbar-bg: #0b0f17;
-  --scrollbar-thumb: rgba(0, 229, 255, 0.2);
-  --scrollbar-thumb-hover: rgba(0, 229, 255, 0.4);
-  --bottom-nav-height: 72px;
+  /* ─── Semantic ─── */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+
+  /* ─── Scrollbar ─── */
+  --scrollbar-bg: #080808;
+  --scrollbar-thumb: rgba(255, 85, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 85, 0, 0.45);
+  --bottom-nav-height: 68px;
 }
 
 /* PROFESSIONAL SCROLLBARS */
@@ -50,76 +66,95 @@
   background: var(--scrollbar-thumb-hover);
 }
 
-/* THEMES */
+/* ═══════════════════════════════════════
+   GAMER THEME SYSTEM — 6 Named Palettes
+   All pages pick up colors via var(--accent)
+   ═══════════════════════════════════════ */
+
+/* 🔥 Blaze (default — already in :root) */
+/* accent: #FF5500 */
+
+/* ⚡ Volt — Lime Hacker */
+body.theme-volt {
+  --accent: #AAFF00;
+  --accent-glow: rgba(170, 255, 0, 0.25);
+  --accent-rgb: 170, 255, 0;
+  --accent2: #77DD00;
+  --border-active: rgba(170, 255, 0, 0.4);
+  --scrollbar-thumb: rgba(170, 255, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(170, 255, 0, 0.4);
+}
+
+/* 💜 Phantom — Purple Esports */
+body.theme-phantom {
+  --accent: #8B5CF6;
+  --accent-glow: rgba(139, 92, 246, 0.28);
+  --accent-rgb: 139, 92, 246;
+  --accent2: #A78BFA;
+  --border-active: rgba(139, 92, 246, 0.5);
+  --scrollbar-thumb: rgba(139, 92, 246, 0.2);
+  --scrollbar-thumb-hover: rgba(139, 92, 246, 0.45);
+}
+
+/* 🩵 Frost — Cyberpunk Cyan */
+body.theme-frost {
+  --accent: #00D4FF;
+  --accent-glow: rgba(0, 212, 255, 0.25);
+  --accent-rgb: 0, 212, 255;
+  --accent2: #00AADD;
+  --border-active: rgba(0, 212, 255, 0.4);
+  --scrollbar-thumb: rgba(0, 212, 255, 0.2);
+  --scrollbar-thumb-hover: rgba(0, 212, 255, 0.45);
+}
+
+/* ❤️ Crimson — Aggressive Esports */
+body.theme-crimson {
+  --accent: #FF1744;
+  --accent-glow: rgba(255, 23, 68, 0.28);
+  --accent-rgb: 255, 23, 68;
+  --accent2: #FF5252;
+  --border-active: rgba(255, 23, 68, 0.45);
+  --scrollbar-thumb: rgba(255, 23, 68, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 23, 68, 0.45);
+}
+
+/* 🏆 Champion — Gold Prestige */
+body.theme-champion {
+  --accent: #FFD700;
+  --accent-glow: rgba(255, 215, 0, 0.25);
+  --accent-rgb: 255, 215, 0;
+  --accent2: #FFA500;
+  --border-active: rgba(255, 215, 0, 0.4);
+  --scrollbar-thumb: rgba(255, 215, 0, 0.2);
+  --scrollbar-thumb-hover: rgba(255, 215, 0, 0.45);
+}
+
+/* Legacy theme aliases (backward compat) */
 body.theme-ember {
-  --accent: #ff4d4d;
-  --accent-glow: rgba(255, 77, 77, 0.4);
+  --accent: #FF1744;
+  --accent-glow: rgba(255, 23, 68, 0.28);
+  --accent-rgb: 255, 23, 68;
 }
 
 body.theme-amethyst {
-  --accent: #bf00ff;
-  --accent-glow: rgba(191, 0, 255, 0.4);
+  --accent: #8B5CF6;
+  --accent-glow: rgba(139, 92, 246, 0.28);
+  --accent-rgb: 139, 92, 246;
 }
 
 body.theme-gold {
-  --accent: #ffcc00;
-  --accent-glow: rgba(255, 204, 0, 0.4);
+  --accent: #FFD700;
+  --accent-glow: rgba(255, 215, 0, 0.25);
+  --accent-rgb: 255, 215, 0;
 }
 
 body.theme-cyber {
-  --accent: #33ff33;
-  --accent-glow: rgba(51, 255, 51, 0.3);
+  --accent: #AAFF00;
+  --accent-glow: rgba(170, 255, 0, 0.25);
+  --accent-rgb: 170, 255, 0;
   --bg-dark: #050505;
   --card-dark: #0a0a0a;
-  --border: rgba(0, 255, 0, 0.2);
 }
-
-/* Cyber Theme Specifics */
-body.theme-cyber .navbar {
-  background: rgba(5, 5, 5, 0.95);
-  border-bottom: 1px solid #0f0;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-}
-
-body.theme-cyber .bottom-nav {
-  border-top: 1px solid #0f0;
-  box-shadow: 0 0 15px rgba(0, 255, 0, 0.2);
-}
-
-body.theme-cyber .form-card,
-body.theme-cyber .stat-card,
-body.theme-cyber .clip-card,
-body.theme-cyber .quest-card {
-  border: 1px solid rgba(0, 255, 0, 0.3);
-  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.05);
-  background: linear-gradient(180deg, rgba(0, 255, 0, 0.05) 0%, rgba(10, 10, 10, 1) 100%);
-}
-
-body.theme-cyber .btn-primary {
-  background: transparent;
-  color: #0f0;
-  border: 1px solid #0f0;
-  box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2), 0 0 10px rgba(0, 255, 0, 0.2);
-  text-shadow: 0 0 5px #0f0;
-}
-
-body.theme-cyber .btn-primary:hover {
-  background: rgba(0, 255, 0, 0.1);
-  box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.4), 0 0 20px rgba(0, 255, 0, 0.4);
-}
-
-body.theme-cyber .text-neon {
-  text-shadow: 0 0 5px #0f0, 0 0 15px #0f0, 0 0 30px #0f0;
-}
-
-body.theme-cyber .sidebar-link.link-active {
-  background: rgba(0, 255, 0, 0.1);
-  border-left-color: #0f0;
-  box-shadow: inset 5px 0 10px rgba(0, 255, 0, 0.1);
-}
-
-/* LIGHT MODE - DEPRECATED for professional dark/neon aesthetic */
-/* body.light-mode { ... } */
 
 
 /* THEME TOGGLE BUTTON */
@@ -330,23 +365,20 @@ body {
   color: var(--text-white);
   font-family: var(--font-main);
   line-height: 1.6;
-  height: 100vh !important;
+  min-height: 100vh;
   width: 100% !important;
-  overflow: hidden !important;
-  /* Lock body, use container for scroll */
+  overflow-x: hidden;
+  overflow-y: auto !important;
   display: flex;
   flex-direction: column;
 }
 
 .main-content-area {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
   padding-top: 70px !important;
   /* Matches Navbar height */
-  padding-bottom: 80px !important;
-  /* Space for Bottom Nav */
+  padding-bottom: 120px !important;
+  /* Increased space for Bottom Nav */
   position: relative;
   z-index: 10;
   display: flex;
@@ -408,18 +440,19 @@ a:active {
   background: #0b0f17;
   padding-top: 80px;
   transition: var(--transition);
-  z-index: 16000;
-  /* Above Navbar */
+  z-index: 30000;
+  /* Higher than navbar but hidden */
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  /* Independent sidebar scroll */
-  scrollbar-width: thin;
+  visibility: hidden;
+  /* Hidden when left is -280 */
 }
 
 .sidebar.active {
   left: 0;
+  visibility: visible;
 }
 
 .sidebar-overlay {
@@ -996,10 +1029,10 @@ select:focus {
 .btn-primary {
   width: 100%;
   padding: 1rem 1.5rem;
-  background: var(--accent);
-  color: #0b0f17;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   font-size: 0.95rem;
   font-weight: 800;
   cursor: pointer;
@@ -1011,34 +1044,62 @@ select:focus {
   align-items: center;
   justify-content: center;
   gap: 10px;
+  box-shadow: 0 8px 28px rgba(var(--accent-rgb, 139, 92, 246), 0.3);
 }
 
 .glow-effect {
-  box-shadow: 0 0 20px var(--accent-glow);
+  box-shadow: 0 0 25px var(--accent-glow);
 }
 
 .btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(var(--accent-rgb, 139, 92, 246), 0.5);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-gradient {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(var(--accent-rgb, 139, 92, 246), 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 30px var(--accent-glow);
+  box-shadow: 0 10px 30px rgba(var(--accent-rgb, 139, 92, 246), 0.5);
 }
 
 .btn-secondary {
   flex: 1;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
   color: white;
   padding: 0.8rem;
-  border: none;
-  border-radius: 8px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
   text-align: center;
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(var(--accent-rgb, 139, 92, 246), 0.3);
 }
 
 .link-btn {
@@ -1056,7 +1117,7 @@ select:focus {
 .loader {
   width: 40px;
   height: 40px;
-  border: 3px solid rgba(0, 229, 255, 0.1);
+  border: 3px solid rgba(var(--accent-rgb, 139, 92, 246), 0.12);
   border-top-color: var(--accent);
   border-radius: 50%;
   margin: 2rem auto;
@@ -1066,6 +1127,24 @@ select:focus {
 @keyframes spin {
   100% {
     transform: rotate(360deg);
+  }
+}
+
+/* SHIMMER LOADING SKELETON */
+.shimmer {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04) 25%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0.04) 75%);
+  background-size: 400% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% center;
+  }
+
+  100% {
+    background-position: -100% center;
   }
 }
 
@@ -1193,7 +1272,8 @@ select:focus {
 .hero {
   min-height: 85vh;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
   padding: 2rem 1rem 4rem;
   position: relative;

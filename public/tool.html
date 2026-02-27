@@ -11,114 +11,178 @@
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Device Search */
-        .device-search-wrap {
-            position: relative;
+        :root {
+            --bg: #080808;
+            --surface: rgba(18, 18, 24, 0.7);
+            --border: rgba(255, 255, 255, 0.08);
+            --radius-lg: 20px;
         }
 
-        #deviceSearch {
+        body {
+            background-color: var(--bg);
+            background-image:
+                radial-gradient(circle at 0% 0%, rgba(var(--accent-rgb), 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
+
+        .main-content-area {
+            padding-bottom: 100px !important;
+        }
+
+        .tool-section {
+            padding: 2rem 0;
             width: 100%;
-            padding: 0.85rem 1rem;
-            background: var(--card-dark);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to bottom, #fff, #888);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Glass Cards */
+        .form-card {
+            background: var(--surface);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.8rem;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .form-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(var(--accent-rgb), 0.3);
+        }
+
+        .form-card:hover::before {
+            opacity: 1;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-white);
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label i {
+            color: var(--accent);
+        }
+
+        /* Inputs */
+        #deviceSearch,
+        .settings-input,
+        input[type="number"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border);
             border-radius: 12px;
-            color: var(--text-white);
-            font-size: 1rem;
+            padding: 1rem;
+            color: #fff;
             font-family: inherit;
-            outline: none;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
 
-        #deviceSearch:focus {
+        #deviceSearch:focus,
+        .settings-input:focus {
             border-color: var(--accent);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(var(--accent-rgb), 0.1);
+            outline: none;
         }
 
+        /* Suggestions */
         #deviceSuggestions {
-            position: absolute;
-            top: calc(100% + 6px);
-            left: 0;
-            right: 0;
-            background: var(--card-dark);
+            background: #111;
             border: 1px solid var(--accent);
             border-radius: 12px;
-            overflow: hidden;
-            z-index: 100;
-            max-height: 260px;
-            overflow-y: auto;
-            display: none;
+            margin-top: 5px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        .suggestion-item {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            font-size: 0.9rem;
-            border-bottom: 1px solid var(--border);
-            transition: background 0.15s;
+        .suggestion-item:hover {
+            background: rgba(var(--accent-rgb), 0.1);
         }
 
-        .suggestion-item:last-child {
-            border-bottom: none;
+        /* Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            accent-color: var(--accent);
         }
 
-        .suggestion-item:hover,
-        .suggestion-item.active {
-            background: rgba(0, 229, 255, 0.12);
-            color: var(--accent);
-        }
-
-        .suggestion-item span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            display: block;
-            margin-top: 2px;
-        }
-
-        #selectedDeviceDisplay {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--accent);
-            font-weight: 700;
-            min-height: 1.2rem;
-        }
-
-        /* Share Image btn */
-        .btn-share {
-            background: linear-gradient(135deg, #bf00ff, #00e5ff);
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent);
             color: #000;
             font-weight: 800;
-            padding: 0.85rem;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            margin-top: 0.75rem;
-            transition: opacity 0.2s, transform 0.15s;
+            letter-spacing: 1px;
+            padding: 1.2rem;
+            border-radius: 14px;
+            box-shadow: 0 8px 24px rgba(var(--accent-rgb), 0.3);
+            transition: all 0.3s ease;
         }
 
-        .btn-share:hover {
-            opacity: 0.85;
+        .btn-primary:hover {
             transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.5);
+            filter: brightness(1.1);
         }
 
-        /* Save Preset */
-        .btn-preset {
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-            font-weight: 700;
-            padding: 0.75rem;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 0.9rem;
-            margin-top: 0.75rem;
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 600;
             transition: all 0.2s;
         }
 
-        .btn-preset:hover {
-            background: rgba(0, 229, 255, 0.2);
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(var(--accent-rgb), 0.5);
         }
     </style>
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
@@ -136,8 +200,8 @@
             <div class="container">
 
                 <div class="page-header">
-                    <h1>Sensitivity Calculator</h1>
-                    <p>Find your perfect pro settings in seconds with zero cost.</p>
+                    <h1>Sensitivity Lab</h1>
+                    <p>Algorithm-driven calibration for zero-shot accuracy.</p>
                 </div>
 
                 <div class="tool-grid"
@@ -193,13 +257,20 @@
                             <input type="number" id="dpiInput" placeholder="400, 800, 1200..." class="settings-input"
                                 value="800">
                             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;">
-                                <button class="btn-secondary" style="width:auto" onclick="setDPIPreset(400)">400</button>
-                                <button class="btn-secondary" style="width:auto" onclick="setDPIPreset(800)">800</button>
-                                <button class="btn-secondary" style="width:auto" onclick="setDPIPreset(1200)">1200</button>
-                                <button class="btn-secondary" style="width:auto" onclick="setDPIPreset(1600)">1600</button>
-                                <button class="btn-secondary" style="width:auto" onclick="setDPIPreset(3200)">3200</button>
+                                <button class="btn-secondary" style="width:auto"
+                                    onclick="setDPIPreset(400)">400</button>
+                                <button class="btn-secondary" style="width:auto"
+                                    onclick="setDPIPreset(800)">800</button>
+                                <button class="btn-secondary" style="width:auto"
+                                    onclick="setDPIPreset(1200)">1200</button>
+                                <button class="btn-secondary" style="width:auto"
+                                    onclick="setDPIPreset(1600)">1600</button>
+                                <button class="btn-secondary" style="width:auto"
+                                    onclick="setDPIPreset(3200)">3200</button>
                             </div>
-                            <div id="dpiInfo" style="font-size: 0.75rem; color: var(--accent); margin-top: 6px; font-weight: 800;"></div>
+                            <div id="dpiInfo"
+                                style="font-size: 0.75rem; color: var(--accent); margin-top: 6px; font-weight: 800;">
+                            </div>
                             <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 5px;">Used to scale
                                 settings relative to your input device resolution.</div>
                         </div>
@@ -299,57 +370,57 @@
         </section>
     </main>
 
-        <!-- BOTTOM NAV -->
-        <nav class="bottom-nav">
-            <!-- Injected by layout.js -->
-        </nav>
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <!-- Injected by layout.js -->
+    </nav>
 
-        <script src="js/phones.js"></script>
-        <script src="js/auth.js"></script>
-        <script src="js/user.js"></script>
-        <script src="js/layout.js"></script>
-        <script src="js/app.js"></script>
-        <script>
-            function updateDpiInfo() {
-                const dpi = parseInt(document.getElementById('dpiInput')?.value || 800);
-                const factor = (800 / (dpi || 800));
-                const el = document.getElementById('dpiInfo');
-                if (el) el.textContent = `Scaling Factor: ${(factor).toFixed(2)}× vs 800 DPI baseline`;
-            }
-            function setDPIPreset(val) {
-                const input = document.getElementById('dpiInput');
-                if (!input) return;
-                input.value = val;
+    <script src="js/phones.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        function updateDpiInfo() {
+            const dpi = parseInt(document.getElementById('dpiInput')?.value || 800);
+            const factor = (800 / (dpi || 800));
+            const el = document.getElementById('dpiInfo');
+            if (el) el.textContent = `Scaling Factor: ${(factor).toFixed(2)}× vs 800 DPI baseline`;
+        }
+        function setDPIPreset(val) {
+            const input = document.getElementById('dpiInput');
+            if (!input) return;
+            input.value = val;
+            updateDpiInfo();
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const dpiEl = document.getElementById('dpiInput');
+            if (dpiEl) {
                 updateDpiInfo();
+                dpiEl.addEventListener('input', updateDpiInfo);
+                dpiEl.addEventListener('change', updateDpiInfo);
             }
-            document.addEventListener('DOMContentLoaded', () => {
-                const dpiEl = document.getElementById('dpiInput');
-                if (dpiEl) {
-                    updateDpiInfo();
-                    dpiEl.addEventListener('input', updateDpiInfo);
-                    dpiEl.addEventListener('change', updateDpiInfo);
-                }
-            });
-            async function manualSubmit() {
-                if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const payload = {
-                    general: document.getElementById('manGen').value,
-                    reddot: document.getElementById('manRed').value,
-                    scope2x: document.getElementById('man2x').value,
-                    scope4x: document.getElementById('man4x').value,
-                    scope8x: document.getElementById('man8x').value,
-                    comment: document.getElementById('manComment').value,
-                    is_private: document.getElementById('manPrivate').checked
-                };
-                const res = await SubmitManualSetup(payload);
-                if (res && res.success) {
-                    document.getElementById('manComment').value = '';
-                }
+        });
+        async function manualSubmit() {
+            if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
             }
-        </script>
+            const payload = {
+                general: document.getElementById('manGen').value,
+                reddot: document.getElementById('manRed').value,
+                scope2x: document.getElementById('man2x').value,
+                scope4x: document.getElementById('man4x').value,
+                scope8x: document.getElementById('man8x').value,
+                comment: document.getElementById('manComment').value,
+                is_private: document.getElementById('manPrivate').checked
+            };
+            const res = await SubmitManualSetup(payload);
+            if (res && res.success) {
+                document.getElementById('manComment').value = '';
+            }
+        }
+    </script>
 </body>
 
 </html>
