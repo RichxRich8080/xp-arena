@@ -135,10 +135,40 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
             await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
             await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
             await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
+            // Achievement unlock (id: perfect_week)
+            try {
+                await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
+                    user_id INT NOT NULL,
+                    achievement_id VARCHAR(64) NOT NULL,
+                    PRIMARY KEY (user_id, achievement_id)
+                )`);
+                const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
+                if (!ach) {
+                    await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
+                }
+            } catch {}
             return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
         }
 
         res.json({ success: true, streak, axp: total, date: today });
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Admin: Reset weekly bonus (testing only)
+router.post('/admin/reset-week-bonus', authenticateToken, async (req, res) => {
+    try {
+        const admin = await db.get('SELECT is_admin FROM users WHERE id = ?', [req.user.id]);
+        if (!admin || !admin.is_admin) return res.status(403).json({ error: 'Admin only' });
+        const { user_id, week_start } = req.body;
+        if (!user_id) return res.status(400).json({ error: 'user_id required' });
+        if (week_start) {
+            await db.run('DELETE FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [user_id, week_start]);
+        } else {
+            await db.run('DELETE FROM weekly_bonus WHERE user_id = ?', [user_id]);
+        }
+        res.json({ success: true });
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
     }

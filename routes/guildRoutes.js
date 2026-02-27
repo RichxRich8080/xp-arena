@@ -140,6 +140,25 @@ router.get('/members', authenticateToken, async (req, res) => {
   }
 });
 
+// Get recruitment filters for a guild
+router.get('/filters', async (req, res) => {
+  try {
+    const gid = parseInt(req.query.guild_id, 10);
+    if (!gid) return res.status(400).json({ error: 'Invalid id' });
+    try {
+      await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
+        guild_id INT PRIMARY KEY,
+        min_level INT DEFAULT 0,
+        min_axp INT DEFAULT 0
+      )`);
+    } catch {}
+    const rules = await db.get('SELECT min_level, min_axp FROM guild_rules WHERE guild_id = ?', [gid]);
+    res.json({ guild_id: gid, min_level: (rules && rules.min_level) || 0, min_axp: (rules && rules.min_axp) || 0 });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 router.post('/remove-member', authenticateToken, async (req, res) => {
   try {
     const { guild_id, user_id } = req.body;

@@ -17,6 +17,7 @@ const ACHIEVEMENTS = [
     { id: 'content_creator', name: 'Content Creator', desc: 'Submit 3 gameplay clips', icon: '🎬', goal: 3 },
     { id: 'supporter', name: 'Community Supporter', desc: 'Visit the support page', icon: '🤝', goal: 1 },
     { id: 'grinder', name: 'Daily Grinder', desc: 'Maintain a 7 day streak', icon: '📅', goal: 7 },
+    { id: 'perfect_week', name: 'Perfect Week', desc: 'Claim daily for 7 consecutive days in one week', icon: '✅', goal: 1 },
     { id: 'rising_star', name: 'Rising Star', desc: 'Reach Level 10', icon: '🌟', goal: 10 },
     { id: 'verified_player', name: 'Verified Hero', desc: 'Reach special rank Master or Champion', icon: '✅', goal: 1 },
     { id: 'legendary', name: 'Arena Legend', desc: 'Reach Champion rank', icon: '🏆', goal: 1 }

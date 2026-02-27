@@ -195,6 +195,7 @@
                         style="margin-top:10px; width: 100%; font-size: 0.7rem; border-color: rgba(255,0,0,0.2);"
                         onclick="leaveGuild()">ABANDON POSITION</button>
                     <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+                    <div id="rulesDisplay" style="margin-top:8px; font-size:0.8rem; color: var(--text-muted);"></div>
                 </div>
                 <div id="manageBlock" class="feature-item tactical-dossier" data-id="CMD_CENT_01" style="display:none">
                     <h3><i class="fas fa-cog"></i> Command Center</h3>
@@ -333,6 +334,28 @@
             msg.textContent = res.ok ? 'Joined!' : (data.error || 'Error');
             if (res.ok) User.loadStats();
         }
+        function updateRulesPreview() {
+            let gid = parseInt(document.getElementById('guildIdInput').value, 10);
+            const code = (document.getElementById('inviteCodeInput')?.value || '').trim();
+            if (!gid && code) {
+                const m = code.match(/G(\d+)/i) || code.match(/(\d+)/);
+                if (m) gid = parseInt(m[1], 10);
+            }
+            const el = document.getElementById('rulesDisplay');
+            if (!gid || !el) { if (el) el.textContent=''; return; }
+            fetch((window.API_URL || '') + '/api/guilds/filters?guild_id=' + gid)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (!data) { el.textContent=''; return; }
+                    const parts = [];
+                    if (data.min_level) parts.push(`Level ${data.min_level}+`);
+                    if (data.min_axp) parts.push(`${Number(data.min_axp).toLocaleString()}+ AXP`);
+                    el.textContent = parts.length ? `Requirements: ${parts.join(' • ')}` : 'Requirements: None';
+                })
+                .catch(() => { el.textContent=''; });
+        }
+        document.getElementById('guildIdInput').addEventListener('input', updateRulesPreview);
+        document.getElementById('inviteCodeInput').addEventListener('input', updateRulesPreview);
         async function leaveGuild() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
             const msg = document.getElementById('guildJoinMsg');
