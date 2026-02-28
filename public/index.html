@@ -17,8 +17,8 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
     rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/onboarding.css">
+  <link rel="stylesheet" href="css/main.css?v=2">
+  <link rel="stylesheet" href="css/onboarding.css?v=2">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
   <link rel="prefetch" href="tool.html">
   <link rel="prefetch" href="result.html">
@@ -552,17 +552,6 @@
       font-size: 1rem;
     }
 
-    /* ─── Scroll Reveal ─── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
 
     /* ─── Responsive ─── */
     @media (max-width: 768px) {
@@ -599,10 +588,84 @@
         justify-content: center;
       }
     }
+
+    /* ─── Dashboard Specifics ─── */
+    .dash-progress-card::after {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 40%);
+      opacity: 0.15;
+      pointer-events: none;
+    }
+
+    .dash-quick-card {
+      padding: 1.2rem 0.5rem !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100px;
+    }
+
+    .dash-quick-card:hover {
+      background: rgba(var(--accent-rgb), 0.05);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+    }
+
+    .activity-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(4px);
+    }
+
+    .activity-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      #user-state .features-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .dash-welcome {
+        flex-direction: column;
+        align-items: flex-start !important;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .dash-quick-card {
+        min-height: 80px;
+        padding: 1rem 0.5rem !important;
+      }
+
+      #user-state h1.hero-title {
+        font-size: 1.8rem !important;
+      }
+    }
   </style>
 </head>
 
-<body class="fade-in">
+<body>
 
   <!-- Ambient BG -->
   <div class="ambient-bg">
@@ -615,166 +678,259 @@
 
   <main class="main-content-area">
 
-    <!-- ── HERO ── -->
-    <section class="hero fade-in-up">
-      <div class="live-pill">
-        <div class="live-dot"></div>
-        <span id="ticker-text">Areni AimBot_Pro just reached Master Rank!</span>
-      </div>
+    <!-- ── DASHBOARD CONTAINER ── -->
+    <!-- This area toggles between GUEST and USER states via JS -->
+    <div id="dashboard-view">
 
-      <h1 class="hero-title">
-        LEVEL UP<br>
-        <span class="line2">YOUR GAMEPLAY</span>
-      </h1>
+      <!-- GUEST VIEW (DEFAULT) -->
+      <section id="guest-state" class="state-container">
+        <!-- HERO -->
+        <section class="hero fade-in-up">
+          <div class="live-pill">
+            <div class="live-dot"></div>
+            <span id="ticker-text">Areni AimBot_Pro just reached Master Rank!</span>
+          </div>
 
-      <p class="hero-sub">
-        The <em>arena</em> for serious Free Fire players. Master your sensitivity,
-        earn AXP, crush the leaderboard — and never miss your shot again.
-      </p>
+          <h1 class="hero-title">
+            LEVEL UP<br>
+            <span class="line2">YOUR GAMEPLAY</span>
+          </h1>
 
-      <div class="hero-actions">
-        <a href="tool.html" class="btn-hero-primary">
-          <i class="fas fa-crosshairs"></i>
-          Sensitivity Tool
-        </a>
-        <a href="signup.html" class="btn-hero-secondary">
-          <i class="fas fa-user-plus"></i>
-          Join the Arena
-        </a>
-      </div>
+          <p class="hero-sub">
+            The <em>arena</em> for serious Free Fire players. Master your sensitivity,
+            earn AXP, crush the leaderboard — and never miss your shot again.
+          </p>
 
-      <!-- Stats Row -->
-      <div class="stats-row" id="homeStats">
-        <div class="stat-cell">
-          <div class="stat-number"><span id="stat-devices">0</span></div>
-          <div class="stat-label">Devices Supported</div>
+          <div class="hero-actions">
+            <a href="signup.html" class="btn-hero-primary">
+              <i class="fas fa-bolt"></i>
+              Join the Arena
+            </a>
+            <a href="login.html" class="btn-hero-secondary">
+              <i class="fas fa-sign-in-alt"></i>
+              Login
+            </a>
+          </div>
+
+          <div class="stats-row" id="homeStats">
+            <div class="stat-cell">
+              <div class="stat-number"><span id="stat-devices">0</span></div>
+              <div class="stat-label">Devices Supported</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-number"><span id="stat-players">0</span></div>
+              <div class="stat-label">Registered Arenis</div>
+            </div>
+            <div class="stat-cell">
+              <div class="stat-number"><span>24/7</span></div>
+              <div class="stat-label">Active Community</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- FEATURE HIGHLIGHTS -->
+        <section class="features-section reveal">
+          <div class="section-label">Platform</div>
+          <h2 class="section-title">Areni Toolkit</h2>
+          <div class="features-grid">
+            <a href="tool.html" class="feature-card">
+              <div class="feature-icon-wrap fi-violet"><i class="fas fa-crosshairs"></i></div>
+              <h3>Sensitivity</h3>
+              <p>Device-specific tuning with accuracy reports.</p>
+            </a>
+            <a href="leaderboard.html" class="feature-card">
+              <div class="feature-icon-wrap fi-cyan"><i class="fas fa-trophy"></i></div>
+              <h3>Rankings</h3>
+              <p>Real-time global leaderboard and guild wars.</p>
+            </a>
+            <a href="premium.html" class="feature-card">
+              <div class="feature-icon-wrap fi-red"><i class="fas fa-gem"></i></div>
+              <h3>Elite</h3>
+              <p>Unlock Pro Lab, 4× AXP, and VIP badge.</p>
+            </a>
+          </div>
+        </section>
+      </section>
+
+      <!-- USER VIEW (INITIALIZED BY JS) -->
+      <section id="user-state" class="state-container" style="display: none; padding-top: 2rem;">
+
+        <!-- WELCOME HERO -->
+        <div class="dash-welcome reveal" style="margin-bottom: 2.5rem; padding: 0 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
+            <div>
+              <div class="section-label" style="justify-content: flex-start; margin-bottom: 0.5rem;">DASHBOARD</div>
+              <h1 class="hero-title" style="text-align: left; font-size: 2.5rem; margin: 0;">Glad to see you,<br><span
+                  class="line2" id="dash-username">Areni</span></h1>
+            </div>
+            <div class="glass-card" style="padding: 1rem 1.5rem; border-radius: 18px; text-align: right;">
+              <div class="stat-label" style="font-size: 0.6rem;">CURRENT RANK</div>
+              <div id="dash-rank"
+                style="font-family: 'Outfit', sans-serif; font-weight: 900; color: var(--accent); font-size: 1.2rem;">
+                Recruit</div>
+            </div>
+          </div>
+
+          <!-- AXP PROGRESS CARD -->
+          <div class="glass-card dash-progress-card"
+            style="padding: 1.5rem; border-radius: 24px; position: relative; overflow: hidden;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div id="dash-level"
+                  style="width: 44px; height: 44px; background: var(--accent); color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Outfit', sans-serif;">
+                  1</div>
+                <div>
+                  <div style="font-weight: 800; font-size: 0.9rem;">Level Progression</div>
+                  <div id="dash-axp-label" style="font-size: 0.75rem; color: var(--text-muted);">0 / 1000 AXP to Level 2
+                  </div>
+                </div>
+              </div>
+              <div class="player-axp" id="dash-total-axp">0 AXP Total</div>
+            </div>
+            <div
+              style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
+              <div id="dash-progress-bar"
+                style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; transition: width 1s cubic-bezier(0.165, 0.84, 0.44, 1);">
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-number"><span id="stat-players">0</span></div>
-          <div class="stat-label">Registered Arenis</div>
+
+        <!-- QUICK ACCESS GRID -->
+        <div class="players-section reveal" style="padding-top: 0;">
+          <div class="section-label" style="justify-content: flex-start; padding: 0 1.5rem;">ARENI COMMAND CENTER</div>
+          <div class="features-grid" style="grid-template-columns: repeat(4, 1fr);">
+            <a href="tool.html" class="feature-card dash-quick-card">
+              <div class="feature-icon-wrap fi-violet" style="margin: 0 auto 0.8rem;"><i class="fas fa-crosshairs"></i>
+              </div>
+              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Engine</h3>
+            </a>
+            <a href="guilds.html" class="feature-card dash-quick-card">
+              <div class="feature-icon-wrap fi-orange" style="margin: 0 auto 0.8rem;"><i class="fas fa-shield-alt"></i>
+              </div>
+              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Clans</h3>
+            </a>
+            <a href="quests.html" class="feature-card dash-quick-card">
+              <div class="feature-icon-wrap fi-green" style="margin: 0 auto 0.8rem;"><i class="fas fa-tasks"></i></div>
+              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Missions</h3>
+            </a>
+            <a href="leaderboard.html" class="feature-card dash-quick-card">
+              <div class="feature-icon-wrap fi-cyan" style="margin: 0 auto 0.8rem;"><i class="fas fa-trophy"></i></div>
+              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Ranks</h3>
+            </a>
+          </div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-number"><span>24/7</span></div>
-          <div class="stat-label">Active Community</div>
+
+        <!-- SECONDARY GRID: ACTIVITY & BOUNTY -->
+        <div class="features-section reveal" style="padding-top: 0;">
+          <div class="features-grid" style="grid-template-columns: 2fr 1fr;">
+            <!-- ACTIVITY FEED -->
+            <div class="glass-card" style="padding: 1.5rem; border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
+                <h3 style="font-size: 0.9rem; font-weight: 800; color: #fff; margin: 0;"><i
+                    class="fas fa-satellite-dish" style="color: var(--accent); margin-right: 8px;"></i> GLOBAL INTEL
+                </h3>
+                <span style="font-size: 0.65rem; color: var(--accent); font-weight: 800; letter-spacing: 1px;">LIVE
+                  UPDATES</span>
+              </div>
+              <div id="dash-activity-list" style="display: grid; gap: 12px;">
+                <!-- Filled by JS -->
+                <div
+                  style="padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: var(--text-muted);">
+                  Decrypting community logs...
+                </div>
+              </div>
+            </div>
+
+            <!-- DAILY BOUNTY STREAK -->
+            <div class="glass-card fi-orange"
+              style="padding: 1.5rem; border-radius: 20px; background: rgba(249, 115, 22, 0.05); border-color: rgba(249, 115, 22, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔥</div>
+              <div id="dash-streak"
+                style="font-family: 'Outfit', sans-serif; font-weight: 950; font-size: 2rem; line-height: 1;">0</div>
+              <div
+                style="font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; color: #f97316; margin-top: 0.5rem;">
+                DAY STREAK</div>
+              <a href="daily-login.html" class="btn-hero-primary"
+                style="margin-top: 1.2rem; padding: 0.5rem 1rem; font-size: 0.75rem; width: 100%;">CLAIM</a>
+            </div>
+          </div>
         </div>
-        <div class="stat-cell">
-          <div class="stat-number"><span id="stat-axp">0</span></div>
-          <div class="stat-label">Total AXP Earned</div>
-        </div>
-      </div>
-    </section>
 
-    <!-- ── FEATURES ── -->
-    <section class="features-section reveal">
-      <div class="section-label">Platform</div>
-      <h2 class="section-title">Everything you need to dominate</h2>
-      <p class="section-sub">Tools, rankings, guilds, and rewards — built for the serious Areni.</p>
-
-      <div class="features-grid">
-        <a href="tool.html" class="feature-card">
-          <div class="feature-icon-wrap fi-violet"><i class="fas fa-crosshairs"></i></div>
-          <h3>Sensitivity Calculator</h3>
-          <p>Device-specific sensitivity tuning with cross-device conversion and accuracy reports.</p>
-          <div class="feature-tag"><i class="fas fa-star"></i> Core Feature</div>
-        </a>
-
-        <a href="leaderboard.html" class="feature-card">
-          <div class="feature-icon-wrap fi-cyan"><i class="fas fa-trophy"></i></div>
-          <h3>Global Leaderboard</h3>
-          <p>Real-time rankings. Compete for the top spot and earn your place in the Hall of Champions.</p>
-          <div class="feature-tag hot"><i class="fas fa-fire"></i> Hot</div>
-        </a>
-
-        <a href="guilds.html" class="feature-card">
-          <div class="feature-icon-wrap fi-orange"><i class="fas fa-users"></i></div>
-          <h3>Guilds & Clans</h3>
-          <p>Create or join a guild, participate in Guild Wars, and earn collective rewards.</p>
-          <div class="feature-tag new"><i class="fas fa-bolt"></i> New</div>
-        </a>
-
-        <a href="quests.html" class="feature-card">
-          <div class="feature-icon-wrap fi-green"><i class="fas fa-tasks"></i></div>
-          <h3>Quests & Rewards</h3>
-          <p>Daily, weekly, and seasonal quests that earn you AXP, badges, and exclusive cosmetics.</p>
-        </a>
-
-        <a href="tournaments.html" class="feature-card">
-          <div class="feature-icon-wrap fi-yellow"><i class="fas fa-gamepad"></i></div>
-          <h3>Tournaments</h3>
-          <p>Join or host competitive AXP-staked tournaments. Prize pools, brackets, and glory.</p>
-          <div class="feature-tag hot"><i class="fas fa-fire"></i> Hot</div>
-        </a>
-
-        <a href="premium.html" class="feature-card">
-          <div class="feature-icon-wrap fi-red"><i class="fas fa-gem"></i></div>
-          <h3>Go Elite & Legend</h3>
-          <p>Unlock Pro Laboratory, 4× AXP, ad-free platform, VIP badge, and creator tools.</p>
-          <div class="feature-tag"><i class="fas fa-crown"></i> Premium</div>
-        </a>
-      </div>
-    </section>
-
-    <!-- ── TOP PLAYERS ── -->
-    <section class="players-section reveal">
-      <div class="section-label">Leaderboard</div>
-      <h2 class="section-title">Top Performers</h2>
-      <p class="section-sub">The best Arenis in the arena right now.</p>
-
-      <div class="players-grid">
-        <div class="player-card rank-1">
-          <div class="player-rank-badge rank-1-badge">👑</div>
-          <div class="player-avatar">🎯</div>
-          <div class="player-name">PRO_PLAYER_77 <span style="font-size:0.75rem;color:#FBBF24;">VIP</span></div>
-          <div class="player-rank-label">Legendary Rank</div>
-          <div class="player-axp">22,500 AXP</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 45</div>
-        </div>
-        <div class="player-card">
-          <div class="player-rank-badge rank-2-badge">🥈</div>
-          <div class="player-avatar">⚡</div>
-          <div class="player-name">Shadow_Slayer</div>
-          <div class="player-rank-label">Elite Areni</div>
-          <div class="player-axp">21,000 AXP</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 42</div>
-        </div>
-        <div class="player-card">
-          <div class="player-rank-badge rank-3-badge">🥉</div>
-          <div class="player-avatar">🔥</div>
-          <div class="player-name">Ghost_Aim</div>
-          <div class="player-rank-label">Diamond Ace</div>
-          <div class="player-axp">19,800 AXP</div>
-          <div style="font-size:0.75rem;color:var(--text-muted);margin-top:0.4rem;">Level 39</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── CTA BANNER ── -->
-    <div class="cta-banner reveal">
-      <div class="cta-inner">
-        <h2>Ready to compete?</h2>
-        <p>Join thousands of Arenis earning XP and climbing the ranks every day.</p>
-        <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-          <a href="signup.html" class="btn-hero-primary">
-            <i class="fas fa-bolt"></i> Join Free
-          </a>
-          <a href="premium.html" class="btn-hero-secondary">
-            <i class="fas fa-gem"></i> Go Elite
-          </a>
-        </div>
-      </div>
+      </section>
     </div>
 
   </main>
 
   <nav class="bottom-nav"><!-- Injected by layout.js --></nav>
 
-  <script src="js/auth.js"></script>
-  <script src="js/user.js"></script>
-  <script src="js/onboarding.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/auth.js?v=2"></script>
+  <script src="js/user.js?v=2"></script>
+  <script src="js/onboarding.js?v=2"></script>
+  <script src="js/layout.js?v=2"></script>
+  <script src="js/app.js?v=2"></script>
   <script>
-    // ─── Animated Counters ───
+    // ─── Dashboard Logic ───
+    function initDashboard() {
+      const guestState = document.getElementById('guest-state');
+      const userState = document.getElementById('user-state');
+
+      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+        const user = Auth.getCurrentUser();
+        const stats = User.getStats();
+
+        // Toggle Views
+        if (guestState) guestState.style.display = 'none';
+        if (userState) userState.style.display = 'block';
+
+        // Populate Data
+        document.getElementById('dash-username').textContent = user.username || 'Areni';
+        document.getElementById('dash-rank').textContent = stats.rank || 'Recruit';
+        document.getElementById('dash-level').textContent = stats.level || 1;
+        document.getElementById('dash-streak').textContent = stats.streak || 0;
+        document.getElementById('dash-total-axp').textContent = `${(stats.axp || 0).toLocaleString()} AXP Total`;
+
+        // Progress Bar
+        const axp = stats.axp || 0;
+        const level = stats.level || 1;
+        const nextLevelAxp = level * 1000; // Simplified formula
+        const progress = (axp % 1000) / 10;
+        document.getElementById('dash-axp-label').textContent = `${(axp % 1000).toLocaleString()} / ${nextLevelAxp.toLocaleString()} AXP to Level ${level + 1}`;
+        setTimeout(() => {
+          document.getElementById('dash-progress-bar').style.width = `${progress}%`;
+        }, 500);
+
+        // Activity List
+        populateActivity();
+      } else {
+        // Guest Actions
+        if (guestState) guestState.style.display = 'block';
+        if (userState) userState.style.display = 'none';
+        initGuestAnimations();
+      }
+    }
+
+    function populateActivity() {
+      const list = document.getElementById('dash-activity-list');
+      if (!list) return;
+
+      const activities = [
+        { icon: 'fa-trophy', color: 'var(--accent2)', text: 'Global Leaderboard updated. Check your standing.' },
+        { icon: 'fa-envelope', color: 'var(--accent)', text: 'New tournament invite from Guild "Phantom".' },
+        { icon: 'fa-bolt', color: '#84cc16', text: 'Daily Bounty reset. 250 AXP available now.' }
+      ];
+
+      list.innerHTML = activities.map(a => `
+        <div class="activity-item">
+          <div class="activity-icon" style="background: ${a.color}20; color: ${a.color};">
+            <i class="fas ${a.icon}"></i>
+          </div>
+          <div style="font-size: 0.8rem; color: #fff;">${a.text}</div>
+        </div>
+      `).join('');
+    }
+
+    // ─── Animated Counters (Guest only) ───
     function animateCounter(el, target, duration, suffix = '') {
       if (!el) return;
       const start = performance.now();
@@ -788,13 +944,15 @@
       requestAnimationFrame(step);
     }
 
-    window.addEventListener('load', () => {
+    function initGuestAnimations() {
       setTimeout(() => {
         animateCounter(document.getElementById('stat-devices'), 1000, 1800, '+');
         animateCounter(document.getElementById('stat-players'), 1247, 2200, '+');
         animateCounter(document.getElementById('stat-axp'), 2375240, 2600, '+');
       }, 400);
-    });
+    }
+
+    window.addEventListener('load', initDashboard);
 
     // ─── Ticker ───
     const tickers = [
@@ -809,14 +967,7 @@
     if (tickEl) {
       setInterval(() => {
         tickIdx = (tickIdx + 1) % tickers.length;
-        tickEl.style.opacity = '0';
-        tickEl.style.transform = 'translateY(5px)';
-        setTimeout(() => {
-          tickEl.textContent = tickers[tickIdx];
-          tickEl.style.transition = 'all 0.4s ease';
-          tickEl.style.opacity = '1';
-          tickEl.style.transform = 'translateY(0)';
-        }, 300);
+        if (tickEl) tickEl.textContent = tickers[tickIdx];
       }, 4000);
     }
 

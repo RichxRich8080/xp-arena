@@ -4,704 +4,704 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Profile • XP ARENA</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="icon" href="/assets/images/logo.png">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css?v=2">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
 
-<body class="fade-in">
-    <nav class="navbar"></nav>
+<div class="ambient-bg">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="grid-bg"></div>
+</div>
 
-    <main class="main-content-area">
-        <div class="container">
-            <!-- HERO SECTION -->
-            <div class="profile-hero">
-                <div class="avatar-container" onclick="openAvatarModal()" style="cursor: pointer; position: relative;">
-                    <div class="avatar-main" id="avatarImage"
-                        style="transition: transform 0.3s; box-shadow: 0 0 20px rgba(0,229,255,0.2);">👤</div>
-                    <div
-                        style="position: absolute; bottom: -5px; right: -5px; background: var(--accent); color: #000; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px var(--accent-glow);">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                </div>
+<nav class="navbar"></nav>
 
-                <h1 class="text-neon"
-                    style="font-size: 2.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 0.5rem;">
-                    <span id="profile-username">Username</span>
-                    <span id="v-badge" style="display: none; color: var(--accent); font-size: 1.8rem;"
-                        title="Verified Champion">🛡️</span>
-                </h1>
+<main class="main-content-area">
+    <div class="container page-wrapper">
 
-                <div id="social-links"
-                    style="display: flex; justify-content: center; gap: 15px; margin-bottom: 1rem; font-size: 1.2rem; color: var(--text-muted);">
-                    <i class="fab fa-tiktok" id="link-tiktok" style="display: none;"></i>
-                    <i class="fab fa-instagram" id="link-instagram" style="display: none;"></i>
-                    <i class="fab fa-youtube" id="link-youtube" style="display: none;"></i>
-                </div>
-
-                <div class="diagnostic-panel glass-card" style="margin: 1.5rem auto; max-width: 720px;">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <div class="scan-line"></div>
-                    <div class="diagnostic-header">System Diagnostics</div>
-                    <div class="diagnostic-grid">
-                        <div class="diagnostic-ring" id="diag-level">
-                            <div class="diagnostic-ring-content">
-                                <div class="diagnostic-ring-value" id="diag-level-value">1</div>
-                                <div class="diagnostic-ring-label">Level</div>
-                            </div>
-                        </div>
-                        <div class="diagnostic-ring" id="diag-axp">
-                            <div class="diagnostic-ring-content">
-                                <div class="diagnostic-ring-value" id="diag-axp-value">0</div>
-                                <div class="diagnostic-ring-label">AXP</div>
-                            </div>
-                        </div>
-                        <div class="diagnostic-ring" id="diag-streak">
-                            <div class="diagnostic-ring-content">
-                                <div class="diagnostic-ring-value" id="diag-streak-value">0</div>
-                                <div class="diagnostic-ring-label">Streak</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
-                        <div id="display-level" class="hud-chip">Level 1</div>
-                        <div id="display-streak" class="hud-chip"><i class="fas fa-fire"></i> <span
-                                id="streak-count">0</span> Day Streak</div>
-                        <div id="display-guild" class="hud-chip"><i class="fas fa-shield-alt"></i> Clan: <span
-                                id="guildName">None</span></div>
-                    </div>
-                </div>
-                <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
-                    <button class="btn-primary" style="width:auto;" onclick="claimDaily()">Claim Daily AXP</button>
-                    <button class="btn-secondary" style="width:auto;" onclick="activateDoubler()">Activate XP Doubler
-                        (24h)</button>
-                </div>
-
-                <div style="max-width: 400px; margin: 0 auto;">
-                    <div class="progress-bar-container">
-                        <div id="axp-progress-fill" class="progress-bar-fill"></div>
-                    </div>
-                    <div id="display-axp-label"
-                        style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">0
-                        / 500 AXP</div>
-                </div>
-            </div>
-
-            <!-- SEASON PASS (BATTLE PASS) -->
-            <div id="season-pass-section" class="form-card"
-                style="margin-top: 1.5rem; border: 1px solid var(--border-glass); background: linear-gradient(135deg, rgba(0,229,255,0.05), rgba(17,24,39,0.8));">
+        <!-- PROFILE HERO -->
+        <div class="profile-hero fade-in-up" style="text-align: center; margin-bottom: 3rem;">
+            <div class="avatar-container" onclick="openAvatarModal()"
+                style="cursor: pointer; position: relative; width: 120px; height: 120px; margin: 0 auto 1.5rem;">
+                <div class="avatar-main" id="avatarImage"
+                    style="width: 100%; height: 100%; font-size: 3.5rem; display: flex; align-items: center; justify-content: center; background: var(--card-dark); border: 2px solid var(--glass-stroke); border-radius: 50%; transition: var(--transition); box-shadow: var(--shadow-sm);">
+                    👤</div>
                 <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                    <div>
-                        <h3 id="season-name" style="margin: 0; color: #fff; font-family: 'Outfit';">Season 1: Neon Dawn
-                        </h3>
-                        <p id="season-timer"
-                            style="font-size: 0.75rem; color: var(--accent); margin-top: 2px; font-weight: 800;">24 DAYS
-                            LEFT</p>
-                    </div>
-                    <div id="season-tier"
-                        style="background: var(--accent); color: #000; padding: 4px 12px; border-radius: 8px; font-weight: 900; font-size: 1rem;">
-                        TIER 12</div>
-                </div>
-
-                <div
-                    style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; margin-top: 1rem;">
-                    <div id="season-progress-fill"
-                        style="height: 100%; background: var(--accent); width: 45%; box-shadow: 0 0 15px var(--accent-glow);">
-                    </div>
-                </div>
-
-                <div
-                    style="display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">
-                    <span>CURRENT REWARD: <span style="color: #fff;">Glow Badge</span></span>
-                    <span>NEXT: <span id="next-reward" style="color: var(--accent);">Elite Icon</span></span>
-                </div>
-
-                <div id="bp-premium-cta" class="hidden"
-                    style="margin-top: 1.5rem; padding: 1rem; background: rgba(0,0,0,0.3); border-radius: 12px; border: 1px dashed var(--accent); font-size: 0.8rem; text-align: center;">
-                    <i class="fas fa-crown" style="color: #ffcc00; margin-right: 5px;"></i> Upgrade to <span
-                        style="color: var(--accent); font-weight: 800;">ELITE</span> to unlock special seasonal rewards!
-                    <a href="premium.html"
-                        style="display: block; margin-top: 8px; color: #fff; font-weight: 900; text-decoration: underline;">UPGRADE
-                        NOW</a>
+                    style="position: absolute; bottom: 0; right: 0; background: var(--accent); color: #000; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--accent-glow); border: 2px solid var(--primary);">
+                    <i class="fas fa-camera" style="font-size: 0.9rem;"></i>
                 </div>
             </div>
 
-            <!-- TABS -->
-            <div class="tab-container">
-                <button class="tab-btn active" onclick="switchTab('overview')"><i class="fas fa-th-large"></i>
-                    Overview</button>
-                <button class="tab-btn" onclick="switchTab('clips')">Clips</button>
-                <button class="tab-btn" onclick="switchTab('vault')">Vault</button>
-                <button class="tab-btn" onclick="switchTab('history')"><i class="fas fa-chart-line"></i>
-                    History</button>
-                <button class="tab-btn" onclick="switchTab('achievements')"><i class="fas fa-trophy"></i>
-                    Badges</button>
-                <button class="tab-btn" onclick="switchTab('squad')"><i class="fas fa-users"></i> Squad</button>
-                <button class="tab-btn" onclick="switchTab('card')"><i class="fas fa-id-card"></i> Card</button>
-                <button class="tab-btn" onclick="switchTab('settings')"><i class="fas fa-cog"></i> Settings</button>
+            <h1 class="hero-title" style="margin-bottom: 0.5rem; font-size: 2.8rem;">
+                <span id="profile-username">Username</span>
+                <span id="v-badge"
+                    style="display: none; color: var(--accent); font-size: 1.8rem; vertical-align: middle;"
+                    title="Verified Champion">🛡️</span>
+            </h1>
+
+            <div id="social-links"
+                style="display: flex; justify-content: center; gap: 20px; margin-bottom: 2rem; font-size: 1.25rem;">
+                <i class="fab fa-tiktok" id="link-tiktok"
+                    style="display: none; color: var(--text-muted); cursor: pointer; transition: var(--transition);"></i>
+                <i class="fab fa-instagram" id="link-instagram"
+                    style="display: none; color: var(--text-muted); cursor: pointer; transition: var(--transition);"></i>
+                <i class="fab fa-youtube" id="link-youtube"
+                    style="display: none; color: var(--text-muted); cursor: pointer; transition: var(--transition);"></i>
             </div>
 
-            <!-- TAB: OVERVIEW -->
-            <div id="tab-overview" class="tab-content active">
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <span class="stat-label"
-                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total
-                            AXP</span>
-                        <span class="stat-val"
-                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                            id="axpDisplay">0</span>
-                    </div>
-                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <span class="stat-label"
-                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Global
-                            Rank</span>
-                        <span class="stat-val"
-                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                            id="profile-rank">Starter</span>
-                    </div>
-                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <span class="stat-label"
-                            style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Submissions</span>
-                        <span class="stat-val"
-                            style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
-                            id="submissionsDisplay">0</span>
-                    </div>
+            <!-- QUICK STATS MODULAR CARDS -->
+            <div class="diagnostic-grid"
+                style="max-width: 800px; margin: 0 auto 2.5rem; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;">
+                <div class="glass-card dash-quick-card">
+                    <div class="diagnostic-ring-label" style="font-size: 0.65rem; margin-bottom: 0.5rem;">LEVEL</div>
+                    <div class="diagnostic-ring-value" id="diag-level-value"
+                        style="font-size: 2rem; background: linear-gradient(135deg, #fff, var(--text-muted)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                        1</div>
                 </div>
-
-                <div class="form-card" style="margin-top: 1.5rem;">
-                    <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
-                    <p id="noActivity" style="color: var(--text-muted); font-size: 0.9rem;">No recent activity yet.
-                        Start
-                        earning AXP!</p>
-                    <div id="recentActivityList"></div>
+                <div class="glass-card dash-quick-card">
+                    <div class="diagnostic-ring-label" style="font-size: 0.65rem; margin-bottom: 0.5rem;">AXP</div>
+                    <div class="diagnostic-ring-value" id="diag-axp-value"
+                        style="font-size: 2rem; color: var(--accent); text-shadow: 0 0 15px var(--accent-glow);">0</div>
+                </div>
+                <div class="glass-card dash-quick-card">
+                    <div class="diagnostic-ring-label" style="font-size: 0.65rem; margin-bottom: 0.5rem;">STREAK</div>
+                    <div class="diagnostic-ring-value" id="diag-streak-value"
+                        style="font-size: 2rem; color: var(--success);">0</div>
                 </div>
             </div>
 
-            <!-- TAB: CLIPS -->
-            <div id="tab-clips" class="tab-content">
-                <div id="clipsGrid">
-                    <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem;">
-                        <div style="text-align: center;">
-                            <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
-                            <p>No clips submitted yet.</p>
-                            <a href="submit.html" class="btn-primary"
-                                style="margin-top: 1rem; width: auto; padding: 0.6rem 1.2rem;">Submit Your First
-                                Clip</a>
-                        </div>
-                    </div>
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:2.5rem;">
+                <button class="btn-hero-primary" onclick="claimDaily()"
+                    style="padding: 0.7rem 1.5rem; font-size: 0.85rem;">Claim Daily AXP</button>
+                <button class="btn-hero-secondary" onclick="activateDoubler()"
+                    style="padding: 0.7rem 1.5rem; font-size: 0.85rem;">Activate XP Doubler</button>
+            </div>
+
+            <div style="max-width: 500px; margin: 0 auto;">
+                <div class="progress-bar-premium">
+                    <div id="axp-progress-fill" class="progress-fill-animate" style="width: 0%;"></div>
+                </div>
+                <div id="display-axp-label"
+                    style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; font-weight: 600; letter-spacing: 0.5px;">
+                    0 / 500 AXP TO NEXT LEVEL</div>
+            </div>
+        </div>
+
+        <!-- SEASON PASS -->
+        <div id="season-pass-section" class="glass-card"
+            style="margin-top: 1.5rem; padding: 2.5rem; background: linear-gradient(135deg, rgba(255, 85, 0, 0.08), rgba(18, 20, 28, 0.95)); border: 1px solid rgba(255, 85, 0, 0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem;">
+                <div>
+                    <h3 id="season-name"
+                        style="margin: 0; color: #fff; font-family: 'Outfit'; font-size: 1.5rem; letter-spacing: -0.5px;">
+                        Season 1: Neon Dawn</h3>
+                    <div id="season-timer"
+                        style="font-size: 0.75rem; color: var(--accent); margin-top: 4px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">
+                        24 DAYS LEFT</div>
+                </div>
+                <div id="season-tier"
+                    style="background: var(--accent); color: #000; padding: 6px 14px; border-radius: 10px; font-weight: 900; font-size: 0.9rem; box-shadow: 0 4px 15px var(--accent-glow);">
+                    TIER 12</div>
+            </div>
+
+            <div class="progress-bar-premium" style="height: 12px; margin-bottom: 1.2rem;">
+                <div id="season-progress-fill"
+                    style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 45%; box-shadow: 0 0 20px var(--accent-glow); transition: width 1s cubic-bezier(0.1, 0.5, 0.1, 1);">
                 </div>
             </div>
 
-            <!-- TAB: VAULT + PRESETS -->
-            <div id="tab-vault" class="tab-content">
-                <!-- Presets section -->
-                <div id="presetsSection">
-                    <h3 style="margin-bottom: 1rem; color: #bf00ff;"><i class="fas fa-star"></i> My Presets</h3>
-                    <div id="presetsList" style="display: grid; gap: 0.75rem; margin-bottom: 2rem;"></div>
+            <div
+                style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-muted); font-weight: 700; letter-spacing: 0.3px;">
+                <span>CURRENT: <span style="color: #fff;">Glow Badge</span></span>
+                <span>NEXT UP: <span id="next-reward" style="color: var(--accent);">Elite Icon</span></span>
+            </div>
+
+            <div id="bp-premium-cta" class="hidden"
+                style="margin-top: 2rem; padding: 1.2rem; background: rgba(0,0,0,0.25); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; text-align: center; backdrop-filter: blur(10px);">
+                <i class="fas fa-crown" style="color: #ffcc00; margin-right: 8px;"></i> Upgrade to <span
+                    style="color: var(--accent); font-weight: 900;">ELITE</span> to unlock special seasonal rewards!
+                <a href="premium.html?v=2"
+                    style="display: block; margin-top: 10px; color: #fff; font-weight: 900; text-decoration: none; border-bottom: 1px solid var(--accent);">UPGRADE
+                    NOW</a>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tab-container glass-card"
+            style="margin-top: 2.5rem; padding: 6px; display: flex; gap: 4px; overflow-x: auto; border-radius: 20px; border: 1px solid var(--glass-stroke); background: rgba(0,0,0,0.2);">
+            <button class="tab-btn active" onclick="switchTab('overview')"><i class="fas fa-th-large"
+                    style="margin-right: 8px;"></i>Overview</button>
+            <button class="tab-btn" onclick="switchTab('clips')"><i class="fas fa-video"
+                    style="margin-right: 8px;"></i>Clips</button>
+            <button class="tab-btn" onclick="switchTab('vault')"><i class="fas fa-vault"
+                    style="margin-right: 8px;"></i>Vault</button>
+            <button class="tab-btn" onclick="switchTab('history')"><i class="fas fa-chart-line"
+                    style="margin-right: 8px;"></i>History</button>
+            <button class="tab-btn" onclick="switchTab('achievements')"><i class="fas fa-trophy"
+                    style="margin-right: 8px;"></i>Badges</button>
+            <button class="tab-btn" onclick="switchTab('squad')"><i class="fas fa-users"
+                    style="margin-right: 8px;"></i>Squad</button>
+            <button class="tab-btn" onclick="switchTab('settings')"><i class="fas fa-cog"
+                    style="margin-right: 8px;"></i>Settings</button>
+        </div>
+
+        <!-- TAB: OVERVIEW -->
+        <div id="tab-overview" class="tab-content active">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1.5rem;">
+                <div class="glass-card"
+                    style="padding: 2rem; text-align: center; border: 1px solid var(--glass-stroke); position: relative; overflow: hidden;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 0.5rem;">Total
+                        AXP</span>
+                    <span class="stat-val"
+                        style="display: block; font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow);"
+                        id="axpDisplay">0</span>
                 </div>
-                <!-- Vault -->
-                <h3 style="margin-bottom: 1rem;"><i class="fas fa-archive"></i> Sensitivity Vault</h3>
-                <div id="vaultList"
-                    style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+                <div class="glass-card"
+                    style="padding: 2rem; text-align: center; border: 1px solid var(--glass-stroke); position: relative; overflow: hidden;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 0.5rem;">Global
+                        Rank</span>
+                    <span class="stat-val" style="display: block; font-size: 2rem; font-weight: 900; color: #fff;"
+                        id="profile-rank">Starter</span>
+                </div>
+                <div class="glass-card"
+                    style="padding: 2rem; text-align: center; border: 1px solid var(--glass-stroke); position: relative; overflow: hidden;">
+                    <span class="stat-label"
+                        style="display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 0.5rem;">Submissions</span>
+                    <span class="stat-val"
+                        style="display: block; font-size: 2rem; font-weight: 900; color: var(--accent);"
+                        id="submissionsDisplay">0</span>
                 </div>
             </div>
 
-            <!-- TAB: HISTORY GRAPH -->
-            <div id="tab-history" class="tab-content">
-                <div class="form-card" style="margin-bottom: 1.5rem;">
-                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-chart-line"></i> AXP Growth (Performance
-                        Analytics)</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Track your AXP
-                        progress over the last 30 days.</p>
-                    <canvas id="axpGrowthCanvas" style="width: 100%; height: 220px;"></canvas>
-                    <div id="axpHistoryEmpty"
-                        style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
-                        No AXP history yet. Claim your daily reward to start tracking!
-                    </div>
-                </div>
-
-                <div class="form-card">
-                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-crosshairs"></i> Sensitivity History</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Your last
-                        calculations — general sensitivity midpoint.</p>
-                    <canvas id="historCanvas"></canvas>
-                    <div id="historyEmpty"
-                        style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
-                        No history yet. <a href="tool.html" style="color: var(--accent);">Calculate your sensitivity
-                            →</a>
-                    </div>
-                </div>
+            <div class="form-card" style="margin-top: 1.5rem;">
+                <h3 style="margin-bottom: 1rem;">Recent Activity</h3>
+                <p id="noActivity" style="color: var(--text-muted); font-size: 0.9rem;">No recent activity yet.
+                    Start
+                    earning AXP!</p>
+                <div id="recentActivityList"></div>
             </div>
+        </div>
 
-            <!-- TAB: BADGES -->
-            <div id="tab-achievements" class="tab-content">
-                <div id="achievementsList" style="display: grid; gap: 1rem;"></div>
-            </div>
-
-            <!-- TAB: SQUAD (CLAN) -->
-            <div id="tab-squad" class="tab-content">
-                <div id="squadNone" style="text-align: center; padding: 2rem;">
-                    <i class="fas fa-users" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
-                    <h3 style="margin-bottom: 10px;">Join or Create a Squad</h3>
-                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">Pool your AXP
-                        together
-                        and climb the global squad leaderboards!</p>
-
-                    <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px; margin: 0 auto;">
-                        <button class="btn-primary" onclick="SquadSystem.promptCreate()">Create New Squad</button>
-                        <button class="btn-secondary" onclick="SquadSystem.promptJoin()">Join Existing Squad</button>
-                    </div>
-                </div>
-
-                <div id="squadActive" class="hidden">
-                    <div class="glass-card"
-                        style="text-align: center; border: 1px solid var(--accent); background: rgba(0,229,255,0.05);">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <div style="font-size: 2.5rem; margin-bottom: 10px;" id="squadIcon">🛡️</div>
-                        <h2 id="squadName" style="color: #fff; margin-bottom: 5px; font-weight: 900;">[SQUAD] Name</h2>
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Founded by <span
-                                id="squadFounder">Player</span></p>
-
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 1.5rem;">
-                            <div
-                                style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
-                                    Total
-                                    Squad AXP</div>
-                                <div id="squadTotalAxp"
-                                    style="font-size: 1.5rem; font-weight: 800; color: var(--accent);">0
-                                </div>
-                            </div>
-                            <div
-                                style="background: var(--card-dark); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
-                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">
-                                    Members
-                                </div>
-                                <div id="squadMemberCount" style="font-size: 1.5rem; font-weight: 800; color: #fff;">1
-                                </div>
-                            </div>
-                        </div>
-
-                        <div style="text-align: left; margin-top: 2rem;">
-                            <h4 style="margin-bottom: 10px; color: var(--text-muted);"><i class="fas fa-list"></i>
-                                Roster
-                            </h4>
-                            <div id="squadRosterList" style="display: grid; gap: 10px;"></div>
-                        </div>
-
-                        <button class="btn-secondary" onclick="SquadSystem.leave()"
-                            style="margin-top: 2rem; border-color: rgba(255,77,77,0.3); color: #ff4d4d;">Leave
-                            Squad</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TAB: PLAYER CARD -->
-            <div id="tab-card" class="tab-content">
-                <div class="form-card" style="text-align: center;">
-                    <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-id-card"></i> My Player Card</h3>
-                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Share your rank &
-                        stats
-                        with the community.</p>
-                    <canvas id="playerCardCanvas"
-                        style="max-width: 100%; border-radius: 16px; border: 1px solid var(--border);"></canvas>
-                    <br>
-                    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:1rem">
-                        <button id="downloadCardBtn" class="btn-primary" style="width:auto;padding:0.75rem 2rem;">
-                            <i class="fas fa-download"></i> Download
-                        </button>
-                        <button id="shareCardBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
-                            <i class="fas fa-share"></i> Share
-                        </button>
-                        <button id="copyLinkBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-settings" class="tab-content">
-                <div class="form-card accordion">
-                    <details open>
-                        <summary>Nickname</summary>
-                        <div class="content">
-                            <div class="settings-group">
-                                <div class="split-two settings-actions">
-                                    <input type="text" id="edit-username" class="settings-input"
-                                        placeholder="New nickname">
-                                    <button class="btn-primary" onclick="updateNickname()">Save</button>
-                                </div>
-                                <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">First change is
-                                    free.
-                                    Subsequent changes cost 500 AXP.</p>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Password</summary>
-                        <div class="content">
-                            <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
-                                <input type="password" id="edit-current-password" class="settings-input"
-                                    placeholder="Current password">
-                                <input type="password" id="edit-new-password" class="settings-input"
-                                    placeholder="New password">
-                                <button class="btn-primary" onclick="updatePassword()">Update Password</button>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Socials</summary>
-                        <div class="content">
-                            <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
-                                <input type="text" id="edit-tiktok" class="settings-input"
-                                    placeholder="TikTok @username">
-                                <input type="text" id="edit-instagram" class="settings-input"
-                                    placeholder="Instagram username">
-                                <input type="text" id="edit-youtube" class="settings-input"
-                                    placeholder="YouTube channel">
-                                <button class="btn-primary" onclick="updateSocials()">Update Socials</button>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Avatar</summary>
-                        <div class="content">
-                            <div class="settings-group">
-                                <div id="avatarSelectGrid"
-                                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
-                                </div>
-                            </div>
-                            <div class="settings-group" style="margin-top: 1rem;">
-                                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">Premium:
-                                    Avatar Image URL</div>
-                                <div class="settings-actions"
-                                    style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
-                                    <input type="url" id="avatarUrlInput" class="settings-input"
-                                        placeholder="https://...">
-                                    <button class="btn-secondary" onclick="saveAvatarUrl()">Save</button>
-                                </div>
-                                <p style="font-size:0.75rem; color: var(--text-muted); margin-top:6px;">Premium only</p>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Premium Name Style</summary>
-                        <div class="content">
-                            <div class="settings-group settings-actions"
-                                style="display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;">
-                                <label for="nameColor" style="font-size:0.9rem; color: var(--text-muted);">Name
-                                    Color</label>
-                                <input type="color" id="nameColor" value="#00e5ff" class="settings-input"
-                                    style="padding:0; width:60px; height:40px;">
-                                <label
-                                    style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted);">
-                                    <input type="checkbox" id="nameGlow"> Glow
-                                </label>
-                                <button class="btn-primary" style="grid-column: 1/-1; width:auto;"
-                                    onclick="savePremiumStyle()">Apply</button>
-                                <p style="grid-column: 1/-1; font-size:0.75rem; color: var(--text-muted); margin:0;">
-                                    Requires Premium</p>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Cloud Sync</summary>
-                        <div class="content">
-                            <div class="form-card"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
-                                <div>
-                                    <h4 style="margin: 0; color: #fff;">Sync to XP Arena Cloud</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Backup your AXP,
-                                        Vault, and Ranks online permanently.</p>
-                                </div>
-                                <label class="switch"
-                                    style="position: relative; display: inline-block; width: 50px; height: 28px;">
-                                    <input type="checkbox" id="cloudSyncToggle" onchange="toggleCloudSync(this)"
-                                        style="opacity: 0; width: 0; height: 0;">
-                                    <span class="slider round"
-                                        style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 30px;"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </details>
-                    <details>
-                        <summary>Push Protocol</summary>
-                        <div class="content">
-                            <div class="form-card"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
-                                <div>
-                                    <h4 style="margin: 0; color: #fff;">Operational Alerts</h4>
-                                    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Get notified when
-                                        your Pro Setup is liked or followed.</p>
-                                </div>
-                                <button class="btn-primary" style="width:auto; padding: 0.5rem 1rem;"
-                                    onclick="Notification.requestPermission()">Enable</button>
-                            </div>
-                        </div>
-                    </details>
-                    <details id="adminTools" class="hidden">
-                        <summary>Admin Tools</summary>
-                        <div class="content">
-                            <div class="settings-group" style="display:grid; gap:10px;">
-                                <div style="font-size:0.8rem; color: var(--text-muted);">Reset Weekly Bonus (testing)
-                                </div>
-                                <input type="number" id="adminUserId" class="settings-input" placeholder="User ID">
-                                <input type="date" id="adminWeekStart" class="settings-input"
-                                    placeholder="Week Start (optional)">
-                                <button class="btn-secondary" style="width:auto" onclick="resetWeekBonus()">Reset
-                                    Bonus</button>
-                                <div id="adminToolsMsg" style="font-size:0.8rem; color: var(--text-muted);"></div>
-                            </div>
-                        </div>
-                    </details>
-                    <div class="settings-group" style="margin-top: 1rem;">
-                        <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';"
-                            style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        <!-- TAB: CLIPS -->
+        <div id="tab-clips" class="tab-content">
+            <div id="clipsGrid">
+                <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem;">
+                    <div style="text-align: center;">
+                        <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>No clips submitted yet.</p>
+                        <a href="submit.html" class="btn-primary"
+                            style="margin-top: 1rem; width: auto; padding: 0.6rem 1.2rem;">Submit Your First
+                            Clip</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <nav class="bottom-nav"></nav>
+        <!-- TAB: VAULT + PRESETS -->
+        <div id="tab-vault" class="tab-content">
+            <!-- Presets section -->
+            <div id="presetsSection" style="margin-bottom: 3rem;">
+                <h3
+                    style="margin-bottom: 1.5rem; color: #bf00ff; font-family: 'Outfit'; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-star"></i> My Presets
+                </h3>
+                <div id="presetsList"
+                    style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                </div>
+            </div>
+            <!-- Vault -->
+            <h3 style="margin-bottom: 1.5rem; font-family: 'Outfit'; display: flex; align-items: center; gap: 10px;">
+                <i class="fas fa-archive"></i> Sensitivity Vault
+            </h3>
+            <div id="vaultList"
+                style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));"></div>
+        </div>
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script src="js/auth.js"></script>
-        <script src="js/user.js"></script>
-        <script src="js/layout.js"></script>
-        <script src="js/app.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                if (!Auth.isLoggedIn()) {
-                    window.location.href = 'login.html';
-                    return;
-                }
+        <!-- TAB: HISTORY GRAPH -->
+        <div id="tab-history" class="tab-content">
+            <div class="form-card" style="margin-bottom: 1.5rem;">
+                <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-chart-line"></i> AXP Growth (Performance
+                    Analytics)</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Track your AXP
+                    progress over the last 30 days.</p>
+                <canvas id="axpGrowthCanvas" style="width: 100%; height: 220px;"></canvas>
+                <div id="axpHistoryEmpty"
+                    style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
+                    No AXP history yet. Claim your daily reward to start tracking!
+                </div>
+            </div>
 
-                if (!User.getStats()) {
-                    window.addEventListener('statsLoaded', initProfile);
-                } else {
-                    initProfile();
-                }
+            <div class="form-card">
+                <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-crosshairs"></i> Sensitivity History</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Your last
+                    calculations — general sensitivity midpoint.</p>
+                <canvas id="historCanvas"></canvas>
+                <div id="historyEmpty"
+                    style="display:none; text-align:center; color: var(--text-muted); padding: 3rem;">
+                    No history yet. <a href="tool.html" style="color: var(--accent);">Calculate your sensitivity
+                        →</a>
+                </div>
+            </div>
+        </div>
 
-                function initProfile() {
-                    renderAvatarSelection();
-                    updateProfileUI();
+        <!-- TAB: BADGES -->
+        <div id="tab-achievements" class="tab-content">
+            <div id="achievementsList"
+                style="display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));"></div>
+        </div>
 
-                    const cloudToggle = document.getElementById('cloudSyncToggle');
-                    if (cloudToggle && localStorage.getItem('xp_cloud_sync') === '1') {
-                        cloudToggle.checked = true;
-                    }
+        <!-- TAB: SQUAD (CLAN) -->
+        <!-- TAB: SQUAD (CLAN) -->
+        <div id="tab-squad" class="tab-content">
+            <div id="squadNone" style="text-align: center; padding: 4rem 2rem;">
+                <div
+                    style="width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; border: 1px solid var(--glass-stroke);">
+                    <i class="fas fa-users" style="font-size: 2rem; color: var(--text-muted);"></i>
+                </div>
+                <h3 style="margin-bottom: 1rem; font-family: 'Outfit'; font-size: 1.8rem;">Join or Create a Squad</h3>
+                <p
+                    style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2.5rem; max-width: 400px; margin-left: auto; margin-right: auto; line-height: 1.6;">
+                    Pool your AXP together and climb the global squad leaderboards!</p>
 
-                    if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
-                    const stats = User.getStats();
-                    if (stats && stats.is_admin) {
-                        const at = document.getElementById('adminTools');
-                        if (at) at.classList.remove('hidden');
-                    }
-                }
+                <div style="display: flex; gap: 15px; max-width: 400px; margin: 0 auto;">
+                    <button class="btn-hero-primary" onclick="SquadSystem.promptCreate()" style="flex: 1;">Create
+                        Squad</button>
+                    <button class="btn-hero-secondary" onclick="SquadSystem.promptJoin()" style="flex: 1;">Join
+                        Squad</button>
+                </div>
+            </div>
 
-                window.addEventListener('statsChange', () => {
-                    updateProfileUI();
-                    if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
-                });
-            });
+            <div id="squadActive" class="hidden">
+                <div class="glass-card"
+                    style="text-align: center; border: 1px solid var(--accent); background: rgba(0,229,255,0.05); padding: 3rem; border-radius: 24px;">
+                    <div style="font-size: 4rem; margin-bottom: 1.5rem; filter: drop-shadow(0 0 15px var(--accent-glow));"
+                        id="squadIcon">🛡️</div>
+                    <h2 id="squadName"
+                        style="color: #fff; margin-bottom: 8px; font-weight: 900; font-family: 'Outfit'; font-size: 2.2rem;">
+                        [SQUAD] Name</h2>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2.5rem;">Founded by <span
+                            id="squadFounder" style="color: #fff; font-weight: 600;">Player</span></p>
 
-            function switchTab(tabId) {
-                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 2.5rem;">
+                        <div
+                            style="background: rgba(0,0,0,0.25); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--glass-stroke);">
+                            <div
+                                style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px;">
+                                Total Squad AXP</div>
+                            <div id="squadTotalAxp"
+                                style="font-size: 2rem; font-weight: 900; color: var(--accent); text-shadow: 0 0 20px var(--accent-glow);">
+                                0</div>
+                        </div>
+                        <div
+                            style="background: rgba(0,0,0,0.25); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--glass-stroke);">
+                            <div
+                                style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 8px;">
+                                Members</div>
+                            <div id="squadMemberCount" style="font-size: 2rem; font-weight: 900; color: #fff;">1</div>
+                        </div>
+                    </div>
 
-                let targetButton = event.target;
-                if (!targetButton.classList.contains('tab-btn')) {
-                    targetButton = event.target.closest('.tab-btn');
-                }
-                if (targetButton) {
-                    targetButton.classList.add('active');
-                } else {
-                    document.querySelector(`.tab-btn[onclick*="switchTab('${tabId}')"]`).classList.add('active');
-                }
-                document.getElementById(`tab-${tabId}`).classList.add('active');
+                    <div style="text-align: left; margin-top: 3rem;">
+                        <h4
+                            style="margin-bottom: 1.5rem; color: var(--text-muted); font-family: 'Outfit'; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-list"></i> Squad Roster
+                        </h4>
+                        <div id="squadRosterList" style="display: grid; gap: 12px;"></div>
+                    </div>
 
-                if (tabId === 'history') {
-                    renderHistoryGraph();
-                    renderAXPGrowthGraph();
-                }
-                if (tabId === 'card') renderPlayerCard();
+                    <button class="btn-hero-secondary" onclick="SquadSystem.leave()"
+                        style="margin-top: 3rem; border-color: rgba(255,77,77,0.2); color: #ff6b6b; font-size: 0.85rem;">Leave
+                        Squad</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PLAYER CARD -->
+        <div id="tab-card" class="tab-content">
+            <div class="form-card" style="text-align: center;">
+                <h3 style="margin-bottom: 0.5rem;"><i class="fas fa-id-card"></i> My Player Card</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Share your rank &
+                    stats
+                    with the community.</p>
+                <canvas id="playerCardCanvas"
+                    style="max-width: 100%; border-radius: 16px; border: 1px solid var(--border);"></canvas>
+                <br>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:1rem">
+                    <button id="downloadCardBtn" class="btn-primary" style="width:auto;padding:0.75rem 2rem;">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button id="shareCardBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
+                        <i class="fas fa-share"></i> Share
+                    </button>
+                    <button id="copyLinkBtn" class="btn-secondary" style="width:auto;padding:0.75rem 2rem;">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-settings" class="tab-content">
+            <div class="form-card accordion">
+                <details open>
+                    <summary>Nickname</summary>
+                    <div class="content">
+                        <div class="settings-group">
+                            <div class="split-two settings-actions">
+                                <input type="text" id="edit-username" class="settings-input" placeholder="New nickname">
+                                <button class="btn-primary" onclick="updateNickname()">Save</button>
+                            </div>
+                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0;">First change is
+                                free.
+                                Subsequent changes cost 500 AXP.</p>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Password</summary>
+                    <div class="content">
+                        <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
+                            <input type="password" id="edit-current-password" class="settings-input"
+                                placeholder="Current password">
+                            <input type="password" id="edit-new-password" class="settings-input"
+                                placeholder="New password">
+                            <button class="btn-primary" onclick="updatePassword()">Update Password</button>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Socials</summary>
+                    <div class="content">
+                        <div class="settings-group settings-actions" style="display: grid; gap: 10px;">
+                            <input type="text" id="edit-tiktok" class="settings-input" placeholder="TikTok @username">
+                            <input type="text" id="edit-instagram" class="settings-input"
+                                placeholder="Instagram username">
+                            <input type="text" id="edit-youtube" class="settings-input" placeholder="YouTube channel">
+                            <button class="btn-primary" onclick="updateSocials()">Update Socials</button>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Avatar</summary>
+                    <div class="content">
+                        <div class="settings-group">
+                            <div id="avatarSelectGrid"
+                                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 10px; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 12px; border: 1px solid var(--border);">
+                            </div>
+                        </div>
+                        <div class="settings-group" style="margin-top: 1rem;">
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px;">Premium:
+                                Avatar Image URL</div>
+                            <div class="settings-actions"
+                                style="display: grid; grid-template-columns: 1fr auto; gap: 10px;">
+                                <input type="url" id="avatarUrlInput" class="settings-input" placeholder="https://...">
+                                <button class="btn-secondary" onclick="saveAvatarUrl()">Save</button>
+                            </div>
+                            <p style="font-size:0.75rem; color: var(--text-muted); margin-top:6px;">Premium only</p>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Premium Name Style</summary>
+                    <div class="content">
+                        <div class="settings-group settings-actions"
+                            style="display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center;">
+                            <label for="nameColor" style="font-size:0.9rem; color: var(--text-muted);">Name
+                                Color</label>
+                            <input type="color" id="nameColor" value="#00e5ff" class="settings-input"
+                                style="padding:0; width:60px; height:40px;">
+                            <label
+                                style="display:flex; align-items:center; gap:8px; font-size:0.9rem; color: var(--text-muted);">
+                                <input type="checkbox" id="nameGlow"> Glow
+                            </label>
+                            <button class="btn-primary" style="grid-column: 1/-1; width:auto;"
+                                onclick="savePremiumStyle()">Apply</button>
+                            <p style="grid-column: 1/-1; font-size:0.75rem; color: var(--text-muted); margin:0;">
+                                Requires Premium</p>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Cloud Sync</summary>
+                    <div class="content">
+                        <div class="form-card"
+                            style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
+                            <div>
+                                <h4 style="margin: 0; color: #fff;">Sync to XP Arena Cloud</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Backup your AXP,
+                                    Vault, and Ranks online permanently.</p>
+                            </div>
+                            <label class="switch"
+                                style="position: relative; display: inline-block; width: 50px; height: 28px;">
+                                <input type="checkbox" id="cloudSyncToggle" onchange="toggleCloudSync(this)"
+                                    style="opacity: 0; width: 0; height: 0;">
+                                <span class="slider round"
+                                    style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 30px;"></span>
+                            </label>
+                        </div>
+                    </div>
+                </details>
+                <details>
+                    <summary>Push Protocol</summary>
+                    <div class="content">
+                        <div class="form-card"
+                            style="display: flex; justify-content: space-between; align-items: center; padding: 1.2rem; background: rgba(0,0,0,0.2); border: 1px solid var(--border);">
+                            <div>
+                                <h4 style="margin: 0; color: #fff;">Operational Alerts</h4>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Get notified when
+                                    your Pro Setup is liked or followed.</p>
+                            </div>
+                            <button class="btn-primary" style="width:auto; padding: 0.5rem 1rem;"
+                                onclick="Notification.requestPermission()">Enable</button>
+                        </div>
+                    </div>
+                </details>
+                <details id="adminTools" class="hidden">
+                    <summary>Admin Tools</summary>
+                    <div class="content">
+                        <div class="settings-group" style="display:grid; gap:10px;">
+                            <div style="font-size:0.8rem; color: var(--text-muted);">Reset Weekly Bonus (testing)
+                            </div>
+                            <input type="number" id="adminUserId" class="settings-input" placeholder="User ID">
+                            <input type="date" id="adminWeekStart" class="settings-input"
+                                placeholder="Week Start (optional)">
+                            <button class="btn-secondary" style="width:auto" onclick="resetWeekBonus()">Reset
+                                Bonus</button>
+                            <div id="adminToolsMsg" style="font-size:0.8rem; color: var(--text-muted);"></div>
+                        </div>
+                    </div>
+                </details>
+                <div class="settings-group" style="margin-top: 1rem;">
+                    <button class="btn-secondary" onclick="Auth.logout(); window.location.href='index.html';"
+                        style="width: 100%;"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav"></nav>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.isLoggedIn()) {
+                window.location.href = 'login.html';
+                return;
             }
 
-            function renderAvatarSelection() {
-                const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '🐺', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
-                const grid = document.getElementById('avatarSelectGrid');
-                grid.innerHTML = avatars.map(a => `
+            if (!User.getStats()) {
+                window.addEventListener('statsLoaded', initProfile);
+            } else {
+                initProfile();
+            }
+
+            function initProfile() {
+                renderAvatarSelection();
+                updateProfileUI();
+
+                const cloudToggle = document.getElementById('cloudSyncToggle');
+                if (cloudToggle && localStorage.getItem('xp_cloud_sync') === '1') {
+                    cloudToggle.checked = true;
+                }
+
+                if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                const stats = User.getStats();
+                if (stats && stats.is_admin) {
+                    const at = document.getElementById('adminTools');
+                    if (at) at.classList.remove('hidden');
+                }
+            }
+
+            window.addEventListener('statsChange', () => {
+                updateProfileUI();
+                if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+            });
+        });
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            let targetButton = event.target;
+            if (!targetButton.classList.contains('tab-btn')) {
+                targetButton = event.target.closest('.tab-btn');
+            }
+            if (targetButton) {
+                targetButton.classList.add('active');
+            } else {
+                document.querySelector(`.tab-btn[onclick*="switchTab('${tabId}')"]`).classList.add('active');
+            }
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            if (tabId === 'history') {
+                renderHistoryGraph();
+                renderAXPGrowthGraph();
+            }
+            if (tabId === 'card') renderPlayerCard();
+        }
+
+        function renderAvatarSelection() {
+            const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '🐺', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
+            const grid = document.getElementById('avatarSelectGrid');
+            grid.innerHTML = avatars.map(a => `
                 <div class="badge-item earned" onclick="User.updateAvatar('${a}')" style="cursor: pointer; font-size: 1.8rem; padding: 0.5rem; transition: transform 0.2s; background: rgba(0,229,255,0.05); border: 1px solid rgba(0,229,255,0.1); border-radius: 8px; text-align: center;" onmouseover="this.style.transform='scale(1.1)'; this.style.borderColor='var(--accent)'" onmouseout="this.style.transform='scale(1)'; this.style.borderColor='rgba(0,229,255,0.1)'" title="Select Avatar">${a}</div>
             `).join('');
-            }
+        }
 
-            async function updateNickname() {
-                const input = document.getElementById('edit-username');
-                const result = await User.updateUsername(input.value);
-                if (result.success) {
-                    if (window.Toast) Toast.show('Nickname updated!', 'success');
-                    input.value = '';
-                    updateProfileUI(); // Ensure new name pops immediately
-                } else {
-                    if (window.Toast) Toast.show(result.message || 'Error updating nickname', 'error');
-                }
+        async function updateNickname() {
+            const input = document.getElementById('edit-username');
+            const result = await User.updateUsername(input.value);
+            if (result.success) {
+                if (window.Toast) Toast.show('Nickname updated!', 'success');
+                input.value = '';
+                updateProfileUI(); // Ensure new name pops immediately
+            } else {
+                if (window.Toast) Toast.show(result.message || 'Error updating nickname', 'error');
             }
+        }
 
-            async function updatePassword() {
-                const currentObj = document.getElementById('edit-current-password');
-                const newObj = document.getElementById('edit-new-password');
-                const result = await User.updatePassword(currentObj.value, newObj.value);
-                if (result.success) {
-                    if (window.Toast) Toast.show('Password updated successfully!', 'success');
-                    currentObj.value = '';
-                    newObj.value = '';
-                } else {
-                    if (window.Toast) Toast.show(result.message || 'Error updating password', 'error');
-                }
+        async function updatePassword() {
+            const currentObj = document.getElementById('edit-current-password');
+            const newObj = document.getElementById('edit-new-password');
+            const result = await User.updatePassword(currentObj.value, newObj.value);
+            if (result.success) {
+                if (window.Toast) Toast.show('Password updated successfully!', 'success');
+                currentObj.value = '';
+                newObj.value = '';
+            } else {
+                if (window.Toast) Toast.show(result.message || 'Error updating password', 'error');
             }
+        }
 
-            function updateSocials() {
-                const socials = {
-                    tiktok: document.getElementById('edit-tiktok').value,
-                    instagram: document.getElementById('edit-instagram').value,
-                    youtube: document.getElementById('edit-youtube').value
-                };
-                if (User.updateSocials(socials)) {
-                    if (window.Toast) Toast.show('Socials updated!', 'success');
-                    updateProfileUI();
-                }
+        function updateSocials() {
+            const socials = {
+                tiktok: document.getElementById('edit-tiktok').value,
+                instagram: document.getElementById('edit-instagram').value,
+                youtube: document.getElementById('edit-youtube').value
+            };
+            if (User.updateSocials(socials)) {
+                if (window.Toast) Toast.show('Socials updated!', 'success');
+                updateProfileUI();
             }
+        }
 
-            function openAvatarModal() {
-                switchTab('settings');
-                document.getElementById('avatarSelectGrid').scrollIntoView({ behavior: 'smooth' });
-            }
+        function openAvatarModal() {
+            switchTab('settings');
+            document.getElementById('avatarSelectGrid').scrollIntoView({ behavior: 'smooth' });
+        }
 
-            function resetWeekBonus() {
-                const uid = parseInt(document.getElementById('adminUserId').value, 10);
-                const ws = document.getElementById('adminWeekStart').value;
-                const msg = document.getElementById('adminToolsMsg');
-                fetch((window.API_URL || '') + '/api/user/admin/reset-week-bonus', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                    body: JSON.stringify({ user_id: uid, week_start: ws || undefined })
-                }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
-                    msg.textContent = ok ? 'Reset completed.' : (d.error || 'Error');
-                }).catch(() => { msg.textContent = 'Network error'; });
-            }
+        function resetWeekBonus() {
+            const uid = parseInt(document.getElementById('adminUserId').value, 10);
+            const ws = document.getElementById('adminWeekStart').value;
+            const msg = document.getElementById('adminToolsMsg');
+            fetch((window.API_URL || '') + '/api/user/admin/reset-week-bonus', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
+                body: JSON.stringify({ user_id: uid, week_start: ws || undefined })
+            }).then(r => r.json().then(d => ({ ok: r.ok, d }))).then(({ ok, d }) => {
+                msg.textContent = ok ? 'Reset completed.' : (d.error || 'Error');
+            }).catch(() => { msg.textContent = 'Network error'; });
+        }
 
-            function sparkleBadge(container) {
-                const spark = document.createElement('div');
-                spark.style.position = 'fixed';
-                spark.style.inset = '0';
-                spark.style.pointerEvents = 'none';
-                spark.style.zIndex = '40000';
-                document.body.appendChild(spark);
-                const count = 60;
-                for (let i = 0; i < count; i++) {
-                    const s = document.createElement('span');
-                    s.style.position = 'absolute';
-                    s.style.left = Math.random() * window.innerWidth + 'px';
-                    s.style.top = Math.random() * window.innerHeight + 'px';
-                    s.style.width = s.style.height = (Math.random() * 4 + 2) + 'px';
-                    s.style.background = 'radial-gradient(circle, #00e5ff, transparent)';
-                    s.style.borderRadius = '50%';
-                    s.style.opacity = '0.9';
-                    s.style.transform = 'translateY(0)';
-                    s.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
-                    spark.appendChild(s);
-                    requestAnimationFrame(() => {
-                        s.style.transform = 'translateY(-60px)';
-                        s.style.opacity = '0';
-                    });
-                }
-                setTimeout(() => spark.remove(), 1200);
-            }
-            function copyReferralLink() {
-                const stats = User.getStats();
-                const code = stats.referralCode || '';
-                const link = `${window.location.origin}/signup.html?ref=${code}`;
-                navigator.clipboard.writeText(link).then(() => {
-                    if (window.Toast) Toast.show('Referral link copied!', 'success');
+        function sparkleBadge(container) {
+            const spark = document.createElement('div');
+            spark.style.position = 'fixed';
+            spark.style.inset = '0';
+            spark.style.pointerEvents = 'none';
+            spark.style.zIndex = '40000';
+            document.body.appendChild(spark);
+            const count = 60;
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement('span');
+                s.style.position = 'absolute';
+                s.style.left = Math.random() * window.innerWidth + 'px';
+                s.style.top = Math.random() * window.innerHeight + 'px';
+                s.style.width = s.style.height = (Math.random() * 4 + 2) + 'px';
+                s.style.background = 'radial-gradient(circle, #00e5ff, transparent)';
+                s.style.borderRadius = '50%';
+                s.style.opacity = '0.9';
+                s.style.transform = 'translateY(0)';
+                s.style.transition = 'transform 1s ease-out, opacity 1s ease-out';
+                spark.appendChild(s);
+                requestAnimationFrame(() => {
+                    s.style.transform = 'translateY(-60px)';
+                    s.style.opacity = '0';
                 });
             }
+            setTimeout(() => spark.remove(), 1200);
+        }
+        function copyReferralLink() {
+            const stats = User.getStats();
+            const code = stats.referralCode || '';
+            const link = `${window.location.origin}/signup.html?ref=${code}`;
+            navigator.clipboard.writeText(link).then(() => {
+                if (window.Toast) Toast.show('Referral link copied!', 'success');
+            });
+        }
 
-            async function updateProfileUI() {
-                const stats = User.getStats();
-                if (!stats) return;
+        async function updateProfileUI() {
+            const stats = User.getStats();
+            if (!stats) return;
 
-                User.updateUI();
+            User.updateUI();
 
-                // Season / Battle Pass Update
-                if (typeof SeasonSystem !== 'undefined') {
-                    const si = SeasonSystem.getSeasonInfo();
-                    const sName = document.getElementById('season-name');
-                    const sTimer = document.getElementById('season-timer');
-                    const sTier = document.getElementById('season-tier');
-                    const sFill = document.getElementById('season-progress-fill');
-                    const sCta = document.getElementById('bp-premium-cta');
+            // Season / Battle Pass Update
+            if (typeof SeasonSystem !== 'undefined') {
+                const si = SeasonSystem.getSeasonInfo();
+                const sName = document.getElementById('season-name');
+                const sTimer = document.getElementById('season-timer');
+                const sTier = document.getElementById('season-tier');
+                const sFill = document.getElementById('season-progress-fill');
+                const sCta = document.getElementById('bp-premium-cta');
 
-                    if (sName) sName.textContent = si.name;
-                    if (sTimer) sTimer.textContent = `${si.daysLeft} DAYS LEFT`;
-                    if (sTier) sTier.textContent = `TIER ${si.level}`;
-                    if (sFill) sFill.style.width = `${si.progress}%`;
-                    if (sCta) {
-                        if (si.isPremium) sCta.classList.add('hidden');
-                        else sCta.classList.remove('hidden');
-                    }
+                if (sName) sName.textContent = si.name;
+                if (sTimer) sTimer.textContent = `${si.daysLeft} DAYS LEFT`;
+                if (sTier) sTier.textContent = `TIER ${si.level}`;
+                if (sFill) sFill.style.width = `${si.progress}%`;
+                if (sCta) {
+                    if (si.isPremium) sCta.classList.add('hidden');
+                    else sCta.classList.remove('hidden');
                 }
+            }
 
-                // Referral (Disabled)
-                // const refDisplay = document.getElementById('referralCodeDisplay');
-                // const refCount = document.getElementById('referralCount');
-                // if (refDisplay) refDisplay.textContent = stats.referralCode || 'XPA-???';
-                // if (refCount) refCount.textContent = stats.referralCount || 0;
+            // Referral (Disabled)
+            // const refDisplay = document.getElementById('referralCodeDisplay');
+            // const refCount = document.getElementById('referralCount');
+            // if (refDisplay) refDisplay.textContent = stats.referralCode || 'XPA-???';
+            // if (refCount) refCount.textContent = stats.referralCount || 0;
 
-                // Activity
-                const recentActivityList = document.getElementById('recentActivityList');
-                const noActivity = document.getElementById('noActivity');
-                if (recentActivityList) {
-                    if (stats.activities && stats.activities.length > 0) {
-                        noActivity.style.display = 'none';
-                        recentActivityList.innerHTML = stats.activities.map(a => `
+            // Activity
+            const recentActivityList = document.getElementById('recentActivityList');
+            const noActivity = document.getElementById('noActivity');
+            if (recentActivityList) {
+                if (stats.activities && stats.activities.length > 0) {
+                    noActivity.style.display = 'none';
+                    recentActivityList.innerHTML = stats.activities.map(a => `
                         <div style="padding: 0.8rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
                             <span style="font-size: 0.9rem;">${a.text}</span>
                             <span style="font-size: 0.7rem; color: var(--text-muted);">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
                     `).join('');
-                    } else {
-                        noActivity.style.display = 'block';
-                        recentActivityList.innerHTML = '';
-                    }
+                } else {
+                    noActivity.style.display = 'block';
+                    recentActivityList.innerHTML = '';
                 }
+            }
 
-                // Clips
-                const clipsGrid = document.getElementById('clipsGrid');
-                if (clipsGrid) {
-                    if (stats.clips && stats.clips.length > 0) {
-                        clipsGrid.innerHTML = stats.clips.map(c => `
+            // Clips
+            const clipsGrid = document.getElementById('clipsGrid');
+            if (clipsGrid) {
+                if (stats.clips && stats.clips.length > 0) {
+                    clipsGrid.innerHTML = stats.clips.map(c => `
                         <div class="clip-card" style="margin-bottom: 1rem;">
                             <div class="clip-icon"><i class="fas fa-play"></i></div>
                             <div class="clip-info">
@@ -711,8 +711,8 @@
                             <div class="clip-axp">+50 AXP</div>
                         </div>
                     `).join('');
-                    } else {
-                        clipsGrid.innerHTML = `
+                } else {
+                    clipsGrid.innerHTML = `
                         <div class="clip-card" style="justify-content: center; opacity: 0.6; padding: 3rem; width: 100%;">
                             <div style="text-align: center;">
                                 <i class="fas fa-video-slash" style="font-size: 2rem; margin-bottom: 1rem;"></i>
@@ -721,47 +721,39 @@
                             </div>
                         </div>
                     `;
-                    }
                 }
+            }
 
-                // Badges
-                const achListEl = document.getElementById('achievementsList');
-                if (achListEl && typeof ACHIEVEMENTS !== 'undefined') {
-                    achListEl.innerHTML = ACHIEVEMENTS.map(ach => {
-                        const isUnlocked = stats.achievements.includes(ach.id);
-                        return `
-                        <div class="glass-card" style="padding: 1rem; display: flex; align-items: center; gap: 15px; opacity: ${isUnlocked ? 1 : 0.3}; border-color: ${isUnlocked ? 'var(--accent)' : 'var(--border)'}; filter: ${isUnlocked ? 'none' : 'grayscale(100%)'} ;">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
-                            <div class="scan-line"></div>
-                            <div style="font-size: 2rem;">${isUnlocked ? ach.icon : '🔒'}</div>
+            // Badges
+            const achListEl = document.getElementById('achievementsList');
+            if (achListEl && typeof ACHIEVEMENTS !== 'undefined') {
+                achListEl.innerHTML = ACHIEVEMENTS.map(ach => {
+                    const isUnlocked = stats.achievements.includes(ach.id);
+                    return `
+                        <div class="glass-card" style="padding: 1.5rem; display: flex; align-items: center; gap: 20px; opacity: ${isUnlocked ? 1 : 0.4}; border: 1px solid ${isUnlocked ? 'rgba(0, 229, 255, 0.3)' : 'var(--glass-stroke)'}; border-radius: 20px; background: ${isUnlocked ? 'rgba(0, 229, 255, 0.03)' : 'rgba(0,0,0,0.2)'}; transition: var(--transition);">
+                            <div style="font-size: 2.5rem; filter: ${isUnlocked ? 'drop-shadow(0 0 10px var(--accent-glow))' : 'grayscale(100%)'};">${isUnlocked ? ach.icon : '🔒'}</div>
                             <div style="flex: 1;">
-                                <h4 style="margin: 0; color: ${isUnlocked ? 'var(--accent)' : 'var(--text-white)'}">${ach.name}</h4>
-                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">${ach.desc}</p>
+                                <h4 style="margin: 0 0 4px; color: ${isUnlocked ? 'var(--accent)' : 'var(--text-white)'}; font-family: 'Outfit'; font-size: 1.1rem;">${ach.name}</h4>
+                                <p style="margin: 0; font-size: 0.8rem; color: var(--text-muted); line-height: 1.4;">${ach.desc}</p>
                             </div>
-                            <div style="font-size: 0.8rem; font-weight: 800; color: var(--accent);">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</div>
+                            <div style="font-size: 0.7rem; font-weight: 800; color: var(--accent); letter-spacing: 1px;">${isUnlocked ? 'UNLOCKED' : 'LOCKED'}</div>
                         </div>
                     `;
-                    }).join('');
-                    if (stats.achievements.includes('perfect_week') && !localStorage.getItem('xp_pw_celebrated')) {
-                        localStorage.setItem('xp_pw_celebrated', '1');
-                        sparkleBadge(achListEl);
-                        if (window.Toast) Toast.show('Perfect Week unlocked!', 'success');
-                    }
+                }).join('');
+                if (stats.achievements.includes('perfect_week') && !localStorage.getItem('xp_pw_celebrated')) {
+                    localStorage.setItem('xp_pw_celebrated', '1');
+                    sparkleBadge(achListEl);
+                    if (window.Toast) Toast.show('Perfect Week unlocked!', 'success');
                 }
+            }
 
-                // Presets
-                const presetsList = document.getElementById('presetsList');
-                if (presetsList) {
-                    if (stats.presets && stats.presets.length > 0) {
-                        presetsList.innerHTML = stats.presets.map(p => `
+            // Presets
+            const presetsList = document.getElementById('presetsList');
+            if (presetsList) {
+                if (stats.presets && stats.presets.length > 0) {
+                    presetsList.innerHTML = stats.presets.map(p => `
                         <div class="preset-card glass-card">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
+
                             <div>
                                 <div class="preset-name">⭐ ${p.name}</div>
                                 <div class="preset-device">${p.device} · General: ${p.general}</div>
@@ -769,35 +761,31 @@
                             <div style="font-size: 0.75rem; color: var(--text-muted);">${new Date(p.timestamp).toLocaleDateString()}</div>
                         </div>
                     `).join('');
-                    } else {
-                        presetsList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No presets saved yet. Calculate sensitivity and save a preset!</p>`;
-                    }
+                } else {
+                    presetsList.innerHTML = `<p style="color: var(--text-muted); font-size: 0.9rem;">No presets saved yet. Calculate sensitivity and save a preset!</p>`;
                 }
+            }
 
-                // Vault
-                const vaultList = document.getElementById('vaultList');
-                if (vaultList) {
-                    if (stats.vault && stats.vault.length > 0) {
-                        vaultList.innerHTML = stats.vault.map(v => `
-                        <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--accent);">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
+            // Vault
+            const vaultList = document.getElementById('vaultList');
+            if (vaultList) {
+                if (stats.vault && stats.vault.length > 0) {
+                    vaultList.innerHTML = stats.vault.map(v => `
+                        <div class="glass-card" style="padding: 1.5rem; border-radius: 20px; border: 1px solid var(--glass-stroke); background: rgba(0,0,0,0.2); transition: var(--transition);">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.2rem;">
                                 <div>
-                                    <h4 style="margin: 0; color: var(--accent);">${v.device}</h4>
+                                    <h4 style="margin: 0; color: var(--accent); font-family: 'Outfit'; font-size: 1.1rem;">${v.device}</h4>
                                     <p style="margin: 0; font-size: 0.75rem; color: var(--text-muted);">${new Date(v.timestamp).toLocaleDateString()}</p>
                                 </div>
-                                <div style="background: var(--bg-dark); padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 800;">SAVED</div>
+                                <div style="background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; letter-spacing: 0.5px; color: var(--text-muted);">SAVED</div>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem;">
-                                <div style="color: var(--text-muted);">Gen: <span style="color: #fff; font-weight: 600;">${v.general}</span></div>
-                                <div style="color: var(--text-muted);">Red: <span style="color: #fff; font-weight: 600;">${v.reddot}</span></div>
-                                <div style="color: var(--text-muted);">2x: <span style="color: #fff; font-weight: 600;">${v.scope2x}</span></div>
-                                <div style="color: var(--text-muted);">4x: <span style="color: #fff; font-weight: 600;">${v.scope4x}</span></div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.85rem;">
+                                <div style="color: var(--text-muted);"><span style="font-size: 0.7rem; display: block; margin-bottom: 2px;">GENERAL</span> <span style="color: #fff; font-weight: 700; font-size: 1.1rem;">${v.general}</span></div>
+                                <div style="color: var(--text-muted);"><span style="font-size: 0.7rem; display: block; margin-bottom: 2px;">RED DOT</span> <span style="color: #fff; font-weight: 700; font-size: 1.1rem;">${v.reddot}</span></div>
+                                <div style="color: var(--text-muted);"><span style="font-size: 0.7rem; display: block; margin-bottom: 2px;">2X SCOPE</span> <span style="color: #fff; font-weight: 700; font-size: 1.1rem;">${v.scope2x}</span></div>
+                                <div style="color: var(--text-muted);"><span style="font-size: 0.7rem; display: block; margin-bottom: 2px;">4X SCOPE</span> <span style="color: #fff; font-weight: 700; font-size: 1.1rem;">${v.scope4x}</span></div>
                             </div>
-                            <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.8rem; display: flex; justify-content: space-between; align-items: center;">
+                            <div style="margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.2rem; display: flex; justify-content: space-between; align-items: center;">
                                 <div style="display: flex; gap: 4px; color: #ffcc00; font-size: 0.7rem;">
                                     <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 5)" style="cursor:pointer;"></i>
                                     <i class="fas fa-star" onclick="SocialSystem.rateSetup('${v.id || index}', 4)" style="cursor:pointer;"></i>
@@ -809,85 +797,365 @@
                             </div>
                         </div>
                     `).join('');
-                    } else {
-                        vaultList.innerHTML = `
+                } else {
+                    vaultList.innerHTML = `
                         <div class="glass-card" style="grid-column: 1/-1; padding: 3rem; text-align: center; opacity: 0.6;">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
+
                             <i class="fas fa-vault" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-muted);"></i>
                             <p>Your sensitivity vault is empty.</p>
                             <a href="tool.html" class="btn-primary" style="margin-top: 1rem; width: auto; display: inline-block; padding: 0.6rem 1.5rem;">Go Calibrate</a>
                         </div>
                     `;
-                    }
                 }
-
-                // Socials in hero
-                const socials = stats.socials || {};
-                const linkTikTok = document.getElementById('link-tiktok');
-                const linkIG = document.getElementById('link-instagram');
-                const linkYT = document.getElementById('link-youtube');
-                if (linkTikTok) linkTikTok.style.display = socials.tiktok ? 'inline-block' : 'none';
-                if (linkIG) linkIG.style.display = socials.instagram ? 'inline-block' : 'none';
-                if (linkYT) linkYT.style.display = socials.youtube ? 'inline-block' : 'none';
-
-                const editTikTok = document.getElementById('edit-tiktok');
-                const editIG = document.getElementById('edit-instagram');
-                const editYT = document.getElementById('edit-youtube');
-                if (editTikTok) editTikTok.value = socials.tiktok || '';
-                if (editIG) editIG.value = socials.instagram || '';
-                if (editYT) editYT.value = socials.youtube || '';
-
-                // Streak
-                const streakEl = document.getElementById('streak-count');
-                if (streakEl) streakEl.textContent = stats.streak || 0;
-
-                // Rank visuals
-                const rankLabel = document.getElementById('profile-rank');
-                if (rankLabel) {
-                    rankLabel.className = 'stat-val';
-                    const rankName = stats.rank.name.toLowerCase();
-                    if (rankName === 'diamond') rankLabel.classList.add('rank-diamond');
-                    if (rankName === 'master') rankLabel.classList.add('rank-master');
-                    if (rankName === 'champion') rankLabel.classList.add('rank-champion');
-                }
-
-                // Influencer Glow
-                const avatarMain = document.getElementById('avatarImage');
-                if (avatarMain) {
-                    if (socials.tiktok || socials.instagram || socials.youtube) {
-                        avatarMain.parentElement.classList.add('influencer-glow');
-                    } else {
-                        avatarMain.parentElement.classList.remove('influencer-glow');
-                    }
-                }
-                // Guild
-                try {
-                    const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const g = data && data.guild;
-                        const el = document.getElementById('guildName');
-                        if (el) el.textContent = g ? (g.badge ? g.badge + ' ' : '') + g.name : 'None';
-                    }
-                } catch { }
             }
 
-            // ========================
-            // SENSITIVITY HISTORY GRAPH (Chart.js)
-            // ========================
-            let historyChartInstance = null;
-            function renderHistoryGraph() {
-                const stats = User.getStats();
-                if (!stats) return;
-                const history = (stats.sensitivityHistory || []).slice().reverse(); // oldest first
-                const canvas = document.getElementById('historCanvas');
-                const emptyEl = document.getElementById('historyEmpty');
-                if (!canvas) return;
+            // Socials in hero
+            const socials = stats.socials || {};
+            const linkTikTok = document.getElementById('link-tiktok');
+            const linkIG = document.getElementById('link-instagram');
+            const linkYT = document.getElementById('link-youtube');
+            if (linkTikTok) linkTikTok.style.display = socials.tiktok ? 'inline-block' : 'none';
+            if (linkIG) linkIG.style.display = socials.instagram ? 'inline-block' : 'none';
+            if (linkYT) linkYT.style.display = socials.youtube ? 'inline-block' : 'none';
 
-                if (history.length < 2) {
+            const editTikTok = document.getElementById('edit-tiktok');
+            const editIG = document.getElementById('edit-instagram');
+            const editYT = document.getElementById('edit-youtube');
+            if (editTikTok) editTikTok.value = socials.tiktok || '';
+            if (editIG) editIG.value = socials.instagram || '';
+            if (editYT) editYT.value = socials.youtube || '';
+
+            // Streak
+            const streakEl = document.getElementById('streak-count');
+            if (streakEl) streakEl.textContent = stats.streak || 0;
+
+            // Rank visuals
+            const rankLabel = document.getElementById('profile-rank');
+            if (rankLabel) {
+                rankLabel.className = 'stat-val';
+                const rankName = stats.rank.name.toLowerCase();
+                if (rankName === 'diamond') rankLabel.classList.add('rank-diamond');
+                if (rankName === 'master') rankLabel.classList.add('rank-master');
+                if (rankName === 'champion') rankLabel.classList.add('rank-champion');
+            }
+
+            // Influencer Glow
+            const avatarMain = document.getElementById('avatarImage');
+            if (avatarMain) {
+                if (socials.tiktok || socials.instagram || socials.youtube) {
+                    avatarMain.parentElement.classList.add('influencer-glow');
+                } else {
+                    avatarMain.parentElement.classList.remove('influencer-glow');
+                }
+            }
+            // Guild
+            try {
+                const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
+                if (res.ok) {
+                    const data = await res.json();
+                    const g = data && data.guild;
+                    const el = document.getElementById('guildName');
+                    if (el) el.textContent = g ? (g.badge ? g.badge + ' ' : '') + g.name : 'None';
+                }
+            } catch { }
+        }
+
+        // ========================
+        // SENSITIVITY HISTORY GRAPH (Chart.js)
+        // ========================
+        let historyChartInstance = null;
+        function renderHistoryGraph() {
+            const stats = User.getStats();
+            if (!stats) return;
+            const history = (stats.sensitivityHistory || []).slice().reverse(); // oldest first
+            const canvas = document.getElementById('historCanvas');
+            const emptyEl = document.getElementById('historyEmpty');
+            if (!canvas) return;
+
+            if (history.length < 2) {
+                canvas.style.display = 'none';
+                emptyEl.style.display = 'block';
+                return;
+            }
+            canvas.style.display = 'block';
+            emptyEl.style.display = 'none';
+
+            const values = history.map(h => parseFloat(h.general_mid) || parseFloat((h.general || '').split('-')[0]) || 0);
+            const labels = history.map(h => (h.device || '?').split(' ').slice(-1)[0]);
+
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
+
+            if (historyChartInstance) {
+                historyChartInstance.destroy();
+            }
+
+            const ctx = canvas.getContext('2d');
+            let gradient = ctx.createLinearGradient(0, 0, 0, 220);
+            gradient.addColorStop(0, accentColor.replace('rgb', 'rgba').replace(')', ', 0.3)').replace('#', '') ? accentColor + "80" : 'rgba(0,229,255,0.3)');
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+
+            historyChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'General Focus',
+                        data: values,
+                        borderColor: accentColor,
+                        backgroundColor: gradient,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0b0f17',
+                        pointBorderColor: accentColor,
+                        pointBorderWidth: 2,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#121826',
+                            titleColor: accentColor,
+                            bodyColor: '#fff',
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
+                        }
+                    },
+                    interaction: { mode: 'index', intersect: false }
+                }
+            });
+        }
+
+        function toggleCloudSync(el) {
+            if (el.checked) {
+                if (window.Toast) Toast.show('Syncing to Cloud...', 'info', 1500);
+                setTimeout(() => {
+                    if (window.Toast) Toast.show('Successfully connected to Cloud Sync!', 'success');
+                    localStorage.setItem('xp_cloud_sync', '1');
+                }, 1500);
+            } else {
+                if (window.Toast) Toast.show('Cloud Sync disabled.', 'info');
+                localStorage.setItem('xp_cloud_sync', '0');
+            }
+        }
+
+        // ========================
+        // PLAYER CARD CANVAS
+        // ========================
+        function renderPlayerCard() {
+            if (!Auth.isLoggedIn()) return;
+            const stats = User.getStats();
+            const user = Auth.getCurrentUser();
+            if (!stats || !user) return;
+
+            const canvas = document.getElementById('playerCardCanvas');
+            if (!canvas) return;
+
+            const W = 600, H = 320;
+            canvas.width = W;
+            canvas.height = H;
+
+            const ctx = canvas.getContext('2d');
+
+            // BG gradient
+            const bg = ctx.createLinearGradient(0, 0, W, H);
+            bg.addColorStop(0, '#0b0f17');
+            bg.addColorStop(1, '#111827');
+            ctx.fillStyle = bg;
+            ctx.fillRect(0, 0, W, H);
+
+            // Glow
+            const glow = ctx.createRadialGradient(W * 0.8, H * 0.2, 10, W * 0.8, H * 0.2, 180);
+            glow.addColorStop(0, 'rgba(0,229,255,0.2)');
+            glow.addColorStop(1, 'rgba(0,229,255,0)');
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, W, H);
+
+            // Border
+            ctx.strokeStyle = 'rgba(0,229,255,0.4)';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(8, 8, W - 16, H - 16);
+
+            // Avatar
+            ctx.font = '70px serif';
+            ctx.fillText(stats.avatar || '👤', 40, 120);
+
+            // Username
+            ctx.font = 'bold 28px Inter, sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(user.username || 'Player', 140, 80);
+
+            // Rank
+            const rank = stats.rank || {};
+            ctx.font = '18px Inter, sans-serif';
+            ctx.fillStyle = '#00e5ff';
+            ctx.fillText(`${rank.icon || ''} ${rank.name || 'Starter'}`, 140, 115);
+
+            // Divider
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(140, 130);
+            ctx.lineTo(560, 130);
+            ctx.stroke();
+
+            // Stats row
+            const level = Math.floor(stats.axp / 500) + 1;
+            const statItems = [
+                { label: 'LEVEL', value: level },
+                { label: 'AXP', value: stats.axp.toLocaleString() },
+                { label: 'STREAK', value: `${stats.streak || 0}d` },
+                { label: 'CLIPS', value: stats.submissions || 0 }
+            ];
+
+            statItems.forEach((s, i) => {
+                const x = 140 + i * 110;
+                ctx.font = '11px Inter, sans-serif';
+                ctx.fillStyle = 'rgba(255,255,255,0.4)';
+                ctx.fillText(s.label, x, 165);
+                ctx.font = 'bold 22px Inter, sans-serif';
+                ctx.fillStyle = '#00e5ff';
+                ctx.fillText(s.value, x, 195);
+            });
+
+            // XP Bar
+            const progress = (stats.axp % 500) / 500;
+            ctx.fillStyle = 'rgba(255,255,255,0.1)';
+            ctx.beginPath();
+            ctx.roundRect(140, 220, 380, 8, 4);
+            ctx.fill();
+
+            ctx.fillStyle = '#00e5ff';
+            ctx.beginPath();
+            ctx.roundRect(140, 220, 380 * progress, 8, 4);
+            ctx.fill();
+
+            ctx.font = '12px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillText(`${stats.axp % 500} / 500 AXP to next level`, 140, 248);
+
+            // Footer
+            ctx.font = '13px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.2)';
+            ctx.fillText('xparena.net', 40, H - 20);
+            ctx.fillStyle = '#00e5ff';
+            ctx.fillText('XP ARENA', W - 110, H - 20);
+
+            // Download button
+            const dlBtn = document.getElementById('downloadCardBtn');
+            if (dlBtn) {
+                dlBtn.onclick = () => {
+                    canvas.toBlob(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `xparena-card-${user.username || 'player'}.png`;
+                        a.click();
+                        URL.revokeObjectURL(url);
+                        if (window.Toast) Toast.show('Player card downloaded!', 'success');
+                    }, 'image/png');
+                };
+            }
+            const shareBtn = document.getElementById('shareCardBtn');
+            if (shareBtn) {
+                if (navigator.share && 'canShare' in navigator) {
+                    shareBtn.onclick = async () => {
+                        try {
+                            const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                            const files = [new File([blob], `xparena-${user.username}.png`, { type: 'image/png' })];
+                            if (navigator.canShare && navigator.canShare({ files })) {
+                                await navigator.share({ title: 'XP Arena Card', text: 'Check out my stats!', files });
+                            } else {
+                                await navigator.share({ title: 'XP Arena', text: `${location.origin}/profile.html` });
+                            }
+                        } catch { }
+                    };
+                } else {
+                    // Hide on browsers without Web Share API
+                    shareBtn.style.display = 'none';
+                }
+            }
+            const copyBtn = document.getElementById('copyLinkBtn');
+            if (copyBtn) {
+                copyBtn.onclick = async () => {
+                    const link = `${location.origin}/profile.html`;
+                    await navigator.clipboard.writeText(link);
+                    if (window.Toast) Toast.show('Profile link copied!', 'success');
+                };
+            }
+        }
+        async function claimDaily() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const res = await User.claimDailyLogin();
+            if (res.success && window.Toast) Toast.show('Daily AXP claimed!', 'success');
+        }
+        async function activateDoubler() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const res = await User.activateXPDoubler(24);
+            if (res.success && window.Toast) Toast.show('XP Doubler activated for 24h!', 'success');
+        }
+        async function saveAvatarUrl() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const url = document.getElementById('avatarUrlInput').value;
+            const resp = await fetch((window.API_URL || '') + '/api/user/avatar-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+                body: JSON.stringify({ url })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                if (window.Toast) Toast.show('Avatar URL updated!', 'success');
+                User.loadStats();
+            } else {
+                if (window.Toast) Toast.show(data.error || 'Error', 'error');
+            }
+        }
+        async function savePremiumStyle() {
+            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
+            const name_color = document.getElementById('nameColor').value;
+            const glow = document.getElementById('nameGlow').checked;
+            const resp = await fetch((window.API_URL || '') + '/api/user/premium/style', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+                body: JSON.stringify({ name_color, glow })
+            });
+            const data = await resp.json();
+            if (resp.ok) {
+                if (window.Toast) Toast.show('Premium style applied!', 'success');
+                User.loadStats();
+            } else {
+                if (window.Toast) Toast.show(data.error || 'Error', 'error');
+            }
+        }
+        async function renderAXPGrowthGraph() {
+            const canvas = document.getElementById('axpGrowthCanvas');
+            const emptyEl = document.getElementById('axpHistoryEmpty');
+            if (!canvas) return;
+
+            try {
+                const res = await fetch((window.API_URL || '') + '/api/user/axp-history', {
+                    headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+                });
+                const history = await res.json();
+
+                if (!history || history.length < 2) {
                     canvas.style.display = 'none';
                     emptyEl.style.display = 'block';
                     return;
@@ -895,37 +1163,35 @@
                 canvas.style.display = 'block';
                 emptyEl.style.display = 'none';
 
-                const values = history.map(h => parseFloat(h.general_mid) || parseFloat((h.general || '').split('-')[0]) || 0);
-                const labels = history.map(h => (h.device || '?').split(' ').slice(-1)[0]);
+                const labels = history.map(h => {
+                    const d = new Date(h.date);
+                    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                });
+                const values = history.map(h => h.axp);
 
                 const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
-
-                if (historyChartInstance) {
-                    historyChartInstance.destroy();
-                }
-
                 const ctx = canvas.getContext('2d');
                 let gradient = ctx.createLinearGradient(0, 0, 0, 220);
-                gradient.addColorStop(0, accentColor.replace('rgb', 'rgba').replace(')', ', 0.3)').replace('#', '') ? accentColor + "80" : 'rgba(0,229,255,0.3)');
-                gradient.addColorStop(1, 'rgba(0,0,0,0)');
+                gradient.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
+                gradient.addColorStop(1, 'transparent');
 
-                historyChartInstance = new Chart(ctx, {
+                if (window.axpChartInstance) window.axpChartInstance.destroy();
+
+                window.axpChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
                         labels: labels,
                         datasets: [{
-                            label: 'General Focus',
+                            label: 'AXP Total',
                             data: values,
                             borderColor: accentColor,
                             backgroundColor: gradient,
                             borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
                             pointBackgroundColor: '#0b0f17',
                             pointBorderColor: accentColor,
-                            pointBorderWidth: 2,
-                            pointRadius: 5,
-                            pointHoverRadius: 7,
-                            fill: true,
-                            tension: 0.4
+                            pointRadius: 4
                         }]
                     },
                     options: {
@@ -937,10 +1203,7 @@
                                 backgroundColor: '#121826',
                                 titleColor: accentColor,
                                 bodyColor: '#fff',
-                                borderColor: 'rgba(255,255,255,0.1)',
-                                borderWidth: 1,
-                                padding: 10,
-                                displayColors: false,
+                                displayColors: false
                             }
                         },
                         scales: {
@@ -952,290 +1215,12 @@
                                 grid: { display: false },
                                 ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
                             }
-                        },
-                        interaction: { mode: 'index', intersect: false }
-                    }
-                });
-            }
-
-            function toggleCloudSync(el) {
-                if (el.checked) {
-                    if (window.Toast) Toast.show('Syncing to Cloud...', 'info', 1500);
-                    setTimeout(() => {
-                        if (window.Toast) Toast.show('Successfully connected to Cloud Sync!', 'success');
-                        localStorage.setItem('xp_cloud_sync', '1');
-                    }, 1500);
-                } else {
-                    if (window.Toast) Toast.show('Cloud Sync disabled.', 'info');
-                    localStorage.setItem('xp_cloud_sync', '0');
-                }
-            }
-
-            // ========================
-            // PLAYER CARD CANVAS
-            // ========================
-            function renderPlayerCard() {
-                if (!Auth.isLoggedIn()) return;
-                const stats = User.getStats();
-                const user = Auth.getCurrentUser();
-                if (!stats || !user) return;
-
-                const canvas = document.getElementById('playerCardCanvas');
-                if (!canvas) return;
-
-                const W = 600, H = 320;
-                canvas.width = W;
-                canvas.height = H;
-
-                const ctx = canvas.getContext('2d');
-
-                // BG gradient
-                const bg = ctx.createLinearGradient(0, 0, W, H);
-                bg.addColorStop(0, '#0b0f17');
-                bg.addColorStop(1, '#111827');
-                ctx.fillStyle = bg;
-                ctx.fillRect(0, 0, W, H);
-
-                // Glow
-                const glow = ctx.createRadialGradient(W * 0.8, H * 0.2, 10, W * 0.8, H * 0.2, 180);
-                glow.addColorStop(0, 'rgba(0,229,255,0.2)');
-                glow.addColorStop(1, 'rgba(0,229,255,0)');
-                ctx.fillStyle = glow;
-                ctx.fillRect(0, 0, W, H);
-
-                // Border
-                ctx.strokeStyle = 'rgba(0,229,255,0.4)';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(8, 8, W - 16, H - 16);
-
-                // Avatar
-                ctx.font = '70px serif';
-                ctx.fillText(stats.avatar || '👤', 40, 120);
-
-                // Username
-                ctx.font = 'bold 28px Inter, sans-serif';
-                ctx.fillStyle = '#ffffff';
-                ctx.fillText(user.username || 'Player', 140, 80);
-
-                // Rank
-                const rank = stats.rank || {};
-                ctx.font = '18px Inter, sans-serif';
-                ctx.fillStyle = '#00e5ff';
-                ctx.fillText(`${rank.icon || ''} ${rank.name || 'Starter'}`, 140, 115);
-
-                // Divider
-                ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(140, 130);
-                ctx.lineTo(560, 130);
-                ctx.stroke();
-
-                // Stats row
-                const level = Math.floor(stats.axp / 500) + 1;
-                const statItems = [
-                    { label: 'LEVEL', value: level },
-                    { label: 'AXP', value: stats.axp.toLocaleString() },
-                    { label: 'STREAK', value: `${stats.streak || 0}d` },
-                    { label: 'CLIPS', value: stats.submissions || 0 }
-                ];
-
-                statItems.forEach((s, i) => {
-                    const x = 140 + i * 110;
-                    ctx.font = '11px Inter, sans-serif';
-                    ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                    ctx.fillText(s.label, x, 165);
-                    ctx.font = 'bold 22px Inter, sans-serif';
-                    ctx.fillStyle = '#00e5ff';
-                    ctx.fillText(s.value, x, 195);
-                });
-
-                // XP Bar
-                const progress = (stats.axp % 500) / 500;
-                ctx.fillStyle = 'rgba(255,255,255,0.1)';
-                ctx.beginPath();
-                ctx.roundRect(140, 220, 380, 8, 4);
-                ctx.fill();
-
-                ctx.fillStyle = '#00e5ff';
-                ctx.beginPath();
-                ctx.roundRect(140, 220, 380 * progress, 8, 4);
-                ctx.fill();
-
-                ctx.font = '12px Inter, sans-serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.4)';
-                ctx.fillText(`${stats.axp % 500} / 500 AXP to next level`, 140, 248);
-
-                // Footer
-                ctx.font = '13px Inter, sans-serif';
-                ctx.fillStyle = 'rgba(255,255,255,0.2)';
-                ctx.fillText('xparena.net', 40, H - 20);
-                ctx.fillStyle = '#00e5ff';
-                ctx.fillText('XP ARENA', W - 110, H - 20);
-
-                // Download button
-                const dlBtn = document.getElementById('downloadCardBtn');
-                if (dlBtn) {
-                    dlBtn.onclick = () => {
-                        canvas.toBlob(blob => {
-                            const url = URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `xparena-card-${user.username || 'player'}.png`;
-                            a.click();
-                            URL.revokeObjectURL(url);
-                            if (window.Toast) Toast.show('Player card downloaded!', 'success');
-                        }, 'image/png');
-                    };
-                }
-                const shareBtn = document.getElementById('shareCardBtn');
-                if (shareBtn) {
-                    if (navigator.share && 'canShare' in navigator) {
-                        shareBtn.onclick = async () => {
-                            try {
-                                const blob = await new Promise(res => canvas.toBlob(res, 'image/png'));
-                                const files = [new File([blob], `xparena-${user.username}.png`, { type: 'image/png' })];
-                                if (navigator.canShare && navigator.canShare({ files })) {
-                                    await navigator.share({ title: 'XP Arena Card', text: 'Check out my stats!', files });
-                                } else {
-                                    await navigator.share({ title: 'XP Arena', text: `${location.origin}/profile.html` });
-                                }
-                            } catch { }
-                        };
-                    } else {
-                        // Hide on browsers without Web Share API
-                        shareBtn.style.display = 'none';
-                    }
-                }
-                const copyBtn = document.getElementById('copyLinkBtn');
-                if (copyBtn) {
-                    copyBtn.onclick = async () => {
-                        const link = `${location.origin}/profile.html`;
-                        await navigator.clipboard.writeText(link);
-                        if (window.Toast) Toast.show('Profile link copied!', 'success');
-                    };
-                }
-            }
-            async function claimDaily() {
-                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-                const res = await User.claimDailyLogin();
-                if (res.success && window.Toast) Toast.show('Daily AXP claimed!', 'success');
-            }
-            async function activateDoubler() {
-                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-                const res = await User.activateXPDoubler(24);
-                if (res.success && window.Toast) Toast.show('XP Doubler activated for 24h!', 'success');
-            }
-            async function saveAvatarUrl() {
-                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-                const url = document.getElementById('avatarUrlInput').value;
-                const resp = await fetch((window.API_URL || '') + '/api/user/avatar-url', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
-                    body: JSON.stringify({ url })
-                });
-                const data = await resp.json();
-                if (resp.ok) {
-                    if (window.Toast) Toast.show('Avatar URL updated!', 'success');
-                    User.loadStats();
-                } else {
-                    if (window.Toast) Toast.show(data.error || 'Error', 'error');
-                }
-            }
-            async function savePremiumStyle() {
-                if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-                const name_color = document.getElementById('nameColor').value;
-                const glow = document.getElementById('nameGlow').checked;
-                const resp = await fetch((window.API_URL || '') + '/api/user/premium/style', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
-                    body: JSON.stringify({ name_color, glow })
-                });
-                const data = await resp.json();
-                if (resp.ok) {
-                    if (window.Toast) Toast.show('Premium style applied!', 'success');
-                    User.loadStats();
-                } else {
-                    if (window.Toast) Toast.show(data.error || 'Error', 'error');
-                }
-            }
-            async function renderAXPGrowthGraph() {
-                const canvas = document.getElementById('axpGrowthCanvas');
-                const emptyEl = document.getElementById('axpHistoryEmpty');
-                if (!canvas) return;
-
-                try {
-                    const res = await fetch((window.API_URL || '') + '/api/user/axp-history', {
-                        headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
-                    });
-                    const history = await res.json();
-
-                    if (!history || history.length < 2) {
-                        canvas.style.display = 'none';
-                        emptyEl.style.display = 'block';
-                        return;
-                    }
-                    canvas.style.display = 'block';
-                    emptyEl.style.display = 'none';
-
-                    const labels = history.map(h => {
-                        const d = new Date(h.date);
-                        return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                    });
-                    const values = history.map(h => h.axp);
-
-                    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#00e5ff';
-                    const ctx = canvas.getContext('2d');
-                    let gradient = ctx.createLinearGradient(0, 0, 0, 220);
-                    gradient.addColorStop(0, 'rgba(0, 229, 255, 0.3)');
-                    gradient.addColorStop(1, 'transparent');
-
-                    if (window.axpChartInstance) window.axpChartInstance.destroy();
-
-                    window.axpChartInstance = new Chart(ctx, {
-                        type: 'line',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'AXP Total',
-                                data: values,
-                                borderColor: accentColor,
-                                backgroundColor: gradient,
-                                borderWidth: 3,
-                                fill: true,
-                                tension: 0.4,
-                                pointBackgroundColor: '#0b0f17',
-                                pointBorderColor: accentColor,
-                                pointRadius: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: { display: false },
-                                tooltip: {
-                                    backgroundColor: '#121826',
-                                    titleColor: accentColor,
-                                    bodyColor: '#fff',
-                                    displayColors: false
-                                }
-                            },
-                            scales: {
-                                y: {
-                                    grid: { color: 'rgba(255,255,255,0.05)' },
-                                    ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 11 } }
-                                },
-                                x: {
-                                    grid: { display: false },
-                                    ticks: { color: 'rgba(255,255,255,0.5)', font: { family: 'Inter', size: 10 } }
-                                }
-                            }
                         }
-                    });
-                } catch (e) { console.error('AXP History error:', e); }
-            }
-        </script>
-</body>
+                    }
+                });
+            } catch (e) { console.error('AXP History error:', e); }
+        }
+    </script>
+    </body>
 
 </html>

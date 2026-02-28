@@ -1,112 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Login • XP Arena</title>
     <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-white);
+            background-color: var(--bg-darker);
+            color: var(--text-primary);
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
         }
-        .ambient {
+
+        .auth-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .auth-card {
+            padding: 3.5rem 2.5rem;
+            text-align: center;
+        }
+
+        .brand {
+            margin-bottom: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            width: 60px;
+            height: 60px;
+            background: rgba(var(--accent-rgb), 0.1);
+            border: 1px solid rgba(var(--accent-rgb), 0.2);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 1.4rem;
+        }
+
+        .brand h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            margin: 0;
+            color: #fff;
+        }
+
+        .auth-header {
+            margin-bottom: 2rem;
+        }
+
+        .auth-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .field {
+            text-align: left;
+            margin-bottom: 1.5rem;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 0.6rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 1rem 1rem 1rem 3rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-stroke);
+            border-radius: var(--radius);
+            color: #fff;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .input-wrap input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
+        }
+
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-dim);
+            cursor: pointer;
+        }
+
+        .auth-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--glass-stroke);
+            font-size: 0.95rem;
+            color: var(--text-dim);
+        }
+
+        .auth-footer a {
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, rgba(var(--accent-rgb), 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Cinematic Overlay */
+        .cinematic-overlay {
             position: fixed;
             inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
+            z-index: 10000;
+            background: var(--bg-darker);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            text-align: center;
         }
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.13;
+
+        .cinematic-overlay.active {
+            display: flex;
         }
-        .orb-v { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -100px; animation: drift 20s ease-in-out infinite alternate; }
-        .orb-c { width: 450px; height: 450px; background: var(--accent2); bottom: -100px; right: -100px; animation: drift 25s ease-in-out infinite alternate-reverse; }
-        @keyframes drift { from { transform: scale(1) translate(0, 0); } to { transform: scale(1.1) translate(30px, 20px); } }
-        .grid-overlay { position: absolute; inset: 0; background-image: linear-gradient(var(--accent-glow) 1px, transparent 1px), linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px); background-size: 60px 60px; opacity: 0.15; }
-        .cinematic-overlay { position: fixed; inset: 0; z-index: 99999; background: #09090f; display: none; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; text-align: center; }
-        .cinematic-overlay.active { display: flex; }
-        .cin-line { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 1.4rem; letter-spacing: 3px; color: var(--accent); opacity: 0; transform: translateY(10px); transition: all 0.5s ease; }
-        .cin-line.show { opacity: 1; transform: translateY(0); }
-        .cin-progress { width: 200px; height: 3px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; margin-top: 1rem; opacity: 0; transition: opacity 0.5s ease; }
-        .cin-progress.show { opacity: 1; }
-        .cin-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 10px; transition: width 1.5s ease; }
-        .verify-overlay { position: fixed; inset: 0; z-index: 50000; background: rgba(9, 9, 15, 0.95); backdrop-filter: blur(16px); display: none; align-items: center; justify-content: center; }
-        .verify-overlay.active { display: flex; }
-        .verify-card { background: rgba(17, 17, 32, 0.95); border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2); border-radius: 24px; padding: 2.5rem 2rem; max-width: 380px; width: 90%; text-align: center; animation: slideUp 0.4s ease; position: relative; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .code-inputs { display: flex; gap: 8px; justify-content: center; margin-bottom: 1.5rem; }
-        .code-input { width: 46px; height: 54px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; text-align: center; font-size: 1.5rem; font-weight: 900; color: #fff; outline: none; transition: all 0.2s; }
-        .code-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 255, 85, 0), 0.15); }
-        .field { margin-bottom: 1.2rem; }
-        .field label { display: block; font-size: 0.8rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.4rem; letter-spacing: 0.3px; }
-        .field .input-wrap { position: relative; }
-        .field .input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #4b5563; font-size: 0.9rem; pointer-events: none; }
-        .field input { width: 100%; padding: 0.85rem 1rem 0.85rem 2.8rem; background: rgba(7, 10, 16, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: #fff; font-size: 0.93rem; font-family: 'Inter', sans-serif; transition: all 0.25s ease; outline: none; }
-        .field input:focus { border-color: rgba(var(--accent-rgb), 0.5); background: rgba(var(--accent-rgb), 0.05); }
-        .pw-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #4b5563; cursor: pointer; font-size: 0.9rem; }
+
+        .cin-line {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 900;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: var(--accent);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 0.5s;
+        }
+
+        .cin-line.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
     </style>
 </head>
+
 <body>
-    <nav class="navbar"></nav>
-    <main class="main-content-area">
-        <div class="ambient">
-            <div class="orb orb-v"></div>
-            <div class="orb orb-c"></div>
-            <div class="grid-overlay"></div>
-        </div>
-        <div class="cinematic-overlay" id="cinematic">
-            <div class="cin-line" id="cin1">IDENTITY VERIFIED</div>
-            <div class="cin-line" id="cin2">Syncing data matrix...</div>
-            <div class="cin-line" id="cin3">Entering the Arena</div>
-            <div class="cin-progress" id="cinProgress"><div class="cin-progress-bar" id="cinBar"></div></div>
-        </div>
-        <div class="verify-overlay" id="verifyOverlay">
-            <div class="verify-card glass-card">
-                <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div><div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
-                <div style="font-size:2.5rem;margin-bottom:1rem;">🔐</div>
-                <h2 style="font-family:'Outfit',sans-serif;font-weight:900;">Verify Access</h2>
-                <p style="color:var(--text-muted);font-size:0.85rem;">Enter the 6-digit code sent to your email.</p>
-                <div class="code-inputs" id="codeInputs">
-                    <input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                </div>
-                <div id="verifyErr" style="display:none;color:var(--danger);font-size:0.84rem;margin-bottom:1rem;"></div>
-                <button class="btn-primary" id="verifyBtn" style="width:100%; border-radius:12px; padding:1.2rem; font-weight:900;">VERIFY & ENTER</button>
+    <div class="bg-glow"></div>
+
+    <div class="cinematic-overlay" id="cinematic">
+        <div class="cin-line" id="cin1">IDENTITY VERIFIED</div>
+        <div class="cin-line" id="cin2">Syncing data matrix...</div>
+        <div class="cin-line" id="cin3">Entering the Arena</div>
+    </div>
+
+    <div class="auth-container">
+        <div class="auth-card glass-card">
+            <div class="brand">
+                <div class="brand-logo"><i class="fas fa-crosshairs"></i></div>
+                <h1>XP ARENA</h1>
             </div>
-        </div>
-        <div class="auth-wrapper" style="margin: auto; width: 100%; max-width: 440px; padding: 1.5rem; position: relative; z-index: 1;">
-            <div class="auth-card glass-card">
-                <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div><div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
-                <div class="scan-line"></div>
-                <div class="brand" style="display:flex; align-items:center; gap:12px; margin-bottom:2rem;">
-                    <div class="brand-icon" style="width:44px; height:44px; background:var(--accent); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#000;"><i class="fas fa-crosshairs"></i></div>
-                    <div class="brand-text" style="font-family:'Outfit',sans-serif; font-weight:900; font-size:1.3rem;">XP ARENA</div>
-                </div>
-                <div class="auth-heading" style="margin-bottom:1.8rem;">
-                    <h1 style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.8rem; margin-bottom:0.5rem;">Welcome back</h1>
-                    <p style="color:var(--text-muted); font-size:0.85rem;">Log in to sync your AXP and rank data.</p>
-                </div>
-                <div class="error-box" id="errorBox" style="display:none; background:rgba(var(--danger-rgb),0.1); border:1px solid var(--danger); padding:1rem; border-radius:10px; margin-bottom:1rem; color:var(--danger);"></div>
-                <form id="loginForm" autocomplete="on">
-                    <div class="field"><label>Username</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="username" placeholder="Your account" required></div></div>
-                    <div class="field"><label>Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="password" placeholder="••••••••" required><button type="button" class="pw-toggle" id="pwToggle"><i class="fas fa-eye-slash"></i></button></div></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin:1.5rem 0;">
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;"><input type="checkbox" id="remember"><span style="font-size:0.85rem; color:var(--text-muted);">Remember me</span></label>
-                        <button type="button" onclick="showForgotModal()" style="color:var(--accent); font-weight:700; background:none; border:none; cursor:pointer; font-size:0.85rem;">Forgot?</button>
+
+            <div class="auth-header">
+                <h2>Welcome Back</h2>
+                <p>Sync your progress and enter the arena</p>
+            </div>
+
+            <div id="errorBox"
+                style="display:none; background:rgba(239, 68, 68, 0.1); border:1px solid var(--danger); padding:1rem; border-radius:12px; margin-bottom:1.5rem; color:var(--danger); font-size:0.9rem;">
+            </div>
+
+            <form id="loginForm" autocomplete="on">
+                <div class="field">
+                    <label>Username</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="username" placeholder="Areni Tag" required>
                     </div>
-                    <button type="submit" class="btn-primary" id="loginBtn" style="width:100%; padding:1.2rem; font-weight:900; font-family:'Outfit', sans-serif;">CONTINUE TO ARENA</button>
-                </form>
-                <div class="auth-footer" style="margin-top:2rem; text-align:center; font-size:0.9rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:1.5rem;">New? <a href="signup.html" style="color:var(--accent); font-weight:700;">Create account</a></div>
+                </div>
+
+                <div class="field">
+                    <label>Security Key</label>
+                    <div class="input-wrap">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                        <button type="button" class="pw-toggle" id="pwToggle"><i class="fas fa-eye-slash"></i></button>
+                    </div>
+                </div>
+
+                <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.5rem 0;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="remember">
+                        <span style="font-size:0.85rem; color:var(--text-dim);">Keep me synced</span>
+                    </label>
+                    <button type="button" onclick="showForgotModal()"
+                        style="color:var(--accent); font-weight:700; background:none; border:none; cursor:pointer; font-size:0.85rem;">Forgot
+                        Key?</button>
+                </div>
+
+                <button type="submit" class="btn-primary" id="loginBtn">LOG IN TO ARENA</button>
+            </form>
+
+            <div class="auth-footer">
+                New Areni? <a href="signup.html">Initialize account</a>
             </div>
         </div>
+    </div>
     </main>
     <nav class="bottom-nav"></nav>
     <script src="js/auth.js"></script>
@@ -189,4 +342,5 @@
         }
     </script>
 </body>
+
 </html>

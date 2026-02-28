@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedTheme) {
         document.body.classList.add(savedTheme);
     } else if (!localStorage.getItem('xp_custom_color')) {
-        try { setTheme('theme-frost'); } catch {}
+        try { setTheme('theme-frost'); } catch { }
     }
 
     // Apply saved dark/light mode
@@ -81,35 +81,30 @@ function injectLayout() {
     }
 
     const navbarHTML = `
-        <div class="hud-corner hud-tl"></div>
-        <div class="hud-corner hud-tr"></div>
-        <div class="hud-corner hud-bl"></div>
-        <div class="hud-corner hud-br"></div>
-        <div class="scan-line"></div>
         <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
-            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" aria-label="Open menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
-                <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
+            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" aria-label="Open menu" style="background: rgba(255,255,255,0.08); border: 1px solid var(--glass-stroke); border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: var(--transition);">
+                <i class="fas fa-bars" style="font-size: 1.1rem;"></i>
             </button>
         </div>
         <div class="nav-center" style="display: flex; justify-content: center; flex: 1;">
-            <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 8px;">
-                <img src="/assets/images/logo.png" alt="XP ARENA Logo" style="height: 24px; width: auto; border-radius: 4px;"> XP ARENA
+            <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 10px;">
+                <img src="/assets/images/logo.png" alt="XP ARENA Logo" style="height: 28px; width: auto; border-radius: 6px;">
+                <span style="font-family:'Outfit', sans-serif; font-weight: 900; letter-spacing: -0.5px; font-size: 1.2rem; color: #fff;">XP ARENA</span>
             </a>
         </div>
         <div class="nav-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
             ${isLoggedIn ? `
-            <button id="notifBtn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.08); border:1px solid var(--border); color:#fff; width:36px;height:36px;border-radius:8px; display:flex; align-items:center; justify-content:center;">
+            <button id="notifBtn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.06); border:1px solid var(--glass-stroke); color:#fff; width:40px;height:40px;border-radius:12px; display:flex; align-items:center; justify-content:center; transition: var(--transition);">
               <i class="fas fa-bell"></i>
             </button>
-            <div id="notifDropdown" class="achievement-panel">
-                <div class="achievement-panel-header">
-                    <h3>Recent Activity</h3>
-                    <button id="clearNotifs" style="background:none; border:none; color:var(--text-muted); font-size:0.8rem; cursor:pointer;"><i class="fas fa-check-double"></i></button>
+            <div id="notifDropdown" class="glass-card" style="position:absolute; top:55px; right:0; width:300px; padding:1.5rem; display:none; z-index:30000; box-shadow: var(--shadow-lg);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h3 style="font-size:0.9rem; font-weight:800; color:#fff;">Recent Activity</h3>
+                    <button id="clearNotifs" style="background:none; border:none; color:var(--text-dim); font-size:0.8rem; cursor:pointer;"><i class="fas fa-check-double"></i></button>
                 </div>
-                <ul id="notifList" class="achievement-list"></ul>
+                <ul id="notifList" style="list-style:none; padding:0; margin:0; display:grid; gap:10px;"></ul>
             </div>` : ``}
-            ${isLoggedIn && typeof window.User !== 'undefined' && window.User.getStats() ? `<span class="level-badge-nav" id="globalLevelBadge">Lvl ${window.User.getStats().level}</span>` : ''}
-            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 36px; height: 36px; background: rgba(var(--accent-rgb, 255,85,0), 0.15); border: 1px solid rgba(var(--accent-rgb, 255,85,0), 0.3); border-radius: 50%;">
+            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 40px; height: 40px; background: rgba(var(--accent-rgb), 0.1); border: 1px solid rgba(var(--accent-rgb), 0.2); border-radius: 12px; transition: var(--transition);">
                 ${avatarHtml}
             </a>
         </div>
@@ -124,54 +119,38 @@ function injectLayout() {
     const sidebarHTML = `
         <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="padding: 2rem 1.5rem; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; display:flex; flex-direction:column; align-items:center; gap:15px; position:relative; overflow:hidden;">
-                <div class="hud-corner tl" style="position:absolute; top:10px; left:10px; width:15px; height:15px; border-top:2px solid var(--accent); border-left:2px solid var(--accent); opacity:0.3;"></div>
-                <div class="hud-corner tr" style="position:absolute; top:10px; right:10px; width:15px; height:15px; border-top:2px solid var(--accent); border-right:2px solid var(--accent); opacity:0.3;"></div>
-                <div class="hud-corner bl" style="position:absolute; bottom:10px; left:10px; width:15px; height:15px; border-bottom:2px solid var(--accent); border-left:2px solid var(--accent); opacity:0.3;"></div>
-                <div class="hud-corner br" style="position:absolute; bottom:10px; right:10px; width:15px; height:15px; border-bottom:2px solid var(--accent); border-right:2px solid var(--accent); opacity:0.3;"></div>
-                <a href="profile.html" style="display:flex; flex-direction:column; align-items:center; gap:12px; text-decoration:none; color:#fff; position:relative; z-index:1;">
-                    <div style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;background:rgba(var(--accent-rgb, 139, 92, 246),0.1);border:1px solid rgba(var(--accent-rgb, 139, 92, 246),0.3);border-radius:50%; box-shadow:0 0 20px rgba(var(--accent-rgb), 0.2);">${avatarHtml}</div>
+            <div class="sidebar-header" style="padding: 2.5rem 1.5rem; border-bottom: 1px solid var(--glass-stroke); margin-bottom: 1rem; display:flex; flex-direction:column; align-items:center; gap:20px; position:relative;">
+                <a href="profile.html" style="display:flex; flex-direction:column; align-items:center; gap:12px; text-decoration:none; color:#fff; z-index:1;">
+                    <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid var(--glass-stroke);border-radius:24px; box-shadow: var(--shadow-sm);">${avatarHtml}</div>
                     <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-                        <span style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.1rem; letter-spacing:0.5px;">${displayName}</span>
-                        ${premiumBadge ? `<span style="font-family:'Rajdhani', sans-serif; font-size:0.7rem; background:linear-gradient(90deg, #ffd700, #ff8c00); color:#000; padding:2px 8px; border-radius:4px; font-weight:800; letter-spacing:1px;">ELITE STATUS</span>` : ''}
+                        <span style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.2rem;">${displayName}</span>
+                        ${premiumBadge ? `<span style="font-family:'Inter', sans-serif; font-size:0.65rem; background:var(--accent); color:#fff; padding:3px 10px; border-radius:10px; font-weight:800; letter-spacing:0.5px;">ELITE MEMBER</span>` : ''}
                     </div>
                 </a>
             </div>
-            <div class="sidebar-scroll" style="padding-bottom: calc(var(--bottom-nav-safe) + 20px);">
-                <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home Panel</a>
+            <div class="sidebar-scroll" style="flex:1; overflow-y:auto; padding: 1rem 0;">
+                <div style="padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Principal Features</div>
+                <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Dashboard Home</a>
                 <a href="tool.html" class="sidebar-link"><i class="fas fa-microchip"></i> Sensitivity Engine</a>
                 <a href="compare.html" class="sidebar-link"><i class="fas fa-chart-line"></i> Precision Lab</a>
-                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Global Ranks</a>
-                <a href="clips.html" class="sidebar-link"><i class="fas fa-video"></i> Tactical Clips</a>
-                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt"></i> Clan Hub</a>
-                <a href="premium.html" class="sidebar-link" style="color:var(--accent); font-weight:800; background:rgba(var(--accent-rgb), 0.05); border-left:3px solid var(--accent);"><i class="fas fa-crown"></i> ELITE ACCESS</a>
-                <div style="padding: 1.5rem 1.5rem 0.5rem; font-family:'Rajdhani', sans-serif; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; font-weight:700;">Navigation Matrix</div>
+                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt"></i> Clan Management</a>
+                
+                <div style="margin-top:2rem; padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Global Network</div>
+                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> World Rankings</a>
+                <a href="clips.html" class="sidebar-link"><i class="fas fa-video"></i> Community Clips</a>
                 <a href="tournaments.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Operations</a>
-                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite-dish"></i> Mission Data</a>
-                <a href="shop.html" class="sidebar-link"><i class="fas fa-box-open"></i> Armory</a>
-                <a href="profile.html" class="sidebar-link"><i class="fas fa-user-cog"></i> Interface Config</a>
-                <a href="help.html" class="sidebar-link"><i class="fas fa-life-ring"></i> Support Link</a>
+                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite-dish"></i> Daily Missions</a>
+                <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-bag"></i> Areni Armory</a>
+                
+                <div style="margin-top:2rem; padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Elite Tier</div>
+                <a href="premium.html" class="sidebar-link" style="color:var(--accent); font-weight:800;"><i class="fas fa-crown"></i> ELITE UPGRADE</a>
             </div>
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 1rem 0;">
-            ${user ? `
-                <a href="profile.html" class="sidebar-link" id="nav-profile"><i class="fas fa-terminal"></i> User Profile [${user.username}]</a>
-                <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();" style="color: #ef4444;"><i class="fas fa-power-off"></i> Terminate Session</a>
-            ` : `
-                <a href="login.html" class="sidebar-link" id="nav-login"><i class="fas fa-code-branch"></i> Initialize Access</a>
-            `}
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: auto 0 0.5rem 0;">
-            <a href="about.html" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
-            <a href="contact.html" class="sidebar-link"><i class="fas fa-phone"></i> Contact</a>
-            <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.5rem 0;">
-            <div style="padding: 0 1.5rem 1.5rem; margin-top: auto;">
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800;">Visual Theme Accent</div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
-                    <div class="theme-dot" onclick="setTheme('default')" style="background: #00e5ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid #fff;" title="Default Neon"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-cyber')" style="background: linear-gradient(135deg, #0f0, #00e5ff); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 1px solid #0f0; box-shadow: 0 0 10px #0f0;" title="$100k Cyber Neon"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-ember')" style="background: #ff4d4d; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Ember Red"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-amethyst')" style="background: #bf00ff; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Amethyst Purple"></div>
-                    <div class="theme-dot" onclick="setTheme('theme-gold')" style="background: #ffcc00; width: 24px; height: 24px; border-radius: 50%; cursor: pointer;" title="Gold"></div>
-                </div>
+            <div style="padding: 1.5rem; border-top: 1px solid var(--glass-stroke);">
+                ${user ? `
+                    <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();" style="color: var(--danger); font-size:0.9rem; padding:0.5rem 0;"><i class="fas fa-power-off"></i> Sign Out</a>
+                ` : `
+                    <a href="login.html" class="btn-primary" style="font-size:0.9rem; padding:0.8rem;">Initialize Access</a>
+                `}
             </div>
         </div>
     `;
@@ -188,30 +167,25 @@ function injectLayout() {
     // 3. Inject Bottom Nav
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const bottomNavHTML = `
-        <div class="hud-corner hud-tl"></div>
-        <div class="hud-corner hud-tr"></div>
-        <div class="hud-corner hud-bl"></div>
-        <div class="hud-corner hud-br"></div>
-        <div class="scan-line"></div>
-        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-home"></i></span>
-            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Hub</span>
+        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
+            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-home"></i></span>
+            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Hub</span>
         </a>
-        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-microchip"></i></span>
-            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Engine</span>
+        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
+            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-microchip"></i></span>
+            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Engine</span>
         </a>
-        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-box-open"></i></span>
-            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Armory</span>
+        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
+            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-box-open"></i></span>
+            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Armory</span>
         </a>
-        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-shield-alt"></i></span>
-            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Clans</span>
+        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
+            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-shield-alt"></i></span>
+            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Clans</span>
         </a>
-        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;">${avatarHtml}</span>
-            <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">User</span>
+        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
+            <span class="nav-icon" style="font-size:1.25rem;">${avatarHtml}</span>
+            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">User</span>
         </a>
     `;
     const bottomNav = document.querySelector('nav.bottom-nav');
@@ -369,6 +343,8 @@ function wrapAndInjectFooter() {
     console.log('Layout: Starting wrapAndInjectFooter');
     if (document.querySelector('.main-content-area')) {
         console.log('Layout: Already wrapped');
+        // Still need to ensure theme fab is injected if missing
+        injectThemeOverlay();
         return;
     }
 
@@ -723,15 +699,15 @@ if (window.location.hash === '#settings') {
 }
 
 // Inject Sound Engine & Toast / Effects Scripts
-if (!document.querySelector('script[src="js/sounds.js"]')) {
+if (!document.querySelector('script[src="js/sounds.js?v=2"]')) {
     const sEng = document.createElement('script');
-    sEng.src = 'js/sounds.js';
+    sEng.src = 'js/sounds.js?v=2';
     document.head.appendChild(sEng);
 }
 
-if (!document.querySelector('script[src="js/toast.js"]')) {
+if (!document.querySelector('script[src="js/toast.js?v=2"]')) {
     const toastScript = document.createElement('script');
-    toastScript.src = 'js/toast.js';
+    toastScript.src = 'js/toast.js?v=2';
     document.head.appendChild(toastScript);
 
     const confettiScript = document.createElement('script');
