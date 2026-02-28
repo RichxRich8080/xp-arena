@@ -8,96 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        /* Referral box */
-        .referral-box {
-            background: rgba(0, 229, 255, 0.06);
-            border: 1px solid rgba(0, 229, 255, 0.3);
-            border-radius: 14px;
-            padding: 1.2rem 1.4rem;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .referral-code {
-            font-family: monospace;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--accent);
-            letter-spacing: 3px;
-            flex: 1;
-        }
-
-        .btn-copy-ref {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-            font-weight: 800;
-            font-size: 0.85rem;
-            cursor: pointer;
-        }
-
-        /* Preset card */
-        .preset-card {
-            background: var(--card-dark);
-            border: 1px solid var(--border);
-            border-left: 4px solid #bf00ff;
-            border-radius: 12px;
-            padding: 1rem 1.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-        }
-
-        .preset-name {
-            font-weight: 800;
-            font-size: 1rem;
-        }
-
-        .preset-device {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        /* History canvas wrap */
-        #historCanvas {
-            width: 100%;
-            height: 220px;
-            border-radius: 12px;
-        }
-
-        /* Toggle Switch */
-        .switch input:checked+.slider {
-            background-color: var(--accent);
-        }
-
-        .switch input:focus+.slider {
-            box-shadow: 0 0 1px var(--accent-glow);
-        }
-
-        .switch input:checked+.slider:before {
-            transform: translateX(22px);
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 20px;
-            width: 20px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-        }
-    </style>
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
 
@@ -131,16 +41,40 @@
                     <i class="fab fa-youtube" id="link-youtube" style="display: none;"></i>
                 </div>
 
-                <div id="display-level"
-                    style="font-size: 1.2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem;">Level 1
-                </div>
-
-                <div id="display-streak"
-                    style="margin-bottom: 1rem; font-size: 0.9rem; font-weight: 600; color: #ffcc00;">
-                    <i class="fas fa-fire"></i> <span id="streak-count">0</span> Day Streak
-                </div>
-                <div id="display-guild" style="margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted);">
-                    <i class="fas fa-shield-alt"></i> Clan: <span id="guildName">None</span>
+                <div class="diagnostic-panel glass-card" style="margin: 1.5rem auto; max-width: 720px;">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
+                    <div class="scan-line"></div>
+                    <div class="diagnostic-header">System Diagnostics</div>
+                    <div class="diagnostic-grid">
+                        <div class="diagnostic-ring" id="diag-level">
+                            <div class="diagnostic-ring-content">
+                                <div class="diagnostic-ring-value" id="diag-level-value">1</div>
+                                <div class="diagnostic-ring-label">Level</div>
+                            </div>
+                        </div>
+                        <div class="diagnostic-ring" id="diag-axp">
+                            <div class="diagnostic-ring-content">
+                                <div class="diagnostic-ring-value" id="diag-axp-value">0</div>
+                                <div class="diagnostic-ring-label">AXP</div>
+                            </div>
+                        </div>
+                        <div class="diagnostic-ring" id="diag-streak">
+                            <div class="diagnostic-ring-content">
+                                <div class="diagnostic-ring-value" id="diag-streak-value">0</div>
+                                <div class="diagnostic-ring-label">Streak</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:10px;">
+                        <div id="display-level" class="hud-chip">Level 1</div>
+                        <div id="display-streak" class="hud-chip"><i class="fas fa-fire"></i> <span
+                                id="streak-count">0</span> Day Streak</div>
+                        <div id="display-guild" class="hud-chip"><i class="fas fa-shield-alt"></i> Clan: <span
+                                id="guildName">None</span></div>
+                    </div>
                 </div>
                 <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem;">
                     <button class="btn-primary" style="width:auto;" onclick="claimDaily()">Claim Daily AXP</button>
@@ -216,8 +150,11 @@
             <!-- TAB: OVERVIEW -->
             <div id="tab-overview" class="tab-content active">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
-                    <div class="stat-card"
-                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <span class="stat-label"
                             style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Total
                             AXP</span>
@@ -225,8 +162,11 @@
                             style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
                             id="axpDisplay">0</span>
                     </div>
-                    <div class="stat-card"
-                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <span class="stat-label"
                             style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Global
                             Rank</span>
@@ -234,8 +174,11 @@
                             style="display: block; font-size: 1.5rem; font-weight: 800; color: var(--accent);"
                             id="profile-rank">Starter</span>
                     </div>
-                    <div class="stat-card"
-                        style="background: var(--card-dark); padding: 1.5rem; border-radius: 16px; border: 1px solid var(--border); text-align: center;">
+                    <div class="stat-card glass-card" style="padding: 1.5rem; text-align: center;">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <span class="stat-label"
                             style="display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Submissions</span>
                         <span class="stat-val"
@@ -330,8 +273,12 @@
                 </div>
 
                 <div id="squadActive" class="hidden">
-                    <div class="form-card"
+                    <div class="glass-card"
                         style="text-align: center; border: 1px solid var(--accent); background: rgba(0,229,255,0.05);">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <div style="font-size: 2.5rem; margin-bottom: 10px;" id="squadIcon">🛡️</div>
                         <h2 id="squadName" style="color: #fff; margin-bottom: 5px; font-weight: 900;">[SQUAD] Name</h2>
                         <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Founded by <span
@@ -518,10 +465,13 @@
                         <summary>Admin Tools</summary>
                         <div class="content">
                             <div class="settings-group" style="display:grid; gap:10px;">
-                                <div style="font-size:0.8rem; color: var(--text-muted);">Reset Weekly Bonus (testing)</div>
+                                <div style="font-size:0.8rem; color: var(--text-muted);">Reset Weekly Bonus (testing)
+                                </div>
                                 <input type="number" id="adminUserId" class="settings-input" placeholder="User ID">
-                                <input type="date" id="adminWeekStart" class="settings-input" placeholder="Week Start (optional)">
-                                <button class="btn-secondary" style="width:auto" onclick="resetWeekBonus()">Reset Bonus</button>
+                                <input type="date" id="adminWeekStart" class="settings-input"
+                                    placeholder="Week Start (optional)">
+                                <button class="btn-secondary" style="width:auto" onclick="resetWeekBonus()">Reset
+                                    Bonus</button>
                                 <div id="adminToolsMsg" style="font-size:0.8rem; color: var(--text-muted);"></div>
                             </div>
                         </div>
@@ -564,11 +514,11 @@
                     }
 
                     if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
-                const stats = User.getStats();
-                if (stats && stats.is_admin) {
-                    const at = document.getElementById('adminTools');
-                    if (at) at.classList.remove('hidden');
-                }
+                    const stats = User.getStats();
+                    if (stats && stats.is_admin) {
+                        const at = document.getElementById('adminTools');
+                        if (at) at.classList.remove('hidden');
+                    }
                 }
 
                 window.addEventListener('statsChange', () => {
@@ -780,7 +730,12 @@
                     achListEl.innerHTML = ACHIEVEMENTS.map(ach => {
                         const isUnlocked = stats.achievements.includes(ach.id);
                         return `
-                        <div class="form-card" style="padding: 1rem; display: flex; align-items: center; gap: 15px; opacity: ${isUnlocked ? 1 : 0.3}; border-color: ${isUnlocked ? 'var(--accent)' : 'var(--border)'}; filter: ${isUnlocked ? 'none' : 'grayscale(100%)'} ;">
+                        <div class="glass-card" style="padding: 1rem; display: flex; align-items: center; gap: 15px; opacity: ${isUnlocked ? 1 : 0.3}; border-color: ${isUnlocked ? 'var(--accent)' : 'var(--border)'}; filter: ${isUnlocked ? 'none' : 'grayscale(100%)'} ;">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
+                            <div class="scan-line"></div>
                             <div style="font-size: 2rem;">${isUnlocked ? ach.icon : '🔒'}</div>
                             <div style="flex: 1;">
                                 <h4 style="margin: 0; color: ${isUnlocked ? 'var(--accent)' : 'var(--text-white)'}">${ach.name}</h4>
@@ -802,7 +757,11 @@
                 if (presetsList) {
                     if (stats.presets && stats.presets.length > 0) {
                         presetsList.innerHTML = stats.presets.map(p => `
-                        <div class="preset-card">
+                        <div class="preset-card glass-card">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
                             <div>
                                 <div class="preset-name">⭐ ${p.name}</div>
                                 <div class="preset-device">${p.device} · General: ${p.general}</div>
@@ -820,7 +779,11 @@
                 if (vaultList) {
                     if (stats.vault && stats.vault.length > 0) {
                         vaultList.innerHTML = stats.vault.map(v => `
-                        <div class="form-card" style="padding: 1.2rem; border-left: 4px solid var(--accent);">
+                        <div class="glass-card" style="padding: 1.2rem; border-left: 4px solid var(--accent);">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
                             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.8rem;">
                                 <div>
                                     <h4 style="margin: 0; color: var(--accent);">${v.device}</h4>
@@ -848,7 +811,11 @@
                     `).join('');
                     } else {
                         vaultList.innerHTML = `
-                        <div class="form-card" style="grid-column: 1/-1; padding: 3rem; text-align: center; opacity: 0.6;">
+                        <div class="glass-card" style="grid-column: 1/-1; padding: 3rem; text-align: center; opacity: 0.6;">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
                             <i class="fas fa-vault" style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-muted);"></i>
                             <p>Your sensitivity vault is empty.</p>
                             <a href="tool.html" class="btn-primary" style="margin-top: 1rem; width: auto; display: inline-block; padding: 0.6rem 1.5rem;">Go Calibrate</a>

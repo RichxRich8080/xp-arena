@@ -30,8 +30,8 @@
         .search-input {
             width: 100%;
             padding: 0.85rem 1rem;
-            background: var(--card-dark);
-            border: 1px solid var(--border);
+            background: rgba(8, 12, 20, 0.8);
+            border: 1px solid var(--hud-line);
             border-radius: 12px;
             color: var(--text-white);
             font-size: 1rem;
@@ -67,11 +67,9 @@
         }
 
         .device-card {
-            background: rgba(0, 229, 255, 0.05);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
+            border-radius: 18px;
+            padding: 1.6rem;
+            text-align: left;
         }
 
         .vs-badge {
@@ -125,12 +123,32 @@
         }
 
         .comment-item {
-            background: var(--glass);
             border-left: 3px solid var(--accent);
             padding: 1rem;
-            border-radius: 8px;
+            border-radius: 12px;
             margin-bottom: 1rem;
             font-size: 0.9rem;
+        }
+
+        .analysis-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(var(--accent-rgb), 0.3);
+            background: rgba(var(--accent-rgb), 0.12);
+            font-size: 0.7rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .analysis-grid {
+            position: relative;
+            overflow: hidden;
         }
     </style>
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
@@ -142,11 +160,17 @@
     <main class="main-content-area">
         <div class="container">
             <div class="page-header" style="text-align: center; margin-bottom: 2rem;">
-                <h1>Compare Devices</h1>
-                <p>See which device has the natural sensitivity advantage.</p>
+                <div class="analysis-badge"><i class="fas fa-microchip"></i> Hardware Analysis</div>
+                <h1>Precision Comparison Matrix</h1>
+                <p>Scan touch metrics, latency, and boost factors before you deploy.</p>
             </div>
 
-            <div class="form-card compare-grid">
+            <div class="glass-card compare-grid analysis-grid">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
+                <div class="scan-line"></div>
                 <!-- DEVICE A -->
                 <div class="form-group" style="margin: 0;">
                     <label style="color: #ff4d4d; font-weight: 800;">🔴 DEVICE A</label>
@@ -181,8 +205,8 @@
                     <!-- Injected via JS -->
                 </div>
 
-                <div id="winnerBanner"
-                    style="margin-top: 1.5rem; background: rgba(0,229,255,0.05); border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--accent);">
+                <div id="winnerBanner" class="glass-card"
+                    style="margin-top: 1.5rem; border: 1px solid var(--accent); border-radius: 12px; padding: 1.5rem; text-align: center; font-size: 1.1rem; font-weight: 800; color: var(--accent);">
                 </div>
 
                 <div class="comment-section">

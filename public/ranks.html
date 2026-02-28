@@ -8,13 +8,6 @@
     <link rel="stylesheet" href="css/main.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #09090b;
-            --surface: rgba(20, 20, 28, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --radius-lg: 20px;
-        }
-
         body {
             background-color: var(--bg);
             background-image: radial-gradient(circle at 50% 100%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%);
@@ -213,7 +206,12 @@
                 <p>Climb the ranks by earning AXP through activities</p>
             </div>
 
-            <div class="player-status" id="playerStatus">
+            <div class="player-status glass-card" id="playerStatus">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
+                <div class="scan-line"></div>
                 <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">YOUR CURRENT RANK</div>
                 <div id="currentRankDisplay"
                     style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">Starter
@@ -264,11 +262,19 @@
         function renderRanksList() {
             const list = document.getElementById('ranksList');
             list.innerHTML = RANKS.map(rank => `
-                <div class="rank-card" id="rank-${rank.name.toLowerCase()}">
+                <div class="rank-card glass-card" id="rank-${rank.name.toLowerCase()}">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <div class="rank-icon">${rank.icon}</div>
                     <div class="rank-info">
                         <h3>${rank.name}</h3>
                         <p>${rank.verified ? 'The ultimate proof of dedication.' : 'Advance to higher tiers by earning AXP.'}</p>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top: 0.8rem;">
+                            <span class="hud-chip">Tier Lock</span>
+                            <span class="hud-chip">${rank.minAXP.toLocaleString()} AXP</span>
+                        </div>
                     </div>
                     <div class="rank-requirement">${rank.minAXP.toLocaleString()} AXP</div>
                 </div>

@@ -356,6 +356,12 @@ const User = {
         const elLevel = document.getElementById('display-level');
         const elAXPLabel = document.getElementById('display-axp-label');
         const elAXPFill = document.getElementById('axp-progress-fill');
+        const diagLevel = document.getElementById('diag-level');
+        const diagLevelValue = document.getElementById('diag-level-value');
+        const diagAxp = document.getElementById('diag-axp');
+        const diagAxpValue = document.getElementById('diag-axp-value');
+        const diagStreak = document.getElementById('diag-streak');
+        const diagStreakValue = document.getElementById('diag-streak-value');
 
         if (elLevel) elLevel.textContent = `Level ${level}`;
         if (elAXPLabel) elAXPLabel.textContent = `${currentLevelAXP} / 500 AXP (Total: ${stats.axp})`;
@@ -365,6 +371,19 @@ const User = {
                 elAXPFill.style.width = `${progressPercent}%`;
             }, 100);
         }
+
+        const currentRankIndex = RANKS.findIndex(r => r.name === rank.name);
+        const nextRank = RANKS[currentRankIndex + 1];
+        const axpTarget = nextRank ? nextRank.minAXP : stats.axp || 1;
+        const axpProgress = Math.min((stats.axp / axpTarget) * 100, 100);
+        const streakProgress = Math.min(((stats.streak || 0) / 7) * 100, 100);
+
+        if (diagLevel) diagLevel.style.setProperty('--progress', progressPercent);
+        if (diagLevelValue) diagLevelValue.textContent = level.toLocaleString();
+        if (diagAxp) diagAxp.style.setProperty('--progress', axpProgress);
+        if (diagAxpValue) diagAxpValue.textContent = stats.axp.toLocaleString();
+        if (diagStreak) diagStreak.style.setProperty('--progress', streakProgress);
+        if (diagStreakValue) diagStreakValue.textContent = (stats.streak || 0).toLocaleString();
 
         const fields = {
             'profile-username': user.username,

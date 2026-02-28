@@ -97,7 +97,11 @@
 
                 <div style="display:grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 4rem;">
                     <aside>
-                        <div class="form-card">
+                        <div class="glass-card">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
                             <h3 style="font-size: 0.8rem; letter-spacing: 2px; color: var(--text-muted);">PERSONA BIO
                             </h3>
                             <p id="pBio" style="line-height: 1.6; margin-top: 10px;"></p>
@@ -189,7 +193,11 @@
                 const grid = document.getElementById('setupGrid');
                 if (data.setups && data.setups.length > 0) {
                     grid.innerHTML = data.setups.map(s => `
-                <div class="setup-card">
+                <div class="setup-card glass-card">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <div style="font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 5px;">${s.mode.toUpperCase()} CONFIG</div>
                     <div style="font-weight: 800; color: #fff; font-size: 1.1rem; margin-bottom: 10px;">Gen ${s.general} Sensitivity</div>
                     <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">

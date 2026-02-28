@@ -94,10 +94,23 @@ document.addEventListener('DOMContentLoaded', () => {
         const fB = getFactorInfo(devB);
 
         const buildCard = (d, f, color) => `
-            <div class="device-card" style="border-top: 4px solid ${color}; position: relative; overflow: hidden;">
-                <h3 style="margin: 0 0 5px 0; color: #fff;">${d.label}</h3>
+            <div class="device-card glass-card" style="border-top: 4px solid ${color}; position: relative; overflow: hidden;">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
+                <div class="scan-line"></div>
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                    <h3 style="margin: 0; color: #fff;">${d.label}</h3>
+                    <span class="hud-chip">ANALYZED</span>
+                </div>
                 <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">${d.series}</p>
-                
+                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px;">
+                    <span class="hud-chip">Touch ${f.touchSampling}</span>
+                    <span class="hud-chip">Latency ${f.latency}</span>
+                    <span class="hud-chip">Boost ${f.mult}x</span>
+                </div>
+
                 <div style="font-size: 3rem; font-weight: 900; color: ${color}; margin: 20px 0; text-shadow: 0 0 20px ${color}44;">
                     ${f.score} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">ARENA SCORE</span>
                 </div>
@@ -137,7 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ];
 
         document.getElementById('comparisonComments').innerHTML = comments.map(c => `
-            <div class="comment-item">
+            <div class="comment-item glass-card">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
                 <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
                     <span style="font-weight: 800; color: var(--accent);">@${c.user}</span>
                     <span style="color: var(--text-muted); font-size: 0.7rem;">${c.date}</span>

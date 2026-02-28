@@ -16,9 +16,8 @@
     <main class="main-content-area">
         <div class="container" style="padding-top: 2rem;">
             <div class="page-header" style="text-align:center; margin-bottom: 3rem;">
-                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">ARENA ARMORY</h1>
-                <p style="color: var(--text-muted);">Exchange your earned AXP for tactical upgrades and cosmetic
-                    prestige.</p>
+                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">ARMORY GEAR MODULES</h1>
+                <p style="color: var(--text-muted);">High-resolution gear modules with live tech specs and AXP pricing.</p>
                 <div class="shop-balance-pill"
                     style="display:inline-flex; align-items:center; gap:10px; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); padding: 0.5rem 1.5rem; border-radius: 50px; margin-top: 1.5rem;">
                     <i class="fas fa-star" style="color: var(--accent);"></i>
@@ -125,6 +124,44 @@
             margin-bottom: 2rem;
             color: var(--accent);
             filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.4));
+        }
+
+        .gear-module {
+            align-items: stretch;
+            text-align: left;
+            padding: 2rem;
+            gap: 0.8rem;
+        }
+
+        .module-visual {
+            height: 170px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(20, 20, 35, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            display: grid;
+            place-items: center;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-visual img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) saturate(1.2);
+        }
+
+        .module-icon {
+            font-size: 3.5rem;
+            color: var(--accent);
+            filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.4));
+        }
+
+        .gear-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 0.5rem;
         }
 
         .shop-item-rarity-badge {

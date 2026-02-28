@@ -11,23 +11,12 @@
         rel="stylesheet">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        * {
-            box-sizing: border-box;
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-white);
             margin: 0;
             padding: 0;
-        }
-
-        body {
-            background: #09090f;
-            color: #f8fafc;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem 0;
             overflow-x: hidden;
-            overflow-y: auto !important;
         }
 
         .ambient {
@@ -81,291 +70,6 @@
             opacity: 0.15;
         }
 
-        .auth-wrapper {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            max-width: 460px;
-        }
-
-        .auth-card {
-            background: rgba(17, 17, 32, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            border-radius: 24px;
-            padding: 2.5rem 2rem;
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-            animation: slideUp 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 2rem;
-        }
-
-        .brand-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: #fff;
-            box-shadow: 0 0 20px var(--accent-glow);
-        }
-
-        .brand-text {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 900;
-            font-size: 1.3rem;
-            background: linear-gradient(135deg, #fff, var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-heading {
-            margin-bottom: 1.8rem;
-        }
-
-        .auth-heading h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.9rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            margin-bottom: 0.3rem;
-        }
-
-        .auth-heading p {
-            font-size: 0.87rem;
-            color: #6b7280;
-        }
-
-        .field {
-            margin-bottom: 1.1rem;
-        }
-
-        .field label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #94a3b8;
-            margin-bottom: 0.4rem;
-        }
-
-        .field .input-wrap {
-            position: relative;
-        }
-
-        .field .input-wrap i {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #4b5563;
-            font-size: 0.9rem;
-            pointer-events: none;
-        }
-
-        .field input {
-            width: 100%;
-            padding: 0.85rem 1rem 0.85rem 2.8rem;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            color: #fff;
-            font-size: 0.93rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.25s ease;
-            outline: none;
-        }
-
-        .field input::placeholder {
-            color: #374151;
-        }
-
-        .field input:focus {
-            border-color: rgba(var(--accent-rgb, 255, 85, 0), 0.5);
-            background: rgba(var(--accent-rgb, 255, 85, 0), 0.05);
-            box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 255, 85, 0), 0.1);
-        }
-
-        .field input.invalid {
-            border-color: rgba(239, 68, 68, 0.5);
-        }
-
-        .pw-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #4b5563;
-            cursor: pointer;
-        }
-
-        .pw-toggle:hover {
-            color: #9ca3af;
-        }
-
-        /* Two-col row */
-        .field-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.8rem;
-        }
-
-        /* Password strength */
-        .strength-bar {
-            height: 3px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.06);
-            margin-top: 6px;
-            overflow: hidden;
-        }
-
-        .strength-fill {
-            height: 100%;
-            border-radius: 10px;
-            width: 0%;
-            transition: width 0.3s ease, background 0.3s ease;
-        }
-
-        .strength-label {
-            font-size: 0.72rem;
-            color: #6b7280;
-            margin-top: 4px;
-        }
-
-        /* Terms */
-        .terms-row {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin: 1rem 0 1.4rem;
-        }
-
-        .terms-row input[type="checkbox"] {
-            accent-color: var(--accent);
-            margin-top: 3px;
-            flex-shrink: 0;
-        }
-
-        .terms-row label {
-            font-size: 0.82rem;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        .terms-row label a {
-            color: var(--accent);
-        }
-
-        /* Error */
-        .error-box {
-            display: none;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 10px;
-            padding: 0.85rem 1rem;
-            color: #fca5a5;
-            font-size: 0.84rem;
-            margin-bottom: 1.1rem;
-        }
-
-        /* Submit */
-        .btn-signup {
-            width: 100%;
-            padding: 0.95rem;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            color: #fff;
-            border: none;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 0.95rem;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            box-shadow: 0 8px 28px var(--accent-glow);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-signup:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 40px rgba(var(--accent-rgb, 255, 85, 0), 0.5);
-        }
-
-        .btn-signup:active {
-            transform: scale(0.98);
-        }
-
-        .btn-signup:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .auth-footer {
-            margin-top: 1.8rem;
-            text-align: center;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 0.88rem;
-            color: #6b7280;
-        }
-
-        .auth-footer a {
-            color: var(--accent);
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        .auth-footer a:hover {
-            color: var(--accent2);
-        }
-
-        /* Perks strip */
-        .perks-strip {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 1.8rem;
-        }
-
-        .perk {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 0.75rem;
-            color: #6b7280;
-        }
-
-        .perk i {
-            color: var(--success);
-        }
-
-        /* Verify overlay */
         .verify-overlay {
             position: fixed;
             inset: 0;
@@ -389,21 +93,7 @@
             max-width: 380px;
             width: 90%;
             text-align: center;
-            animation: slideUp 0.4s ease;
-        }
-
-        .verify-card h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.6rem;
-            font-weight: 900;
-            margin-bottom: 0.5rem;
-        }
-
-        .verify-card p {
-            color: #6b7280;
-            font-size: 0.87rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
+            position: relative;
         }
 
         .code-inputs {
@@ -431,243 +121,171 @@
             border-color: var(--accent);
             box-shadow: 0 0 0 3px rgba(var(--accent-rgb, 255, 85, 0), 0.15);
         }
+
+        .strength-bar {
+            height: 3px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.3s ease, background 0.3s ease;
+        }
+
+        .strength-label {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
     </style>
 </head>
 
 <body>
-
-    <div class="ambient">
-        <div class="orb orb-v"></div>
-        <div class="orb orb-c"></div>
-        <div class="grid-overlay"></div>
-    </div>
-
-    <!-- Verify Overlay -->
-    <div class="verify-overlay" id="verifyOverlay">
-        <div class="verify-card">
-            <div style="font-size:2.5rem;margin-bottom:1rem;">✉️</div>
-            <h2>Almost there!</h2>
-            <p>We sent a verification code to your email. Enter any 6-character code to proceed — <span
-                    style="color:var(--accent)">verification is instant!</span></p>
-            <div class="code-inputs" id="codeInputs">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-                <input class="code-input" maxlength="1" type="text" inputmode="numeric">
-            </div>
-            <div id="verifyErr" style="display:none;color:#fca5a5;font-size:0.84rem;margin-bottom:1rem;"></div>
-            <button class="btn-signup" id="verifyBtn">
-                <i class="fas fa-check-circle"></i> Verify & Enter Arena
-            </button>
-            <p style="font-size:0.75rem;color:#6b7280;margin-top:1rem;">Type any 6 digits — any code is accepted.</p>
+    <nav class="navbar"></nav>
+    <main class="main-content-area">
+        <div class="ambient">
+            <div class="orb orb-v"></div>
+            <div class="orb orb-c"></div>
+            <div class="grid-overlay"></div>
         </div>
-    </div>
-
-    <div class="auth-wrapper">
-        <div class="auth-card">
-            <div class="brand">
-                <div class="brand-icon"><i class="fas fa-crosshairs"></i></div>
-                <div class="brand-text">XP ARENA</div>
-            </div>
-
-            <div class="auth-heading">
-                <h1>Create your account</h1>
-                <p>Join thousands of Arenis competing for the top spot.</p>
-            </div>
-
-            <div class="perks-strip">
-                <div class="perk"><i class="fas fa-check-circle"></i> Free forever</div>
-                <div class="perk"><i class="fas fa-check-circle"></i> +100 AXP welcome bonus</div>
-                <div class="perk"><i class="fas fa-check-circle"></i> No credit card</div>
-            </div>
-
-            <div class="error-box" id="errorBox"></div>
-
-            <form id="signupForm" autocomplete="off">
-                <div class="field-row">
-                    <div class="field">
-                        <label>Username</label>
-                        <div class="input-wrap">
-                            <i class="fas fa-user"></i>
-                            <input type="text" id="username" placeholder="YourTag" autocomplete="off" required>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <label>Email</label>
-                        <div class="input-wrap">
-                            <i class="fas fa-envelope"></i>
-                            <input type="email" id="email" placeholder="you@email.com" autocomplete="off" required>
-                        </div>
-                    </div>
+        <div class="verify-overlay" id="verifyOverlay">
+            <div class="verify-card glass-card">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
+                <div style="font-size:2.5rem;margin-bottom:1rem;">✉️</div>
+                <h2 style="font-family:'Outfit',sans-serif;font-weight:900;">Verify Matrix</h2>
+                <p style="color:var(--text-muted);font-size:0.85rem;">We sent a code to your email. Enter any 6 digits
+                    to proceed.</p>
+                <div class="code-inputs" id="codeInputs">
+                    <input class="code-input" maxlength="1" type="text" inputmode="numeric"><input class="code-input"
+                        maxlength="1" type="text" inputmode="numeric"><input class="code-input" maxlength="1"
+                        type="text" inputmode="numeric"><input class="code-input" maxlength="1" type="text"
+                        inputmode="numeric"><input class="code-input" maxlength="1" type="text"
+                        inputmode="numeric"><input class="code-input" maxlength="1" type="text" inputmode="numeric">
                 </div>
-
-                <div class="field">
-                    <label>Password</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="Min. 6 characters" autocomplete="new-password"
-                            required id="password">
-                        <button type="button" class="pw-toggle" id="pwToggle"><i class="fas fa-eye-slash"></i></button>
-                    </div>
-                    <div class="strength-bar">
-                        <div class="strength-fill" id="strengthFill"></div>
-                    </div>
-                    <div class="strength-label" id="strengthLabel">Enter a password</div>
+                <div id="verifyErr" style="display:none;color:var(--danger);font-size:0.84rem;margin-bottom:1rem;">
                 </div>
-
-                <div class="field">
-                    <label>Referral Code <span style="color:#6b7280;font-weight:400;">(optional)</span></label>
-                    <div class="input-wrap">
-                        <i class="fas fa-ticket-alt"></i>
-                        <input type="text" id="referral" placeholder="Friend's referral code">
-                    </div>
-                </div>
-
-                <div class="terms-row">
-                    <input type="checkbox" id="terms" required>
-                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy
-                            Policy</a></label>
-                </div>
-
-                <button type="submit" class="btn-signup" id="signupBtn">
-                    <i class="fas fa-bolt"></i>
-                    Join the Arena — It's Free
-                </button>
-            </form>
-
-            <div class="auth-footer">
-                Already have an account?
-                <a href="login.html">Log in</a>
+                <button class="btn-primary" id="verifyBtn" style="width:100%; padding:1.2rem; font-weight:900;">VERIFY &
+                    ENTER</button>
             </div>
         </div>
-    </div>
-
+        <div class="auth-wrapper"
+            style="margin: auto; width: 100%; max-width: 480px; padding: 1.5rem; position: relative; z-index: 1;">
+            <div class="auth-card glass-card">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
+                <div class="scan-line"></div>
+                <div class="brand" style="display:flex; align-items:center; gap:12px; margin-bottom:2rem;">
+                    <div class="brand-icon"
+                        style="width:44px; height:44px; background:var(--accent); border-radius:12px; display:flex; align-items:center; justify-content:center; color:#000;">
+                        <i class="fas fa-crosshairs"></i></div>
+                    <div class="brand-text" style="font-family:'Outfit',sans-serif; font-weight:900; font-size:1.3rem;">
+                        XP ARENA</div>
+                </div>
+                <div class="auth-heading" style="margin-bottom:1.5rem;">
+                    <h1
+                        style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.8rem; margin-bottom:0.5rem;">
+                        Join the Arena</h1>
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Create your identity matrix to start
+                        competing.</p>
+                </div>
+                <div class="error-box" id="errorBox"
+                    style="display:none; background:rgba(var(--danger-rgb),0.1); border:1px solid var(--danger); padding:1rem; border-radius:10px; margin-bottom:1rem; color:var(--danger);">
+                </div>
+                <form id="signupForm" autocomplete="off">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                        <div class="field"><label>Username</label>
+                            <div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="username"
+                                    placeholder="AreniTag" required></div>
+                        </div>
+                        <div class="field"><label>Email</label>
+                            <div class="input-wrap"><i class="fas fa-envelope"></i><input type="email" id="email"
+                                    placeholder="you@mail.com" required></div>
+                        </div>
+                    </div>
+                    <div class="field"><label>Password</label>
+                        <div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="password"
+                                placeholder="Min. 6 chars" required><button type="button" class="pw-toggle"
+                                id="pwToggle"
+                                style="background:none;border:none;color:var(--text-muted);cursor:pointer;position:absolute;right:10px;top:50%;transform:translateY(-50%);"><i
+                                    class="fas fa-eye-slash"></i></button></div>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-label" id="strengthLabel">Enter a password</div>
+                    </div>
+                    <div class="field"><label>Referral <span
+                                style="color:var(--text-muted);font-weight:400;">(optional)</span></label>
+                        <div class="input-wrap"><i class="fas fa-ticket-alt"></i><input type="text" id="referral"
+                                placeholder="Code"></div>
+                    </div>
+                    <div style="margin:1.5rem 0; display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="terms" required><label for="terms"
+                            style="font-size:0.8rem; color:var(--text-muted);">Agree to <a href="#"
+                                style="color:var(--accent);">Terms</a></label>
+                    </div>
+                    <button type="submit" class="btn-primary" id="signupBtn"
+                        style="width:100%; padding:1.2rem; font-weight:900; font-family:'Outfit', sans-serif;">INITIALIZE
+                        ACCOUNT</button>
+                </form>
+                <div class="auth-footer"
+                    style="margin-top:2rem; text-align:center; font-size:0.9rem; color:var(--text-muted); border-top:1px solid var(--border); padding-top:1.5rem;">
+                    Already an Areni? <a href="login.html" style="color:var(--accent); font-weight:700;">Log in</a>
+                </div>
+            </div>
+        </div>
+    </main>
+    <nav class="bottom-nav"></nav>
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
     <script src="js/app.js"></script>
     <script>
-        // ─── Password toggle ───
         document.getElementById('pwToggle').addEventListener('click', () => {
-            const inp = document.getElementById('password');
-            const ico = document.querySelector('#pwToggle i');
-            inp.type = inp.type === 'password' ? 'text' : 'password';
-            ico.className = inp.type === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye';
+            const inp = document.getElementById('password'); const ico = document.querySelector('#pwToggle i');
+            inp.type = inp.type === 'password' ? 'text' : 'password'; ico.className = inp.type === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye';
         });
-
-        // ─── Password strength ───
         document.getElementById('password').addEventListener('input', function () {
-            const v = this.value;
-            const fill = document.getElementById('strengthFill');
-            const label = document.getElementById('strengthLabel');
-            let score = 0;
-            if (v.length >= 6) score++;
-            if (v.length >= 10) score++;
-            if (/[A-Z]/.test(v)) score++;
-            if (/[0-9]/.test(v)) score++;
-            if (/[^A-Za-z0-9]/.test(v)) score++;
-            const configs = [
-                { w: '0%', bg: 'transparent', text: 'Enter a password' },
-                { w: '20%', bg: '#ef4444', text: 'Weak' },
-                { w: '40%', bg: '#f97316', text: 'Fair' },
-                { w: '60%', bg: '#f59e0b', text: 'Okay' },
-                { w: '80%', bg: '#84cc16', text: 'Strong' },
-                { w: '100%', bg: '#10b981', text: 'Very strong 🔥' },
-            ];
-            const c = configs[score] || configs[0];
-            fill.style.width = c.w; fill.style.background = c.bg; label.textContent = c.text;
+            const v = this.value; const fill = document.getElementById('strengthFill'); const label = document.getElementById('strengthLabel');
+            let score = 0; if (v.length >= 6) score++; if (v.length >= 10) score++; if (/[A-Z]/.test(v)) score++; if (/[0-9]/.test(v)) score++; if (/[^A-Za-z0-9]/.test(v)) score++;
+            const cfg = [{ w: '0%', bg: 'transparent', t: 'Enter a password' }, { w: '20%', bg: '#ef4444', t: 'Weak' }, { w: '40%', bg: '#f97316', t: 'Fair' }, { w: '60%', bg: '#f59e0b', t: 'Okay' }, { w: '80%', bg: '#84cc16', t: 'Strong' }, { w: '100%', bg: '#10b981', t: 'Elite 🔥' }];
+            const c = cfg[score] || cfg[0]; fill.style.width = c.w; fill.style.background = c.bg; label.textContent = c.t;
         });
-
-        // ─── Referral from URL ───
-        const urlRef = new URLSearchParams(location.search).get('ref');
-        if (urlRef) document.getElementById('referral').value = urlRef;
-
-        // ─── Code input auto-advance ───
         let pendingUser = '';
         const codeInputs = document.querySelectorAll('.code-input');
         codeInputs.forEach((inp, i) => {
             inp.addEventListener('input', () => { if (inp.value && i < codeInputs.length - 1) codeInputs[i + 1].focus(); });
             inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) codeInputs[i - 1].focus(); });
         });
-
-        // ─── Signup Submit ───
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const errBox = document.getElementById('errorBox');
-            const btn = document.getElementById('signupBtn');
-            errBox.style.display = 'none';
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Creating account...';
-
-            const username = document.getElementById('username').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const ref = document.getElementById('referral').value.trim();
-
-            if (!document.getElementById('terms').checked) {
-                errBox.textContent = 'Please accept the terms to continue.';
-                errBox.style.display = 'block';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-bolt"></i> Join the Arena — It\'s Free';
-                return;
-            }
-
+            e.preventDefault(); const errBox = document.getElementById('errorBox'); const btn = document.getElementById('signupBtn');
+            errBox.style.display = 'none'; btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ENROLLING...';
+            const username = document.getElementById('username').value.trim(); const email = document.getElementById('email').value.trim(); const password = document.getElementById('password').value;
             try {
-                const res = await fetch((window.API_URL || '') + '/api/auth/register', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, email, password, ref: ref || undefined })
-                });
+                const res = await fetch((window.API_URL || '') + '/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
                 const data = await res.json();
-
-                if (res.ok && data.success) {
-                    pendingUser = username;
-                    document.getElementById('verifyOverlay').classList.add('active');
-                    document.querySelector('.code-input').focus();
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fas fa-bolt"></i> Join the Arena — It\'s Free';
-                } else {
-                    throw new Error(data.error || 'Registration failed');
-                }
-            } catch (err) {
-                errBox.textContent = err.message;
-                errBox.style.display = 'block';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-bolt"></i> Join the Arena — It\'s Free';
-            }
+                if (res.ok && data.success) { pendingUser = username; document.getElementById('verifyOverlay').classList.add('active'); document.querySelector('.code-input').focus(); }
+                else throw new Error(data.error || 'Failed');
+            } catch (err) { errBox.textContent = err.message; errBox.style.display = 'block'; } finally { btn.disabled = false; btn.innerHTML = 'INITIALIZE ACCOUNT'; }
         });
-
-        // ─── Verify ───
         document.getElementById('verifyBtn').addEventListener('click', async () => {
             const code = Array.from(codeInputs).map(i => i.value).join('') || '000000';
-            const vBtn = document.getElementById('verifyBtn');
-            const vErr = document.getElementById('verifyErr');
-            vBtn.disabled = true;
-            vBtn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
-            vErr.style.display = 'none';
-
+            const vBtn = document.getElementById('verifyBtn'); vBtn.disabled = true; vBtn.innerHTML = 'VERIFYING...';
             try {
-                const res = await fetch((window.API_URL || '') + '/api/auth/verify-email', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: pendingUser, code: code || '000000' })
-                });
+                const res = await fetch((window.API_URL || '') + '/api/auth/verify-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: pendingUser, code }) });
                 const data = await res.json();
-                if (res.ok && data.success) {
-                    localStorage.setItem('xp_token', data.token);
-                    localStorage.setItem('xp_current_user', JSON.stringify(data.user));
-                    window.location.href = 'profile.html';
-                } else {
-                    throw new Error(data.error || 'Verification failed');
-                }
-            } catch (err) {
-                vErr.textContent = err.message;
-                vErr.style.display = 'block';
-                vBtn.disabled = false;
-                vBtn.innerHTML = '<i class="fas fa-check-circle"></i> Verify & Enter Arena';
-            }
+                if (res.ok && data.success) { localStorage.setItem('xp_token', data.token); localStorage.setItem('xp_current_user', JSON.stringify(data.user)); window.location.href = 'profile.html'; }
+                else throw new Error(data.error || 'Failed');
+            } catch (err) { document.getElementById('verifyErr').textContent = err.message; document.getElementById('verifyErr').style.display = 'block'; vBtn.disabled = false; vBtn.innerHTML = 'VERIFY & ENTER'; }
         });
     </script>
 </body>

@@ -9,13 +9,6 @@
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        :root {
-            --bg: #09090b;
-            --surface: rgba(20, 20, 28, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --radius-lg: 18px;
-        }
-
         body {
             background-color: var(--bg);
             background-image:
@@ -160,12 +153,6 @@
             margin-bottom: 2rem;
             text-transform: uppercase;
         }
-
-        /* Scrollbar Fix */
-        .main-content-area {
-            overflow-y: auto !important;
-            height: 100% !important;
-        }
     </style>
 </head>
 
@@ -185,7 +172,13 @@
             </div>
             <div id="guildActions"
                 style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
-                <div id="homeBlock" class="feature-item tactical-dossier" data-id="HOME_CARD" style="display:none">
+                <div id="homeBlock" class="feature-item tactical-dossier glass-card" data-id="HOME_CARD"
+                    style="display:none">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
+                    <div class="scan-line"></div>
                     <div style="display:flex; align-items:center; gap:12px; margin-bottom: 10px;">
                         <div id="homeBadge" style="font-size:1.6rem;">🛡️</div>
                         <div>
@@ -200,14 +193,22 @@
                         <a href="#roster" class="btn-secondary" style="width:auto">View Roster</a>
                     </div>
                 </div>
-                <div id="createBlock" class="feature-item tactical-dossier" data-id="UNIT_INIT_04">
+                <div id="createBlock" class="feature-item tactical-dossier glass-card" data-id="UNIT_INIT_04">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
                     <input id="guildNameInput" class="settings-input" placeholder="Clan Designation (Name)" />
                     <button class="btn-primary" style="margin-top:10px; width: 100%;" onclick="createGuild()">ACTIVATE
                         CLAN</button>
                     <div id="guildCreateMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
                 </div>
-                <div id="joinBlock" class="feature-item tactical-dossier" data-id="DEPLOY_REQ_09">
+                <div id="joinBlock" class="feature-item tactical-dossier glass-card" data-id="DEPLOY_REQ_09">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
                     <input id="guildIdInput" class="settings-input" placeholder="Clan ID" />
                     <input id="inviteCodeInput" class="settings-input" placeholder="Invite Code (e.g., G123)" />
@@ -219,7 +220,12 @@
                     <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
                     <div id="rulesDisplay" style="margin-top:8px; font-size:0.8rem; color: var(--text-muted);"></div>
                 </div>
-                <div id="manageBlock" class="feature-item tactical-dossier" data-id="CMD_CENT_01" style="display:none">
+                <div id="manageBlock" class="feature-item tactical-dossier glass-card" data-id="CMD_CENT_01"
+                    style="display:none">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <h3><i class="fas fa-cog"></i> Command Center</h3>
                     <div id="activeGuildName"
                         style="font-weight:800; margin-bottom:12px; color: var(--accent); font-size: 1.2rem;"></div>
@@ -246,12 +252,25 @@
                             <div id="guildRulesMsg"
                                 style="margin-top:6px; font-size:0.85rem; color: var(--text-muted);"></div>
                         </div>
+                        <div class="glass-card" style="padding: 1rem;">
+                            <div class="hud-corner hud-tl"></div>
+                            <div class="hud-corner hud-tr"></div>
+                            <div class="hud-corner hud-bl"></div>
+                            <div class="hud-corner hud-br"></div>
+                            <div
+                                style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px;">
+                                WAR STATUS</div>
+                            <textarea id="warNote" class="settings-input" rows="3"
+                                placeholder="Command dispatch note for war request"></textarea>
+                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
+                                onclick="applyGuildWar()">REQUEST WAR</button>
+                        </div>
                     </div>
                     <div id="roster" style="margin-top:20px;">
                         <div
                             style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
                             CLAN ROSTER</div>
-                        <div id="guildMembersList" style="display:grid; gap:8px;"></div>
+                        <div id="guildMembersList" class="tactical-list"></div>
                     </div>
                     <div style="margin-top:12px;">
                         <div style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 4px;">INVITE CODE</div>
@@ -266,7 +285,7 @@
             <div style="width:100%; max-width:1000px; margin: 2rem auto;">
                 <h3 style="text-align:center; margin-bottom: 1.5rem; letter-spacing: 2px; color: var(--accent);">CLAN
                     RANKINGS</h3>
-                <div id="guildLeaderboard" style="display:grid; gap:8px;"></div>
+                <div id="guildLeaderboard" class="tactical-list"></div>
             </div>
     </main>
 
@@ -435,12 +454,16 @@
                 const res = await fetch((window.API_URL || '') + '/api/guilds/members?guild_id=' + gid, { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
                 const rows = res.ok ? await res.json() : [];
                 el.innerHTML = rows.map(m => `
-                    <div class="form-card" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center; padding:0.8rem 1rem;">
+                    <div class="glass-card tactical-list-item" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <div><b>${m.username}</b> <span style="font-size:0.75rem; color: var(--text-muted);">(${m.role})</span><br><span style="font-size:0.8rem; color: var(--text-muted);">AXP ${Number(m.axp || 0).toLocaleString()}</span></div>
                         <button class="btn-secondary" style="width:auto" onclick="removeMember(${gid}, ${m.id})">Remove</button>
                     </div>
-                `).join('') || '<div class="form-card">No members.</div>';
-            } catch { el.innerHTML = '<div class="form-card">Failed to load members.</div>'; }
+                `).join('') || '<div class="glass-card" style="padding: 1rem; text-align:center;">No members.</div>';
+            } catch { el.innerHTML = '<div class="glass-card" style="padding: 1rem; text-align:center;">Failed to load members.</div>'; }
         }
         async function removeMember(gid, uid) {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
@@ -469,12 +492,16 @@
         }
         async function loadGuildLeaderboard() {
             const el = document.getElementById('guildLeaderboard');
-            el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Loading...</div>';
+            el.innerHTML = '<div class="glass-card" style="text-align:center; padding: 1rem;">Loading...</div>';
             try {
                 const res = await fetch((window.API_URL || '') + '/api/guilds/leaderboard');
                 const rows = res.ok ? await res.json() : [];
                 el.innerHTML = rows.map((g, i) => `
-                    <div class="form-card" style="display:grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items:center;">
+                    <div class="glass-card tactical-list-item" style="display:grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items:center;">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <div style="text-align:center; font-weight:800;">#${i + 1}</div>
                         <div>
                             <div style="font-weight:800; color:#fff;">${g.badge ? g.badge + ' ' : ''}${g.name}</div>
@@ -484,7 +511,7 @@
                     </div>
                 `).join('');
             } catch {
-                el.innerHTML = '<div class="form-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
+                el.innerHTML = '<div class="glass-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
             }
         }
     </script>

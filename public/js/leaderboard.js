@@ -107,7 +107,11 @@ async function renderLeaderboard() {
                 border: 1px solid ${p.isMe ? 'var(--accent)' : isTop3 ? 'rgba(255,255,255,0.1)' : 'var(--border)'};
                 transition: all 0.2s;
                 cursor: pointer;
-            " class="lb-row" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
+            " class="lb-row hud-table-row glass-card" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
+                <div class="hud-corner hud-tl"></div>
+                <div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div>
+                <div class="hud-corner hud-br"></div>
                 <div style="font-size: ${isTop3 ? '1.6rem' : '1rem'}; font-weight: 800; color: ${posColor}; text-align: center;">${posLabel}</div>
                 <div>
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -152,7 +156,11 @@ async function renderLeaderboard() {
                     border-radius: 14px;
                     background: rgba(var(--accent-rgb, 255, 85, 0), 0.08);
                     border: 1px solid var(--accent);
-                ">
+                " class="hud-table-row glass-card">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
                     <div style="font-size: 1rem; font-weight: 800; color: var(--accent); text-align: center;">#${myPosition + 1}</div>
                     <div style="display: flex; align-items: center; gap: 10px;">
                         <span style="font-size: 1.4rem;">${me.avatar}</span>
@@ -320,7 +328,11 @@ async function renderGuildLeaderboard() {
                         margin-bottom: 0.6rem;
                         background: ${isTop3 ? 'rgba(255,255,255,0.03)' : 'transparent'};
                         border: 1px solid ${isTop3 ? 'rgba(255,255,255,0.1)' : 'var(--border)'};
-                    " class="lb-row">
+                    " class="lb-row hud-table-row glass-card">
+                        <div class="hud-corner hud-tl"></div>
+                        <div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div>
+                        <div class="hud-corner hud-br"></div>
                         <div style="font-size: ${isTop3 ? '1.6rem' : '1rem'}; font-weight: 800; color: ${posColor}; text-align: center;">${posLabel}</div>
                         <div>
                             <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">

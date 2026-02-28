@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('xp_theme');
     if (savedTheme) {
         document.body.classList.add(savedTheme);
+    } else if (!localStorage.getItem('xp_custom_color')) {
+        try { setTheme('theme-frost'); } catch {}
     }
 
     // Apply saved dark/light mode
@@ -79,6 +81,11 @@ function injectLayout() {
     }
 
     const navbarHTML = `
+        <div class="hud-corner hud-tl"></div>
+        <div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div>
+        <div class="hud-corner hud-br"></div>
+        <div class="scan-line"></div>
         <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
             <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" aria-label="Open menu" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff;">
                 <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
@@ -130,31 +137,31 @@ function injectLayout() {
                     </div>
                 </a>
             </div>
-            <div class="sidebar-scroll" style="padding-bottom: 100px;">
+            <div class="sidebar-scroll" style="padding-bottom: calc(var(--bottom-nav-safe) + 20px);">
                 <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Home Panel</a>
                 <a href="tool.html" class="sidebar-link"><i class="fas fa-microchip"></i> Sensitivity Engine</a>
-                <a href="compare.html" class="sidebar-link"><i class="fas fa-analytics"></i> Precision Lab</a>
-                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-skull"></i> Global Ranks</a>
+                <a href="compare.html" class="sidebar-link"><i class="fas fa-chart-line"></i> Precision Lab</a>
+                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> Global Ranks</a>
                 <a href="clips.html" class="sidebar-link"><i class="fas fa-video"></i> Tactical Clips</a>
-                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-halved"></i> Clan Hub</a>
+                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt"></i> Clan Hub</a>
                 <a href="premium.html" class="sidebar-link" style="color:var(--accent); font-weight:800; background:rgba(var(--accent-rgb), 0.05); border-left:3px solid var(--accent);"><i class="fas fa-crown"></i> ELITE ACCESS</a>
                 <div style="padding: 1.5rem 1.5rem 0.5rem; font-family:'Rajdhani', sans-serif; font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:2px; font-weight:700;">Navigation Matrix</div>
                 <a href="tournaments.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Operations</a>
-                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite"></i> Mission Data</a>
+                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite-dish"></i> Mission Data</a>
                 <a href="shop.html" class="sidebar-link"><i class="fas fa-box-open"></i> Armory</a>
-                <a href="profile.html" class="sidebar-link"><i class="fas fa-user-gear"></i> Interface Config</a>
-                <a href="help.html" class="sidebar-link"><i class="fas fa-signal"></i> Support Link</a>
+                <a href="profile.html" class="sidebar-link"><i class="fas fa-user-cog"></i> Interface Config</a>
+                <a href="help.html" class="sidebar-link"><i class="fas fa-life-ring"></i> Support Link</a>
             </div>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 1rem 0;">
             ${user ? `
                 <a href="profile.html" class="sidebar-link" id="nav-profile"><i class="fas fa-terminal"></i> User Profile [${user.username}]</a>
                 <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();" style="color: #ef4444;"><i class="fas fa-power-off"></i> Terminate Session</a>
             ` : `
-                <a href="login.html" class="sidebar-link" id="nav-login"><i class="fas fa-code-merge"></i> Initialize Access</a>
+                <a href="login.html" class="sidebar-link" id="nav-login"><i class="fas fa-code-branch"></i> Initialize Access</a>
             `}
             <hr style="border: 0; border-top: 1px solid var(--border); margin: auto 0 0.5rem 0;">
-            <a href="about" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
-            <a href="contact" class="sidebar-link"><i class="fas fa-phone"></i> Contact</a>
+            <a href="about.html" class="sidebar-link"><i class="fas fa-info-circle"></i> About</a>
+            <a href="contact.html" class="sidebar-link"><i class="fas fa-phone"></i> Contact</a>
             <hr style="border: 0; border-top: 1px solid var(--border); margin: 0.5rem 0;">
             <div style="padding: 0 1.5rem 1.5rem; margin-top: auto;">
                 <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.8rem; text-transform: uppercase; font-weight: 800;">Visual Theme Accent</div>
@@ -181,6 +188,11 @@ function injectLayout() {
     // 3. Inject Bottom Nav
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const bottomNavHTML = `
+        <div class="hud-corner hud-tl"></div>
+        <div class="hud-corner hud-tr"></div>
+        <div class="hud-corner hud-bl"></div>
+        <div class="hud-corner hud-br"></div>
+        <div class="scan-line"></div>
         <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
             <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-home"></i></span>
             <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Hub</span>
@@ -194,7 +206,7 @@ function injectLayout() {
             <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Armory</span>
         </a>
         <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
-            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-shield-halved"></i></span>
+            <span class="nav-icon" style="font-size:1.2rem;"><i class="fas fa-shield-alt"></i></span>
             <span class="nav-label" style="font-family:'Rajdhani', sans-serif; font-size:0.65rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Clans</span>
         </a>
         <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit;">
@@ -889,7 +901,8 @@ function setupPageTransitions() {
 
         e.preventDefault();
         if (window.Sounds) Sounds.play('click');
-        document.body.classList.add('page-transition-out');
+        const content = document.querySelector('.main-content-area') || document.body;
+        content.classList.add('page-transition-out');
 
         // Wait for animation then navigate
         setTimeout(() => {

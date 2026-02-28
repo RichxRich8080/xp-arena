@@ -45,24 +45,41 @@ const Shop = {
             return;
         }
 
-        container.innerHTML = this.items.map(item => `
-            <div class="form-card shop-item-card rarity-${item.rarity}" data-id="${item.id}">
-                <div class="shop-item-icon">
-                    <i class="${item.icon}"></i>
-                </div>
-                <div class="shop-item-rarity-badge">${item.rarity.toUpperCase()}</div>
-                <h4>${item.name}</h4>
-                <p>${item.description}</p>
-                <div class="shop-item-footer">
-                    <div class="shop-item-price">
-                        <i class="fas fa-star" style="color: var(--accent);"></i> ${item.price_axp.toLocaleString()} AXP
+        container.innerHTML = this.items.map(item => {
+            const rarityLabel = (item.rarity || 'common').toUpperCase();
+            const typeLabel = (item.type || 'module').toUpperCase();
+            const stockLabel = item.stock === -1 ? 'UNLIMITED' : (item.stock ?? 'N/A');
+            const imageUrl = item.image_url || item.image || '';
+            const visual = imageUrl
+                ? `<img src="${imageUrl}" alt="${item.name}" loading="lazy" />`
+                : `<div class="module-icon"><i class="${item.icon}"></i></div>`;
+            return `
+                <div class="shop-item-card gear-module glass-card rarity-${item.rarity}" data-id="${item.id}">
+                    <div class="hud-corner hud-tl"></div>
+                    <div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div>
+                    <div class="hud-corner hud-br"></div>
+                    <div class="scan-line"></div>
+                    <div class="shop-item-rarity-badge">${rarityLabel}</div>
+                    <div class="module-visual">${visual}</div>
+                    <h4>${item.name}</h4>
+                    <p>${item.description}</p>
+                    <div class="gear-specs">
+                        <span class="hud-chip">TYPE ${typeLabel}</span>
+                        <span class="hud-chip">STOCK ${stockLabel}</span>
+                        <span class="hud-chip">GRADE ${rarityLabel}</span>
                     </div>
-                    <button class="btn-primary shop-buy-btn" onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
-                        ${this.canAfford(item.price_axp) ? 'PURCHASE' : 'INSUFFICIENT AXP'}
-                    </button>
+                    <div class="shop-item-footer">
+                        <div class="shop-item-price">
+                            <i class="fas fa-star" style="color: var(--accent);"></i> ${item.price_axp.toLocaleString()} AXP
+                        </div>
+                        <button class="btn-primary shop-buy-btn" onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
+                            ${this.canAfford(item.price_axp) ? 'PURCHASE' : 'INSUFFICIENT AXP'}
+                        </button>
+                    </div>
                 </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
     },
 
     canAfford(price) {
