@@ -4,636 +4,508 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Analyzing Settings • XP ARENA</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Outfit:wght@500;800&display=swap"
-        rel="stylesheet">
+    <title>Diagnostic Report • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        :root {
-            --accent: #00e5ff;
-            --accent-glow: rgba(0, 229, 255, 0.4);
-            --bg-deep: #06090f;
-            --glass: rgba(17, 24, 39, 0.7);
-            --border-glass: rgba(0, 229, 255, 0.2);
-        }
-
-        body {
-            background: var(--bg-deep);
-            color: #fff;
-            overflow: auto !important;
-            display: flex;
-            align-items: stretch;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        #loading-container {
+        .result-container {
+            padding: 8rem 2rem 10rem;
+            max-width: 850px;
+            margin: 0 auto;
             text-align: center;
-            z-index: 100;
         }
 
-        .gear-wrapper {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 2rem;
+        #loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 500px;
+        }
+
+        .neural-link-orb {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--photon-glow) 0%, transparent 70%);
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            margin-bottom: 4rem;
         }
 
-        .gear-icon {
-            font-size: 80px;
-            color: var(--accent);
-            filter: drop-shadow(0 0 15px var(--accent-glow));
-            animation: rotateGear 4s linear infinite;
-        }
-
-        .halo {
+        .orb-scanner {
             position: absolute;
-            width: 140px;
-            height: 140px;
-            border: 2px solid var(--border-glass);
-            border-radius: 50%;
-            animation: pulse 2s infinite ease-in-out;
+            width: 100%;
+            height: 2px;
+            background: var(--photon);
+            box-shadow: 0 0 15px var(--photon-glow);
+            animation: scan 3s linear infinite;
+            top: 0;
+            opacity: 0.5;
         }
 
-        .halo-2 {
-            width: 180px;
-            height: 180px;
-            animation-delay: 0.5s;
-        }
-
-        @keyframes rotateGear {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        @keyframes pulse {
+        @keyframes scan {
             0% {
-                transform: scale(1);
-                opacity: 0.5;
+                top: 0;
+                opacity: 0;
             }
 
             50% {
-                transform: scale(1.1);
-                opacity: 0.2;
+                opacity: 0.8;
             }
 
             100% {
-                transform: scale(1);
-                opacity: 0.5;
+                top: 100%;
+                opacity: 0;
             }
         }
 
-        .status-text {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #fff, var(--accent));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        #result-container {
-            position: relative;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 1s cubic-bezier(0.19, 1, 0.22, 1);
-            background: radial-gradient(circle at center, rgba(0, 229, 255, 0.05) 0%, transparent 70%);
-            padding: 4rem 1rem;
-        }
-
-        #result-container.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .elite-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-glass);
-            border-radius: 30px;
-            padding: 2rem;
-            width: 90%;
-            max-width: 480px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
-        }
-
-        .elite-card::before {
+        .neural-link-orb::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+            inset: -15px;
+            border: 1px dashed var(--photon);
+            border-radius: 50%;
+            animation: rotate 10s linear infinite;
+            opacity: 0.3;
         }
 
-        .rarity-tag {
-            display: inline-block;
-            padding: 4px 16px;
-            background: rgba(255, 204, 0, 0.1);
-            border: 1px solid #ffcc00;
-            color: #ffcc00;
-            border-radius: 100px;
-            font-size: 0.65rem;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
+        .orb-icon {
+            font-size: 3.5rem;
+            color: var(--photon);
+            filter: drop-shadow(0 0 15px var(--photon-glow));
         }
 
-        .res-grid {
+        #result-content {
+            display: none;
+            animation: slideUpFade 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        .diagnostic-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 4rem;
+            position: relative;
+            overflow: hidden;
+            text-align: left;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .card-grain {
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+        }
+
+        .result-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1.5rem;
-            margin: 2rem 0;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
         }
 
-        .res-box {
+        .result-node {
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 1.5rem;
-            border-radius: 20px;
-            transition: all 0.3s;
+            padding: 2rem;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s var(--transition);
         }
 
-        .res-box:hover {
-            border-color: var(--border-glass);
-            background: rgba(0, 229, 255, 0.03);
-            transform: translateY(-5px);
+        .result-node:hover {
+            transform: translateY(-8px);
+            background: rgba(0, 245, 255, 0.03);
+            border-color: var(--photon);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
         }
 
-        .res-val {
-            font-family: 'Outfit';
-            font-size: 2.3rem;
-            font-weight: 800;
-            color: #fff;
-            display: block;
-        }
-
-        .res-label {
-            font-size: 0.7rem;
-            color: var(--text-muted);
+        .node-label {
+            font-size: 0.75rem;
+            color: var(--stardust-muted);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
-
-        .btn-elite {
-            background: var(--accent);
-            color: #000;
-            border: none;
-            padding: 1.2rem;
-            border-radius: 16px;
-            font-weight: 900;
-            font-size: 0.9rem;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 3px;
             margin-bottom: 0.8rem;
-        }
-
-        .btn-elite:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 30px var(--accent-glow);
-        }
-
-        .diag-pill {
-            background: rgba(0, 229, 255, 0.1);
-            color: var(--accent);
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-size: 0.65rem;
+            display: block;
             font-weight: 800;
+        }
+
+        .node-val {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 3.2rem;
+            font-weight: 700;
+            color: var(--stardust);
+            line-height: 1;
+            text-shadow: 0 0 20px var(--photon-glow);
+        }
+
+        /* Dossier Accents */
+        .dossier-stamp {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            border: 3px solid var(--photon);
+            color: var(--photon);
+            padding: 0.5rem 1rem;
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 900;
+            font-size: 1.2rem;
+            transform: rotate(15deg);
+            opacity: 0;
+            pointer-events: none;
+            text-transform: uppercase;
+            animation: stampIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 2s;
+            background: rgba(0, 245, 255, 0.05);
+        }
+
+        @keyframes stampIn {
+            0% {
+                transform: scale(5) rotate(45deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(15deg);
+                opacity: 0.6;
+            }
+        }
+
+        .hologram-fringe {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.05), transparent);
+            background-size: 200% 100%;
+            animation: holoSlide 4s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes holoSlide {
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .hardware-profile {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px dashed var(--glass-border);
+            display: flex;
+            gap: 2rem;
+            font-size: 0.75rem;
+            color: var(--stardust-muted);
+            font-family: monospace;
+        }
+
+        .hw-item b {
+            color: var(--photon);
+            margin-right: 5px;
+        }
+
+        .scanline {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, transparent 50%, rgba(255, 255, 255, 0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .confidence-badge {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            margin-bottom: 1.5rem;
-            letter-spacing: 1px;
+            gap: 10px;
+            background: rgba(0, 245, 255, 0.08);
+            color: var(--photon);
+            padding: 8px 16px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(0, 245, 255, 0.2);
+        }
+
+        .verdict-shell {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 3rem;
+            border: 1px solid var(--glass-border);
+            position: relative;
+        }
+
+        .verdict-shell::before {
+            content: 'AI ANALYSIS';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: var(--void);
+            padding: 0 10px;
+            font-size: 0.6rem;
+            letter-spacing: 2px;
+            color: var(--photon);
+            font-weight: 900;
         }
 
         @media (max-width: 600px) {
-            #loading-container {
-                padding: 3rem 1rem;
-            }
-
-            .elite-card {
-                padding: 1.5rem;
-            }
-
-            .res-grid {
+            .result-grid {
                 grid-template-columns: 1fr;
-                gap: 1rem;
             }
 
-            .res-val {
-                font-size: 1.8rem;
+            .diagnostic-card {
+                padding: 2.5rem 1.5rem;
+            }
+
+            .node-val {
+                font-size: 2.2rem;
             }
         }
     </style>
 </head>
 
-<body>
-
-    <canvas id="particlesCanvas" style="position:fixed; inset:0; z-index:0; pointer-events:none;"></canvas>
-    <div id="loading-container" style="position:relative; z-index:1;">
-        <div class="gear-wrapper">
-            <div class="halo halo-1"></div>
-            <div class="halo halo-2"></div>
-            <i class="fas fa-microchip gear-icon" style="font-size: 60px;"></i>
-        </div>
-        <div class="status-text" id="status-msg">NEURAL SYNC...</div>
-        <p id="status-device" style="color: var(--accent); font-size: 0.8rem; font-weight: 800; margin-top: 10px;">--
-        </p>
-    </div>
-
-    <div id="result-container" style="position:relative; z-index:1;">
-        <div class="elite-card"
-            style="box-shadow: 0 40px 120px rgba(0,255,255,0.08), 0 0 60px rgba(0,229,255,0.06) inset;">
-            <div class="rarity-tag">LEGENDARY CALIBRATION</div>
-            <div class="diag-pill" id="ai-sync-pill">
-                <i class="fas fa-atom"></i> <span id="ai-sync-text">AI TARGETING SYNCED</span>
+<body class="page-rebirth">
+    <div class="result-container">
+        <!-- Loading -->
+        <div id="loading-state">
+            <div class="neural-link-orb">
+                <div class="orb-scanner"></div>
+                <i class="fas fa-brain orb-icon"></i>
             </div>
+            <h2 class="clash" id="status-msg" style="font-size: 2.5rem; letter-spacing: 0.5rem;">NEURAL SYNC</h2>
+            <p id="status-device"
+                style="color: var(--photon); font-weight: 800; margin-top: 1.5rem; opacity: 0.7; letter-spacing: 2px;">
+                IDENTIFYING HARDWARE</p>
+        </div>
 
-            <h2 id="final-device" style="margin: 0; font-family: 'Outfit'; font-size: 1.8rem; color: #fff;">Device Name
-            </h2>
-            <p
-                style="color: var(--accent); font-size: 0.75rem; font-weight: 800; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px;">
-                PRO READY</p>
+        <!-- Result -->
+        <div id="result-content">
+            <div class="diagnostic-card"
+                style="padding: 0; position: relative; border: none; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;">
 
-            <div class="res-grid">
-                <div class="res-box">
-                    <span class="res-label">GENERAL</span>
-                    <span class="res-val" id="res-gen">--</span>
-                </div>
-                <div class="res-box">
-                    <span class="res-label">RED DOT</span>
-                    <span class="res-val" id="res-red">--</span>
-                </div>
-                <div class="res-box">
-                    <span class="res-label">2X SCOPE</span>
-                    <span class="res-val" id="res-2x">--</span>
-                </div>
-                <div class="res-box">
-                    <span class="res-label">4X SCOPE</span>
-                    <span class="res-val" id="res-4x">--</span>
-                </div>
-                <div class="res-box" style="grid-column: span 2; padding: 1rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="res-label">HARDWARE DPI</span>
-                        <span id="res-dpi" style="font-family: 'Outfit'; font-weight: 800; color: var(--accent);">--
-                            DPI</span>
+                <!-- Premium Perspective Card -->
+                <div class="premium-sensitivity-container" style="padding: 2rem; perspective: 1000px;">
+                    <div class="pulse-card"
+                        style="padding: 3rem; background: rgba(14, 15, 25, 0.8); border: 1px solid var(--glass-border); border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); position: relative; overflow: hidden;">
+
+                        <div class="card-grain"></div>
+                        <div class="scanline"></div>
+
+                        <!-- Header Overlay -->
+                        <div style="text-align: center; margin-bottom: 3rem;">
+                            <div class="premium-badge"
+                                style="margin-bottom: 1rem; display: inline-block; padding: 6px 15px; background: var(--photon-glow); border: 1px solid var(--photon); border-radius: 100px; font-size: 0.65rem; color: var(--photon); font-weight: 900; letter-spacing: 2px;">
+                                ELITE VERIFIED</div>
+                            <h2 class="clash" id="final-device"
+                                style="font-size: 2.5rem; color: var(--stardust); letter-spacing: 2px;">Apple iPad Pro
+                                M2</h2>
+                            <p
+                                style="color: var(--photon); font-weight: 800; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;">
+                                PRO SENSITIVITY DOSSIER</p>
+                        </div>
+
+                        <!-- Main Grid -->
+                        <div class="result-grid" style="grid-template-columns: 1fr; gap: 1.5rem; display: grid;">
+
+                            <!-- Sensitivity Items -->
+                            <div class="sensitivity-item-row"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                                <div class="node-label"
+                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
+                                    General</div>
+                                <div class="node-val text-photon" id="res-gen"
+                                    style="font-size: 2.5rem; text-shadow: 0 0 20px var(--photon-glow); font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--photon);">
+                                    100-100</div>
+                            </div>
+
+                            <div class="sensitivity-item-row"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                                <div class="node-label"
+                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
+                                    Red Dot</div>
+                                <div class="node-val" id="res-red"
+                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--stardust);">
+                                    95-100</div>
+                            </div>
+
+                            <div class="sensitivity-item-row"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                                <div class="node-label"
+                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
+                                    2X Scope</div>
+                                <div class="node-val" id="res-2x"
+                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--stardust);">
+                                    88-100</div>
+                            </div>
+
+                            <div class="sensitivity-item-row"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                                <div class="node-label"
+                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
+                                    4X Scope</div>
+                                <div class="node-val" id="res-4x"
+                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: #4FC3F7;">
+                                    75-100</div>
+                            </div>
+
+                            <div class="sensitivity-item-row"
+                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                                <div class="node-label"
+                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
+                                    8X Scope</div>
+                                <div class="node-val" id="res-8x"
+                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: #4DD0E1;">
+                                    60-100</div>
+                            </div>
+
+                        </div>
+
+                        <!-- Footer Verdict -->
+                        <div class="verdict-shell"
+                            style="margin-top: 3rem; background: transparent; border: none; padding: 1rem;">
+                            <p id="verdict-text"
+                                style="font-size: 0.9rem; color: var(--stardust-muted); font-style: italic; text-align: center; line-height: 1.6;">
+                                "PRO FILE LOADED: Ruok FF's extreme max sensitivity. Requires incredibly precise finger
+                                control."
+                            </p>
+                        </div>
+
+                        <div
+                            style="text-align: center; margin-top: 1rem; opacity: 0.4; font-size: 0.6rem; letter-spacing: 2px;">
+                            GENERATED AT XPARENA.NET</div>
                     </div>
                 </div>
-            </div>
 
-            <div id="verdict-banner"
-                style="background: rgba(0,229,255,0.05); padding: 1.2rem; border-radius: 18px; border: 1px solid var(--border-glass); margin-bottom: 2rem; font-size: 0.8rem; line-height: 1.5; color: rgba(255,255,255,0.8);">
-                Hardware analysis complete. Sensitivity optimized for peak responsiveness.
-            </div>
-            <div id="confidence-ribbon" style="margin-bottom: 1.2rem; text-align:center;">
-                <span id="confidence-pill"
-                    style="display:inline-block; padding:6px 12px; border-radius: 100px; font-size:0.7rem; font-weight:900; letter-spacing:1px; background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:#fff;">
-                    CONFIDENCE: --
-                </span>
-            </div>
-            <button class="btn-elite" onclick="downloadVideo()">
-                <i class="fas fa-video"></i> DOWNLOAD VIDEO
-            </button>
+                <div class="hardware-profile" style="margin-top: 3rem;">
+                    <div class="hw-item"><b>CORE:</b> <span id="hw-core">NEURAL-8</span></div>
+                    <div class="hw-item"><b>OS:</b> <span id="hw-os">XP-v2.5</span></div>
+                    <div class="hw-item"><b>SIG:</b> <span id="hw-sig">ENCRYPTED</span></div>
+                    <div class="hw-item"><b>LATENCY:</b> <span class="text-photon">1.2 MS</span></div>
+                </div>
 
-            <button class="btn-elite" onclick="exportImage()">
-                <i class="fas fa-id-card"></i> GEN ELITE OPERATOR CARD
-            </button>
+                <!-- Actions -->
+                <div style="margin-top: 5rem; display: grid; gap: 1.5rem;">
+                    <button class="btn-rebirth btn-photon"
+                        style="width: 100%; justify-content: center; padding: 1.6rem; font-size: 1rem; box-shadow: 0 10px 40px var(--photon-glow);"
+                        onclick="copySettings()">
+                        <i class="fas fa-microchip" style="margin-right: 12px;"></i> DOWNLOAD CONFIG
+                    </button>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <button class="btn-elite"
-                    style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);"
-                    onclick="copySettings()">COPY</button>
-                <button class="btn-elite"
-                    style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1);"
-                    onclick="shareLink()">SHARE LINK</button>
-            </div>
-            <button class="btn-elite"
-                style="background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); margin-top:10px;"
-                onclick="window.location.href='tool.html'">RETRY</button>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <button class="btn-rebirth"
+                            style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--stardust); justify-content: center; padding: 1.4rem; border-radius: 20px;"
+                            onclick="exportImage()">
+                            <i class="fas fa-file-invoice" style="margin-right: 10px;"></i> ARCHIVE DOSSIER
+                        </button>
+                        <button class="btn-rebirth"
+                            style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--stardust); justify-content: center; padding: 1.4rem; border-radius: 20px;"
+                            onclick="shareLink()">
+                            <i class="fas fa-broadcast-tower" style="margin-right: 10px;"></i> BEAM SIGNAL
+                        </button>
+                    </div>
+                </div>
 
-            <div style="margin-top:1.2rem; text-align:left;">
-                <div
-                    style="font-size:0.8rem; color: var(--text-muted); margin-bottom:6px; font-weight:800; letter-spacing:1px;">
-                    RECOMMENDED STEPS</div>
-                <ul style="margin:0; padding-left: 1rem; line-height:1.7; color: rgba(255,255,255,0.8);">
-                    <li>Set General, then Red Dot, then 2x and 4x scopes in game</li>
-                    <li>Play 2–3 matches to acclimate; avoid rapid changes</li>
-                    <li>Re-run calibration after device updates or accessories change</li>
-                </ul>
+                <button class="btn-rebirth"
+                    style="width: 100%; margin-top: 2rem; background: transparent; border: 1px solid var(--glass-border); color: var(--stardust-muted); font-size: 0.8rem; letter-spacing: 3px; justify-content: center; text-transform: uppercase; font-weight: 800;"
+                    onclick="window.location.href='tool.html'">
+                    INITIATE RE-CALIBRATION
+                </button>
             </div>
         </div>
     </div>
+    </div>
 
-    <!-- Hidden audio for effects -->
-    <audio id="sfx-whoosh" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
-
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/app.js"></script> <!-- To get generateShareImage logic -->
+    <script src="js/app.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const hash = (location.hash || '').replace(/^#/, '');
-            let resultsFromHash = null;
             if (hash.startsWith('data=')) {
                 try {
                     const b64 = decodeURIComponent(hash.slice(5));
-                    resultsFromHash = JSON.parse(atob(b64));
-                    localStorage.setItem('xp_calc_results', JSON.stringify(resultsFromHash));
-                    localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultsFromHash.device }));
+                    const data = JSON.parse(atob(b64));
+                    localStorage.setItem('xp_calc_results', JSON.stringify(data));
                 } catch { }
             }
-            const params = JSON.parse(localStorage.getItem('xp_calc_params') || '{}');
-            if (!params.device) {
+
+            const results = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+            if (!results.device) {
                 window.location.href = 'tool.html';
                 return;
             }
-            document.getElementById('status-device').textContent = params.device;
-            initParticles();
-            startSequence(params);
+
+            document.getElementById('status-device').textContent = results.device.toUpperCase();
+
+            // Progress Sequence
+            const statusMsg = document.getElementById('status-msg');
+            const stages = ["NEURAL SYNC", "DECRYPTING BIOS", "OPTIMIZING NODES", "CALIBRATED"];
+            let idx = 0;
+
+            const seq = setInterval(() => {
+                idx++;
+                if (idx < stages.length) {
+                    statusMsg.textContent = stages[idx];
+                    statusMsg.style.animation = 'none';
+                    void statusMsg.offsetWidth;
+                    statusMsg.style.animation = 'pulse 0.4s ease';
+                } else {
+                    clearInterval(seq);
+                    reveal(results);
+                }
+            }, 900);
         });
 
-        function startSequence(params) {
-            const statusMsg = document.getElementById('status-msg');
+        function reveal(res) {
+            document.getElementById('res-gen').textContent = res.general;
+            document.getElementById('res-red').textContent = res.reddot;
+            document.getElementById('res-2x').textContent = res.scope2x;
+            document.getElementById('res-4x').textContent = res.scope4x;
+            document.getElementById('final-device').textContent = res.device;
+            document.getElementById('verdict-text').textContent = res.verdict || res.ai_verdict || "Standard calibration active.";
 
-            const steps = [
-                { msg: "SYNCING...", time: 0 },
-                { msg: "ANALYZING DEVICE...", time: 800 },
-                { msg: "OPTIMIZING...", time: 1600 },
-                { msg: "READY", time: 2200 }
-            ];
+            const syncTitle = res.ai_sync === 'ELITE BOOST' ? 'ELITE SYNC' : (res.ai_sync === 'AUTO-NERFED' ? 'SIGNAL INTERFERENCE' : 'SYNC SECURE');
+            const pct = res.ai_sync === 'ELITE BOOST' ? 99 : (res.ai_sync === 'AUTO-NERFED' ? 62 : 94);
+            document.getElementById('confidence-pill').innerHTML = `<i class="fas fa-shield-check"></i> ${syncTitle}: ${pct}%`;
 
-            steps.forEach(step => {
-                setTimeout(() => {
-                    statusMsg.textContent = step.msg;
-                    // Add a little glow pulse on step change
-                    statusMsg.style.transform = 'scale(1.1)';
-                    setTimeout(() => statusMsg.style.transform = 'scale(1)', 200);
-                }, step.time);
-            });
-
-            setTimeout(() => {
-                revealResult(params);
-            }, 2500);
-        }
-
-        function revealResult(params) {
-            // Re-use logic from app.js if possible or re-calculate
-            // For now, let's assume we pass the results in localStorage too or calculate here
-            const results = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-
-            document.getElementById('res-gen').textContent = results.general;
-            document.getElementById('res-red').textContent = results.reddot;
-            document.getElementById('res-2x').textContent = results.scope2x;
-            document.getElementById('res-4x').textContent = results.scope4x;
-            document.getElementById('final-device').textContent = results.device;
-            document.getElementById('res-dpi').textContent = (results.dpi || 800) + ' DPI';
-
-            // AI Status Updates
-            const aiText = document.getElementById('ai-sync-text');
-            const aiPill = document.getElementById('ai-sync-pill');
-            if (results.ai_sync) {
-                aiText.textContent = `AI ${results.ai_sync}`;
-                if (results.ai_sync === 'AUTO-NERFED') aiPill.style.color = 'var(--danger)';
-                if (results.ai_sync === 'ELITE BOOST') aiPill.style.color = '#00ff88';
-            }
-
-            document.getElementById('verdict-banner').innerHTML = `
-                <div style="font-weight: 800; color: var(--accent); margin-bottom: 5px; text-transform: uppercase; font-size: 0.7rem;">
-                    <i class="fas fa-brain"></i> AI VERDICT:
-                </div>
-                ${results.ai_verdict || "Hardware analysis complete. Optimized for peak responsiveness."}
-            `;
-
-            // Confidence score based on device factor proxies and AI
-            const dpi = results.dpi || 800;
-            let conf = 0.7; // base
-            if (results.ai_sync === 'ELITE BOOST') conf += 0.15;
-            if (results.ai_sync === 'AUTO-NERFED') conf -= 0.15;
-            if (dpi >= 800 && dpi <= 1200) conf += 0.05;
-            if (dpi > 2400 || dpi < 400) conf -= 0.05;
-            const rate = window.estimatedTouchSamplingRate || 120;
-            if (rate >= 180) conf += 0.05;
-            if (rate < 90) conf -= 0.05;
-            conf = Math.max(0.3, Math.min(0.95, conf));
-            const pct = Math.round(conf * 100);
-            const pill = document.getElementById('confidence-pill');
-            if (pill) {
-                pill.textContent = `CONFIDENCE: ${pct}%`;
-                if (pct >= 85) { pill.style.background = 'rgba(0,255,136,0.12)'; pill.style.borderColor = 'rgba(0,255,136,0.4)'; pill.style.color = '#00ff88'; }
-                else if (pct >= 70) { pill.style.background = 'rgba(0,229,255,0.1)'; pill.style.borderColor = 'rgba(0,229,255,0.3)'; pill.style.color = 'var(--accent)'; }
-                else { pill.style.background = 'rgba(255,68,68,0.12)'; pill.style.borderColor = 'rgba(255,68,68,0.3)'; pill.style.color = '#ff6666'; }
-            }
-
-            // Animate transition
-            document.getElementById('loading-container').style.opacity = '0';
-            document.getElementById('loading-container').style.transform = 'scale(0.9)';
-
-            setTimeout(() => {
-                document.getElementById('loading-container').style.display = 'none';
-                const resCont = document.getElementById('result-container');
-                resCont.classList.add('active');
-
-                // Play finish sound
-                document.getElementById('sfx-whoosh').play().catch(() => { });
-            }, 800);
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('result-content').style.display = 'block';
         }
 
         function copySettings() {
             const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            const text = `XP ARENA ELITE PRO:\nDevice: ${res.device}\nGen: ${res.general}\nRed Dot: ${res.reddot}\n2x: ${res.scope2x}\n4x: ${res.scope4x}`;
+            const text = `ARENI CALIBRATION [${res.device}]\nGen: ${res.general}\nRed Dot: ${res.reddot}\n2x: ${res.scope2x}\n4x: ${res.scope4x}`;
             navigator.clipboard.writeText(text).then(() => {
-                if (window.Toast) Toast.show('Elite settings copied!', 'success');
+                if (window.Toast) Toast.show('Decrypted config copied to buffer.', 'success');
             });
-        }
-        function shareLink() {
-            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            try {
-                const b64 = btoa(JSON.stringify({
-                    device: res.device,
-                    general: res.general,
-                    reddot: res.reddot,
-                    scope2x: res.scope2x,
-                    scope4x: res.scope4x,
-                    dpi: res.dpi || 800
-                }));
-                const url = `${location.origin}${location.pathname}#data=${encodeURIComponent(b64)}`;
-                navigator.clipboard.writeText(url).then(() => {
-                    if (window.Toast) Toast.show('Share link copied!', 'success');
-                });
-            } catch {
-                if (window.Toast) Toast.show('Could not create share link.', 'danger');
-            }
         }
 
         function exportImage() {
+            if (window.Toast) Toast.show('Generating high-res archival dossier...', 'info');
             const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            if (typeof generateShareImage === 'function') {
-                generateShareImage(res);
-            } else {
-                if (window.Toast) Toast.show('Generating operator card...', 'info');
-            }
+            if (typeof generateShareImage === 'function') generateShareImage(res);
         }
 
-        async function downloadVideo() {
-            const results = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            const w = 720, h = 1280;
-            const canvas = document.createElement('canvas');
-            canvas.width = w; canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            let t = 0;
-
-            function drawFrame() {
-                // Background
-                const grad = ctx.createLinearGradient(0, 0, w, h);
-                grad.addColorStop(0, '#0b0f17'); grad.addColorStop(1, '#111827');
-                ctx.fillStyle = grad; ctx.fillRect(0, 0, w, h);
-
-                // Accents
-                ctx.strokeStyle = 'rgba(0,229,255,0.3)';
-                ctx.lineWidth = 4;
-                ctx.strokeRect(40, 40, w - 80, h - 80);
-
-                // Title
-                ctx.fillStyle = '#00e5ff';
-                ctx.font = 'bold 48px Outfit, Inter, sans-serif';
-                ctx.fillText('XP ARENA • ELITE', 60, 120);
-
-                // Device
-                ctx.fillStyle = '#fff';
-                ctx.font = 'bold 42px Outfit, Inter, sans-serif';
-                ctx.fillText(results.device || 'Your Device', 60, 190);
-
-                // Values
-                ctx.font = '32px Inter, sans-serif';
-                const y0 = 280, lh = 70;
-                const rows = [
-                    ['GENERAL', results.general || '--'],
-                    ['RED DOT', results.reddot || '--'],
-                    ['2X SCOPE', results.scope2x || '--'],
-                    ['4X SCOPE', results.scope4x || '--'],
-                    ['DPI', (results.dpi || 800) + ' DPI']
-                ];
-                rows.forEach((r, i) => {
-                    ctx.fillStyle = 'rgba(148,163,184,1)';
-                    ctx.fillText(r[0], 60, y0 + i * lh);
-                    ctx.fillStyle = '#fff';
-                    ctx.fillText(r[1], 360, y0 + i * lh);
+        function shareLink() {
+            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+            try {
+                const b64 = btoa(JSON.stringify(res));
+                const url = `${location.origin}${location.pathname}#data=${encodeURIComponent(b64)}`;
+                navigator.clipboard.writeText(url).then(() => {
+                    if (window.Toast) Toast.show('Neural link beamed to buffer.', 'success');
                 });
-
-                // Animated accent bar
-                const barW = 560, barH = 10, bx = 60, by = y0 + rows.length * lh + 40;
-                ctx.fillStyle = 'rgba(0,229,255,0.2)';
-                ctx.fillRect(bx, by, barW, barH);
-                ctx.fillStyle = '#00e5ff';
-                const prog = ((t % 100) / 100) * barW;
-                ctx.fillRect(bx, by, prog, barH);
-                t += 2;
-            }
-
-            const stream = canvas.captureStream(30);
-            const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-            const chunks = [];
-            recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
-            recorder.onstop = () => {
-                const blob = new Blob(chunks, { type: 'video/webm' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'xp-arena-sensitivity.webm';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-            };
-
-            let rafId;
-            function loop() { drawFrame(); rafId = requestAnimationFrame(loop); }
-            loop();
-            recorder.start();
-            // Record ~3 seconds
-            setTimeout(() => {
-                recorder.stop();
-                cancelAnimationFrame(rafId);
-            }, 3200);
-        }
-
-        function initParticles() {
-            const canvas = document.getElementById('particlesCanvas');
-            const ctx = canvas.getContext('2d');
-            const DPR = Math.max(1, window.devicePixelRatio || 1);
-            let w = canvas.clientWidth = window.innerWidth;
-            let h = canvas.clientHeight = window.innerHeight;
-            canvas.width = w * DPR;
-            canvas.height = h * DPR;
-            ctx.scale(DPR, DPR);
-            const particles = [];
-            const colors = ['#00e5ff', '#80ffff', '#00ffff', '#b3f5ff'];
-            for (let i = 0; i < 80; i++) {
-                particles.push({
-                    x: Math.random() * w,
-                    y: Math.random() * h,
-                    vx: (Math.random() - 0.5) * 0.5,
-                    vy: (Math.random() - 0.5) * 0.5,
-                    r: Math.random() * 2 + 0.5,
-                    c: colors[Math.floor(Math.random() * colors.length)],
-                    a: Math.random() * 0.6 + 0.2
-                });
-            }
-            function step() {
-                ctx.clearRect(0, 0, w, h);
-                for (const p of particles) {
-                    p.x += p.vx;
-                    p.y += p.vy;
-                    if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
-                    if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
-                    ctx.beginPath();
-                    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-                    ctx.fillStyle = p.c;
-                    ctx.globalAlpha = p.a;
-                    ctx.fill();
-                }
-                ctx.globalAlpha = 1;
-                requestAnimationFrame(step);
-            }
-            window.addEventListener('resize', () => {
-                w = canvas.clientWidth = window.innerWidth;
-                h = canvas.clientHeight = window.innerHeight;
-                canvas.width = w * DPR;
-                canvas.height = h * DPR;
-                ctx.scale(DPR, DPR);
-            });
-            step();
+            } catch { }
         }
     </script>
 </body>

@@ -4,223 +4,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gamer Shop • XP ARENA</title>
-    <link rel="stylesheet" href="css/main.css">
+    <title>Armory • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
-</head>
-
-<body class="fade-in">
-
-    <nav class="navbar"></nav>
-
-    <main class="main-content-area">
-        <div class="container" style="padding-top: 2rem;">
-            <div class="page-header" style="text-align:center; margin-bottom: 3rem;">
-                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">ARMORY GEAR MODULES</h1>
-                <p style="color: var(--text-muted);">High-resolution gear modules with live tech specs and AXP pricing.</p>
-                <div class="shop-balance-pill"
-                    style="display:inline-flex; align-items:center; gap:10px; background: rgba(0,229,255,0.1); border: 1px solid var(--accent); padding: 0.5rem 1.5rem; border-radius: 50px; margin-top: 1.5rem;">
-                    <i class="fas fa-star" style="color: var(--accent);"></i>
-                    <span style="font-weight:900; color:#fff;"><span id="shop-balance">0</span> AXP AVAILABLE</span>
-                </div>
-            </div>
-
-            <div id="shop-items-grid" class="shop-grid">
-                <!-- Dynamic Items from shop.js -->
-                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
-                </div>
-                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
-                </div>
-                <div class="skeleton-card" style="height:300px; background:rgba(255,255,255,0.05); border-radius:16px;">
-                </div>
-            </div>
-
-            <div class="shop-footer-info"
-                style="margin-top: 4rem; text-align:center; padding: 2rem; background:rgba(0,0,0,0.2); border-radius:16px; border:1px solid var(--border);">
-                <i class="fas fa-info-circle" style="color: var(--accent); font-size: 1.5rem; margin-bottom: 1rem;"></i>
-                <p style="font-size:0.9rem; color:var(--text-muted); max-width:600px; margin: 0 auto;">AXP (Arena
-                    Experience Points) are earned by using the Sensitivity Tool, submitting clips, and participating in
-                    the community. Boosters activate immediately upon purchase.</p>
-            </div>
-        </div>
-    </main>
-
     <style>
-        :root {
-            --bg: #09090b;
-            --surface: rgba(20, 20, 28, 0.7);
-            --border: rgba(255, 255, 255, 0.08);
-            --radius-lg: 20px;
+        .shop-container {
+            padding: 8rem 2rem 10rem;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        body {
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(circle at 0% 0%, rgba(var(--accent-rgb), 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 100% 100%, rgba(var(--accent-rgb), 0.05) 0%, transparent 40%);
-            background-attachment: fixed;
-        }
-
-        .main-content-area {
-            padding-bottom: 120px !important;
-        }
-
-        .page-header {
+        .shop-header {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 5rem;
         }
 
-        .page-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 950;
-            letter-spacing: -2px;
-            color: #fff;
+        .shop-header h1 {
+            font-size: 4rem;
+            line-height: 1;
             margin-bottom: 1rem;
         }
 
-        .shop-balance-pill {
+        .balance-hub {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            background: rgba(var(--accent-rgb), 0.1);
-            border: 1px solid var(--accent);
+            gap: 1rem;
+            background: var(--glass-highlight);
+            border: 1px solid var(--photon);
             padding: 0.8rem 2rem;
-            border-radius: 50px;
+            border-radius: 100px;
             margin-top: 1rem;
-            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.2);
+            box-shadow: 0 0 20px var(--photon-glow);
         }
 
-        /* Shop Grid & Cards */
+        .balance-hub i {
+            color: var(--photon);
+            font-size: 1.2rem;
+        }
+
+        .balance-hub span {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            color: var(--stardust);
+        }
+
         .shop-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 2rem;
         }
 
+        /* Item Cards (Enhanced Pulse) */
         .shop-item-card {
-            background: var(--surface);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            text-align: center;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            gap: 1.5rem;
+            position: relative;
         }
 
-        .shop-item-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(var(--accent-rgb), 0.4);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+        .rarity-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 10;
         }
 
-        .shop-item-icon {
-            font-size: 4rem;
-            margin-bottom: 2rem;
-            color: var(--accent);
-            filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.4));
+        .rarity-legendary {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            border: 1px solid #ffd700;
         }
 
-        .gear-module {
-            align-items: stretch;
-            text-align: left;
-            padding: 2rem;
-            gap: 0.8rem;
+        .rarity-epic {
+            background: rgba(191, 0, 255, 0.1);
+            color: #bf00ff;
+            border: 1px solid #bf00ff;
+        }
+
+        .rarity-rare {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            border: 1px solid #00e5ff;
         }
 
         .module-visual {
-            height: 170px;
-            border-radius: 16px;
-            background: linear-gradient(135deg, rgba(0, 229, 255, 0.15), rgba(20, 20, 35, 0.9));
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            display: grid;
-            place-items: center;
+            height: 180px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            margin-bottom: 0.5rem;
         }
 
         .module-visual img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: contrast(1.05) saturate(1.2);
         }
 
-        .module-icon {
+        .module-visual i {
             font-size: 3.5rem;
-            color: var(--accent);
-            filter: drop-shadow(0 0 20px rgba(var(--accent-rgb), 0.4));
+            color: var(--photon);
+            filter: drop-shadow(0 0 10px var(--photon-glow));
         }
 
-        .gear-specs {
+        .spec-tags {
             display: flex;
+            gap: 0.5rem;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-top: 0.5rem;
         }
 
-        .shop-item-rarity-badge {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.7rem;
-            font-weight: 900;
-            padding: 4px 12px;
-            border-radius: 50px;
+        .spec-tag {
+            font-size: 0.6rem;
+            background: var(--glass-highlight);
+            border: 1px solid var(--glass-border);
+            padding: 4px 8px;
+            border-radius: 4px;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-
-        .rarity-legendary {
-            border: 1px solid #ffcc00;
-            background: rgba(255, 204, 0, 0.1);
-            color: #ffcc00;
-        }
-
-        .rarity-epic {
-            border: 1px solid #bf00ff;
-            background: rgba(191, 0, 255, 0.1);
-            color: #bf00ff;
+            color: var(--stardust-muted);
         }
 
         .shop-item-footer {
-            margin-top: 2rem;
-            width: 100%;
+            margin-top: auto;
             display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
         }
 
-        .shop-item-price {
-            font-size: 1.25rem;
-            font-weight: 950;
-            color: #fff;
+        .price-tag {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--stardust);
         }
 
-        .btn-primary.shop-buy-btn {
-            background: var(--accent);
-            color: #000;
-            font-weight: 900;
-            padding: 1rem;
-            border-radius: 12px;
-            letter-spacing: 1px;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
+        @media (max-width: 600px) {
+            .shop-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+</head>
 
-    <nav class="bottom-nav"></nav>
+<body>
+    <div class="shop-container">
+        <header class="shop-header">
+            <span class="section-label" style="letter-spacing: 0.4rem;">Hardware Procurement</span>
+            <h1 class="clash">REBIRTH<br><span class="text-photon">ARMORY</span></h1>
 
+            <div class="balance-hub">
+                <i class="fas fa-star"></i>
+                <span><span id="shop-balance">0</span> AXP SECURED</span>
+            </div>
+        </header>
+
+        <div id="shop-items-grid" class="shop-grid">
+            <!-- Dynamic Injection via shop.js -->
+        </div>
+
+        <div
+            style="margin-top: 6rem; text-align: center; opacity: 0.6; font-size: 0.85rem; color: var(--stardust-muted);">
+            <i class="fas fa-info-circle"></i> AXP values fluctuate based on global supply. All modules are
+            non-refundable once synced.
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
-    <script src="js/shop.js"></script>
     <script src="js/layout.js"></script>
+    <script src="js/shop.js"></script>
 </body>
 
 </html>

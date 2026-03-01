@@ -4,237 +4,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Join the Arena • XP Arena</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
-        rel="stylesheet">
+    <title>Enroll • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         body {
-            background-color: var(--bg-darker);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: var(--void);
+            background: radial-gradient(circle at top right, var(--primary-glow), transparent 70%),
+                var(--void);
+            color: var(--stardust);
+            font-family: 'Urbanist', sans-serif;
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
         }
 
         .auth-container {
+            flex: 1;
             width: 100%;
             max-width: 440px;
             padding: 2rem;
-            position: relative;
+            display: flex;
+            align-items: center;
             z-index: 10;
         }
 
         .auth-card {
-            padding: 3rem 2.5rem;
+            padding: 4rem 3rem;
             text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
         }
 
-        .brand {
-            margin-bottom: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 64px;
-            height: 64px;
-            background: rgba(var(--accent-rgb), 0.1);
-            border: 1px solid rgba(var(--accent-rgb), 0.2);
+        .brand-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--photon);
             border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .brand h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            margin: 0;
-            color: #fff;
-        }
-
-        .auth-header {
-            margin-bottom: 2rem;
+            margin: 0 auto 2rem;
+            color: var(--photon);
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
         }
 
         .auth-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 800;
+            font-size: clamp(1.8rem, 5vw, 2.3rem);
             margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
         .auth-header p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            color: var(--stardust-muted);
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
+            font-weight: 500;
         }
 
-        .field {
+        .form-group {
             text-align: left;
             margin-bottom: 1.5rem;
         }
 
-        .field label {
+        .form-label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            margin-bottom: 0.6rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--photon);
+            margin-bottom: 0.8rem;
+            font-weight: 900;
         }
 
-        .input-wrap {
+        .input-node {
             position: relative;
         }
 
-        .input-wrap i {
+        .input-node i {
             position: absolute;
             left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-dim);
+            color: var(--stardust-muted);
             font-size: 0.9rem;
+            transition: color 0.3s;
         }
 
-        .input-wrap input {
+        .rebirth-input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-stroke);
-            border-radius: var(--radius);
-            color: #fff;
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--stardust);
+            font-family: inherit;
             font-size: 1rem;
-            transition: var(--transition);
+            transition: all 0.4s;
         }
 
-        .input-wrap input:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--accent);
+        .rebirth-input:focus {
+            background: rgba(0, 245, 255, 0.03);
+            border-color: var(--photon);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
         }
 
-        .strength-bar {
+        /* Strength Bar */
+        .strength-track {
             height: 4px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 2px;
-            margin-top: 10px;
+            margin-top: 12px;
             overflow: hidden;
         }
 
         .strength-fill {
             height: 100%;
             width: 0;
-            transition: var(--transition);
+            transition: width 0.4s var(--transition);
         }
 
-        .strength-label {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            margin-top: 6px;
-        }
-
-        .auth-footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--glass-stroke);
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .auth-footer a {
-            color: var(--accent);
-            font-weight: 700;
-            text-decoration: none;
+        .strength-msg {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+            color: var(--stardust-muted);
+            font-weight: 800;
         }
 
         /* Verification Overlay */
         .verify-overlay {
             position: fixed;
             inset: 0;
-            z-index: 1000;
-            background: rgba(5, 6, 8, 0.9);
-            backdrop-filter: blur(12px);
+            z-index: 10000;
+            background: rgba(10, 11, 14, 0.98);
             display: none;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 1.5rem;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         .verify-overlay.active {
             display: flex;
+            animation: fadeIn 0.5s forwards;
         }
 
-        .verify-card {
-            max-width: 400px;
-            width: 100%;
-            padding: 3rem 2rem;
-            text-align: center;
-        }
-
-        .code-inputs {
+        .code-matrix {
             display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 2rem 0;
+            gap: 12px;
+            margin: 3rem 0;
         }
 
         .code-input {
-            width: 44px;
-            height: 56px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-stroke);
-            border-radius: 12px;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: #fff;
+            width: 50px;
+            height: 65px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--stardust);
             text-align: center;
-            transition: var(--transition);
+            transition: all 0.3s;
         }
 
         .code-input:focus {
-            border-color: var(--accent);
-            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--photon);
             outline: none;
-        }
-
-        .bg-glow {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(var(--accent-rgb), 0.05) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+            background: rgba(0, 245, 255, 0.05);
         }
     </style>
+    <!-- Reward Overlay -->
+    <div id="rewardOverlay"
+        style="position: fixed; inset: 0; z-index: 10001; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; backdrop-filter: blur(20px);">
+        <div class="pulse-card" id="rewardCard"
+            style="padding: 4rem; text-align: center; transform: scale(0.8); opacity: 0; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div style="font-size: 5rem; text-shadow: 0 0 30px var(--photon-glow); margin-bottom: 2rem;">💎</div>
+            <h2 class="clash" style="font-size: 3rem; margin-bottom: 0.5rem;">LEGACY BONUS</h2>
+            <div class="text-photon"
+                style="font-family: 'Clash Display', sans-serif; font-size: 2.5rem; font-weight: 900; letter-spacing: 4px;">
+                +500 AXP</div>
+            <p style="color: var(--stardust-muted); margin-top: 1.5rem; font-weight: 700; letter-spacing: 1px;">ARENI
+                STATUS INITIALIZED</p>
+        </div>
+    </div>
 </head>
 
-<body>
-    <div class="bg-glow"></div>
-
+<body class="page-rebirth">
     <div class="verify-overlay" id="verifyOverlay">
-        <div class="verify-card glass-card">
-            <div style="font-size: 3rem; margin-bottom: 1.5rem;">📫</div>
-            <h2>Verify Identity</h2>
-            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom: 2rem;">A security code has been
-                transmitted to your email. Enter it below to proceed.</p>
-            <div class="code-inputs" id="codeInputs">
+        <div class="pulse-card" style="max-width: 420px; text-align: center; padding: 4rem 3rem;">
+            <div style="font-size: 3rem; margin-bottom: 2rem;">📡</div>
+            <h2 class="clash">SYNC VERIFICATION</h2>
+            <p style="color: var(--stardust-muted); font-size: 0.9rem; margin-bottom: 2rem; line-height: 1.6;">A
+                security signal has been transmitted to your uplink. Enter the 6-digit decryption code.</p>
+
+            <div class="code-matrix" id="codeInputs">
                 <input class="code-input" maxlength="1" type="text" inputmode="numeric">
                 <input class="code-input" maxlength="1" type="text" inputmode="numeric">
                 <input class="code-input" maxlength="1" type="text" inputmode="numeric">
@@ -242,115 +217,188 @@
                 <input class="code-input" maxlength="1" type="text" inputmode="numeric">
                 <input class="code-input" maxlength="1" type="text" inputmode="numeric">
             </div>
-            <div id="verifyErr" style="display:none; color:var(--danger); font-size:0.85rem; margin-bottom: 1rem;">
+
+            <div id="verifyErr"
+                style="display:none; color:#ff4444; font-size:0.8rem; margin-bottom: 1.5rem; font-weight: 800; letter-spacing: 0.5px;">
             </div>
-            <button class="btn-primary" id="verifyBtn">VERIFY & CONFIGURE</button>
+            <button class="btn-rebirth btn-photon" id="verifyBtn"
+                style="width: 100%; justify-content: center; padding: 1.4rem;">AUTHORIZE SIGNAL</button>
         </div>
     </div>
 
     <div class="auth-container">
-        <div class="auth-card glass-card">
-            <div class="brand">
-                <div class="brand-logo"><i class="fas fa-crosshairs"></i></div>
-                <h1>XP ARENA</h1>
-            </div>
+        <div class="pulse-card auth-card">
+            <div class="brand-icon"><i class="fas fa-satellite-dish"></i></div>
 
-            <div class="auth-header">
-                <h2>Join the Elite</h2>
-                <p>Initialize your Areni identity matrix</p>
-            </div>
+            <header class="auth-header">
+                <span class="section-label" style="letter-spacing: 0.4rem; margin-bottom: 2rem;">Neural Registry</span>
+                <h1 class="clash">INITIALIZE<br><span class="text-photon">UPLINK</span></h1>
+                <p>Establish your presence in the global sector.</p>
+            </header>
 
             <div id="errorBox"
-                style="display:none; background:rgba(239, 68, 68, 0.1); border:1px solid var(--danger); padding:1rem; border-radius:12px; margin-bottom:1.5rem; color:var(--danger); font-size:0.9rem;">
+                style="display:none; background:rgba(255, 68, 68, 0.05); border:1px solid #ff4444; padding:1.2rem; border-radius:12px; margin-bottom:2rem; color:#ff4444; font-size:0.85rem; font-weight: 700; letter-spacing: 0.5px;">
             </div>
 
-            <form id="signupForm" autocomplete="off">
-                <div class="field">
-                    <label>Areni Username</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="username" placeholder="Enter Tag" required>
+            <form id="signupForm">
+                <div class="form-group">
+                    <label class="form-label">Operative Alias</label>
+                    <div class="input-node">
+                        <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
+                            autocomplete="username">
+                        <i class="fas fa-id-badge"></i>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label>Email Address</label>
-                    <div class="input-wrap">
+                <div class="form-group">
+                    <label class="form-label">Neural Uplink Email</label>
+                    <div class="input-node">
+                        <input type="email" id="email" class="rebirth-input" placeholder="operative@arena.net" required
+                            autocomplete="email">
                         <i class="fas fa-envelope"></i>
-                        <input type="email" id="email" placeholder="name@arena.com" required>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label>Security Key</label>
-                    <div class="input-wrap">
+                <div class="form-group">
+                    <label class="form-label">Security Protocol (Key)</label>
+                    <div class="input-node">
+                        <input type="password" id="password" class="rebirth-input" placeholder="Encryption Key" required
+                            autocomplete="new-password">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="Min. 6 characters" required>
                     </div>
-                    <div class="strength-bar">
+                    <div class="strength-track">
                         <div class="strength-fill" id="strengthFill"></div>
                     </div>
-                    <div class="strength-label" id="strengthLabel">Enter a password</div>
+                    <div class="strength-msg" id="strengthLabel">Enter Encryption Key</div>
                 </div>
 
-                <div style="margin: 2rem 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
-                    <input type="checkbox" id="terms" required style="margin-top: 4px;">
-                    <label for="terms" style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.4;">
-                        I acknowledge the <a href="#">Terms of Engagement</a> and Privacy Protocol.
+                <div style="margin: 2.5rem 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
+                    <input type="checkbox" id="terms" required style="accent-color: var(--photon); margin-top: 5px;">
+                    <label for="terms"
+                        style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.5; font-weight: 500;">
+                        I acknowledge the <span class="text-photon" style="font-weight: 800;">Rules of Engagement</span>
+                        and data privacy protocols.
                     </label>
                 </div>
 
-                <button type="submit" class="btn-primary" id="signupBtn">INITIALIZE ACCOUNT</button>
+                <button type="submit" id="signupBtn" class="btn-rebirth btn-photon"
+                    style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
+                    INITIALIZE PROFILE
+                </button>
             </form>
 
-            <div class="auth-footer">
-                Already an Areni? <a href="login.html">Log in here</a>
+            <div
+                style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--stardust-muted); font-weight: 700; letter-spacing: 1px;">
+                ALREADY REGISTERED? <a href="login.html" class="text-photon"
+                    style="text-decoration: none; font-weight: 900; margin-left: 5px;">ACCESS PORTAL</a>
             </div>
         </div>
     </div>
-    </main>
-    <nav class="bottom-nav"></nav>
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
+
+    <!-- Scripts -->
+    ,ReplacementContent:
     <script>
-        document.getElementById('pwToggle').addEventListener('click', () => {
-            const inp = document.getElementById('password'); const ico = document.querySelector('#pwToggle i');
-            inp.type = inp.type === 'password' ? 'text' : 'password'; ico.className = inp.type === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye';
-        });
         document.getElementById('password').addEventListener('input', function () {
-            const v = this.value; const fill = document.getElementById('strengthFill'); const label = document.getElementById('strengthLabel');
-            let score = 0; if (v.length >= 6) score++; if (v.length >= 10) score++; if (/[A-Z]/.test(v)) score++; if (/[0-9]/.test(v)) score++; if (/[^A-Za-z0-9]/.test(v)) score++;
-            const cfg = [{ w: '0%', bg: 'transparent', t: 'Enter a password' }, { w: '20%', bg: '#ef4444', t: 'Weak' }, { w: '40%', bg: '#f97316', t: 'Fair' }, { w: '60%', bg: '#f59e0b', t: 'Okay' }, { w: '80%', bg: '#84cc16', t: 'Strong' }, { w: '100%', bg: '#10b981', t: 'Elite 🔥' }];
-            const c = cfg[score] || cfg[0]; fill.style.width = c.w; fill.style.background = c.bg; label.textContent = c.t;
+            const v = this.value;
+            const fill = document.getElementById('strengthFill');
+            const label = document.getElementById('strengthLabel');
+            let score = 0;
+            if (v.length >= 6) score++;
+            if (v.length >= 10) score++;
+            if (/[A-Z]/.test(v)) score++;
+            if (/[0-9]/.test(v)) score++;
+            if (/[^A-Za-z0-9]/.test(v)) score++;
+            const cfg = [
+                { w: '0%', bg: 'transparent', t: 'Enter Key' },
+                { w: '20%', bg: '#ff4444', t: 'Compromised' },
+                { w: '40%', bg: '#ffbb33', t: 'Weak Signal' },
+                { w: '60%', bg: '#00C851', t: 'Secure' },
+                { w: '80%', bg: 'var(--photon)', t: 'Fortified' },
+                { w: '100%', bg: 'var(--photon)', t: 'Elite Signal 🔥' }
+            ];
+            const c = cfg[score] || cfg[0];
+            fill.style.width = c.w;
+            fill.style.background = c.bg;
+            if (score >= 4) fill.style.boxShadow = '0 0 15px ' + c.bg;
+            else fill.style.boxShadow = 'none';
+            label.textContent = c.t;
         });
+
         let pendingUser = '';
         const codeInputs = document.querySelectorAll('.code-input');
         codeInputs.forEach((inp, i) => {
             inp.addEventListener('input', () => { if (inp.value && i < codeInputs.length - 1) codeInputs[i + 1].focus(); });
             inp.addEventListener('keydown', e => { if (e.key === 'Backspace' && !inp.value && i > 0) codeInputs[i - 1].focus(); });
         });
+
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const errBox = document.getElementById('errorBox'); const btn = document.getElementById('signupBtn');
-            errBox.style.display = 'none'; btn.disabled = true; btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> ENROLLING...';
-            const username = document.getElementById('username').value.trim(); const email = document.getElementById('email').value.trim(); const password = document.getElementById('password').value;
+            e.preventDefault();
+            const btn = document.getElementById('signupBtn');
+            const errBox = document.getElementById('errorBox');
+            errBox.style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING...';
+
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
             try {
-                const res = await fetch((window.API_URL || '') + '/api/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password }) });
+                const res = await fetch((window.API_URL || '') + '/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, password })
+                });
                 const data = await res.json();
-                if (res.ok && data.success) { pendingUser = username; document.getElementById('verifyOverlay').classList.add('active'); document.querySelector('.code-input').focus(); }
-                else throw new Error(data.error || 'Failed');
-            } catch (err) { errBox.textContent = err.message; errBox.style.display = 'block'; } finally { btn.disabled = false; btn.innerHTML = 'INITIALIZE ACCOUNT'; }
+                if (res.ok && data.success) {
+                    pendingUser = username;
+                    document.getElementById('verifyOverlay').classList.add('active');
+                    codeInputs[0].focus();
+                } else throw new Error(data.error || 'Enrollment failed.');
+            } catch (err) {
+                errBox.textContent = err.message;
+                errBox.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = 'RETRY INITIALIZATION';
+            }
         });
+
         document.getElementById('verifyBtn').addEventListener('click', async () => {
-            const code = Array.from(codeInputs).map(i => i.value).join('') || '000000';
-            const vBtn = document.getElementById('verifyBtn'); vBtn.disabled = true; vBtn.innerHTML = 'VERIFYING...';
+            const code = Array.from(codeInputs).map(i => i.value).join('');
+            if (code.length < 6) return;
+            const vBtn = document.getElementById('verifyBtn');
+            const vErr = document.getElementById('verifyErr');
+            vBtn.disabled = true;
+            vBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> VERIFYING...';
+
             try {
-                const res = await fetch((window.API_URL || '') + '/api/auth/verify-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: pendingUser, code }) });
+                const res = await fetch((window.API_URL || '') + '/api/auth/verify-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username: pendingUser, code })
+                });
                 const data = await res.json();
-                if (res.ok && data.success) { localStorage.setItem('xp_token', data.token); localStorage.setItem('xp_current_user', JSON.stringify(data.user)); window.location.href = 'profile.html'; }
-                else throw new Error(data.error || 'Failed');
-            } catch (err) { document.getElementById('verifyErr').textContent = err.message; document.getElementById('verifyErr').style.display = 'block'; vBtn.disabled = false; vBtn.innerHTML = 'VERIFY & ENTER'; }
+                if (res.ok && data.success) {
+                    localStorage.setItem('xp_token', data.token);
+                    localStorage.setItem('xp_current_user', JSON.stringify(data.user));
+
+                    const reward = document.getElementById('rewardOverlay');
+                    const card = document.getElementById('rewardCard');
+                    reward.style.display = 'flex';
+
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 50);
+
+                    setTimeout(() => window.location.href = 'index.html', 4000);
+                } else throw new Error(data.error || 'Verification failed.');
+            } catch (err) {
+                vErr.textContent = err.message;
+                vErr.style.display = 'block';
+                vBtn.disabled = false;
+                vBtn.innerHTML = 'RETRY AUTHORIZATION';
+            }
         });
     </script>
 </body>

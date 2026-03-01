@@ -1,1019 +1,409 @@
 /**
- * Shared Layout System for XP Arena
- * This script injects the Navbar, Sidebar, and Bottom Nav into any page.
+ * Shared Layout System for XP Arena REBIRTH
+ * This script injects the new Command Dock and Top Bar UI.
  */
 
 // Global API Configuration
 window.API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
     ? 'http://localhost:3000'
-    : ''; // Vercel routes /api directly
+    : '';
+
+// Helper to get root-relative paths
+function getRootPath(path) {
+    if (window.location.protocol.startsWith('http')) {
+        return '/' + path;
+    }
+    return '/' + path;
+}
+
+// Inject Rebirth Foundation
+const cssPath = 'css/rebirth.css';
+if (!document.querySelector(`link[href="${cssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = cssPath;
+    document.head.appendChild(link);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Apply saved theme
-    const savedTheme = localStorage.getItem('xp_theme');
-    if (savedTheme) {
-        document.body.classList.add(savedTheme);
-    } else if (!localStorage.getItem('xp_custom_color')) {
-        try { setTheme('theme-frost'); } catch { }
-    }
-
-    // Apply saved dark/light mode
-    if (localStorage.getItem('xp_light_mode') === '1') {
-        document.body.classList.add('light-mode');
-    }
-
-    // Apply saved custom color
-    const savedCustomColor = localStorage.getItem('xp_custom_color');
-    if (savedCustomColor && !savedTheme) {
-        setCustomColor(savedCustomColor, false);
-    }
+    applyCustomAccent();
 
     if (typeof Auth !== 'undefined') {
-        injectLayout();
+        injectRebirthLayout();
         highlightActiveLinks();
         syncGlobalXP();
         trackPageVisit();
-        setupPageTransitions();
+        document.body.classList.add('page-rebirth');
         window.addEventListener('statsChange', syncGlobalXP);
-
-        // Elite Gating
-        applyEliteGating();
-
-        // Mystery Protocol
-        checkMysteryProtocol();
-
-        // Initial user checks
         if (typeof User !== 'undefined' && Auth.isLoggedIn()) {
             User.checkDailyLogin();
-
-            // Ask for push notification permission (delayed slightly)
-            setTimeout(() => {
-                subscribeToPushNotifications();
-            }, 3000);
-
-            // Check for signup success popup
-            if (localStorage.getItem('xp_signup_success')) {
-                setTimeout(() => {
-                    if (window.Toast) {
-                        Toast.show('Account created successfully! Welcome to XP Arena.', 'success', 5000);
-                        localStorage.removeItem('xp_signup_success');
-                    }
-                }, 1000);
-            }
         }
     } else {
-        console.error("Auth script missing! Layout might not display correctly.");
+        injectRebirthLayout();
     }
 });
 
-function injectLayout() {
+function injectRebirthLayout() {
     const user = Auth.getCurrentUser();
     const isLoggedIn = !!user;
-    const isLightMode = document.body.classList.contains('light-mode');
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const isIndex = currentPage === 'index.html' || currentPage === '';
 
-    // Attempt to grab actual user avatar instead of generic icon
-    let avatarHtml = '<i class="fas fa-user-circle"></i>';
-    if (isLoggedIn && typeof window.User !== 'undefined') {
-        const stats = window.User.getStats();
-        if (stats && stats.avatar) {
-            avatarHtml = `<span style="font-size: 1.25rem;">${stats.avatar}</span>`;
-        }
-    }
+    const root = './';
 
-    const navbarHTML = `
-        <div class="nav-left" style="display: flex; align-items: center; gap: 15px;">
-            <button class="menu-btn" id="menuBtn" onclick="toggleSidebar()" title="Menu" aria-label="Open menu" style="background: rgba(255,255,255,0.08); border: 1px solid var(--glass-stroke); border-radius: 12px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #fff; transition: var(--transition);">
-                <i class="fas fa-bars" style="font-size: 1.1rem;"></i>
-            </button>
-        </div>
-        <div class="nav-center" style="display: flex; justify-content: center; flex: 1;">
-            <a href="index.html" class="logo" style="display: flex; align-items: center; gap: 10px;">
-                <img src="/assets/images/logo.png" alt="XP ARENA Logo" style="height: 28px; width: auto; border-radius: 6px;">
-                <span style="font-family:'Outfit', sans-serif; font-weight: 900; letter-spacing: -0.5px; font-size: 1.2rem; color: #fff;">XP ARENA</span>
-            </a>
-        </div>
-        <div class="nav-right" style="display: flex; align-items: center; gap: 12px; position: relative;">
-            ${isLoggedIn ? `
-            <button id="notifBtn" title="Notifications" aria-label="Notifications" style="background: rgba(255,255,255,0.06); border:1px solid var(--glass-stroke); color:#fff; width:40px;height:40px;border-radius:12px; display:flex; align-items:center; justify-content:center; transition: var(--transition);">
-              <i class="fas fa-bell"></i>
-            </button>
-            <div id="notifDropdown" class="glass-card" style="position:absolute; top:55px; right:0; width:300px; padding:1.5rem; display:none; z-index:30000; box-shadow: var(--shadow-lg);">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                    <h3 style="font-size:0.9rem; font-weight:800; color:#fff;">Recent Activity</h3>
-                    <button id="clearNotifs" style="background:none; border:none; color:var(--text-dim); font-size:0.8rem; cursor:pointer;"><i class="fas fa-check-double"></i></button>
-                </div>
-                <ul id="notifList" style="list-style:none; padding:0; margin:0; display:grid; gap:10px;"></ul>
-            </div>` : ``}
-            <a href="${isLoggedIn ? 'profile.html' : 'login.html'}" class="profile-btn" id="navbarProfileBtn" title="Profile" aria-label="Profile" style="display:flex; align-items:center; justify-content:center; width: 40px; height: 40px; background: rgba(var(--accent-rgb), 0.1); border: 1px solid rgba(var(--accent-rgb), 0.2); border-radius: 12px; transition: var(--transition);">
-                ${avatarHtml}
-            </a>
-        </div>
-    `;
-    const nav = document.querySelector('nav.navbar');
-    if (nav) nav.innerHTML = navbarHTML;
+    // Hide legacy elements
+    const legacyNav = document.querySelector('nav.navbar');
+    if (legacyNav) legacyNav.style.display = 'none';
+    const legacyBottomNav = document.querySelector('nav.bottom-nav');
+    if (legacyBottomNav) legacyBottomNav.style.display = 'none';
 
-    // 2. Inject Sidebar
-    const stats = isLoggedIn && typeof window.User !== 'undefined' ? window.User.getStats() : null;
-    const premiumBadge = stats && stats.is_premium ? '<span style="font-size:0.7rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd700;padding:2px 6px;border-radius:6px;margin-left:6px;">PREMIUM</span>' : '';
-    const displayName = isLoggedIn ? (Auth.getCurrentUser().username || 'Areni') : 'Guest';
-    const sidebarHTML = `
-        <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="padding: 2.5rem 1.5rem; border-bottom: 1px solid var(--glass-stroke); margin-bottom: 1rem; display:flex; flex-direction:column; align-items:center; gap:20px; position:relative;">
-                <a href="profile.html" style="display:flex; flex-direction:column; align-items:center; gap:12px; text-decoration:none; color:#fff; z-index:1;">
-                    <div style="width:80px;height:80px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border:1px solid var(--glass-stroke);border-radius:24px; box-shadow: var(--shadow-sm);">${avatarHtml}</div>
-                    <div style="display:flex; flex-direction:column; align-items:center; gap:4px;">
-                        <span style="font-family:'Outfit', sans-serif; font-weight:900; font-size:1.2rem;">${displayName}</span>
-                        ${premiumBadge ? `<span style="font-family:'Inter', sans-serif; font-size:0.65rem; background:var(--accent); color:#fff; padding:3px 10px; border-radius:10px; font-weight:800; letter-spacing:0.5px;">ELITE MEMBER</span>` : ''}
+    // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
+    const topBarHTML = `
+        <div class="rebirth-top-bar" style="position: fixed; top: 0; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 9998; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+            
+            <div class="top-bar-left">
+                 <button onclick="toggleSettings()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s; z-index: 10;">
+                    <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
+                </button>
+            </div>
+
+            <div class="center-brand">
+                 <a href="${root}index.html" class="rebirth-logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                    <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); transition: background 0.4s var(--transition);">
+                        <div style="color: var(--void); transform: rotate(-45deg); font-weight: 900; font-size: 1.2rem;">X</div>
                     </div>
+                    <span style="font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--stardust);">XP ARENA</span>
                 </a>
             </div>
-            <div class="sidebar-scroll" style="flex:1; overflow-y:auto; padding: 1rem 0;">
-                <div style="padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Principal Features</div>
-                <a href="index.html" class="sidebar-link"><i class="fas fa-home"></i> Dashboard Home</a>
-                <a href="tool.html" class="sidebar-link"><i class="fas fa-microchip"></i> Sensitivity Engine</a>
-                <a href="compare.html" class="sidebar-link"><i class="fas fa-chart-line"></i> Precision Lab</a>
-                <a href="guilds.html" class="sidebar-link"><i class="fas fa-shield-alt"></i> Clan Management</a>
-                
-                <div style="margin-top:2rem; padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Global Network</div>
-                <a href="leaderboard.html" class="sidebar-link"><i class="fas fa-trophy"></i> World Rankings</a>
-                <a href="clips.html" class="sidebar-link"><i class="fas fa-video"></i> Community Clips</a>
-                <a href="tournaments.html" class="sidebar-link"><i class="fas fa-crosshairs"></i> Operations</a>
-                <a href="quests.html" class="sidebar-link"><i class="fas fa-satellite-dish"></i> Daily Missions</a>
-                <a href="shop.html" class="sidebar-link"><i class="fas fa-shopping-bag"></i> Areni Armory</a>
-                
-                <div style="margin-top:2rem; padding: 0 1.5rem 0.75rem; font-size:0.7rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; font-weight:800;">Elite Tier</div>
-                <a href="premium.html" class="sidebar-link" style="color:var(--accent); font-weight:800;"><i class="fas fa-crown"></i> ELITE UPGRADE</a>
-            </div>
-            <div style="padding: 1.5rem; border-top: 1px solid var(--glass-stroke);">
-                ${user ? `
-                    <a href="#" class="sidebar-link" onclick="Auth.logout(); location.reload();" style="color: var(--danger); font-size:0.9rem; padding:0.5rem 0;"><i class="fas fa-power-off"></i> Sign Out</a>
-                ` : `
-                    <a href="login.html" class="btn-primary" style="font-size:0.9rem; padding:0.8rem;">Initialize Access</a>
-                `}
+            
+            <div class="top-bar-right" style="display: flex; align-items: center; gap: 0.8rem;">
+                <a href="${isLoggedIn ? root + 'profile.html' : root + 'login.html'}" id="nav-profile-link" style="width: 44px; height: 44px; border-radius: 12px; background: ${isLoggedIn ? 'var(--glass-highlight)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${isLoggedIn ? 'var(--photon)' : 'var(--glass-border)'}; display: flex; align-items: center; justify-content: center; text-decoration: none; color: ${isLoggedIn ? 'var(--photon)' : 'var(--stardust)'}; transition: all 0.3s; position: relative; overflow: hidden; z-index: 10;">
+                    <i class="fas ${isLoggedIn ? 'fa-user' : 'fa-user-circle'}" style="font-size: 1.4rem; ${isLoggedIn ? 'text-shadow: 0 0 10px var(--photon-glow);' : ''}"></i>
+                    ${isLoggedIn ? '<div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--photon); box-shadow: 0 -2px 10px var(--photon-glow);"></div>' : ''}
+                </a>
             </div>
         </div>
     `;
 
-    // Check if sidebar already exists or if we need to insert it
-    if (!document.getElementById('sidebar')) {
-        const body = document.body;
-        const wrapper = document.createElement('div');
-        wrapper.innerHTML = sidebarHTML;
-        body.insertBefore(wrapper.firstElementChild, body.firstChild); // Overlay
-        body.insertBefore(wrapper.lastElementChild, body.firstChild);  // Sidebar
+    if (!document.querySelector('.rebirth-top-bar')) {
+        document.body.insertAdjacentHTML('afterbegin', topBarHTML);
     }
 
-    // 3. Inject Bottom Nav
-    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    const bottomNavHTML = `
-        <a href="index.html" class="nav-item ${currentPage === 'index.html' ? 'active' : ''}" data-page="index.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
-            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-home"></i></span>
-            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Hub</span>
-        </a>
-        <a href="tool.html" class="nav-item ${currentPage === 'tool.html' ? 'active' : ''}" data-page="tool.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
-            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-microchip"></i></span>
-            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Engine</span>
-        </a>
-        <a href="shop.html" class="nav-item ${currentPage === 'shop.html' ? 'active' : ''}" data-page="shop.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
-            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-box-open"></i></span>
-            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Armory</span>
-        </a>
-        <a href="guilds.html" class="nav-item ${currentPage === 'guilds.html' ? 'active' : ''}" data-page="guilds.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
-            <span class="nav-icon" style="font-size:1.25rem;"><i class="fas fa-shield-alt"></i></span>
-            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">Clans</span>
-        </a>
-        <a href="profile.html" class="nav-item ${currentPage === 'profile.html' ? 'active' : ''}" data-page="profile.html" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; text-decoration:none; color:inherit; height: 100%; border-radius: 50px; transition: var(--transition);">
-            <span class="nav-icon" style="font-size:1.25rem;">${avatarHtml}</span>
-            <span class="nav-label" style="font-size:0.65rem; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;">User</span>
-        </a>
-    `;
-    const bottomNav = document.querySelector('nav.bottom-nav');
-    if (bottomNav) bottomNav.innerHTML = bottomNavHTML;
-
-    // 4. Wrap Content and Inject Footer
-    wrapAndInjectFooter();
-
-    // 5. Daily Reward Reminder
-    checkDailyRewardReminder();
-
-    // 6. Premium Hint Banner (non-premium users only, skip on premium pages)
-    try {
-        const page = (window.location.pathname.split('/').pop() || '').toLowerCase();
-        const skip = ['premium.html', 'premium-dashboard.html'].includes(page);
-        if (!skip && Auth.isLoggedIn()) {
-            const stats = window.User && window.User.getStats ? window.User.getStats() : null;
-            if (stats && !stats.is_premium && !localStorage.getItem('xp_premium_hint_dismiss')) {
-                const banner = document.createElement('div');
-                banner.id = 'premium-hint-banner';
-                banner.style.cssText = 'position:fixed; bottom:80px; left:50%; transform:translateX(-50%); background:rgba(11,15,23,0.95); border:1px solid var(--accent); color:#fff; padding:10px 14px; border-radius:12px; z-index:30000; display:flex; gap:10px; align-items:center;';
-                banner.innerHTML = '<span style=\"font-weight:900; letter-spacing:1px; font-size:0.8rem;\">Go Premium</span><a href=\"premium.html\" class=\"btn-secondary\" style=\"width:auto\">Compare</a><button id=\"phDismiss\" style=\"background:none;border:none;color:var(--text-muted);font-size:1.2rem;\">&times;</button>';
-                document.body.appendChild(banner);
-                document.getElementById('phDismiss').addEventListener('click', () => { localStorage.setItem('xp_premium_hint_dismiss', '1'); banner.remove(); });
-            }
-        }
-    } catch { }
-}
-
-function checkDailyRewardReminder() {
-    if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) return;
-    if (window.location.pathname.includes('daily-login.html') || window.location.pathname.includes('login.html')) return;
-
-    setTimeout(() => {
-        const stats = User.getStats();
-        const today = new Date().toDateString();
-        const last = stats ? (stats.lastLoginDate || (stats.lastLogin ? new Date(stats.lastLogin).toDateString() : null)) : null;
-        if (stats && last !== today) {
-            const reminder = document.createElement('div');
-            reminder.id = 'daily-reminder-popup';
-            reminder.innerHTML = `
-                <div class="reminder-card" onclick="window.location.href='daily-login.html'">
-                    <div class="reminder-glow"></div>
-                    <div class="reminder-content">
-                        <div class="reminder-icon">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <div class="reminder-text">
-                            <div class="reminder-title">DAILY BOUNTY</div>
-                            <div class="reminder-sub">Tap to Sync</div>
-                        </div>
-                        <button onclick="window.location.href='daily-login.html'" class="reminder-btn">CLAIM</button>
-                        <button onclick="event.stopPropagation(); this.closest('#daily-reminder-popup').remove()" class="reminder-close">&times;</button>
-                    </div>
-                </div>
-                <style>
-                    #daily-reminder-popup {
-                        position: fixed;
-                        bottom: 110px;
-                        right: 20px;
-                        z-index: 100000;
-                        pointer-events: auto;
-                    }
-                    .reminder-card {
-                        background: rgba(11, 15, 23, 0.9);
-                        backdrop-filter: blur(20px);
-                        -webkit-backdrop-filter: blur(20px);
-                        border: 1px solid var(--accent);
-                        border-radius: 16px;
-                        padding: 12px;
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
-                        animation: reminderSlideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-                        position: relative;
-                        overflow: hidden;
-                        min-width: 240px;
-                    }
-                    .reminder-content {
-                        display: flex;
-                        align-items: center;
-                        gap: 12px;
-                        position: relative;
-                        z-index: 2;
-                    }
-                    .reminder-icon {
-                        background: var(--accent);
-                        color: #000;
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 1rem;
-                        flex-shrink: 0;
-                    }
-                    .reminder-title {
-                        font-weight: 950;
-                        color: #fff;
-                        font-size: 0.8rem;
-                        letter-spacing: 1px;
-                        line-height: 1;
-                    }
-                    .reminder-sub {
-                        font-size: 0.7rem;
-                        color: var(--text-muted);
-                        margin-top: 2px;
-                    }
-                    .reminder-btn {
-                        background: var(--accent);
-                        border: none;
-                        color: #000;
-                        font-weight: 900;
-                        padding: 6px 14px;
-                        border-radius: 8px;
-                        cursor: pointer;
-                        font-size: 0.75rem;
-                        margin-left: auto;
-                        transition: transform 0.2s;
-                    }
-                    .reminder-btn:hover { transform: scale(1.05); }
-                    .reminder-close {
-                        background: none;
-                        border: none;
-                        color: rgba(255,255,255,0.3);
-                        font-size: 1.2rem;
-                        cursor: pointer;
-                        padding: 0 5px;
-                    }
-                    .reminder-glow {
-                        position: absolute;
-                        top: 0; left: 0; width: 100%; height: 100%;
-                        background: radial-gradient(circle at center, var(--accent-glow) 0%, transparent 70%);
-                        opacity: 0.3;
-                    }
-                    @keyframes reminderSlideIn {
-                        0% { transform: translateX(120%) scale(0.8); opacity: 0; }
-                        100% { transform: translateX(0) scale(1); opacity: 1; }
-                    }
-                    @media (max-width: 600px) {
-                        #daily-reminder-popup {
-                            right: 10px;
-                            left: 10px;
-                            bottom: 100px;
-                        }
-                        .reminder-card { min-width: auto; }
-                    }
-                </style>
-            `;
-            document.body.appendChild(reminder);
-        }
-    }, 2000);
-}
-
-function wrapAndInjectFooter() {
-    console.log('Layout: Starting wrapAndInjectFooter');
-    if (document.querySelector('.main-content-area')) {
-        console.log('Layout: Already wrapped');
-        // Still need to ensure theme fab is injected if missing
-        injectThemeOverlay();
-        return;
-    }
-
-    try {
-        // Use class selectors for better compatibility
-        const navbar = document.querySelector('.navbar');
-        const bottomNav = document.querySelector('.bottom-nav');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.querySelector('.sidebar-overlay');
-
-        const user = Auth.getCurrentUser();
-        const isLoggedIn = !!user;
-        const stats = isLoggedIn && typeof window.User !== 'undefined' ? window.User.getStats() : null;
-
-        console.log('Layout: Wrapping content. isLoggedIn:', isLoggedIn);
-
-        const wrapper = document.createElement('div');
-        wrapper.className = 'main-content-area';
-
-        // SAFETY: Only move direct children of body
-        const bodyChildren = Array.from(document.body.childNodes);
-        bodyChildren.forEach(child => {
-            // Skip navbar, bottomNav, sidebar, overlay, and scripts
-            if (child === navbar || child === bottomNav || child === sidebar || child === overlay) return;
-            if (child.nodeName === 'SCRIPT' || child.nodeName === 'STYLE') return;
-            if (child.id === 'xpa-levelup-overlay' || child.className === 'axp-increment-popup' || child.className === 'theme-fab' || child.className === 'theme-selector-overlay') return;
-
-            wrapper.appendChild(child);
-        });
-
-        // Inject Wrapper into body
-        // If bottomNav exists AND is a direct child of body, insert before it
-        if (bottomNav && bottomNav.parentNode === document.body) {
-            document.body.insertBefore(wrapper, bottomNav);
-        } else {
-            document.body.appendChild(wrapper);
-        }
-
-        // 2. Inject Theme FAB & Overlay
-        injectThemeOverlay();
-
-        // Inject Footer into Wrapper
-        const footerHTML = `
-            <footer class="site-footer">
-                <div class="footer-grid">
-                    <div class="footer-col">
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:1.5rem;">
-                            <img src="/assets/images/logo.png" style="height:32px;" alt="Logo">
-                            <span style="font-weight:900; color:#fff; font-size:1.2rem; letter-spacing:1px;">XP ARENA</span>
-                        </div>
-                        <p style="font-size:0.9rem; line-height:1.6;">The ultimate toolkit for Free Fire Arenis. Precision sensitivity, device comparisons, and community rankings.</p>
-                    </div>
-                    <div class="footer-col">
-                        <h4>Quick Links</h4>
-                        <ul class="footer-links">
-                            <li><a href="index.html">Home</a></li>
-                            <li><a href="shop.html">Armory (Shop)</a></li>
-                            <li><a href="guilds.html">Clans</a></li>
-                            <li><a href="daily-login.html">Daily Rewards</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4>Resources</h4>
-                        <ul class="footer-links">
-                            <li><a href="sponsors.html">Sponsors</a></li>
-                            <li><a href="support.html">Support Us</a></li>
-                            <li><a href="help.html">Help & FAQ</a></li>
-                            <li><a href="about.html">About XP Arena</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-col">
-                        <h4>Community</h4>
-                        <div class="social-links">
-                            <a href="#" title="Discord"><i class="fab fa-discord"></i></a>
-                            <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
-                            <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
-                            <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <p>&copy; 2026 XP ARENA. All rights reserved.</p>
-                    <div style="display:flex; gap:1.5rem;">
-                        <a href="#">Privacy Policy</a>
-                        <a href="#">Terms of Service</a>
-                    </div>
-                </div>
-            </footer>
+    // Inject Floating Back Button
+    if (!isIndex && !document.querySelector('.back-link-float')) {
+        const backBtnHTML = `
+            <a href="javascript:history.back()" class="back-link-float">
+                <i class="fas fa-chevron-left"></i>
+            </a>
         `;
-        wrapper.insertAdjacentHTML('beforeend', footerHTML);
-        console.log('Layout: Successfully wrapped and injected footer');
-    } catch (err) {
-        console.error('Layout: Error in wrapAndInjectFooter:', err);
+        document.body.insertAdjacentHTML('beforeend', backBtnHTML);
     }
+
+    // Inject Command Dock (v2: 6-item expansion)
+    const navItems = [
+        { icon: 'fa-th-large', label: 'Hub', link: root + 'index.html', id: 'nav-hub' },
+        { icon: 'fa-microchip', label: 'Engine', link: root + 'tool.html', id: 'nav-tool' },
+        { icon: 'fa-shopping-cart', label: 'Shop', link: root + 'shop.html', id: 'nav-shop' },
+        { icon: 'fa-trophy', label: 'Elite', link: root + 'leaderboard.html', id: 'nav-leaderboard' },
+        { icon: 'fa-shield-alt', label: 'Clan', link: root + 'guilds.html', id: 'nav-guilds' },
+        { icon: 'fa-tasks', label: 'Tasks', link: root + 'quests.html', id: 'nav-quests' }
+    ];
+
+    const dockHTML = `
+        <div class="command-dock" style="grid-template-columns: repeat(6, 1fr);">
+            ${navItems.map(item => `
+                <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''}" id="${item.id}">
+                    <i class="fas ${item.icon}"></i>
+                    <span class="dock-label">${item.label}</span>
+                </a>
+            `).join('')}
+        </div>
+    `;
+
+    if (!document.querySelector('.command-dock')) {
+        document.body.insertAdjacentHTML('beforeend', dockHTML);
+    }
+
+    injectRebirthFooter();
+    injectSettingsDrawer();
+    injectColorOverlay();
 }
 
-function injectThemeOverlay() {
-    if (document.querySelector('.theme-fab')) return;
-
-    const fabHTML = `
-        <button class="theme-fab" id="themeFab" title="Color Palette" aria-label="Change color theme">
-            <i class="fas fa-palette"></i>
-        </button>
-        <div class="theme-panel" id="themePanel">
-            <div class="theme-panel-header">
-                <div class="theme-panel-title">
-                    <i class="fas fa-palette"></i>
-                    Color Palette
+function injectRebirthFooter() {
+    if (document.querySelector('.rebirth-footer')) return;
+    const root = './';
+    const footerHTML = `
+        <footer class="rebirth-footer">
+            <div class="footer-grid">
+                <div class="footer-brand footer-col">
+                    <span class="logo-text clash">XP ARENA</span>
+                    <p style="color: var(--stardust-muted); font-size: 0.95rem; margin-bottom: 2.5rem; line-height: 1.6;">The ultimate diagnostic ecosystem for the next generation of Arenis.</p>
                 </div>
-                <button class="theme-panel-close" id="themePanelClose">&times;</button>
+                
+                <div class="footer-col">
+                    <h4 class="clash" style="letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase; color: var(--primary);">Network</h4>
+                    <ul class="footer-links">
+                        <li><a href="${root}index.html">The Hub</a></li>
+                        <li><a href="${root}tool.html">Sensitivity Lab</a></li>
+                        <li><a href="${root}shop.html">Armory</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="clash" style="letter-spacing: 2px; font-size: 0.8rem; text-transform: uppercase;">Community</h4>
+                    <ul class="footer-links">
+                        <li><a href="${root}guilds.html">Clans & Guilds</a></li>
+                        <li><a href="${root}leaderboard.html">Rankings</a></li>
+                        <li><a href="${root}quests.html">Neural Quests</a></li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="theme-panel-section-label">GAMER THEMES</div>
-            <div class="theme-grid">
-                <button class="theme-swatch" data-theme="default" onclick="setTheme('default')">
-                    <div class="theme-swatch-dot" style="background:#FF5500"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">🔥 Blaze</div>
-                        <div class="theme-swatch-hex">#FF5500</div>
-                    </div>
-                </button>
-                <button class="theme-swatch" data-theme="theme-volt" onclick="setTheme('theme-volt')">
-                    <div class="theme-swatch-dot" style="background:#AAFF00"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">⚡ Volt</div>
-                        <div class="theme-swatch-hex">#AAFF00</div>
-                    </div>
-                </button>
-                <button class="theme-swatch" data-theme="theme-phantom" onclick="setTheme('theme-phantom')">
-                    <div class="theme-swatch-dot" style="background:#8B5CF6"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">💜 Phantom</div>
-                        <div class="theme-swatch-hex">#8B5CF6</div>
-                    </div>
-                </button>
-                <button class="theme-swatch" data-theme="theme-frost" onclick="setTheme('theme-frost')">
-                    <div class="theme-swatch-dot" style="background:#00D4FF"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">🩵 Frost</div>
-                        <div class="theme-swatch-hex">#00D4FF</div>
-                    </div>
-                </button>
-                <button class="theme-swatch" data-theme="theme-crimson" onclick="setTheme('theme-crimson')">
-                    <div class="theme-swatch-dot" style="background:#FF1744"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">❤️ Crimson</div>
-                        <div class="theme-swatch-hex">#FF1744</div>
-                    </div>
-                </button>
-                <button class="theme-swatch" data-theme="theme-champion" onclick="setTheme('theme-champion')">
-                    <div class="theme-swatch-dot" style="background:#FFD700"></div>
-                    <div class="theme-swatch-info">
-                        <div class="theme-swatch-name">🏆 Champion</div>
-                        <div class="theme-swatch-hex">#FFD700</div>
-                    </div>
-                </button>
+            <div class="footer-bottom">
+                <p>&copy; 2026 XP ARENA SECTOR 7.</p>
+                <div style="display: flex; gap: 2rem;">
+                    <a href="${root}about.html" style="color: inherit; text-decoration: none; font-weight: 700;">MANIFESTO</a>
+                    <a href="${root}help.html" style="color: inherit; text-decoration: none; font-weight: 700;">SUPPORT</a>
+                </div>
             </div>
+        </footer>
+        `;
 
-            <div class="theme-panel-section-label" style="margin-top:1rem;">CUSTOM COLOR</div>
-            <div style="display:flex;align-items:center;gap:10px;">
-                <input type="color" id="customColorPicker" onchange="setCustomColor(this.value)"
-                    style="width:44px;height:44px;border:none;background:none;cursor:pointer;border-radius:10px;padding:0;flex-shrink:0;">
-                <div style="font-size:0.8rem;color:#5a5a6a;line-height:1.4;">Pick any color to use as your accent across all pages</div>
+    document.body.insertAdjacentHTML('beforeend', footerHTML);
+}
+
+function injectSettingsDrawer() {
+    if (document.getElementById('settings-drawer')) return;
+    const user = Auth.getCurrentUser();
+    const isLoggedIn = !!user;
+    const root = './';
+
+    const drawerHTML = `
+        <div id="settings-drawer" class="settings-drawer">
+            <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; border-bottom: 1px solid var(--glass-border);">
+                <h3 class="clash" style="margin: 0; font-size: 1.2rem; letter-spacing: 0.1em; color: var(--stardust);">SYSTEM NAV</h3>
+                <button onclick="toggleSettings()" style="background: none; border: none; color: var(--stardust-muted); font-size: 1.4rem; cursor: pointer; transition: color 0.3s;"><i class="fas fa-times"></i></button>
             </div>
+            
+            <div class="drawer-content" style="padding: 2rem; display: flex; flex-direction: column; gap: 2.5rem;">
+                <div class="settings-group">
+                    <span style="display: block; font-size: 0.7rem; color: var(--stardust-muted); margin-bottom: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase;">Primary Navigation</span>
+                    <div class="drawer-nav-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+                        <a href="${root}index.html" class="drawer-nav-item">
+                            <i class="fas fa-th-large"></i>
+                            <span>Hub</span>
+                        </a>
+                        <a href="${root}tool.html" class="drawer-nav-item">
+                            <i class="fas fa-microchip"></i>
+                            <span>Engine</span>
+                        </a>
+                        <a href="${root}shop.html" class="drawer-nav-item">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span>Shop</span>
+                        </a>
+                        <a href="${root}leaderboard.html" class="drawer-nav-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Elite</span>
+                        </a>
+                        <a href="${root}guilds.html" class="drawer-nav-item">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Clan</span>
+                        </a>
+                        <a href="${root}quests.html" class="drawer-nav-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>Tasks</span>
+                        </a>
+                        <a href="${root}premium.html" class="drawer-nav-item" style="color: var(--gold) !important; border-color: rgba(255, 215, 0, 0.3);">
+                            <i class="fas fa-crown"></i>
+                            <span>Go Elite</span>
+                        </a>
+                        <!-- Add robust connection to root and identity sector login/signup for flexibility -->
+                        <a href="${root}login.html" class="drawer-nav-item" style="opacity: 0.8;">
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Login</span>
+                        </a>
+                        <a href="${root}signup.html" class="drawer-nav-item" style="opacity: 0.8;">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Enroll</span>
+                        </a>
+                    </div>
+                </div>
 
-            <div style="margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.06);">
-                <button onclick="toggleDarkMode()" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:#f0f0f0;padding:0.65rem;border-radius:10px;cursor:pointer;font-size:0.82rem;font-weight:700;letter-spacing:0.5px;"><i class="fas fa-moon"></i> TOGGLE DARK / LIGHT</button>
+                <div class="settings-group">
+                    <span style="display: block; font-size: 0.7rem; color: var(--stardust-muted); margin-bottom: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase;">Neural Personalization</span>
+                    <button class="menu-action" onclick="toggleColorOverlay(); toggleSettings();" style="display: flex; align-items: center; gap: 15px; width: 100%; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--stardust); cursor: pointer; text-align: left; transition: all 0.3s;">
+                        <i class="fas fa-palette" style="color: var(--photon);"></i>
+                        <span>Customize Neural Accent</span>
+                    </button>
+                </div>
+
+                <div class="settings-group">
+                   <span style="display: block; font-size: 0.7rem; color: var(--stardust-muted); margin-bottom: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase;">Neural Synchronization</span>
+                    <div class="setting-item" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <div class="setting-info">
+                            <div style="font-weight: 700; color: var(--stardust); font-size: 0.95rem;">Cloud Sync</div>
+                            <div style="font-size: 0.75rem; color: var(--stardust-muted);">Persist diagnostics across nodes</div>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" id="syncToggle" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <span style="display: block; font-size: 0.7rem; color: var(--stardust-muted); margin-bottom: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase;">Tactical Access</span>
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        <button class="menu-action" onclick="window.location.href='${root}manifest.json'" style="display: flex; align-items: center; gap: 15px; width: 100%; padding: 1rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; color: var(--stardust); cursor: pointer; text-align: left; transition: all 0.3s;">
+                            <i class="fas fa-download" style="color: var(--photon);"></i>
+                            <span>Install as App (PWA)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="settings-group">
+                    <span style="display: block; font-size: 0.7rem; color: var(--stardust-muted); margin-bottom: 1.2rem; letter-spacing: 0.15em; text-transform: uppercase;">Operational Status</span>
+                    ${isLoggedIn ? `
+                        <button class="menu-action danger" onclick="handleDeleteAccount()" style="display: flex; align-items: center; gap: 15px; width: 100%; padding: 1rem; background: rgba(255, 68, 68, 0.05); border: 1px solid rgba(255, 68, 68, 0.2); border-radius: 12px; color: #ff4444; cursor: pointer; text-align: left; transition: all 0.3s; margin-bottom: 1rem;">
+                            <i class="fas fa-user-slash"></i>
+                            <span>Destroy Account Data</span>
+                        </button>
+                        <div style="padding: 1rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.8rem; font-weight: 700;">USER_SESSION</span>
+                            <button onclick="Auth.logout()" style="background: none; border: none; color: #ff4444; font-weight: 800; cursor: pointer; font-size: 0.7rem; letter-spacing: 1px;">LOGOUT</button>
+                        </div>
+                    ` : `
+                        <button class="btn-rebirth" onclick="window.location.href='${root}login.html'" style="width: 100%; justify-content: center; padding: 1.2rem;">
+                            <i class="fas fa-sign-in-alt"></i> INITIALIZE UPLINK
+                        </button>
+                    `}
+                </div>
             </div>
         </div>
-
-        <style>
-        .theme-fab {
-            position: fixed;
-            bottom: calc(var(--bottom-nav-height, 68px) + 16px);
-            right: 16px;
-            z-index: 40000;
-            width: 48px; height: 48px;
-            border-radius: 50%;
-            background: var(--accent);
-            color: #fff;
-            border: none;
-            cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 20px rgba(var(--accent-rgb, 255,85,0), 0.45), 0 2px 8px rgba(0,0,0,0.6);
-            transition: all 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
-            -webkit-tap-highlight-color: transparent;
-        }
-        .theme-fab:hover { transform: scale(1.1) rotate(15deg); }
-        .theme-fab:active { transform: scale(0.95); }
-
-        .theme-panel {
-            position: fixed;
-            bottom: calc(var(--bottom-nav-height, 68px) + 72px);
-            right: 16px;
-            z-index: 39999;
-            width: 280px;
-            background: rgba(10,10,10,0.97);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 18px;
-            padding: 1.2rem;
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
-            display: none;
-            animation: panelSlideUp 0.35s cubic-bezier(0.165,0.84,0.44,1) forwards;
-            transform-origin: bottom right;
-        }
-        .theme-panel.open { display: block; }
-
-        @keyframes panelSlideUp {
-            from { opacity:0; transform: scale(0.88) translateY(12px); }
-            to   { opacity:1; transform: scale(1) translateY(0); }
-        }
-
-        .theme-panel-header {
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-        .theme-panel-title {
-            font-weight: 900; font-size: 0.9rem; letter-spacing: 0.5px;
-            color: #f0f0f0; display: flex; align-items: center; gap: 8px;
-        }
-        .theme-panel-title i { color: var(--accent); }
-        .theme-panel-close {
-            background: rgba(255,255,255,0.06); border: none; color: #5a5a6a;
-            width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
-            font-size: 1.1rem; display: flex; align-items: center; justify-content: center;
-            transition: background 0.2s;
-        }
-        .theme-panel-close:hover { background: rgba(255,255,255,0.12); color: #f0f0f0; }
-
-        .theme-panel-section-label {
-            font-size: 0.67rem; font-weight: 800; letter-spacing: 2px;
-            color: #5a5a6a; margin-bottom: 0.7rem;
-        }
-
-        .theme-grid {
-            display: grid; grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .theme-swatch {
-            display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 10px;
-            padding: 0.6rem 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-        }
-        .theme-swatch:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.15);
-            transform: translateY(-1px);
-        }
-        .theme-swatch.active {
-            border-color: var(--accent);
-            background: rgba(var(--accent-rgb,255,85,0), 0.08);
-            box-shadow: 0 0 0 1px var(--accent);
-        }
-        .theme-swatch-dot {
-            width: 22px; height: 22px; border-radius: 50%;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-        }
-        .theme-swatch-info { flex: 1; min-width: 0; }
-        .theme-swatch-name { font-size: 0.78rem; font-weight: 800; color: #f0f0f0; line-height: 1.2; }
-        .theme-swatch-hex { font-size: 0.65rem; color: #5a5a6a; font-family: monospace; }
-        </style>
+        <div id="drawer-overlay" onclick="toggleSettings()" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.4s;"></div>
     `;
-    document.body.insertAdjacentHTML('beforeend', fabHTML);
+    document.body.insertAdjacentHTML('beforeend', drawerHTML);
 
-    const fab = document.getElementById('themeFab');
-    const panel = document.getElementById('themePanel');
-    const closeBtn = document.getElementById('themePanelClose');
-
-    fab.addEventListener('click', (e) => {
-        e.stopPropagation();
-        panel.classList.toggle('open');
-    });
-
-    closeBtn.addEventListener('click', () => panel.classList.remove('open'));
-
-    document.addEventListener('click', (e) => {
-        if (panel.classList.contains('open') && !fab.contains(e.target) && !panel.contains(e.target)) {
-            panel.classList.remove('open');
-        }
-    });
-
-    // Mark active swatch
-    _updateActiveThemeSwatch();
-}
-
-function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.querySelector('.sidebar-overlay');
-    if (sidebar && overlay) {
-        const isActive = sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-
-        // Scroll Lock
-        if (isActive) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.height = '100vh';
-        } else {
-            document.body.style.overflow = '';
-            document.body.style.height = '';
-        }
+    const syncToggle = document.getElementById('syncToggle');
+    if (syncToggle) {
+        syncToggle.checked = localStorage.getItem('xp_cloud_sync') !== 'false';
+        syncToggle.addEventListener('change', (e) => {
+            localStorage.setItem('xp_cloud_sync', e.target.checked);
+            if (window.Toast) Toast.show(`CLOUD SYNC ${e.target.checked ? 'ACTIVE' : 'OFFLINE'} `, 'info');
+        });
     }
 }
+
+function injectColorOverlay() {
+    if (document.getElementById('color-overlay')) return;
+
+    const colors = [
+        { name: 'Photon Blue', hex: '#00f5ff' },
+        { name: 'Solar Flare', hex: '#ffcc00' },
+        { name: 'Nova Pink', hex: '#ff2d55' },
+        { name: 'Pulse Green', hex: '#32d74b' },
+        { name: 'Void Violet', hex: '#bf5af2' },
+        { name: 'Plasma Orange', hex: '#ff9d00' },
+        { name: 'Ice White', hex: '#f8fafc' },
+        { name: 'Deep Sea', hex: '#5e5ce6' }
+    ];
+
+    const currentAccent = localStorage.getItem('xp_accent_color') || '#00f5ff';
+
+    const overlayHTML = `
+        <div id="color-overlay" class="color-overlay">
+            <div class="color-modal">
+                <h2 class="clash" style="font-size: 1.8rem; margin-bottom: 0.5rem;">NEURAL PERSONALIZATION</h2>
+                <p style="color: var(--stardust-muted); font-size: 0.9rem;">Select your operational accent frequency.</p>
+
+                <div class="color-grid">
+                    ${colors.map(c => `
+                        <div class="color-token ${c.hex.toLowerCase() === currentAccent.toLowerCase() ? 'active' : ''}" 
+                             style="background: ${c.hex}; --token-glow: ${c.hex}66;" 
+                             onclick="updateGlobalAccent('${c.hex}', this)" 
+                             title="${c.name}">
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: center; align-items: center;">
+                    <div style="font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--primary);" id="overlayHexDisplay">${currentAccent.toUpperCase()}</div>
+                </div>
+
+                <button class="btn-rebirth btn-photon" onclick="toggleColorOverlay()" style="margin-top: 3rem; width: 100%;">
+                    SYNCHRONIZE HUD
+                </button>
+            </div>
+        </div>
+        `;
+
+    document.body.insertAdjacentHTML('beforeend', overlayHTML);
+}
+
+window.updateGlobalAccent = function (color, el) {
+    document.documentElement.style.setProperty('--photon', color);
+    document.documentElement.style.setProperty('--photon-glow', color + '33');
+    localStorage.setItem('xp_accent_color', color);
+
+    const hexDisplay = document.getElementById('overlayHexDisplay');
+    if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
+
+    document.querySelectorAll('.color-token').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+
+    if (window.Toast) Toast.show('Neural HUD Resynchronized', 'info');
+};
+
+window.toggleColorOverlay = function () {
+    const overlay = document.getElementById('color-overlay');
+    if (overlay) overlay.classList.toggle('open');
+};
+
+window.toggleSettings = function () {
+    const drawer = document.getElementById('settings-drawer');
+    const overlay = document.getElementById('drawer-overlay');
+    if (drawer && overlay) {
+        drawer.classList.toggle('open');
+        const isOpen = drawer.classList.contains('open');
+        overlay.style.opacity = isOpen ? '1' : '0';
+        overlay.style.pointerEvents = isOpen ? 'auto' : 'none';
+    }
+};
 
 function highlightActiveLinks() {
     const currentPath = window.location.pathname.split('/').pop() || 'index.html';
     const cleanPath = currentPath.replace('.html', '');
-
-    // Highlight Sidebar
-    const sidebarLinks = document.querySelectorAll('.sidebar-link');
-    sidebarLinks.forEach(link => {
+    document.querySelectorAll('.dock-item').forEach(link => {
         const href = link.getAttribute('href');
         if (!href) return;
-
-        const linkClean = href.replace('.html', '');
-        if (href === currentPath || linkClean === cleanPath ||
-            (currentPath === 'profile.html' && href.includes('profile.html'))) {
-            link.classList.add('link-active');
-            link.style.color = 'var(--accent)';
-        }
-    });
-
-    // Highlight Bottom Nav
-    const bottomLinks = document.querySelectorAll('.nav-item');
-    bottomLinks.forEach(link => {
-        const page = link.getAttribute('data-page');
-        if (!page) return;
-
-        const pageClean = page.replace('.html', '');
-        if (page === currentPath || pageClean === cleanPath) {
+        const linkClean = href.split('/').pop().replace('.html', '');
+        if (href.endsWith(currentPath) || linkClean === cleanPath) {
             link.classList.add('active');
+        } else {
+            link.classList.remove('active');
         }
     });
-}
-
-// Deep link to profile settings tab via hash
-if (window.location.hash === '#settings') {
-    window.addEventListener('load', () => {
-        const btn = Array.from(document.querySelectorAll('.tab-btn'))
-            .find(el => ((el.getAttribute('onclick') || '').includes("switchTab('settings')")));
-        if (btn) btn.click();
-    });
-}
-
-// Inject Sound Engine & Toast / Effects Scripts
-if (!document.querySelector('script[src="js/sounds.js?v=2"]')) {
-    const sEng = document.createElement('script');
-    sEng.src = 'js/sounds.js?v=2';
-    document.head.appendChild(sEng);
-}
-
-if (!document.querySelector('script[src="js/toast.js?v=2"]')) {
-    const toastScript = document.createElement('script');
-    toastScript.src = 'js/toast.js?v=2';
-    document.head.appendChild(toastScript);
-
-    const confettiScript = document.createElement('script');
-    confettiScript.src = 'js/confetti.js';
-    document.head.appendChild(confettiScript);
-
-    const effectsScript = document.createElement('script');
-    effectsScript.src = 'js/effects.js';
-    document.head.appendChild(effectsScript);
 }
 
 function syncGlobalXP() {
     if (typeof User === 'undefined' || !Auth.isLoggedIn()) return;
-    const stats = User.getStats();
-    if (!stats) return;
-
-    const badge = document.getElementById('globalLevelBadge');
-
-    if (badge) {
-        badge.textContent = `Lvl ${stats.level}`;
-        if (stats.level >= 10) {
-            badge.style.background = 'var(--accent)';
-            badge.style.color = '#000';
-        }
-    }
 }
 
 function trackPageVisit() {
     if (typeof User === 'undefined' || !Auth.isLoggedIn()) return;
     const page = window.location.pathname.split('/').pop() || 'index.html';
-
     User.updateStats(stats => {
         if (!stats.visitedPages) stats.visitedPages = [];
         if (!stats.visitedPages.includes(page)) {
             stats.visitedPages.push(page);
         }
     });
-
-    // Handle quest alert
-    const stats = User.getStats();
-    const alert = document.getElementById('questAlert');
-    if (alert && stats.quests) {
-        const canClaim = stats.visitedPages.length >= 5 && !stats.quests.completed.includes('explorer');
-        alert.style.display = canClaim ? 'block' : 'none';
-    }
 }
 
-function setTheme(theme) {
-    const ALL_THEMES = ['theme-volt', 'theme-phantom', 'theme-frost', 'theme-crimson', 'theme-champion', 'theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber'];
-    ALL_THEMES.forEach(t => document.body.classList.remove(t));
-    document.documentElement.style.removeProperty('--accent');
-    document.documentElement.style.removeProperty('--accent-glow');
-    document.documentElement.style.removeProperty('--accent-rgb');
-    localStorage.removeItem('xp_custom_color');
-
-    if (theme !== 'default') {
-        document.body.classList.add(theme);
-        localStorage.setItem('xp_theme', theme);
-    } else {
-        localStorage.removeItem('xp_theme');
+function applyCustomAccent() {
+    const savedColor = localStorage.getItem('xp_accent_color');
+    if (savedColor) {
+        document.documentElement.style.setProperty('--photon', savedColor);
+        document.documentElement.style.setProperty('--photon-glow', savedColor + '33');
     }
-
-    _updateActiveThemeSwatch();
-
-    if (window.Toast) Toast.show('Theme updated!', 'info', 1500);
-}
-
-function _updateActiveThemeSwatch() {
-    const saved = localStorage.getItem('xp_theme') || 'default';
-    document.querySelectorAll('.theme-swatch').forEach(s => {
-        s.classList.toggle('active', (s.dataset.theme || 'default') === saved);
-    });
-}
-
-window.setTheme = setTheme;
-
-function setCustomColor(color, showToast = true) {
-    const ALL_THEMES = ['theme-volt', 'theme-phantom', 'theme-frost', 'theme-crimson', 'theme-champion', 'theme-ember', 'theme-amethyst', 'theme-gold', 'theme-cyber'];
-    ALL_THEMES.forEach(t => document.body.classList.remove(t));
-    localStorage.removeItem('xp_theme');
-
-    document.documentElement.style.setProperty('--accent', color);
-
-    const hex = color.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16) || 255;
-    const g = parseInt(hex.substring(2, 4), 16) || 85;
-    const b = parseInt(hex.substring(4, 6), 16) || 0;
-    document.documentElement.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.3)`);
-    document.documentElement.style.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
-
-    localStorage.setItem('xp_custom_color', color);
-
-    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('active'));
-
-    const colorPicker = document.getElementById('customColorPicker');
-    if (colorPicker) colorPicker.value = color;
-
-    if (showToast && window.Toast) Toast.show('Custom color applied!', 'success', 1500);
-}
-window.setCustomColor = setCustomColor;
-
-function toggleDarkMode() {
-    const isLight = document.body.classList.toggle('light-mode');
-    localStorage.setItem('xp_light_mode', isLight ? '1' : '0');
-    // Re-inject layout so toggle button label updates
-    injectLayout();
-    highlightActiveLinks();
-    syncGlobalXP();
-    if (window.Toast) Toast.show(isLight ? '☀️ Light mode on' : '🌙 Dark mode on', 'info', 2000);
-}
-
-window.toggleDarkMode = toggleDarkMode;
-
-document.addEventListener('click', (e) => {
-    const btn = document.getElementById('notifBtn');
-    const dd = document.getElementById('notifDropdown');
-    if (!btn || !dd) return;
-    if (btn.contains(e.target)) {
-        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
-        if (dd.style.display === 'block' && typeof Auth !== 'undefined' && Auth.isLoggedIn() && typeof User !== 'undefined') {
-            const stats = User.getStats();
-            const list = document.getElementById('notifList');
-            if (list) {
-                const items = (stats.activities || []).slice(0, 5).map(a => `
-                    <li class="achievement-item">
-                        <div class="achievement-icon">
-                            <i class="${a.text.includes('reward') || a.text.includes('AXP') ? 'fas fa-star' : 'fas fa-info-circle'}"></i>
-                        </div>
-                        <div class="achievement-content">
-                            <div class="achievement-title">${a.text}</div>
-                            <span class="achievement-time">${new Date(a.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
-                    </li>
-                `).join('');
-                list.innerHTML = items || '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">No recent activity</div>';
-            }
-        }
-    } else if (!dd.contains(e.target) && e.target.id !== 'clearNotifs' && !e.target.closest('#clearNotifs')) {
-        dd.style.display = 'none';
-    }
-});
-
-document.addEventListener('click', (e) => {
-    const clearBtn = e.target.closest('#clearNotifs');
-    if (clearBtn && typeof User !== 'undefined' && Auth.isLoggedIn()) {
-        User.updateStatsLocally(s => s.activities = []);
-        const list = document.getElementById('notifList');
-        if (list) list.innerHTML = '<div style="padding: 1rem; text-align: center; color: var(--text-muted); font-size: 0.9rem;">No recent activity</div>';
-    }
-});
-
-function setupPageTransitions() {
-    document.body.addEventListener('click', (e) => {
-        const link = e.target.closest('a');
-        if (!link) return;
-
-        const target = link.getAttribute('target');
-        const href = link.getAttribute('href');
-
-        // Skip for external, new tab, hash links, or javascript
-        if (target === '_blank' || !href || href.startsWith('#') || href.startsWith('javascript:')) return;
-
-        // Skip if it's the current page
-        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
-        const linkPath = href.split('/').pop() || 'index.html';
-        if (currentPath === linkPath) return;
-
-        e.preventDefault();
-        if (window.Sounds) Sounds.play('click');
-        const content = document.querySelector('.main-content-area') || document.body;
-        content.classList.add('page-transition-out');
-
-        // Wait for animation then navigate
-        setTimeout(() => {
-            window.location.href = href;
-        }, 300); // matches the 0.3s CSS transition
-    });
-}
-
-// Push Notifications Setup
-async function subscribeToPushNotifications() {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-        console.warn('Push notifications are not supported by the browser.');
-        return;
-    }
-
-    // Don't ask again if they recently denied or if already subscribed
-    const pushStatus = localStorage.getItem(`xp_push_${Auth.getCurrentUser().id}`);
-    if (pushStatus === 'denied' || pushStatus === 'subscribed') {
-        return;
-    }
-
-    try {
-        const permission = await Notification.requestPermission();
-        if (permission === 'granted') {
-            const registration = await navigator.serviceWorker.ready;
-
-            // Fetch public key
-            const res = await fetch((window.API_URL || '') + '/api/push/public-key');
-            if (!res.ok) throw new Error('Could not fetch VAPID public key');
-            const { publicKey } = await res.json();
-
-            // Convert VAPID key
-            const convertedVapidKey = urlBase64ToUint8Array(publicKey);
-
-            // Subscribe
-            const subscription = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: convertedVapidKey
-            });
-
-            // Send to backend
-            await fetch((window.API_URL || '') + '/api/push/subscribe', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + Auth.getToken()
-                },
-                body: JSON.stringify({ subscription })
-            });
-
-            // For now, save the permission state
-            localStorage.setItem(`xp_push_${Auth.getCurrentUser().id}`, 'subscribed');
-            console.log('Push notification permission granted and registered.');
-            if (window.Toast) Toast.show('Push notifications enabled!', 'success', 3000);
-        } else {
-            localStorage.setItem(`xp_push_${Auth.getCurrentUser().id}`, 'denied');
-        }
-    } catch (e) {
-        console.error('Push subscription failed:', e);
-    }
-}
-
-// Utility function to convert VAPID key
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding)
-        .replace(/\-/g, '+')
-        .replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
-}
-
-function applyEliteGating() {
-    if (typeof User === 'undefined') return;
-    const stats = User.getStats();
-    const isElite = stats && stats.is_premium;
-
-    // Professional hiding of Pro-only elements
-    document.querySelectorAll('.pro-only').forEach(el => {
-        if (!isElite) {
-            el.style.display = 'none';
-        } else {
-            el.classList.add('premium-active');
-        }
-    });
-
-    // Toggle visibility of creator dashboard in sidebar
-    const crLink = document.querySelector('a[href="creators.html"]');
-    if (crLink && !isElite) {
-        crLink.style.opacity = '0.4';
-        crLink.style.pointerEvents = 'none';
-        crLink.style.cursor = 'not-allowed';
-        crLink.innerHTML += ' <i class="fas fa-lock" style="font-size:0.6rem; margin-left:8px; color: var(--accent);"></i>';
-    }
-}
-
-function checkMysteryProtocol() {
-    if (!Auth.isLoggedIn()) return;
-    const today = new Date().toISOString().split('T')[0];
-    if (localStorage.getItem('xp_mystery_protocol') === today) return;
-
-    // Show Protocol Pop-up
-    const popup = document.createElement('div');
-    popup.id = 'mysteryProtocolPopup';
-    popup.style = `
-        position: fixed; bottom: 85px; right: 20px; z-index: 9999;
-        background: linear-gradient(135deg, rgba(10,10,10,0.95), rgba(0,20,20,0.95));
-        border: 2px solid var(--accent); border-radius: 12px; padding: 1.5rem;
-        box-shadow: 0 0 30px var(--accent-glow); color: #fff; width: 280px;
-        transform: translateY(100px); opacity: 0; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    `;
-    popup.innerHTML = `
-        <div style="font-size: 0.6rem; letter-spacing: 3px; color: var(--accent); margin-bottom: 8px;">UPLINK DETECTED</div>
-        <h3 style="margin: 0 0 10px 0; font-weight: 900;">SECRET PROTOCOL</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">A new tactical encryption has appeared in the Mystery Room. Decrypt for AXP rewards.</p>
-        <div style="display:flex; gap:10px;">
-            <a href="mystery.html" class="btn-primary" style="padding: 8px 15px; font-size: 0.75rem; text-decoration:none;" onclick="markProtocolSeen()">ENTER ROOM</a>
-            <button class="btn-secondary" style="padding: 8px 15px; font-size: 0.75rem;" onclick="markProtocolSeen()">IGNORE</button>
-        </div>
-    `;
-
-    document.body.appendChild(popup);
-    setTimeout(() => {
-        popup.style.transform = 'translateY(0)';
-        popup.style.opacity = '1';
-    }, 2000);
-
-    window.markProtocolSeen = () => {
-        localStorage.setItem('xp_mystery_protocol', today);
-        popup.style.transform = 'translateY(100px)';
-        popup.style.opacity = '0';
-        setTimeout(() => popup.remove(), 500);
-    };
 }

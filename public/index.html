@@ -4,984 +4,711 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>XP Arena – Free Fire Sensitivity, Rankings & Tournaments</title>
-  <meta name="description"
-    content="XP Arena – Track your Free Fire sensitivity, earn XP, climb the ranks. Pro-grade sensitivity tool for competitive Arenis.">
-  <link rel="manifest" href="manifest.json">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="XP Arena – Compete at the Highest Level">
-  <meta property="og:description" content="Track your Free Fire sensitivity, earn XP, and rise in the rankings.">
-  <meta property="og:image" content="/assets/images/logo.png">
-  <meta name="theme-color" content="#FF5500">
-  <link rel="icon" href="/assets/images/logo.png">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css?v=2">
-  <link rel="stylesheet" href="css/onboarding.css?v=2">
+  <title>Hub • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
-  <link rel="prefetch" href="tool.html">
-  <link rel="prefetch" href="result.html">
   <style>
-    /* ─── Ambient Background ─── */
-    .ambient-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
+    .rebirth-hub {
+      padding: 8rem 2rem 10rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    .orb {
+    .hub-hero {
+      margin-bottom: 4rem;
+      text-align: center;
+    }
+
+    .hub-hero h1 {
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+    }
+
+    .stat-mini {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .stat-mini-value {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: var(--photon);
+    }
+
+    .stat-mini-label {
+      font-size: 0.8rem;
+      color: var(--stardust-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Hero Progress Ring */
+    .hub-hero-progress {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 2rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-circle-bg {
+      fill: none;
+      stroke: var(--nebula-solid);
+      stroke-width: 8;
+    }
+
+    .progress-circle-val {
+      fill: none;
+      stroke: var(--photon);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 565.48;
+      stroke-dashoffset: 565.48;
+      transition: stroke-dashoffset 1.5s var(--transition);
+    }
+
+    .hub-hero-level {
       position: absolute;
-      border-radius: 50%;
-      filter: blur(130px);
-      opacity: 0.12;
+      font-family: 'Clash Display', sans-serif;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--stardust);
     }
 
+    .hub-hero-level span {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--stardust-muted);
+      text-align: center;
+      letter-spacing: 0.2em;
+    }
 
-    @keyframes orb-float {
+    /* Live Feed */
+    .arena-ticker {
+      background: rgba(255, 255, 255, 0.03);
+      border-top: 1px solid var(--glass-border);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0.75rem 0;
+      margin: 2rem 0 4rem;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .ticker-content {
+      display: inline-block;
+      animation: ticker 30s linear infinite;
+    }
+
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-right: 4rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--stardust-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .ticker-item i {
+      color: var(--photon);
+      font-size: 0.7rem;
+    }
+
+    .ticker-item b {
+      color: var(--stardust);
+    }
+
+    @keyframes ticker {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    @keyframes slideInRight {
       from {
-        transform: translate(0, 0) scale(1);
+        opacity: 0;
+        transform: translateX(50px);
       }
 
       to {
-        transform: translate(30px, 20px) scale(1.08);
+        opacity: 1;
+        transform: translateX(0);
       }
     }
 
-    .grid-bg {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--accent-glow) 1px, transparent 1px),
-        linear-gradient(90deg, var(--accent-glow) 1px, transparent 1px);
-      background-size: 60px 60px;
-      opacity: 0.15;
-    }
-
-    /* ─── Hero ─── */
-    .hero {
-      position: relative;
-      z-index: 1;
-      padding: 5rem 1.5rem 3rem;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .live-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(var(--accent-rgb, 255, 85, 0), 0.1);
-      border: 1px solid rgba(var(--accent-rgb, 255, 85, 0), 0.25);
-      border-radius: 100px;
-      padding: 0.4rem 1rem;
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 2rem;
-    }
-
-    .live-dot {
-      width: 7px;
-      height: 7px;
-      background: #84cc16;
-      border-radius: 50%;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-
-      0%,
-      100% {
+    @keyframes pulse-icon {
+      0% {
         opacity: 1;
-        box-shadow: 0 0 0 0 rgba(132, 204, 22, 0.5);
+        transform: scale(1);
       }
 
       50% {
-        opacity: 0.7;
-        box-shadow: 0 0 0 5px rgba(132, 204, 22, 0);
+        opacity: 0.5;
+        transform: scale(0.9);
+      }
+
+      100% {
+        opacity: 1;
+        transform: scale(1);
       }
     }
 
-    .hero-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.8rem, 8vw, 5.5rem);
-      font-weight: 900;
-      line-height: 1.05;
-      letter-spacing: -2px;
-      margin-bottom: 1.2rem;
+    .featured-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
     }
 
-    .hero-title .line2 {
-      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-size: 200%;
-      animation: grad-shift 5s ease-in-out infinite alternate;
-    }
-
-    @keyframes grad-shift {
-      from {
-        background-position: 0% center;
-      }
-
-      to {
-        background-position: 100% center;
-      }
-    }
-
-    .hero-sub {
-      font-size: 1.1rem;
-      color: var(--text-muted);
-      max-width: 560px;
-      line-height: 1.7;
-      margin-bottom: 2.5rem;
-    }
-
-    .hero-sub em {
-      color: var(--accent);
-      font-style: normal;
-      font-weight: 600;
-    }
-
-    .hero-actions {
+    .featured-card {
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
       display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .featured-avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: var(--nebula-solid);
+      display: flex;
+      align-items: center;
       justify-content: center;
-      margin-bottom: 4rem;
+      border: 1px solid var(--glass-border);
     }
 
-    .btn-hero-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      border: none;
-      padding: 0.9rem 2rem;
-      border-radius: 14px;
-      font-weight: 800;
-      font-size: 0.95rem;
-      cursor: pointer;
-      text-decoration: none;
-      box-shadow: 0 8px 30px var(--accent-glow);
-      transition: all 0.3s ease;
-      letter-spacing: 0.3px;
-    }
-
-    .btn-hero-primary:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 14px 40px rgba(var(--accent-rgb, 255, 85, 0), 0.5);
-    }
-
-    .btn-hero-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 0.9rem 2rem;
-      border-radius: 14px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      text-decoration: none;
-      transition: all 0.3s ease;
-    }
-
-    .btn-hero-secondary:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border-active);
-      transform: translateY(-2px);
-    }
-
-    /* ─── Stats ─── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      overflow: hidden;
-      width: 100%;
-      max-width: 800px;
-      margin-bottom: 5rem;
-    }
-
-    .stat-cell {
-      background: var(--glass);
-      backdrop-filter: blur(20px);
-      padding: 1.5rem 1rem;
-      text-align: center;
-    }
-
-    .stat-number {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #fff;
-      line-height: 1;
-      margin-bottom: 0.3rem;
-    }
-
-    .stat-number span {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .stat-label {
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-
-    /* ─── Section Labels ─── */
-    .section-label {
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 0.6rem;
-    }
-
-    .section-label::before,
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    .section-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(1.7rem, 4vw, 2.6rem);
-      font-weight: 900;
-      text-align: center;
-      margin-bottom: 0.6rem;
-    }
-
-    .section-sub {
-      font-size: 0.95rem;
-      color: var(--text-muted);
-      text-align: center;
-      margin-bottom: 2.5rem;
-    }
-
-    /* ─── Features Section ─── */
-    .features-section {
-      position: relative;
-      z-index: 1;
-      padding: 0 1.5rem 5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.2rem;
-    }
-
-    .feature-card {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.8rem;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-      position: relative;
-      overflow: hidden;
-      text-decoration: none;
-      display: block;
-    }
-
-    .feature-card::before {
-      content: '';
-      position: absolute;
+    /* Cinematic Transition Overlays */
+    .cinematic-overlay {
+      position: fixed;
       inset: 0;
-      border-radius: inherit;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%);
-      pointer-events: none;
-    }
-
-    .feature-card:hover {
-      border-color: var(--border-active);
-      transform: translateY(-6px);
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-glow);
-    }
-
-    .feature-icon-wrap {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      margin-bottom: 1.2rem;
-    }
-
-    .fi-violet {
-      background: rgba(var(--accent-rgb, 139, 92, 246), 0.12);
-      color: var(--accent);
-    }
-
-    .fi-cyan {
-      background: rgba(var(--accent-rgb, 6, 182, 212), 0.12);
-      color: var(--accent2);
-    }
-
-    .fi-green {
-      background: rgba(132, 204, 22, 0.12);
-      color: #84cc16;
-    }
-
-    .fi-orange {
-      background: rgba(249, 115, 22, 0.12);
-      color: #f97316;
-    }
-
-    .fi-yellow {
-      background: rgba(245, 158, 11, 0.12);
-      color: #f59e0b;
-    }
-
-    .fi-red {
-      background: rgba(239, 68, 68, 0.12);
-      color: #ef4444;
-    }
-
-    .feature-card h3 {
-      font-size: 1rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-
-    .feature-card p {
-      font-size: 0.84rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
-
-    .feature-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(var(--accent-rgb, 139, 92, 246), 0.1);
-      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
-      border-radius: 100px;
-      padding: 2px 8px;
-      font-size: 0.65rem;
-      font-weight: 800;
-      letter-spacing: 1px;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-top: 0.8rem;
-    }
-
-    .feature-tag.new {
-      background: rgba(132, 204, 22, 0.1);
-      border-color: rgba(132, 204, 22, 0.2);
-      color: #84cc16;
-    }
-
-    .feature-tag.hot {
-      background: rgba(249, 115, 22, 0.1);
-      border-color: rgba(249, 115, 22, 0.2);
-      color: #f97316;
-    }
-
-    /* ─── Top Players ─── */
-    .players-section {
-      position: relative;
-      z-index: 1;
-      padding: 0 1.5rem 5rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .players-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
-    }
-
-    .player-card {
-      background: var(--glass);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 1.5rem;
-      backdrop-filter: blur(20px);
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .player-card:hover {
-      border-color: var(--border-active);
-      transform: translateY(-4px);
-    }
-
-    .player-card.rank-1 {
-      border-color: rgba(251, 191, 36, 0.3);
-    }
-
-    .player-card.rank-1:hover {
-      border-color: rgba(251, 191, 36, 0.5);
-      box-shadow: 0 0 30px rgba(251, 191, 36, 0.1);
-    }
-
-    .player-rank-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 1.2rem;
-      margin-bottom: 0.8rem;
-    }
-
-    .rank-1-badge {
-      background: linear-gradient(135deg, #FBBF24, #D97706);
-    }
-
-    .rank-2-badge {
-      background: linear-gradient(135deg, #94A3B8, #64748B);
-    }
-
-    .rank-3-badge {
-      background: linear-gradient(135deg, #CD7F32, #92400E);
-    }
-
-    .player-avatar {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.8rem;
-      margin: 0 auto 0.8rem;
-      border: 2px solid rgba(var(--accent-rgb, 139, 92, 246), 0.3);
-    }
-
-    .player-name {
-      font-weight: 800;
-      font-size: 0.95rem;
-      margin-bottom: 0.2rem;
-    }
-
-    .player-rank-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-bottom: 0.8rem;
-    }
-
-    .player-axp {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    /* ─── CTA Banner ─── */
-    .cta-banner {
-      position: relative;
-      z-index: 1;
-      padding: 0 1.5rem 6rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-
-    .cta-inner {
-      background: linear-gradient(135deg, rgba(var(--accent-rgb, 139, 92, 246), 0.12), rgba(var(--accent-rgb, 6, 182, 212), 0.08));
-      border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.22);
-      border-radius: 24px;
-      padding: 3.5rem 2rem;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-inner::before {
-      content: '';
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .cta-inner h2 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 2rem;
-      font-weight: 900;
-      margin-bottom: 0.8rem;
-    }
-
-    .cta-inner p {
-      color: var(--text-muted);
-      margin-bottom: 2rem;
-      font-size: 1rem;
-    }
-
-
-    /* ─── Responsive ─── */
-    @media (max-width: 768px) {
-      .features-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .players-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-row {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .hero {
-        padding: 4rem 1rem 2rem;
-      }
-
-      .features-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-actions {
-        flex-direction: column;
-        align-items: center;
-      }
-
-      .btn-hero-primary,
-      .btn-hero-secondary {
-        width: 100%;
-        justify-content: center;
-      }
-    }
-
-    /* ─── Dashboard Specifics ─── */
-    .dash-progress-card::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 40%);
-      opacity: 0.15;
-      pointer-events: none;
-    }
-
-    .dash-quick-card {
-      padding: 1.2rem 0.5rem !important;
-      display: flex;
+      background: var(--void);
+      z-index: 10002;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 100px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
     }
 
-    .dash-quick-card:hover {
-      background: rgba(var(--accent-rgb), 0.05);
-    }
-
-    .activity-item {
+    .cinematic-overlay.active {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.2s ease;
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    .activity-item:hover {
-      background: rgba(255, 255, 255, 0.04);
-      transform: translateX(4px);
-    }
-
-    .activity-icon {
-      width: 28px;
-      height: 28px;
-      border-radius: 8px;
+    .neural-gate {
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      border: 2px solid var(--photon);
+      position: relative;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.8rem;
+      box-shadow: 0 0 50px var(--photon-glow);
     }
 
-    @media (max-width: 900px) {
-      #user-state .features-grid {
-        grid-template-columns: 1fr !important;
+    .gate-spark {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 1px solid var(--photon);
+      animation: gateRipple 2s infinite;
+      opacity: 0;
+    }
+
+    @keyframes gateRipple {
+      0% {
+        transform: scale(0.8);
+        opacity: 0.8;
       }
 
-      .dash-welcome {
-        flex-direction: column;
-        align-items: flex-start !important;
+      100% {
+        transform: scale(1.5);
+        opacity: 0;
       }
     }
 
-    @media (max-width: 600px) {
-      .dash-quick-card {
-        min-height: 80px;
-        padding: 1rem 0.5rem !important;
+    .welcome-text {
+      margin-top: 3rem;
+      font-size: 2.5rem;
+      letter-spacing: 0.5rem;
+      text-align: center;
+    }
+
+    .xp-award-text {
+      color: var(--gold);
+      font-size: 4rem;
+      font-weight: 900;
+      text-shadow: 0 0 30px var(--gold-glow);
+      margin-top: 1rem;
+      animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes bounceIn {
+      0% {
+        transform: scale(0.3);
+        opacity: 0;
       }
 
-      #user-state h1.hero-title {
-        font-size: 1.8rem !important;
+      50% {
+        transform: scale(1.1);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Ambient BG -->
-  <div class="ambient-bg">
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="grid-bg"></div>
+  <!-- Cinematic Overlays -->
+  <div id="login-cinematic" class="cinematic-overlay">
+    <div class="neural-gate">
+      <div class="gate-spark" style="animation-delay: 0s;"></div>
+      <div class="gate-spark" style="animation-delay: 0.5s;"></div>
+      <div class="gate-spark" style="animation-delay: 1s;"></div>
+      <i class="fas fa-brain"
+        style="font-size: 5rem; color: var(--photon); filter: drop-shadow(0 0 20px var(--photon-glow));"></i>
+    </div>
+    <h2 class="clash welcome-text">WELCOME BACK<br><span class="text-photon">ARENI</span></h2>
+    <p style="color: var(--stardust-muted); margin-top: 1rem; letter-spacing: 0.2rem;">UPLINK SECURE • PROTOCOL 17
+      ACTIVE</p>
   </div>
 
-  <nav class="navbar"><!-- Injected by layout.js --></nav>
+  <div id="signup-cinematic" class="cinematic-overlay">
+    <div class="neural-gate" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold-glow);">
+      <div class="gate-spark" style="border-color: var(--gold); animation-delay: 0s;"></div>
+      <div class="gate-spark" style="border-color: var(--gold); animation-delay: 0.5s;"></div>
+      <i class="fas fa-award"
+        style="font-size: 5rem; color: var(--gold); filter: drop-shadow(0 0 20px var(--gold-glow));"></i>
+    </div>
+    <h2 class="clash welcome-text">LEGACY INITIALIZED</h2>
+    <div class="xp-award-text">+500 AXP</div>
+    <p style="color: var(--stardust-muted); margin-top: 1rem; letter-spacing: 0.2rem;">SIGNUP BONUS DEPOSITED</p>
+  </div>
 
-  <main class="main-content-area">
+  <div class="rebirth-hub">
+    <!-- Guest Hub -->
+    <section id="guest-state" class="state-container">
+      <div class="hub-hero">
+        <div class="hub-hero-progress">
+          <svg class="progress-svg" viewBox="0 0 200 200">
+            <circle class="progress-circle-bg" cx="100" cy="100" r="90" />
+            <circle class="progress-circle-val" id="guestProg" cx="100" cy="100" r="90" />
+          </svg>
+          <div class="hub-hero-level">?<span>LVL</span></div>
+        </div>
+        <h1 class="clash">REBIRTH THE<br><span class="text-photon">ARENA</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto 3rem; font-size: 1.1rem;">
+          Join the next generation of performance tracking. Optimize your sensitivity, master your ranks, and
+          define your legacy as an Areni.
+        </p>
+        <div style="display: flex; gap: 1rem; justify-content: center;">
+          <a href="signup.html" class="btn-rebirth btn-photon">Initialize Access</a>
+          <a href="login.html" class="btn-rebirth"
+            style="background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">Sync
+            Protocol</a>
+        </div>
+      </div>
 
-    <!-- ── DASHBOARD CONTAINER ── -->
-    <!-- This area toggles between GUEST and USER states via JS -->
-    <div id="dashboard-view">
-
-      <!-- GUEST VIEW (DEFAULT) -->
-      <section id="guest-state" class="state-container">
-        <!-- HERO -->
-        <section class="hero fade-in-up">
-          <div class="live-pill">
-            <div class="live-dot"></div>
-            <span id="ticker-text">Areni AimBot_Pro just reached Master Rank!</span>
+      <div class="arena-ticker">
+        <div class="ticker-content">
+          <div class="ticker-item"><i class="fas fa-satellite-dish"></i> <b>SYSTEM</b> NEURAL LINK STABLE</div>
+          <div class="ticker-item"><i class="fas fa-trophy"></i> <b>ARENI_VINCENZO</b> ASCENDED TO CHAMPION TIER</div>
+          <div class="ticker-item"><i class="fas fa-shield-alt"></i> <b>GUILD_WAR</b> SECTOR 7 INFILTRATION COMPLETE
           </div>
-
-          <h1 class="hero-title">
-            LEVEL UP<br>
-            <span class="line2">YOUR GAMEPLAY</span>
-          </h1>
-
-          <p class="hero-sub">
-            The <em>arena</em> for serious Free Fire players. Master your sensitivity,
-            earn AXP, crush the leaderboard — and never miss your shot again.
-          </p>
-
-          <div class="hero-actions">
-            <a href="signup.html" class="btn-hero-primary">
-              <i class="fas fa-bolt"></i>
-              Join the Arena
-            </a>
-            <a href="login.html" class="btn-hero-secondary">
-              <i class="fas fa-sign-in-alt"></i>
-              Login
-            </a>
+          <div class="ticker-item"><i class="fas fa-bolt"></i> <b>ENGINE</b> NEW PHONES DATABASE UPDATED</div>
+          <div class="ticker-item"><i class="fas fa-satellite-dish"></i> <b>SYSTEM</b> NEURAL LINK STABLE</div>
+          <div class="ticker-item"><i class="fas fa-trophy"></i> <b>ARENI_VINCENZO</b> ASCENDED TO CHAMPION TIER</div>
+          <div class="ticker-item"><i class="fas fa-shield-alt"></i> <b>GUILD_WAR</b> SECTOR 7 INFILTRATION COMPLETE
           </div>
+          <div class="ticker-item"><i class="fas fa-bolt"></i> <b>ENGINE</b> NEW PHONES DATABASE UPDATED</div>
+        </div>
+      </div>
 
-          <div class="stats-row" id="homeStats">
-            <div class="stat-cell">
-              <div class="stat-number"><span id="stat-devices">0</span></div>
-              <div class="stat-label">Devices Supported</div>
-            </div>
-            <div class="stat-cell">
-              <div class="stat-number"><span id="stat-players">0</span></div>
-              <div class="stat-label">Registered Arenis</div>
-            </div>
-            <div class="stat-cell">
-              <div class="stat-number"><span>24/7</span></div>
-              <div class="stat-label">Active Community</div>
-            </div>
+      <!-- LIVE ARENI MATRIX (GUEST) -->
+      <div class="live-matrix-section" style="margin: 4rem 0;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+          <div>
+            <h3 class="clash"
+              style="font-size: 2rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-satellite-dish"
+                style="color: var(--photon); font-size: 1.5rem; animation: pulse-icon 2s infinite;"></i>
+              LIVE MATRIX
+            </h3>
+            <p style="color: var(--stardust-muted); font-size: 0.9rem;">Real-time feed of top Areni operatives.</p>
           </div>
-        </section>
+          <a href="leaderboard.html" class="btn-rebirth"
+            style="padding: 0.5rem 1rem; font-size: 0.8rem; background: transparent; color: var(--photon); border-color: rgba(0, 245, 255, 0.3);">VIEW
+            FULL CORE <i class="fas fa-arrow-right"></i></a>
+        </div>
 
-        <!-- FEATURE HIGHLIGHTS -->
-        <section class="features-section reveal">
-          <div class="section-label">Platform</div>
-          <h2 class="section-title">Areni Toolkit</h2>
-          <div class="features-grid">
-            <a href="tool.html" class="feature-card">
-              <div class="feature-icon-wrap fi-violet"><i class="fas fa-crosshairs"></i></div>
-              <h3>Sensitivity</h3>
-              <p>Device-specific tuning with accuracy reports.</p>
-            </a>
-            <a href="leaderboard.html" class="feature-card">
-              <div class="feature-icon-wrap fi-cyan"><i class="fas fa-trophy"></i></div>
-              <h3>Rankings</h3>
-              <p>Real-time global leaderboard and guild wars.</p>
-            </a>
-            <a href="premium.html" class="feature-card">
-              <div class="feature-icon-wrap fi-red"><i class="fas fa-gem"></i></div>
-              <h3>Elite</h3>
-              <p>Unlock Pro Lab, 4× AXP, and VIP badge.</p>
-            </a>
-          </div>
-        </section>
-      </section>
-
-      <!-- USER VIEW (INITIALIZED BY JS) -->
-      <section id="user-state" class="state-container" style="display: none; padding-top: 2rem;">
-
-        <!-- WELCOME HERO -->
-        <div class="dash-welcome reveal" style="margin-bottom: 2.5rem; padding: 0 1.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
-            <div>
-              <div class="section-label" style="justify-content: flex-start; margin-bottom: 0.5rem;">DASHBOARD</div>
-              <h1 class="hero-title" style="text-align: left; font-size: 2.5rem; margin: 0;">Glad to see you,<br><span
-                  class="line2" id="dash-username">Areni</span></h1>
+        <div class="live-leaderboard-grid" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="live-row"
+            style="display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 16px; position: relative; overflow: hidden; animation: slideInRight 0.5s ease backwards;">
+            <div style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #ffd700;">#1
             </div>
-            <div class="glass-card" style="padding: 1rem 1.5rem; border-radius: 18px; text-align: right;">
-              <div class="stat-label" style="font-size: 0.6rem;">CURRENT RANK</div>
-              <div id="dash-rank"
-                style="font-family: 'Outfit', sans-serif; font-weight: 900; color: var(--accent); font-size: 1.2rem;">
-                Recruit</div>
-            </div>
-          </div>
-
-          <!-- AXP PROGRESS CARD -->
-          <div class="glass-card dash-progress-card"
-            style="padding: 1.5rem; border-radius: 24px; position: relative; overflow: hidden;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div id="dash-level"
-                  style="width: 44px; height: 44px; background: var(--accent); color: #000; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-family: 'Outfit', sans-serif;">
-                  1</div>
-                <div>
-                  <div style="font-weight: 800; font-size: 0.9rem;">Level Progression</div>
-                  <div id="dash-axp-label" style="font-size: 0.75rem; color: var(--text-muted);">0 / 1000 AXP to Level 2
-                  </div>
-                </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div
+                style="width: 40px; height: 40px; border-radius: 10px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); display: flex; justify-content: center; align-items: center; color: #ffd700;">
+                <i class="fas fa-crown"></i>
               </div>
-              <div class="player-axp" id="dash-total-axp">0 AXP Total</div>
+              <div>
+                <div
+                  style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--stardust);">
+                  VINCENZO</div>
+                <div
+                  style="font-size: 0.65rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px;">
+                  CHAMPION TIER</div>
+              </div>
             </div>
             <div
-              style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 100px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05);">
-              <div id="dash-progress-bar"
-                style="height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); width: 0%; transition: width 1s cubic-bezier(0.165, 0.84, 0.44, 1);">
-              </div>
+              style="text-align: right; font-family: 'Outfit', sans-serif; font-weight: 800; color: #ffd700; font-size: 1.2rem;">
+              84,500 <span style="font-size: 0.6rem; opacity: 0.7;">AXP</span>
+            </div>
+            <div
+              style="position: absolute; left: 0; bottom: 0; height: 2px; background: #ffd700; width: 100%; box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);">
             </div>
           </div>
-        </div>
-
-        <!-- QUICK ACCESS GRID -->
-        <div class="players-section reveal" style="padding-top: 0;">
-          <div class="section-label" style="justify-content: flex-start; padding: 0 1.5rem;">ARENI COMMAND CENTER</div>
-          <div class="features-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <a href="tool.html" class="feature-card dash-quick-card">
-              <div class="feature-icon-wrap fi-violet" style="margin: 0 auto 0.8rem;"><i class="fas fa-crosshairs"></i>
-              </div>
-              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Engine</h3>
-            </a>
-            <a href="guilds.html" class="feature-card dash-quick-card">
-              <div class="feature-icon-wrap fi-orange" style="margin: 0 auto 0.8rem;"><i class="fas fa-shield-alt"></i>
-              </div>
-              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Clans</h3>
-            </a>
-            <a href="quests.html" class="feature-card dash-quick-card">
-              <div class="feature-icon-wrap fi-green" style="margin: 0 auto 0.8rem;"><i class="fas fa-tasks"></i></div>
-              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Missions</h3>
-            </a>
-            <a href="leaderboard.html" class="feature-card dash-quick-card">
-              <div class="feature-icon-wrap fi-cyan" style="margin: 0 auto 0.8rem;"><i class="fas fa-trophy"></i></div>
-              <h3 style="text-align: center; margin: 0; font-size: 0.85rem;">Ranks</h3>
-            </a>
-          </div>
-        </div>
-
-        <!-- SECONDARY GRID: ACTIVITY & BOUNTY -->
-        <div class="features-section reveal" style="padding-top: 0;">
-          <div class="features-grid" style="grid-template-columns: 2fr 1fr;">
-            <!-- ACTIVITY FEED -->
-            <div class="glass-card" style="padding: 1.5rem; border-radius: 20px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem;">
-                <h3 style="font-size: 0.9rem; font-weight: 800; color: #fff; margin: 0;"><i
-                    class="fas fa-satellite-dish" style="color: var(--accent); margin-right: 8px;"></i> GLOBAL INTEL
-                </h3>
-                <span style="font-size: 0.65rem; color: var(--accent); font-weight: 800; letter-spacing: 1px;">LIVE
-                  UPDATES</span>
-              </div>
-              <div id="dash-activity-list" style="display: grid; gap: 12px;">
-                <!-- Filled by JS -->
-                <div
-                  style="padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: var(--text-muted);">
-                  Decrypting community logs...
-                </div>
-              </div>
+          <div class="live-row"
+            style="display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 16px; animation: slideInRight 0.5s ease backwards 0.2s;">
+            <div style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #c0c0c0;">#2
             </div>
-
-            <!-- DAILY BOUNTY STREAK -->
-            <div class="glass-card fi-orange"
-              style="padding: 1.5rem; border-radius: 20px; background: rgba(249, 115, 22, 0.05); border-color: rgba(249, 115, 22, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-              <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔥</div>
-              <div id="dash-streak"
-                style="font-family: 'Outfit', sans-serif; font-weight: 950; font-size: 2rem; line-height: 1;">0</div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
               <div
-                style="font-size: 0.7rem; font-weight: 800; letter-spacing: 1px; color: #f97316; margin-top: 0.5rem;">
-                DAY STREAK</div>
-              <a href="daily-login.html" class="btn-hero-primary"
-                style="margin-top: 1.2rem; padding: 0.5rem 1rem; font-size: 0.75rem; width: 100%;">CLAIM</a>
+                style="width: 40px; height: 40px; border-radius: 10px; background: rgba(192, 192, 192, 0.1); border: 1px solid rgba(192, 192, 192, 0.3); display: flex; justify-content: center; align-items: center; color: #c0c0c0;">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div>
+                <div
+                  style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--stardust);">
+                  NOVA_STRIKE</div>
+                <div
+                  style="font-size: 0.65rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px;">
+                  ELITE TIER</div>
+              </div>
+            </div>
+            <div
+              style="text-align: right; font-family: 'Outfit', sans-serif; font-weight: 800; color: #c0c0c0; font-size: 1.2rem;">
+              72,100 <span style="font-size: 0.6rem; opacity: 0.7;">AXP</span>
+            </div>
+          </div>
+          <div class="live-row"
+            style="display: grid; grid-template-columns: 50px 1fr 100px; align-items: center; padding: 1.2rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 16px; animation: slideInRight 0.5s ease backwards 0.4s;">
+            <div style="font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: #cd7f32;">#3
+            </div>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+              <div
+                style="width: 40px; height: 40px; border-radius: 10px; background: rgba(205, 127, 50, 0.1); border: 1px solid rgba(205, 127, 50, 0.3); display: flex; justify-content: center; align-items: center; color: #cd7f32;">
+                <i class="fas fa-crosshairs"></i>
+              </div>
+              <div>
+                <div
+                  style="font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 1.1rem; color: var(--stardust);">
+                  CYPHER</div>
+                <div
+                  style="font-size: 0.65rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px;">
+                  VANGUARD TIER</div>
+              </div>
+            </div>
+            <div
+              style="text-align: right; font-family: 'Outfit', sans-serif; font-weight: 800; color: #cd7f32; font-size: 1.2rem;">
+              68,450 <span style="font-size: 0.6rem; opacity: 0.7;">AXP</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hub-grid">
+        <div class="pulse-card">
+          <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--photon);"><i class="fas fa-bolt"></i></div>
+          <h3 style="margin-bottom: 0.5rem;">Precision Engine</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.9rem;">Advanced neural algorithms to find your perfect
+            sensitivity settings.</p>
+        </div>
+        <div class="pulse-card">
+          <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--corona);"><i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 style="margin-bottom: 0.5rem;">Areni Network</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.9rem;">Join elite guilds and compete in global sanctioned
+            operations.</p>
+        </div>
+        <div class="pulse-card">
+          <div style="font-size: 2rem; margin-bottom: 1rem; color: var(--stardust);"><i class="fas fa-trophy"></i></div>
+          <h3 style="margin-bottom: 0.5rem;">Global Rankings</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.9rem;">Climb the AXP ladder and claim your position among
+            the world's best.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- User Hub -->
+    <section id="user-state" class="state-container" style="display: none;">
+      <div class="hub-hero">
+        <div class="hub-hero-progress">
+          <svg class="progress-svg" viewBox="0 0 200 200">
+            <circle class="progress-circle-bg" cx="100" cy="100" r="90" />
+            <circle class="progress-circle-val" id="dashProg" cx="100" cy="100" r="90" />
+          </svg>
+          <div class="hub-hero-level" id="dash-level">1<span>LVL</span></div>
+        </div>
+        <h1 class="clash" id="dash-greeting">WELCOME,<br><span class="text-photon" id="dash-username">ARENI</span></h1>
+        <div class="stat-mini" style="max-width: 300px; margin: 2rem auto 0; justify-content: center;">
+          <div style="text-align: center;">
+            <div class="stat-mini-value" id="dash-axp">0</div>
+            <div class="stat-mini-label">Current AXP</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hub-grid">
+        <div class="pulse-card" onclick="location.href='tool.html'" style="cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+            <div style="font-size: 1.5rem; color: var(--photon);"><i class="fas fa-microchip"></i></div>
+            <div class="stat-mini-label">Engine</div>
+          </div>
+          <h3 style="margin-bottom: 0.5rem;">Sensitivity Lab</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Run analytical tests to
+            refine your recoil control.</p>
+          <div class="btn-rebirth"
+            style="padding: 0.5rem 1rem; font-size: 0.8rem; background: var(--glass-highlight); border: 1px solid var(--glass-border);">
+            CALIBRATE</div>
+        </div>
+
+        <div class="pulse-card" onclick="location.href='quests.html'" style="cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+            <div style="font-size: 1.5rem; color: var(--corona);"><i class="fas fa-crosshairs"></i></div>
+            <div class="stat-mini-label">Missions</div>
+          </div>
+          <h3 style="margin-bottom: 0.5rem;">Daily Bounties</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Complete objectives to
+            earn bonus AXP.</p>
+          <div id="dash-quests-count" style="font-family: 'Clash Display', sans-serif; font-size: 1.2rem;">3 <span
+              style="font-size: 0.7rem; color: var(--stardust-muted);">PENDING</span></div>
+        </div>
+
+        <div class="pulse-card" onclick="location.href='guilds.html'" style="cursor: pointer;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+            <div style="font-size: 1.5rem; color: var(--stardust);"><i class="fas fa-shield-alt"></i></div>
+            <div class="stat-mini-label">Social</div>
+          </div>
+          <h3 style="margin-bottom: 0.5rem;">Clan Command</h3>
+          <p style="color: var(--stardust-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Manage your guild or join
+            sanctioned warfare.</p>
+          <div id="dash-clan-tag" style="font-family: 'Clash Display', sans-serif; color: var(--photon);">[RECRUIT]
+          </div>
+        </div>
+
+        <!-- NEW: Neural Intelligence Module -->
+        <div class="pulse-card"
+          style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), transparent);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div>
+              <span
+                style="font-size: 0.6rem; letter-spacing: 0.3em; color: var(--photon); text-transform: uppercase;">Neural
+                Intelligence</span>
+              <h3 class="clash" style="font-size: 1.5rem; margin: 0.5rem 0;">OPERATIONAL PROJECTION</h3>
+            </div>
+            <div style="text-align: right;">
+              <div id="projection-accuracy"
+                style="font-family: 'Clash Display', sans-serif; color: var(--photon); font-size: 1.2rem;">94.2%</div>
+              <div class="stat-mini-label">Sync Confidence</div>
+            </div>
+          </div>
+
+          <div class="featured-grid"
+            style="margin-top: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+            <div
+              style="padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--glass-border);">
+              <div class="stat-mini-label" style="margin-bottom: 0.5rem;">Next Ascension</div>
+              <div id="projection-axp-needed"
+                style="font-family: 'Clash Display', sans-serif; font-size: 1.8rem; color: var(--stardust);">420 <span
+                  style="font-size: 0.8rem; color: var(--stardust-muted);">AXP</span></div>
+              <div style="font-size: 0.7rem; color: var(--stardust-muted); margin-top: 5px;" id="projection-time">
+                Estimated 12.4h activity</div>
+            </div>
+            <div
+              style="padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--glass-border);">
+              <div class="stat-mini-label" style="margin-bottom: 0.5rem;">Reflex Stability</div>
+              <div style="font-family: 'Clash Display', sans-serif; font-size: 1.8rem; color: var(--corona);">OPTIMAL
+              </div>
+              <div style="font-size: 0.7rem; color: var(--stardust-muted); margin-top: 5px;">Calibration recommended
+              </div>
+            </div>
+            <div
+              style="padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid var(--glass-border);">
+              <div class="stat-mini-label" style="margin-bottom: 0.5rem;">Sector Rank</div>
+              <div id="projection-rank"
+                style="font-family: 'Clash Display', sans-serif; font-size: 1.8rem; color: var(--photon);">#142</div>
+              <div style="font-size: 0.7rem; color: var(--stardust-muted); margin-top: 5px;">TOP 4% GLOBAL</div>
             </div>
           </div>
         </div>
 
-      </section>
-    </div>
+        <!-- NEW: Live Sector Standings -->
+        <div class="pulse-card" style="grid-column: 1 / -1; padding: 2.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h3 class="clash" style="font-size: 1.2rem; letter-spacing: 0.1em; color: var(--stardust);"><i
+                class="fas fa-bolt" style="color: var(--photon); margin-right: 10px;"></i> LIVE SECTOR STANDINGS</h3>
+            <a href="leaderboard.html"
+              style="font-size: 0.7rem; color: var(--photon); text-decoration: none; font-weight: 800; letter-spacing: 1px;">VIEW
+              MATRIX <i class="fas fa-arrow-right"></i></a>
+          </div>
 
-  </main>
+          <div id="live-standings-container" style="display: grid; gap: 10px;">
+            <!-- Skeleton/Static placeholder -->
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--glass-border);">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-family: 'Clash Display', sans-serif; opacity: 0.5;">#01</span>
+                <div
+                  style="width: 30px; height: 30px; border-radius: 8px; background: var(--photon); opacity: 0.1; border: 1px solid var(--photon);">
+                </div>
+                <span style="font-weight: 700; font-size: 0.9rem;">ELITE_ARENI</span>
+              </div>
+              <span style="font-family: 'Clash Display', sans-serif; color: var(--photon);">12.4K <span
+                  style="font-size: 0.6rem; opacity: 0.5;">AXP</span></span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(0, 245, 255, 0.05); border-radius: 12px; border: 1px solid var(--photon); box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-family: 'Clash Display', sans-serif; color: var(--photon);">#142</span>
+                <div
+                  style="width: 30px; height: 30px; border-radius: 8px; background: var(--photon); border: 1px solid var(--photon);">
+                </div>
+                <span style="font-weight: 800; font-size: 0.9rem;">YOU (ARENI)</span>
+              </div>
+              <span style="font-family: 'Clash Display', sans-serif; color: var(--photon);">2.8K <span
+                  style="font-size: 0.6rem; opacity: 0.5;">AXP</span></span>
+            </div>
+            <div
+              style="display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--glass-border);">
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-family: 'Clash Display', sans-serif; opacity: 0.5;">#143</span>
+                <div
+                  style="width: 30px; height: 30px; border-radius: 8px; background: var(--stardust); opacity: 0.1; border: 1px solid var(--stardust);">
+                </div>
+                <span style="font-weight: 700; font-size: 0.9rem;">NEXT_STALKER</span>
+              </div>
+              <span style="font-family: 'Clash Display', sans-serif; color: var(--stardust-muted);">2.7K <span
+                  style="font-size: 0.6rem; opacity: 0.5;">AXP</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
-  <nav class="bottom-nav"><!-- Injected by layout.js --></nav>
-
-  <script src="js/auth.js?v=2"></script>
-  <script src="js/user.js?v=2"></script>
-  <script src="js/onboarding.js?v=2"></script>
-  <script src="js/layout.js?v=2"></script>
-  <script src="js/app.js?v=2"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
   <script>
-    // ─── Dashboard Logic ───
-    function initDashboard() {
-      const guestState = document.getElementById('guest-state');
-      const userState = document.getElementById('user-state');
+    document.addEventListener('DOMContentLoaded', () => {
+      handleCinematics();
 
-      if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
-        const user = Auth.getCurrentUser();
-        const stats = User.getStats();
+      setTimeout(() => {
+        const prog = document.getElementById('guestProg');
+        if (prog) prog.style.strokeDashoffset = '420';
 
-        // Toggle Views
-        if (guestState) guestState.style.display = 'none';
-        if (userState) userState.style.display = 'block';
+        if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+          document.getElementById('guest-state').style.display = 'none';
+          document.getElementById('user-state').style.display = 'block';
 
-        // Populate Data
-        document.getElementById('dash-username').textContent = user.username || 'Areni';
-        document.getElementById('dash-rank').textContent = stats.rank || 'Recruit';
-        document.getElementById('dash-level').textContent = stats.level || 1;
-        document.getElementById('dash-streak').textContent = stats.streak || 0;
-        document.getElementById('dash-total-axp').textContent = `${(stats.axp || 0).toLocaleString()} AXP Total`;
+          const stats = User.getStats();
+          if (stats) {
+            document.getElementById('dash-username').textContent = Auth.getCurrentUser().username;
+            document.getElementById('dash-level').innerHTML = `${stats.level}<span>LVL</span>`;
+            document.getElementById('dash-axp').textContent = stats.axp;
 
-        // Progress Bar
-        const axp = stats.axp || 0;
-        const level = stats.level || 1;
-        const nextLevelAxp = level * 1000; // Simplified formula
-        const progress = (axp % 1000) / 10;
-        document.getElementById('dash-axp-label').textContent = `${(axp % 1000).toLocaleString()} / ${nextLevelAxp.toLocaleString()} AXP to Level ${level + 1}`;
-        setTimeout(() => {
-          document.getElementById('dash-progress-bar').style.width = `${progress}%`;
-        }, 500);
+            const percent = (stats.axp % 1000) / 1000;
+            const offset = 565.48 - (565.48 * percent);
+            document.getElementById('dashProg').style.strokeDashoffset = offset;
 
-        // Activity List
-        populateActivity();
-      } else {
-        // Guest Actions
-        if (guestState) guestState.style.display = 'block';
-        if (userState) userState.style.display = 'none';
-        initGuestAnimations();
+            updateNeuralProjections(stats);
+          }
+        }
+      }, 500);
+    });
+
+    function updateNeuralProjections(stats) {
+      const currentAXP = stats.axp || 0;
+      const nextLevelAXP = (Math.floor(currentAXP / 1000) + 1) * 1000;
+      const needed = nextLevelAXP - currentAXP;
+
+      const axpNeededEl = document.getElementById('projection-axp-needed');
+      if (axpNeededEl) axpNeededEl.innerHTML = `${needed} <span style="font-size: 0.8rem; color: var(--stardust-muted);">AXP</span>`;
+
+      const timeEl = document.getElementById('projection-time');
+      if (timeEl) {
+        const hours = (needed / 35).toFixed(1);
+        timeEl.textContent = `Estimated ${hours}h activity required`;
+      }
+
+      const accuracyEl = document.getElementById('projection-accuracy');
+      if (accuracyEl) {
+        const acc = (92 + Math.random() * 6).toFixed(1);
+        accuracyEl.textContent = `${acc}%`;
       }
     }
 
-    function populateActivity() {
-      const list = document.getElementById('dash-activity-list');
-      if (!list) return;
+    function handleCinematics() {
+      const isLogin = localStorage.getItem('xp_login_success');
+      const isSignup = localStorage.getItem('xp_signup_success');
 
-      const activities = [
-        { icon: 'fa-trophy', color: 'var(--accent2)', text: 'Global Leaderboard updated. Check your standing.' },
-        { icon: 'fa-envelope', color: 'var(--accent)', text: 'New tournament invite from Guild "Phantom".' },
-        { icon: 'fa-bolt', color: '#84cc16', text: 'Daily Bounty reset. 250 AXP available now.' }
-      ];
+      if (isLogin) {
+        const overlay = document.getElementById('login-cinematic');
+        overlay.classList.add('active');
+        localStorage.removeItem('xp_login_success');
+        setTimeout(() => overlay.classList.remove('active'), 3000);
+      } else if (isSignup) {
+        const overlay = document.getElementById('signup-cinematic');
+        overlay.classList.add('active');
+        localStorage.removeItem('xp_signup_success');
 
-      list.innerHTML = activities.map(a => `
-        <div class="activity-item">
-          <div class="activity-icon" style="background: ${a.color}20; color: ${a.color};">
-            <i class="fas ${a.icon}"></i>
-          </div>
-          <div style="font-size: 0.8rem; color: #fff;">${a.text}</div>
-        </div>
-      `).join('');
-    }
-
-    // ─── Animated Counters (Guest only) ───
-    function animateCounter(el, target, duration, suffix = '') {
-      if (!el) return;
-      const start = performance.now();
-      const step = (now) => {
-        const p = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - p, 4);
-        const val = Math.round(eased * target);
-        el.textContent = val.toLocaleString() + suffix;
-        if (p < 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }
-
-    function initGuestAnimations() {
-      setTimeout(() => {
-        animateCounter(document.getElementById('stat-devices'), 1000, 1800, '+');
-        animateCounter(document.getElementById('stat-players'), 1247, 2200, '+');
-        animateCounter(document.getElementById('stat-axp'), 2375240, 2600, '+');
-      }, 400);
-    }
-
-    window.addEventListener('load', initDashboard);
-
-    // ─── Ticker ───
-    const tickers = [
-      'FragKing99 just hit Diamond rank! 🎯',
-      'VoltAreni earned 500 AXP from daily quests! ⚡',
-      'Ghost_Aim topped the weekly leaderboard! 🔥',
-      'Shadow_Slayer joined Guild "Apex Wolves" 🐺',
-      'PRO_PLAYER_77 unlocked the Legend badge! 👑',
-    ];
-    let tickIdx = 0;
-    const tickEl = document.getElementById('ticker-text');
-    if (tickEl) {
-      setInterval(() => {
-        tickIdx = (tickIdx + 1) % tickers.length;
-        if (tickEl) tickEl.textContent = tickers[tickIdx];
-      }, 4000);
-    }
-
-    // ─── Scroll Reveal ───
-    const revealEls = document.querySelectorAll('.reveal');
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach((e, i) => {
-        if (e.isIntersecting) {
-          setTimeout(() => e.target.classList.add('visible'), i * 60);
-          obs.unobserve(e.target);
+        if (typeof User !== 'undefined') {
+          User.updateStats(stats => {
+            stats.axp = (stats.axp || 0) + 500;
+          });
         }
-      });
-    }, { threshold: 0.08 });
-    revealEls.forEach(el => obs.observe(el));
+
+        setTimeout(() => overlay.classList.remove('active'), 4000);
+      }
+    }
   </script>
 </body>
 

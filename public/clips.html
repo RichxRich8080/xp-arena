@@ -4,445 +4,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Elite Clips • XP ARENA</title>
-    <meta name="description" content="Watch the best Free Fire gameplay clips submitted by the XP ARENA community.">
-    <link rel="stylesheet" href="css/main.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&family=Rajdhani:wght@600;700&display=swap"
-        rel="stylesheet">
+    <title>Hall of Fame • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        body {
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(circle at 50% -20%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 50% 50%, 40px 40px, 40px 40px;
-            background-attachment: fixed;
-            color: var(--text-white);
-        }
-
-        .ambient-bg {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .orb {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            filter: blur(160px);
-            opacity: 0.1;
-            top: -200px;
-            right: -200px;
-        }
-
-        .page-wrapper {
-            position: relative;
-            z-index: 1;
-            max-width: 1300px;
-            margin: 0 auto;
-            padding: 5rem 1.5rem 8rem;
-        }
-
         .clips-hero {
+            padding: 10rem 2rem 6rem;
             text-align: center;
-            margin-bottom: 6rem;
-        }
-
-        .clips-hero .subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            letter-spacing: 6px;
-            color: var(--accent);
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
+            background: radial-gradient(circle at top left, rgba(0, 245, 255, 0.05), transparent 60%);
         }
 
         .clips-hero h1 {
-            font-family: 'Outfit', sans-serif;
             font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 900;
-            letter-spacing: -4px;
-            line-height: 0.85;
+            line-height: 0.9;
             margin-bottom: 2rem;
-            background: linear-gradient(to bottom, #fff 40%, rgba(255, 255, 255, 0.4));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
-        .clips-hero p {
-            color: #94a3b8;
-            font-size: 1.15rem;
-            max-width: 600px;
+        .clips-section {
+            max-width: 1300px;
             margin: 0 auto;
-            line-height: 1.6;
+            padding: 0 2rem 10rem;
         }
 
-        /* GRID */
-        .clip-grid {
+        /* Clip Grid */
+        .clip-matrix {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-            gap: 2.5rem;
-            margin-bottom: 6rem;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 3rem;
         }
 
-        /* CARD */
-        .clip-card {
-            background: var(--surface);
-            backdrop-filter: blur(24px) saturate(160%);
-            -webkit-backdrop-filter: blur(24px) saturate(160%);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative;
-        }
-
-        .clip-card:hover {
-            transform: translateY(-12px);
-            border-color: rgba(var(--accent-rgb), 0.4);
-            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
-        }
-
-        .thumb-wrap {
-            position: relative;
-            aspect-ratio: 16/9;
-            background: #000;
-            overflow: hidden;
+        .clip-card-rebirth {
             cursor: pointer;
+            transition: all 0.4s var(--transition);
         }
 
-        .thumb-wrap img {
+        .clip-card-rebirth:hover {
+            transform: translateY(-10px);
+        }
+
+        .clip-thumb-wrap {
+            aspect-ratio: 16/9;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            background: var(--void);
+            border: 1px solid var(--glass-border);
+        }
+
+        .clip-thumb-wrap img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             opacity: 0.8;
-            transition: all 0.7s cubic-bezier(0.165, 0.84, 0.44, 1);
+            transition: transform 0.6s var(--transition);
         }
 
-        .clip-card:hover .thumb-wrap img {
+        .clip-card-rebirth:hover .clip-thumb-wrap img {
             transform: scale(1.1);
             opacity: 1;
         }
 
-        .play-icon {
+        .play-indicator {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.9);
-            width: 70px;
-            height: 70px;
-            background: var(--accent);
-            border-radius: 50%;
+            inset: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000;
-            font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
             opacity: 0;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 30px var(--accent-glow);
-            z-index: 2;
+            transition: all 0.3s;
         }
 
-        .clip-card:hover .play-icon {
-            transform: translate(-50%, -50%) scale(1.1);
+        .clip-card-rebirth:hover .play-indicator {
             opacity: 1;
         }
 
-        .duration-tag {
-            position: absolute;
-            bottom: 15px;
-            right: 15px;
-            padding: 5px;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            color: #fff;
-            z-index: 2;
-        }
-
-        .clip-info {
-            padding: 1.8rem;
-        }
-
-        .clip-info h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .author-tag {
-            display: inline-flex;
+        .play-btn-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: var(--photon);
+            color: var(--void);
+            display: flex;
             align-items: center;
-            gap: 8px;
-            font-family: 'Rajdhani', sans-serif;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 0 30px var(--photon-glow);
+            transform: scale(0.8);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .clip-card-rebirth:hover .play-btn-circle {
+            transform: scale(1.1);
+        }
+
+        .clip-duration {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 4px 12px;
+            border-radius: 8px;
+            font-family: 'Clash Display', sans-serif;
+            font-size: 0.75rem;
+            color: #fff;
+            border: 1px solid var(--glass-border);
+        }
+
+        .clip-meta {
+            padding: 1.5rem 0.5rem;
+        }
+
+        .clip-meta h3 {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .clip-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--photon);
             font-weight: 700;
             font-size: 0.85rem;
-            color: var(--accent);
             text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1.5rem;
+            letter-spacing: 0.1em;
         }
 
-        .clip-foot {
+        .clip-stats {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        .stat-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #94a3b8;
-            font-size: 0.9rem;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            color: var(--stardust-muted);
+            font-size: 0.8rem;
             font-weight: 600;
         }
 
-        .stat-group i {
-            font-size: 1rem;
-        }
-
-        .stat-group.liked {
-            color: #ef4444;
-        }
-
-        /* HUD CORNERS */
-        .card-corner {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            border: 1.5px solid var(--accent);
-            opacity: 0.4;
-            pointer-events: none;
-        }
-
-        .tl {
-            top: 12px;
-            left: 12px;
-            border-right: 0;
-            border-bottom: 0;
-        }
-
-        .tr {
-            top: 12px;
-            right: 12px;
-            border-left: 0;
-            border-bottom: 0;
-        }
-
-        .bl {
-            bottom: 12px;
-            left: 12px;
-            border-right: 0;
-            border-top: 0;
-        }
-
-        .br {
-            bottom: 12px;
-            right: 12px;
-            border-left: 0;
-            border-top: 0;
-        }
-
-        /* THEATER MODAL OVERRIDE */
-        #theaterModal {
-            background: rgba(3, 3, 5, 0.98);
-            backdrop-filter: blur(30px);
-        }
-
-        .submit-cta {
-            text-align: center;
-            background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.1), transparent);
-            border: 1px solid rgba(var(--accent-rgb), 0.2);
-            border-radius: var(--radius-lg);
-            padding: 4rem 2rem;
-            margin-top: 4rem;
-        }
-
-        .submit-cta h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 3rem;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            color: #fff;
-        }
-
-        .btn-submit {
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            background: var(--accent);
-            color: #000;
-            padding: 1.5rem 3.5rem;
-            border-radius: 100px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 800;
-            font-size: 1.3rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            box-shadow: 0 10px 40px var(--accent-glow);
-            border: none;
-            cursor: pointer;
-            margin-top: 2.5rem;
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-8px) scale(1.05);
-            box-shadow: 0 20px 60px var(--accent-glow);
-            filter: brightness(1.1);
+        .clip-stats i {
+            margin-right: 6px;
         }
 
         @media (max-width: 768px) {
-            .clip-grid {
+            .clip-matrix {
                 grid-template-columns: 1fr;
-            }
-
-            .clips-hero h1 {
-                font-size: 3.5rem;
-            }
-
-            .page-wrapper {
-                padding-top: 3rem;
             }
         }
     </style>
 </head>
 
-<body class="fade-in">
-
-    <nav class="navbar"></nav>
-
-    <div class="ambient-bg">
-        <div class="orb"></div>
+<body class="page-rebirth">
+    <div class="clips-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Archives of Tactical
+            Superiority</span>
+        <h1 class="clash">HALL OF<br><span class="text-photon">FAME</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
+            Legendary moments captured from the digital frontier. Witness the elite precision of the world's finest
+            Arenis.
+        </p>
     </div>
 
-    <main class="main-content-area">
-        <div class="page-wrapper">
-
-            <div class="clips-hero reveal">
-                <div class="subtitle">Field Archives</div>
-                <h1 class="text-neon">Hall of Fame</h1>
-                <p>Legendary snapshots of pure skill. Witness the greatest moments captured on the digital battlefield.
-                </p>
-            </div>
-
-            <div class="clip-grid">
-                <!-- Clip 1 -->
-                <div class="clip-card reveal">
-                    <div class="card-corner tl"></div>
-                    <div class="card-corner tr"></div>
-                    <div class="card-corner bl"></div>
-                    <div class="card-corner br"></div>
-                    <div class="thumb-wrap"
-                        onclick="openTheater('assets/images/featured-clip.jpg', 'Neon Executioner 1v4', 'Shadow_Protocol')">
-                        <img src="assets/images/featured-clip.jpg" alt="Clip">
-                        <div class="duration-tag">0:42</div>
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <h3>Neon Executioner 1v4</h3>
-                        <div class="author-tag">
-                            <i class="fas fa-user-shield"></i>
-                            Shadow_Protocol
-                        </div>
-                        <div class="clip-foot">
-                            <div class="stat-group"><i class="fas fa-eye"></i> 42.1K</div>
-                            <div class="stat-group liked"><i class="fas fa-heart"></i> 12.4K</div>
-                        </div>
+    <div class="clips-section">
+        <div class="clip-matrix">
+            <!-- Clip Card 1 -->
+            <div class="clip-card-rebirth"
+                onclick="openTheater('assets/images/featured-clip.jpg', 'Neon Executioner 1v4', 'Shadow_Protocol')">
+                <div class="clip-thumb-wrap">
+                    <img src="assets/images/featured-clip.jpg" alt="Clip">
+                    <div class="clip-duration">0:42</div>
+                    <div class="play-indicator">
+                        <div class="play-btn-circle"><i class="fas fa-play"></i></div>
                     </div>
                 </div>
-
-                <!-- Clip 2 -->
-                <div class="clip-card reveal">
-                    <div class="card-corner tl"></div>
-                    <div class="card-corner tr"></div>
-                    <div class="card-corner bl"></div>
-                    <div class="card-corner br"></div>
-                    <div class="thumb-wrap"
-                        onclick="openTheater('assets/images/video-guide.jpg', 'Zenith One-Tap Montage', 'Nova_Strike')">
-                        <img src="assets/images/video-guide.jpg" alt="Clip">
-                        <div class="duration-tag">3:15</div>
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <h3>Zenith One-Tap Montage</h3>
-                        <div class="author-tag">
-                            <i class="fas fa-bolt"></i>
-                            Nova_Strike
-                        </div>
-                        <div class="clip-foot">
-                            <div class="stat-group"><i class="fas fa-eye"></i> 18.5K</div>
-                            <div class="stat-group"><i class="fas fa-heart"></i> 4.2K</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Clip 3 -->
-                <div class="clip-card reveal">
-                    <div class="card-corner tl"></div>
-                    <div class="card-corner tr"></div>
-                    <div class="card-corner bl"></div>
-                    <div class="card-corner br"></div>
-                    <div class="thumb-wrap"
-                        onclick="openTheater('assets/images/logo.png', 'Perfect Predator Scrims', 'Ghost_FF')">
-                        <img src="assets/images/logo.png" alt="Clip">
-                        <div class="duration-tag">1:02</div>
-                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                    </div>
-                    <div class="clip-info">
-                        <h3>Perfect Predator Scrims</h3>
-                        <div class="author-tag">
-                            <i class="fas fa-crosshairs"></i>
-                            Ghost_FF
-                        </div>
-                        <div class="clip-foot">
-                            <div class="stat-group"><i class="fas fa-eye"></i> 9.2K</div>
-                            <div class="stat-group"><i class="fas fa-heart"></i> 1.1K</div>
-                        </div>
+                <div class="clip-meta">
+                    <div class="clip-author"><i class="fas fa-certificate"></i> Shadow_Protocol</div>
+                    <h3 class="clash">Neon Executioner 1v4</h3>
+                    <div class="clip-stats">
+                        <span><i class="fas fa-eye"></i> 42.1K</span>
+                        <span style="color: var(--corona);"><i class="fas fa-heart"></i> 12.4K</span>
                     </div>
                 </div>
             </div>
 
-            <div class="submit-cta reveal">
-                <h2>Recorded a Masterpiece?</h2>
-                <p>Upload your greatest plays and get featured in the XP ARENA Hall of Fame.</p>
-                <a href="submit.html" class="btn-submit">
-                    <i class="fas fa-cloud-upload-alt"></i> Upload Archive
-                </a>
+            <!-- Clip Card 2 -->
+            <div class="clip-card-rebirth"
+                onclick="openTheater('assets/images/video-guide.jpg', 'Zenith One-Tap Montage', 'Nova_Strike')">
+                <div class="clip-thumb-wrap">
+                    <img src="assets/images/video-guide.jpg" alt="Clip">
+                    <div class="clip-duration">3:15</div>
+                    <div class="play-indicator">
+                        <div class="play-btn-circle"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="clip-meta">
+                    <div class="clip-author"><i class="fas fa-bolt"></i> Nova_Strike</div>
+                    <h3 class="clash">Zenith One-Tap Montage</h3>
+                    <div class="clip-stats">
+                        <span><i class="fas fa-eye"></i> 18.5K</span>
+                        <span><i class="fas fa-heart"></i> 4.2K</span>
+                    </div>
+                </div>
             </div>
 
+            <!-- Clip Card 3 -->
+            <div class="clip-card-rebirth"
+                onclick="openTheater('assets/images/logo.png', 'Perfect Predator Scrims', 'Ghost_FF')">
+                <div class="clip-thumb-wrap">
+                    <img src="assets/images/logo.png" alt="Clip">
+                    <div class="clip-duration">1:02</div>
+                    <div class="play-indicator">
+                        <div class="play-btn-circle"><i class="fas fa-play"></i></div>
+                    </div>
+                </div>
+                <div class="clip-meta">
+                    <div class="clip-author"><i class="fas fa-crosshairs"></i> Ghost_FF</div>
+                    <h3 class="clash">Perfect Predator Scrims</h3>
+                    <div class="clip-stats">
+                        <span><i class="fas fa-eye"></i> 9.2K</span>
+                        <span><i class="fas fa-heart"></i> 1.1K</span>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
 
-    <nav class="bottom-nav"></nav>
+        <div
+            style="margin-top: 10rem; text-align: center; border: 1px solid var(--glass-border); padding: 5rem 2rem; border-radius: 40px; background: var(--nebula);">
+            <h2 class="clash" style="font-size: 2.5rem; margin-bottom: 1rem;">RECORDED A MASTERPIECE?</h2>
+            <p style="color: var(--stardust-muted); max-width: 500px; margin: 0 auto 3rem;">Upload your greatest plays
+                to the archives and get featured in the XP ARENA Hall of Fame.</p>
+            <button class="btn-rebirth btn-photon" style="padding: 1.5rem 4rem; font-size: 1.2rem;"
+                onclick="window.location.href='submit.html'">UPLOAD DATA ARCHIVE</button>
+        </div>
+    </div>
 
+    <!-- Theater Modal Logic -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-
     <script>
         window.openTheater = function (imgSrc, title, author) {
             const existing = document.getElementById('theater-overlay');
@@ -453,48 +252,39 @@
             modal.style.cssText = `
                 position: fixed; inset: 0; z-index: 100000;
                 display: flex; align-items: center; justify-content: center;
-                background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
-                animation: fadeIn 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+                background: rgba(3, 3, 5, 0.98); backdrop-filter: blur(30px);
+                animation: fadeIn 0.4s var(--transition);
             `;
 
             modal.innerHTML = `
-                <div style="width: 100%; max-width: 1100px; padding: 2rem; position: relative;" class="reveal visible">
-                    <button onclick="document.getElementById('theater-overlay').remove()" style="position: absolute; top: -30px; right: 2rem; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer;"><i class="fas fa-times"></i></button>
+                <div style="width: 100%; max-width: 1200px; padding: 2rem; position: relative;">
+                    <button onclick="document.getElementById('theater-overlay').remove()" style="position: absolute; top: 0; right: 2rem; background: none; border: none; color: #fff; font-size: 2.5rem; cursor: pointer; z-index: 10;"><i class="fas fa-times"></i></button>
                     
-                    <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; position: relative;">
-                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.3;">
+                    <div style="width: 100%; aspect-ratio: 16/9; background: #000; border-radius: 32px; border: 1px solid var(--glass-border); overflow: hidden; position: relative; box-shadow: 0 0 100px rgba(0,0,0,0.8);">
+                        <img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.4;">
                         <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column;">
-                            <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
-                            <p style="font-family: 'Rajdhani'; font-weight: 700; letter-spacing: 2px; color: #fff;">SECURE STREAM INITIALIZING...</p>
+                            <div class="play-btn-circle" style="width: 120px; height: 120px; font-size: 2.5rem; margin-bottom: 2rem;"><i class="fas fa-lock"></i></div>
+                            <p class="clash" style="letter-spacing: 0.3em; color: #fff; font-size: 1.2rem;">DECRYPTING ARCHIVE...</p>
                         </div>
                     </div>
                     
-                    <div style="margin-top: 2rem; display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div style="margin-top: 3rem; display: flex; justify-content: space-between; align-items: flex-end;">
                         <div>
-                            <h2 style="font-family:'Outfit'; font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 0.5rem;">${title}</h2>
-                            <p style="color: var(--accent); font-weight: 800; font-size: 1.1rem; display:flex; align-items:center; gap:10px;">
-                                <i class="fas fa-user-circle"></i> ${author}
+                            <span class="section-label" style="font-size: 0.6rem; color: var(--photon); margin-bottom: 0.5rem;">HALL OF FAME ENTRY</span>
+                            <h2 class="clash" style="font-size: 2.5rem; color: #fff;">${title}</h2>
+                            <p style="color: var(--stardust-muted); font-weight: 800; font-size: 1.1rem; display:flex; align-items:center; gap:12px; margin-top: 0.5rem;">
+                                <i class="fas fa-user-circle text-photon"></i> ${author}
                             </p>
                         </div>
                         <div style="display:flex; gap: 15px;">
-                            <button class="btn-primary" style="padding: 0.8rem 1.5rem; background: rgba(255,255,255,0.05); border: 1px solid var(--border); color:#fff;" onclick="this.innerHTML='<i class=\'fas fa-heart\'></i> LIKED'; this.style.color='var(--accent)'"><i class="fas fa-heart"></i> Like Clip</button>
+                            <button class="btn-rebirth" style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color:#fff;" onclick="Toast.show('Enlistment protocol updated.', 'success')"><i class="fas fa-heart"></i> TRANSMIT LOVE</button>
+                            <button class="btn-rebirth btn-photon"><i class="fas fa-share"></i> BROADCAST</button>
                         </div>
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
         }
-
-        // Scroll Reveal
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, i) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => entry.target.classList.add('visible'), i * 150);
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
     </script>
 </body>
 

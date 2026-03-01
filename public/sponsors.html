@@ -4,77 +4,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sponsors • XP ARENA</title>
-    <meta name="description"
-        content="Meet the partners and sponsors fueling the next generation of esports at XP ARENA.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <title>Strategic Alliances • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .alliances-hero {
+            padding: 10rem 2rem 5rem;
+            text-align: center;
+            background: radial-gradient(circle at bottom right, rgba(0, 245, 255, 0.05), transparent 70%);
+        }
+
+        .alliances-hero h1 {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            line-height: 0.9;
+        }
+
+        .alliances-section {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        .sponsors-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 6rem;
+        }
+
+        .sponsor-node {
+            padding: 3rem 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .sponsor-node:hover {
+            border-color: var(--photon);
+            background: rgba(0, 245, 255, 0.03);
+            transform: translateY(-5px);
+        }
+
+        .sponsor-logo {
+            height: 80px;
+            width: auto;
+            filter: grayscale(1) brightness(2);
+            transition: all 0.4s;
+        }
+
+        .sponsor-node:hover .sponsor-logo {
+            filter: grayscale(0) brightness(1);
+        }
+
+        .node-tier {
+            font-size: 0.65rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: var(--photon);
+            text-transform: uppercase;
+        }
+
+        .node-available {
+            opacity: 0.3;
+            border-style: dashed;
+        }
+
+        .benefits-card {
+            padding: 4rem;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), transparent);
+            text-align: center;
+        }
+
+        .benefits-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+            text-align: left;
+        }
+
+        .benefit-tag {
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: var(--stardust-muted);
+        }
+
+        .benefit-tag i {
+            color: var(--photon);
+        }
+    </style>
 </head>
 
-<body class="fade-in">
+<body class="page-rebirth">
+    <div class="alliances-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Ecosystem Expansion</span>
+        <h1 class="clash">STRATEGIC<br><span class="text-photon">ALLIANCES</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 600px; margin: 2rem auto 0; font-size: 1.1rem;">
+            Powering the next evolution of competitive gaming through elite partnerships.
+        </p>
+    </div>
 
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
-
-    <main class="main-content-area">
-        <div class="container">
-            <div class="page-header">
-                <h1>Our Partners</h1>
-                <p>Fueling the next generation of esports.</p>
+    <div class="alliances-section">
+        <div class="sponsors-matrix">
+            <div class="pulse-card sponsor-node">
+                <img src="assets/images/logo.png" alt="XP ARENA Core" class="sponsor-logo">
+                <div>
+                    <h3 class="clash" style="font-size: 1.2rem; margin-bottom: 0.5rem;">XP ARENA</h3>
+                    <span class="node-tier">Foundational Pillar</span>
+                </div>
             </div>
 
-            <div class="sponsors-grid">
-                <div class="sponsor-card"
-                    style="background: var(--card-dark); border: 1px solid var(--border); border-radius: 12px; padding: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem; transition: transform 0.3s ease, border-color 0.3s ease;">
-                    <img src="/assets/images/logo.png" alt="XP ARENA Foundational Partner"
-                        style="height: 60px; width: auto; border-radius: 8px;">
-                    <div style="font-weight: 800; color: #fff;">XP ARENA</div>
-                    <div style="font-size: 0.8rem; color: var(--accent);">Foundational Partner</div>
+            <div class="pulse-card sponsor-node node-available">
+                <div style="font-size: 2rem; color: var(--stardust-muted);"><i class="fas fa-plus-circle"></i></div>
+                <div>
+                    <h3 class="clash" style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--stardust-muted);">
+                        VACANT SECTOR</h3>
+                    <span class="node-tier" style="color: var(--stardust-muted);">Open for Alliance</span>
                 </div>
-                <div class="sponsor-placeholder">Partner Slot Available</div>
-                <div class="sponsor-placeholder">Partner Slot Available</div>
-                <div class="sponsor-placeholder">Partner Slot Available</div>
             </div>
 
-            <div class="form-card" style="text-align: center; padding: 4rem 2rem;">
-                <h2>Become a Sponsor</h2>
-                <p style="color: var(--text-muted); max-width: 600px; margin: 0.5rem auto 2rem;">Connect with thousands
-                    of
-                    dedicated competitive gamers every week.</p>
-
-                <ul class="benefits-list">
-                    <li>Brand exposure on weekly tournaments</li>
-                    <li>Direct link placement on high-traffic tool pages</li>
-                    <li>Social media shoutouts to our community</li>
-                    <li>Custom branded skins/events</li>
-                    <li>Comprehensive campaign reporting</li>
-                </ul>
-
-                <div style="margin-top: 3rem;">
-                    <a href="contact.html" class="btn-primary"
-                        style="display: inline-block; width: auto; padding: 1rem 3rem;">Partner With Us</a>
-                </div>
-
-                <div style="margin-top: 1.5rem;">
-                    <a href="https://wa.me/2348012345678"
-                        style="color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600;">Contact
-                        us
-                        on WhatsApp →</a>
+            <div class="pulse-card sponsor-node node-available">
+                <div style="font-size: 2rem; color: var(--stardust-muted);"><i class="fas fa-handshake"></i></div>
+                <div>
+                    <h3 class="clash" style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--stardust-muted);">
+                        VACANT SECTOR</h3>
+                    <span class="node-tier" style="color: var(--stardust-muted);">Open for Alliance</span>
                 </div>
             </div>
         </div>
-    </main>
 
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
+        <div class="pulse-card benefits-card">
+            <h2 class="clash" style="font-size: 2.2rem; margin-bottom: 1rem;">SECURE YOUR SIGNAL</h2>
+            <p style="color: var(--stardust-muted); max-width: 500px; margin: 0 auto;">Connect with a global network of
+                dedicated Arenis and high-performance creators.</p>
 
+            <div class="benefits-matrix">
+                <div class="benefit-tag"><i class="fas fa-bolt"></i> Tournament Dominance</div>
+                <div class="benefit-tag"><i class="fas fa-link"></i> Direct Hub Integration</div>
+                <div class="benefit-tag"><i class="fas fa-satellite"></i> Community Broadcasts</div>
+                <div class="benefit-tag"><i class="fas fa-shield-alt"></i> Branded Neural Skins</div>
+                <div class="benefit-tag"><i class="fas fa-chart-line"></i> Deep Analytic Insights</div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 1.5rem; margin-top: 3rem;">
+                <button class="btn-rebirth btn-photon" style="padding: 1.5rem 4rem;"
+                    onclick="window.location.href='contact.html'">
+                    INITIATE ALLIANCE
+                </button>
+                <a href="https://wa.me/2348012345678"
+                    style="color: var(--stardust-muted); font-size: 0.85rem; font-weight: 800; text-decoration: none; letter-spacing: 1px;">
+                    DIRECT CHANNEL (WHATSAPP) &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
 </body>
 
 </html>

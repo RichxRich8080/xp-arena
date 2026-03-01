@@ -4,516 +4,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Clans • XP ARENA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <title>Clan Command • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        body {
-            background-color: var(--bg);
-            background-image:
-                linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)),
-                url('assets/images/grid-bg.png');
-            /* If available, or just colors */
-            background-attachment: fixed;
-        }
-
-        .clans-page-wrapper {
-            padding: 2rem 0 100px;
-        }
-
-        .page-header {
+        .guilds-hero {
+            padding: 10rem 2rem 6rem;
             text-align: center;
-            margin-bottom: 4rem;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(0, 245, 255, 0.05), transparent 70%);
         }
 
-        .tactical-badge {
-            font-size: 0.75rem;
-            color: var(--accent);
-            letter-spacing: 4px;
-            font-weight: 900;
-            margin-bottom: 1rem;
-            text-transform: uppercase;
-            display: inline-block;
-            background: rgba(var(--accent-rgb), 0.1);
-            padding: 0.5rem 1.5rem;
-            border-radius: 4px;
-            border-left: 3px solid var(--accent);
+        .guilds-hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            line-height: 0.9;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.05em;
         }
 
-        .glitch-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 900;
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            margin-bottom: 1rem;
-            line-height: 1;
+        .guilds-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
 
-        .description {
-            max-width: 650px;
-            color: var(--text-muted);
-            line-height: 1.7;
-            margin: 0 auto 3rem;
-            font-size: 1.1rem;
-        }
-
-        /* Tactical Dossier Cards */
-        .feature-item.tactical-dossier {
-            background: var(--surface);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        .guild-action-card {
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            justify-content: space-between;
         }
 
-        .feature-item.tactical-dossier:hover {
-            border-color: rgba(var(--accent-rgb), 0.4);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-        }
-
-        .feature-item h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #fff;
+        .guild-form-group {
             display: flex;
-            align-items: center;
-            gap: 12px;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
-        .feature-item h3 i {
-            color: var(--accent);
-        }
-
-        /* Inputs & Controls */
-        .settings-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
+        .guild-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            padding: 1.25rem;
             border-radius: 12px;
-            padding: 1rem;
             color: #fff;
             font-family: inherit;
-            transition: border-color 0.2s;
-        }
-
-        .settings-input:focus {
-            border-color: var(--accent);
-            outline: none;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #000;
-            font-weight: 900;
-            padding: 1rem;
-            border-radius: var(--radius-lg);
-            letter-spacing: 1px;
-            border: none;
-            cursor: pointer;
+            font-size: 1rem;
             transition: all 0.3s;
         }
 
-        .btn-secondary {
+        .guild-input:focus {
             background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 1rem;
-            border-radius: var(--radius-lg);
-            font-weight: 700;
-            transition: all 0.2s;
+            border-color: var(--photon);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+            outline: none;
         }
 
-        .btn-secondary:hover {
-            border-color: var(--accent);
-            background: rgba(var(--accent-rgb), 0.1);
+        /* Active Clan Banner */
+        .active-clan-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--nebula-solid), var(--void));
+            border: 1px solid var(--photon);
+            box-shadow: 0 0 40px var(--photon-glow);
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            padding: 3rem;
+        }
+
+        .clan-emblem-large {
+            width: 120px;
+            height: 120px;
+            background: var(--nebula);
+            border: 2px solid var(--photon);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            position: relative;
+        }
+
+        .clan-emblem-large::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 25px;
+            border: 1px solid var(--photon-glow);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            100% {
+                transform: scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        .clan-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+
+        .meta-item span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--stardust-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.25rem;
+        }
+
+        .meta-item strong {
+            font-size: 1.2rem;
+            color: var(--stardust);
+            font-family: 'Clash Display', sans-serif;
         }
 
         /* Leaderboard Table */
-        .leaderboard-container {
-            width: 100%;
-            max-width: 1000px;
-            margin: 4rem auto;
+        .clan-leaderboard {
+            grid-column: 1 / -1;
+            margin-top: 4rem;
         }
 
-        .rankings-title {
-            text-align: center;
-            font-family: 'Outfit', sans-serif;
-            font-size: 2rem;
-            font-weight: 900;
-            color: #fff;
-            margin-bottom: 2rem;
-            text-transform: uppercase;
+        .clan-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 150px 150px;
+            align-items: center;
+            padding: 1.5rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s;
+        }
+
+        .clan-row:hover {
+            border-color: var(--photon);
+            transform: scale(1.01);
+            background: var(--nebula);
+        }
+
+        @media (max-width: 768px) {
+            .guilds-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .active-clan-card {
+                flex-direction: column;
+                text-align: center;
+                gap: 2rem;
+            }
+
+            .clan-meta-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .clan-row {
+                grid-template-columns: 60px 1fr 100px;
+            }
+
+            .clan-row .hide-mobile {
+                display: none;
+            }
         }
     </style>
 </head>
 
-<body>
-    <nav class="navbar"></nav>
+<body class="page-rebirth">
+    <div class="guilds-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Collaborative Neural
+            Network</span>
+        <h1 class="clash">CLAN<br><span class="text-photon">COMMAND</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
+            Establish your Faction, recruit elite Arenis, and dominate the global leaderboards.
+        </p>
+    </div>
 
-    <main class="main-content-area clans-page-wrapper">
-        <div class="container">
-            <div class="page-header" style="text-align:center;">
+    <div class="guilds-grid">
+        <!-- Active Clan Section (Dynamic) -->
+        <div id="homeBlock" class="pulse-card active-clan-card" style="display: none;">
+            <div id="homeBadge" class="clan-emblem-large">🛡️</div>
+            <div style="flex: 1;">
+                <h2 id="homeName" class="clash" style="font-size: 2.5rem; margin-bottom: 0.5rem;">CLAN NAME</h2>
+                <div class="clan-meta-grid">
+                    <div class="meta-item">
+                        <span>Operatives</span>
+                        <strong id="memberCount">--</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Matrix Power</span>
+                        <strong id="matrixPower">--</strong>
+                    </div>
+                    <div class="meta-item">
+                        <span>Global Rank</span>
+                        <strong id="globalRank">#--</strong>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+                    <button class="btn-rebirth btn-photon" onclick="alert('War protocol engaging...')">DEPLOY
+                        WAR</button>
+                    <button class="btn-rebirth"
+                        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);"
+                        onclick="Clan.leave()">ABANDON UNIT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Block -->
+        <div id="createBlock" class="pulse-card guild-action-card">
+            <div>
+                <h3 class="clash" style="font-size: 1.5rem;"><i class="fas fa-plus-circle text-photon"></i> INITIALIZE
+                    FACTION</h3>
+                <p style="color: var(--stardust-muted); font-size: 0.9rem; margin-top: 0.5rem;">Forge a new destiny.
+                    Lead your squad to eternal glory.</p>
+                <div class="guild-form-group">
+                    <input type="text" id="guildNameInput" class="guild-input"
+                        placeholder="Unit Designation (e.g. VANGUARD)">
+                </div>
+            </div>
+            <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; margin-top: 2rem;"
+                onclick="Clan.create(document.getElementById('guildNameInput').value)">ACTIVATE UNIT</button>
+        </div>
+
+        <!-- Join Block -->
+        <div id="joinBlock" class="pulse-card guild-action-card">
+            <div>
+                <h3 class="clash" style="font-size: 1.5rem;"><i class="fas fa-sign-in-alt text-photon"></i> TACTICAL
+                    DEPLOYMENT</h3>
+                <p style="color: var(--stardust-muted); font-size: 0.9rem; margin-top: 0.5rem;">Enter a Clan ID or
+                    invite code to join an active faction.</p>
+                <div class="guild-form-group">
+                    <input type="text" id="guildIdInput" class="guild-input" placeholder="Neural ID / Invite Code">
+                </div>
+            </div>
+            <button class="btn-rebirth"
+                style="width: 100%; justify-content: center; margin-top: 2rem; border: 1px solid var(--glass-border);"
+                onclick="Clan.join(null, document.getElementById('guildIdInput').value)">DEPLOY NOW</button>
+        </div>
+
+        <!-- Command Center (Visible if leader) -->
+        <div id="manageBlock" class="pulse-card" style="grid-column: 1 / -1; display: none;">
+            <h3 class="clash" style="font-size: 1.8rem; margin-bottom: 2rem;"><i
+                    class="fas fa-terminal text-photon"></i> COMMAND CENTER</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="guild-form-group">
+                    <span class="section-label" style="font-size: 0.65rem;">Unit Identified (Emoji Icon)</span>
+                    <input type="hidden" id="guildBadgeId">
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="guildBadgeInput" class="guild-input" style="flex: 1;"
+                            placeholder="🛡️, ⚡, 🔥">
+                        <button class="btn-rebirth btn-photon"
+                            onclick="Clan.setBadge(document.getElementById('guildBadgeInput').value)">SYNC</button>
+                    </div>
+                </div>
+                <div class="guild-form-group">
+                    <span class="section-label" style="font-size: 0.65rem;">Invite Protocol</span>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" id="guildInviteCode" class="guild-input" style="flex: 1;" readonly>
+                        <button class="btn-rebirth" style="border: 1px solid var(--glass-border);"
+                            onclick="navigator.clipboard.writeText(this.previousElementSibling.value); Toast.show('Invite Secure.', 'success')">CLONE</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 4rem;">
+                <span class="section-label" style="font-size: 0.65rem; margin-bottom: 1.5rem;">OPERATIVE ROSTER</span>
+                <div id="guildMembersList"
+                    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem;">
+                    <!-- Members Injected -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard -->
+        <section class="clan-leaderboard">
+            <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 3rem;">
+                <h2 class="clash" style="font-size: 2rem;">GLOBAL <span class="text-photon">CLAN</span> MATRIX</h2>
                 <div
-                    style="font-size: 0.8rem; color: var(--accent); letter-spacing: 3px; font-weight: 800; margin-bottom: 0.5rem;">
-                    [ TACTICAL BRIEFING ]</div>
-                <h1 class="glitch-title" style="margin-bottom: 0.5rem;">Clan Command</h1>
-                <p class="description" style="margin: 0 auto 3rem;">Establish your Faction or deploy into an existing
-                    squad.
-                    Premium Arenis receive complimentary clan registration.</p>
-            </div>
-            <div id="guildActions"
-                style="display:grid; grid-template-columns: repeat(auto-fit,minmax(300px,1fr)); gap: 1.5rem; width:100%; max-width:1100px; margin: 0 auto;">
-                <div id="homeBlock" class="feature-item tactical-dossier glass-card" data-id="HOME_CARD"
-                    style="display:none">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <div class="scan-line"></div>
-                    <div style="display:flex; align-items:center; gap:12px; margin-bottom: 10px;">
-                        <div id="homeBadge" style="font-size:1.6rem;">🛡️</div>
-                        <div>
-                            <div id="homeName" style="font-weight:900; letter-spacing:0.5px;"></div>
-                            <div id="homeStats" style="font-size:0.8rem; color: var(--text-muted);">Members — • AXP —
-                            </div>
-                        </div>
-                    </div>
-                    <div style="display:flex; gap: 10px; flex-wrap: wrap;">
-                        <button class="btn-secondary" style="width:auto" onclick="applyGuildWar()">Apply for Clan
-                            War</button>
-                        <a href="#roster" class="btn-secondary" style="width:auto">View Roster</a>
-                    </div>
-                </div>
-                <div id="createBlock" class="feature-item tactical-dossier glass-card" data-id="UNIT_INIT_04">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <h3><i class="fas fa-plus"></i> Initialize Unit</h3>
-                    <input id="guildNameInput" class="settings-input" placeholder="Clan Designation (Name)" />
-                    <button class="btn-primary" style="margin-top:10px; width: 100%;" onclick="createGuild()">ACTIVATE
-                        CLAN</button>
-                    <div id="guildCreateMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
-                </div>
-                <div id="joinBlock" class="feature-item tactical-dossier glass-card" data-id="DEPLOY_REQ_09">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <h3><i class="fas fa-sign-in-alt"></i> Tactical Deployment</h3>
-                    <input id="guildIdInput" class="settings-input" placeholder="Clan ID" />
-                    <input id="inviteCodeInput" class="settings-input" placeholder="Invite Code (e.g., G123)" />
-                    <button class="btn-secondary" style="margin-top:10px; width: 100%;" onclick="joinGuild()">DEPLOY
-                        NOW</button>
-                    <button class="btn-secondary"
-                        style="margin-top:10px; width: 100%; font-size: 0.7rem; border-color: rgba(255,0,0,0.2);"
-                        onclick="leaveGuild()">ABANDON POSITION</button>
-                    <div id="guildJoinMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
-                    <div id="rulesDisplay" style="margin-top:8px; font-size:0.8rem; color: var(--text-muted);"></div>
-                </div>
-                <div id="manageBlock" class="feature-item tactical-dossier glass-card" data-id="CMD_CENT_01"
-                    style="display:none">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <h3><i class="fas fa-cog"></i> Command Center</h3>
-                    <div id="activeGuildName"
-                        style="font-weight:800; margin-bottom:12px; color: var(--accent); font-size: 1.2rem;"></div>
-                    <input type="hidden" id="guildBadgeId" value="">
-                    <div style="display:grid; gap:15px;">
-                        <div>
-                            <div
-                                style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 5px; letter-spacing: 1px;">
-                                SET CLAN BADGE</div>
-                            <input id="guildBadgeInput" class="settings-input" placeholder="Badge (e.g. 🛡️, ⚡)" />
-                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
-                                onclick="setGuildBadge()">UPDATE IDENTIFIER</button>
-                        </div>
-                        <div>
-                            <div
-                                style="font-size:0.75rem; color: var(--text-muted); margin: 10px 0 5px; letter-spacing: 1px;">
-                                RECRUITMENT FILTERS</div>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                                <input id="minLevelInput" class="settings-input" placeholder="Min Level (e.g. 5)" />
-                                <input id="minAXPInput" class="settings-input" placeholder="Min AXP (e.g. 5000)" />
-                            </div>
-                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
-                                onclick="setGuildRules()">SAVE FILTERS</button>
-                            <div id="guildRulesMsg"
-                                style="margin-top:6px; font-size:0.85rem; color: var(--text-muted);"></div>
-                        </div>
-                        <div class="glass-card" style="padding: 1rem;">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
-                            <div
-                                style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 8px; letter-spacing: 1px;">
-                                WAR STATUS</div>
-                            <textarea id="warNote" class="settings-input" rows="3"
-                                placeholder="Command dispatch note for war request"></textarea>
-                            <button class="btn-secondary" style="width: 100%; margin-top: 10px;"
-                                onclick="applyGuildWar()">REQUEST WAR</button>
-                        </div>
-                    </div>
-                    <div id="roster" style="margin-top:20px;">
-                        <div
-                            style="font-weight:800; margin-bottom:10px; color: var(--accent); border-bottom: 1px solid var(--border); padding-bottom: 5px;">
-                            CLAN ROSTER</div>
-                        <div id="guildMembersList" class="tactical-list"></div>
-                    </div>
-                    <div style="margin-top:12px;">
-                        <div style="font-size:0.75rem; color: var(--text-muted); margin-bottom: 4px;">INVITE CODE</div>
-                        <div style="display:flex; gap:8px; align-items:center;">
-                            <input id="guildInviteCode" class="settings-input" readonly value="" />
-                            <button class="btn-secondary" style="width:auto" onclick="copyInviteCode()">Copy</button>
-                        </div>
-                    </div>
-                    <div id="manageMsg" style="margin-top:8px; font-size:0.85rem; color: var(--text-muted);"></div>
+                    style="flex: 1; height: 1px; background: linear-gradient(to right, var(--glass-border), transparent);">
                 </div>
             </div>
-            <div style="width:100%; max-width:1000px; margin: 2rem auto;">
-                <h3 style="text-align:center; margin-bottom: 1.5rem; letter-spacing: 2px; color: var(--accent);">CLAN
-                    RANKINGS</h3>
-                <div id="guildLeaderboard" class="tactical-list"></div>
+            <div id="guildLeaderboard">
+                <!-- Injected by guilds.js -->
             </div>
-    </main>
+        </section>
+    </div>
 
-    <nav class="bottom-nav"></nav>
-
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
+    <script src="js/guilds.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', initGuilds);
-        async function initGuilds() {
-            loadGuildLeaderboard();
-            if (Auth.isLoggedIn()) {
-                try {
-                    const res = await fetch((window.API_URL || '') + '/api/user/profile', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-                    if (res.ok) {
-                        const data = await res.json();
-                        const g = data.guild;
-                        const createBlock = document.getElementById('createBlock');
-                        const joinBlock = document.getElementById('joinBlock');
-                        const manageBlock = document.getElementById('manageBlock');
-                        const homeBlock = document.getElementById('homeBlock');
-                        if (g) {
-                            if (createBlock) createBlock.style.display = 'none';
-                            if (joinBlock) joinBlock.style.display = 'none';
-                            if (manageBlock) {
-                                manageBlock.style.display = 'block';
-                                document.getElementById('activeGuildName').textContent = (g.badge ? g.badge + ' ' : '') + g.name;
-                                document.getElementById('guildBadgeId').value = g.id;
-                                document.getElementById('guildIdInput').value = g.id;
-                                loadGuildMembers(g.id);
-                            }
-                            if (homeBlock) {
-                                homeBlock.style.display = 'block';
-                                document.getElementById('homeBadge').textContent = g.badge || '🛡️';
-                                document.getElementById('homeName').textContent = g.name;
-                                const leaderRow = await fetch((window.API_URL || '') + '/api/guilds/members?guild_id=' + g.id, { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-                                let members = [];
-                                if (leaderRow.ok) members = await leaderRow.json();
-                                let totalAXP = 0;
-                                members.forEach(m => totalAXP += (m.axp || 0));
-                                document.getElementById('homeStats').textContent = `Members ${members.length} • AXP ${Number(totalAXP).toLocaleString()}`;
-                                const inv = document.getElementById('guildInviteCode'); if (inv) inv.value = 'G' + g.id;
-                            }
-                        } else {
-                            if (createBlock) createBlock.style.display = '';
-                            if (joinBlock) joinBlock.style.display = '';
-                            if (manageBlock) manageBlock.style.display = 'none';
-                            const hb = document.getElementById('homeBlock'); if (hb) hb.style.display = 'none';
-                        }
-                    }
-                } catch { }
+        // Override for better UI updates
+        Clan._originalSync = Clan.syncUserClan;
+        Clan.syncUserClan = async function () {
+            await Clan._originalSync();
+            const guild = Auth.getCurrentUser()?.guild;
+            if (guild) {
+                document.getElementById('memberCount').textContent = guild.member_count || '1';
+                document.getElementById('matrixPower').textContent = (guild.total_xp || 0).toLocaleString();
+                document.getElementById('globalRank').textContent = '#1'; // Placeholder
             }
-            function copyInviteCode() {
-                const inv = document.getElementById('guildInviteCode');
-                if (!inv) return;
-                navigator.clipboard.writeText(inv.value).then(() => {
-                    if (window.Toast) Toast.show('Invite code copied!', 'success');
-                });
-            }
-        }
-        async function createGuild() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const name = document.getElementById('guildNameInput').value.trim();
-            const msg = document.getElementById('guildCreateMsg');
-            const res = await fetch((window.API_URL || '') + '/api/guilds/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ name })
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Created! ID: ' + data.guild_id : (data.error || 'Error');
-            if (res.ok) User.loadStats();
-        }
-        async function joinGuild() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            let gid = parseInt(document.getElementById('guildIdInput').value, 10);
-            const code = (document.getElementById('inviteCodeInput')?.value || '').trim();
-            if (!gid && code) {
-                const m = code.match(/G(\d+)/i) || code.match(/(\d+)/);
-                if (m) gid = parseInt(m[1], 10);
-            }
-            const msg = document.getElementById('guildJoinMsg');
-            const res = await fetch((window.API_URL || '') + '/api/guilds/join', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ guild_id: gid })
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Joined!' : (data.error || 'Error');
-            if (res.ok) User.loadStats();
-        }
-        function updateRulesPreview() {
-            let gid = parseInt(document.getElementById('guildIdInput').value, 10);
-            const code = (document.getElementById('inviteCodeInput')?.value || '').trim();
-            if (!gid && code) {
-                const m = code.match(/G(\d+)/i) || code.match(/(\d+)/);
-                if (m) gid = parseInt(m[1], 10);
-            }
-            const el = document.getElementById('rulesDisplay');
-            if (!gid || !el) { if (el) el.textContent = ''; return; }
-            fetch((window.API_URL || '') + '/api/guilds/filters?guild_id=' + gid)
-                .then(r => r.ok ? r.json() : null)
-                .then(data => {
-                    if (!data) { el.textContent = ''; return; }
-                    const parts = [];
-                    if (data.min_level) parts.push(`Level ${data.min_level}+`);
-                    if (data.min_axp) parts.push(`${Number(data.min_axp).toLocaleString()}+ AXP`);
-                    let suffix = '';
-                    try {
-                        const stats = User.getStats();
-                        if (stats) {
-                            const lvl = Math.floor((stats.axp || 0) / 500) + 1;
-                            const meet = (!data.min_level || lvl >= data.min_level) && (!data.min_axp || (stats.axp || 0) >= data.min_axp);
-                            suffix = meet ? ' • You meet the requirements' : ' • You do not meet the requirements';
-                        }
-                    } catch { }
-                    el.textContent = (parts.length ? `Requirements: ${parts.join(' • ')}` : 'Requirements: None') + suffix;
-                })
-                .catch(() => { el.textContent = ''; });
-        }
-        document.getElementById('guildIdInput').addEventListener('input', updateRulesPreview);
-        document.getElementById('inviteCodeInput').addEventListener('input', updateRulesPreview);
-        async function leaveGuild() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const msg = document.getElementById('guildJoinMsg');
-            const res = await fetch((window.API_URL || '') + '/api/guilds/leave', {
-                method: 'POST',
-                headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Left clan.' : (data.error || 'Error');
-            if (res.ok) User.loadStats();
-        }
-        async function setGuildBadge() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const guild_id = parseInt(document.getElementById('guildBadgeId').value, 10);
-            const badge = document.getElementById('guildBadgeInput').value;
-            const msg = document.getElementById('guildBadgeMsg');
+        };
+
+        Clan.setBadge = async function (badge) {
+            const gid = document.getElementById('guildBadgeId').value;
             const res = await fetch((window.API_URL || '') + '/api/guilds/badge', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ guild_id, badge })
+                body: JSON.stringify({ guild_id: gid, badge })
             });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Badge updated!' : (data.error || 'Error');
-            if (res.ok) loadGuildLeaderboard();
-        }
-        async function setGuildRules() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const guild_id = parseInt(document.getElementById('guildBadgeId').value, 10);
-            const min_level = parseInt(document.getElementById('minLevelInput').value || '0', 10);
-            const min_axp = parseInt(document.getElementById('minAXPInput').value || '0', 10);
-            const msg = document.getElementById('guildRulesMsg');
-            const res = await fetch((window.API_URL || '') + '/api/guilds/filters', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ guild_id, min_level, min_axp })
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Filters saved!' : (data.error || 'Error');
-        }
-        async function loadGuildMembers(gid) {
-            const el = document.getElementById('guildMembersList');
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/guilds/members?guild_id=' + gid, { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-                const rows = res.ok ? await res.json() : [];
-                el.innerHTML = rows.map(m => `
-                    <div class="glass-card tactical-list-item" style="display:grid; grid-template-columns: 1fr auto; gap:8px; align-items:center;">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <div><b>${m.username}</b> <span style="font-size:0.75rem; color: var(--text-muted);">(${m.role})</span><br><span style="font-size:0.8rem; color: var(--text-muted);">AXP ${Number(m.axp || 0).toLocaleString()}</span></div>
-                        <button class="btn-secondary" style="width:auto" onclick="removeMember(${gid}, ${m.id})">Remove</button>
-                    </div>
-                `).join('') || '<div class="glass-card" style="padding: 1rem; text-align:center;">No members.</div>';
-            } catch { el.innerHTML = '<div class="glass-card" style="padding: 1rem; text-align:center;">Failed to load members.</div>'; }
-        }
-        async function removeMember(gid, uid) {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const res = await fetch((window.API_URL || '') + '/api/guilds/remove-member', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ guild_id: gid, user_id: uid })
-            });
-            const data = await res.json();
-            const msg = document.getElementById('manageMsg');
-            msg.textContent = res.ok ? 'Member removed.' : (data.error || 'Error');
-            if (res.ok) loadGuildMembers(gid);
-        }
-        async function applyGuildWar() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            const gid = parseInt(document.getElementById('guildBadgeId').value, 10);
-            const note = document.getElementById('warNote').value;
-            const msg = document.getElementById('manageMsg');
-            const res = await fetch((window.API_URL || '') + '/api/guilds/war/apply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                body: JSON.stringify({ guild_id: gid, note })
-            });
-            const data = await res.json();
-            msg.textContent = res.ok ? 'Applied for Clan War!' : (data.error || 'Error');
-        }
-        async function loadGuildLeaderboard() {
-            const el = document.getElementById('guildLeaderboard');
-            el.innerHTML = '<div class="glass-card" style="text-align:center; padding: 1rem;">Loading...</div>';
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/guilds/leaderboard');
-                const rows = res.ok ? await res.json() : [];
-                el.innerHTML = rows.map((g, i) => `
-                    <div class="glass-card tactical-list-item" style="display:grid; grid-template-columns: 48px 1fr auto; gap: 10px; align-items:center;">
-                        <div class="hud-corner hud-tl"></div>
-                        <div class="hud-corner hud-tr"></div>
-                        <div class="hud-corner hud-bl"></div>
-                        <div class="hud-corner hud-br"></div>
-                        <div style="text-align:center; font-weight:800;">#${i + 1}</div>
-                        <div>
-                            <div style="font-weight:800; color:#fff;">${g.badge ? g.badge + ' ' : ''}${g.name}</div>
-                            <div style="font-size:0.8rem; color: var(--text-muted);">Members: ${g.members} • AXP: ${Number(g.axp || 0).toLocaleString()}</div>
-                        </div>
-                        <div style="text-align:right;"><a class="btn-secondary" style="width:auto;" onclick="document.getElementById('guildIdInput').value='${g.id}';">Use ID</a></div>
-                    </div>
-                `).join('');
-            } catch {
-                el.innerHTML = '<div class="glass-card" style="text-align:center; padding: 1rem;">Failed to load.</div>';
+            if (res.ok) {
+                Toast.show('Identifier synced.', 'success');
+                Clan.syncUserClan();
+                Clan.loadLeaderboard();
             }
-        }
+        };
     </script>
 </body>
 

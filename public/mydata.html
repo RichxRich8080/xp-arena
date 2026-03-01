@@ -4,51 +4,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Data • XP ARENA</title>
-  <meta name="description" content="Export your XP ARENA data: vault, presets and history.">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/main.css">
+  <title>Neural Vault • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .vault-hero {
+      padding: 12rem 2rem 6rem;
+      text-align: center;
+      background: radial-gradient(circle at top left, var(--primary-glow), transparent 70%);
+      transition: background 0.5s ease;
+    }
+
+    .vault-hero h1 {
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      line-height: 0.9;
+    }
+
+    .vault-section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2.5rem 10rem;
+    }
+
+    .vault-controls {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 4rem 0 6rem;
+    }
+
+    .category-net {
+      margin-bottom: 5rem;
+    }
+
+    .category-label {
+      font-size: 0.7rem;
+      color: var(--stardust-muted);
+      text-transform: uppercase;
+      letter-spacing: 5px;
+      font-weight: 900;
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .category-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--glass-border);
+    }
+
+    .data-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .data-node {
+      padding: 2.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-left: 4px solid var(--primary);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 24px;
+      transition: all 0.3s var(--transition);
+    }
+
+    .data-node:hover {
+      transform: translateX(10px);
+      background: rgba(255, 255, 255, 0.04);
+      border-color: var(--primary);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .node-info h4 {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.3rem;
+      margin-bottom: 0.8rem;
+      letter-spacing: 1px;
+    }
+
+    .node-meta {
+      font-size: 0.85rem;
+      color: var(--stardust-muted);
+      display: flex;
+      gap: 20px;
+      font-weight: 600;
+    }
+
+    .btn-delete {
+      background: rgba(255, 68, 68, 0.08);
+      color: #ff4444;
+      border: 1px solid rgba(255, 68, 68, 0.2);
+      padding: 0.8rem 1.5rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .btn-delete:hover {
+      background: #ff4444;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+    }
+
+    .empty-signal {
+      padding: 5rem;
+      text-align: center;
+      color: var(--stardust-muted);
+      font-style: italic;
+      background: rgba(255, 255, 255, 0.01);
+      border-radius: 32px;
+      border: 1px dashed var(--glass-border);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      .data-node {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+      }
+
+      .btn-delete {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
 </head>
 
-<body class="fade-in">
-  <nav class="navbar"></nav>
-  <main class="main-content-area">
-    <div class="container">
-      <div class="page-header" data-parallax="8">
-        <h1 class="text-neon">My Data</h1>
-        <p>Review and export your Vault, Presets and History.</p>
-      </div>
+<body class="page-rebirth">
+  <div class="vault-hero">
+    <span class="section-label" style="letter-spacing: 0.8rem; margin-bottom: 2.5rem;">Synchronized Data
+      Management</span>
+    <h1 class="clash">NEURAL<br><span class="text-photon">DATA VAULT</span></h1>
 
-      <div class="form-card">
-        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:1rem">
-          <button class="btn-secondary" id="exportAllBtn" style="width:auto">Export All JSON</button>
-          <a class="btn-secondary" href="profile.html" style="width:auto">Go to Profile</a>
-        </div>
-        <div id="dataSections">
-          <h3 style="margin:1rem 0">Vault</h3>
-          <div id="vaultList" style="display:grid;gap:10px"></div>
-          <h3 style="margin:1.5rem 0 1rem">Presets</h3>
-          <div id="presetsList" style="display:grid;gap:10px"></div>
-          <h3 style="margin:1.5rem 0 1rem">History</h3>
-          <div id="historyList" style="display:grid;gap:10px"></div>
-        </div>
-        <p style="font-size:0.8rem;color:var(--text-muted);margin-top:1rem">Note: deletion from this page will be added
-          soon. For now, export your data or manage items from your Profile.</p>
-      </div>
+    <div class="vault-controls">
+      <button class="btn-rebirth btn-photon" id="exportAllBtn" style="padding: 1.4rem 3rem;">EXPORT ALL JSON</button>
+      <button class="btn-rebirth" onclick="window.location.href='profile.html'"
+        style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 1.4rem 3rem;">PROFILE
+        UPLINK</button>
     </div>
-  </main>
+  </div>
 
-  <nav class="bottom-nav"></nav>
-  <script src="js/auth.js"></script>
-  <script src="js/user.js"></script>
-  <script src="js/layout.js"></script>
+  <div class="vault-section">
+    <div class="category-net">
+      <span class="category-label">DEVICE REPOSITORIES (VAULT)</span>
+      <div id="vaultList" class="data-grid"></div>
+    </div>
+
+    <div class="category-net">
+      <span class="category-label">OPERATIONAL PRESETS</span>
+      <div id="presetsList" class="data-grid"></div>
+    </div>
+
+    <div class="category-net">
+      <span class="category-label">SENSITIVITY ARCHIVES (HISTORY)</span>
+      <div id="historyList" class="data-grid"></div>
+    </div>
+
+    <div
+      style="margin-top: 8rem; text-align: center; padding: 4rem; background: rgba(255,255,255,0.02); border-radius: 32px; border: 1px solid var(--glass-border);">
+      <h4 class="clash" style="margin-bottom: 1rem; color: var(--stardust); letter-spacing: 2px;">DATA SECURITY PROTOCOL
+      </h4>
+      <p style="color: var(--stardust-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Neural deletion protocols are permanent and cannot be reversed by the hub core. Ensure your local encrypted
+        backups are secure before terminating high-value data nodes.
+      </p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  ,ReplacementContent:
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
       renderData();
-      const exportBtn = document.getElementById('exportAllBtn');
-      exportBtn.addEventListener('click', () => {
+
+      document.getElementById('exportAllBtn').addEventListener('click', () => {
         const stats = User.getStats() || {};
         const data = {
           vault: stats.vault || [],
@@ -59,10 +200,9 @@
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'xp-arena-data.json';
+        a.download = `xp-arena-vault-${new Date().getTime()}.json`;
         a.click();
         URL.revokeObjectURL(url);
-        if (window.Toast) Toast.show('Data exported!', 'success');
       });
     });
 
@@ -77,61 +217,51 @@
       const historyList = document.getElementById('historyList');
 
       vaultList.innerHTML = vault.length ? vault.map(v => `
-        <div class="form-card" style="padding:1rem;border-left:4px solid var(--accent)">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <strong>${v.device || 'Device'}</strong>
-              <div style="font-size:0.8rem;color:var(--text-muted)">${new Date(v.timestamp).toLocaleString()}</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="font-size:0.85rem;color:var(--text-muted)">Gen: <span style="color:#fff">${v.general || '-'}</span></div>
-              <button class="btn-secondary" data-del="vault" data-id="${v.id}" style="width:auto;padding:0.4rem 0.8rem">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('') : `<p style="color:var(--text-muted)">No items in Vault.</p>`;
+                <div class="pulse-card data-node">
+                    <div class="node-info">
+                        <h4 class="clash">${v.device || 'Inert Device'}</h4>
+                        <div class="node-meta">
+                            <span><i class="fas fa-calendar-day" style="margin-right: 8px;"></i> ${new Date(v.timestamp).toLocaleDateString()}</span>
+                            <span class="text-photon"><i class="fas fa-microchip" style="margin-right: 8px;"></i> GEN: ${v.general || '--'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteNode('vault', ${v.id})">TERMINAL TERMINATE</button>
+                </div>
+            `).join('') : '<div class="empty-signal">Neural archives empty. Base connection established.</div>';
 
       presetsList.innerHTML = presets.length ? presets.map(p => `
-        <div class="form-card" style="padding:1rem;border-left:4px solid #bf00ff">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <strong>⭐ ${p.name}</strong>
-              <div style="font-size:0.8rem;color:var(--text-muted)">${new Date(p.timestamp).toLocaleString()}</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="font-size:0.85rem;color:var(--text-muted)">${p.device || ''}</div>
-              <button class="btn-secondary" data-del="preset" data-id="${p.id}" style="width:auto;padding:0.4rem 0.8rem">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('') : `<p style="color:var(--text-muted)">No presets saved.</p>`;
+                <div class="pulse-card data-node" style="border-left-color: var(--corona);">
+                    <div class="node-info">
+                        <h4 class="clash">${p.name}</h4>
+                        <div class="node-meta">
+                            <span><i class="fas fa-mobile-android" style="margin-right: 8px;"></i> ${p.device || 'Global Overlay'}</span>
+                            <span><i class="fas fa-fingerprint" style="margin-right: 8px;"></i> ID: ${p.id}</span>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteNode('preset', ${p.id})">VOID PRESET</button>
+                </div>
+            `).join('') : '<div class="empty-signal">Tactical presets empty. Define new operational parameters.</div>';
 
       historyList.innerHTML = history.length ? history.map(h => `
-        <div class="form-card" style="padding:1rem;border-left:4px solid rgba(255,255,255,0.2)">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
-              <strong>${h.device || 'Device'}</strong>
-              <div style="font-size:0.8rem;color:var(--text-muted)">${new Date(h.timestamp).toLocaleString()}</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:center">
-              <div style="font-size:0.85rem;color:var(--text-muted)">Center: <span style="color:#fff">${h.general_mid || '-'}</span></div>
-              <button class="btn-secondary" data-del="history" data-id="${h.id}" style="width:auto;padding:0.4rem 0.8rem">Delete</button>
-            </div>
-          </div>
-        </div>
-      `).join('') : `<p style="color:var(--text-muted)">No history yet.</p>`;
+                <div class="pulse-card data-node" style="border-left-color: rgba(255,255,255,0.15);">
+                    <div class="node-info">
+                        <h4 class="clash">Operational Fragment</h4>
+                        <div class="node-meta">
+                            <span><i class="fas fa-history" style="margin-right: 8px;"></i> ${new Date(h.timestamp).toLocaleDateString()}</span>
+                            <span><i class="fas fa-analytics" style="margin-right: 8px;"></i> MID: ${h.general_mid || '--'}</span>
+                        </div>
+                    </div>
+                    <button class="btn-delete" onclick="deleteNode('history', ${h.id})">PURGE LOG</button>
+                </div>
+            `).join('') : '<div class="empty-signal">Historical logs empty. No past operations detected.</div>';
+    }
 
-      document.querySelectorAll('[data-del]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const type = btn.getAttribute('data-del');
-          const id = parseInt(btn.getAttribute('data-id'), 10);
-          if (!id) return;
-          if (type === 'vault') await User.deleteVault(id);
-          if (type === 'preset') await User.deletePreset(id);
-          if (type === 'history') await User.deleteHistory(id);
-          renderData();
-        });
-      });
+    async function deleteNode(type, id) {
+      if (!confirm('Neural termination is irreversible. Purge this node from the vault?')) return;
+      if (type === 'vault') await User.deleteVault(id);
+      if (type === 'preset') await User.deletePreset(id);
+      if (type === 'history') await User.deleteHistory(id);
+      renderData();
     }
   </script>
 </body>

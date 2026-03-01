@@ -41,7 +41,7 @@ const Shop = {
         if (!container) return;
 
         if (this.items.length === 0) {
-            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 3rem; color: var(--text-muted);">The armory is empty today. Check back later!</div>';
+            container.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 4rem; color: var(--stardust-muted); border: 1px solid var(--glass-border); border-radius: 20px; background: var(--nebula);">The armory is currently offline. Restocking in progress...</div>';
             return;
         }
 
@@ -52,29 +52,29 @@ const Shop = {
             const imageUrl = item.image_url || item.image || '';
             const visual = imageUrl
                 ? `<img src="${imageUrl}" alt="${item.name}" loading="lazy" />`
-                : `<div class="module-icon"><i class="${item.icon}"></i></div>`;
+                : `<i class="${item.icon}"></i>`;
+
             return `
-                <div class="shop-item-card gear-module glass-card rarity-${item.rarity}" data-id="${item.id}">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <div class="scan-line"></div>
-                    <div class="shop-item-rarity-badge">${rarityLabel}</div>
+                <div class="pulse-card shop-item-card" data-id="${item.id}">
+                    <div class="rarity-badge rarity-${item.rarity}">${rarityLabel}</div>
                     <div class="module-visual">${visual}</div>
-                    <h4>${item.name}</h4>
-                    <p>${item.description}</p>
-                    <div class="gear-specs">
-                        <span class="hud-chip">TYPE ${typeLabel}</span>
-                        <span class="hud-chip">STOCK ${stockLabel}</span>
-                        <span class="hud-chip">GRADE ${rarityLabel}</span>
+                    <div class="item-meta">
+                        <h3 class="clash" style="margin-bottom: 0.5rem;">${item.name}</h3>
+                        <p style="font-size: 0.85rem; color: var(--stardust-muted); margin-bottom: 1rem;">${item.description}</p>
+                        <div class="spec-tags">
+                            <span class="spec-tag">TYP: ${typeLabel}</span>
+                            <span class="spec-tag">STK: ${stockLabel}</span>
+                        </div>
                     </div>
                     <div class="shop-item-footer">
-                        <div class="shop-item-price">
-                            <i class="fas fa-star" style="color: var(--accent);"></i> ${item.price_axp.toLocaleString()} AXP
+                        <div class="price-tag">
+                            <span class="text-photon">${item.price_axp.toLocaleString()}</span> AXP
                         </div>
-                        <button class="btn-primary shop-buy-btn" onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
-                            ${this.canAfford(item.price_axp) ? 'PURCHASE' : 'INSUFFICIENT AXP'}
+                        <button class="btn-rebirth ${this.canAfford(item.price_axp) ? 'btn-photon' : ''}" 
+                                style="font-size: 0.75rem; padding: 0.6rem 1rem;"
+                                onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" 
+                                ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
+                            ${this.canAfford(item.price_axp) ? 'ACQUIRE' : 'INSUFFICIENT'}
                         </button>
                     </div>
                 </div>

@@ -4,246 +4,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ranks & Tiers • XP ARENA</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Ranks • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        body {
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 50% 100%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%);
-            background-attachment: fixed;
+        .ranks-container {
+            padding: 8rem 2rem 10rem;
+            max-width: 900px;
+            margin: 0 auto;
         }
 
-        .main-content-area {
-            padding-bottom: 120px !important;
-        }
-
-        .page-header {
+        .ranks-header {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 5rem;
         }
 
-        .page-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 950;
-            letter-spacing: -2px;
-            color: #fff;
+        .ranks-header h1 {
+            font-size: 4rem;
+            line-height: 1;
             margin-bottom: 1rem;
         }
 
-        /* Rank Cards */
-        .rank-card {
-            background: var(--surface);
-            backdrop-filter: blur(15px);
-            border: 1px solid var(--border);
+        .status-module {
+            background: var(--glass-highlight);
+            padding: 2.5rem;
             border-radius: var(--radius-lg);
-            padding: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 2rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .rank-card:hover {
-            transform: translateX(10px);
-            border-color: rgba(var(--accent-rgb), 0.4);
-            background: rgba(var(--accent-rgb), 0.05);
-        }
-
-        .rank-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--border);
-            transition: background 0.3s;
-        }
-
-        .rank-card.active::before {
-            background: var(--accent);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        .rank-icon {
-            font-size: 2.5rem;
-            width: 70px;
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            flex-shrink: 0;
-            transition: all 0.3s;
-        }
-
-        .rank-card:hover .rank-icon {
-            transform: scale(1.1) rotate(-5deg);
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .rank-info {
-            flex: 1;
-        }
-
-        .rank-info h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 0.4rem;
-        }
-
-        .rank-info p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-
-        .rank-requirement {
-            font-size: 1.1rem;
-            font-weight: 950;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            white-space: nowrap;
-        }
-
-        @media (max-width: 600px) {
-            .rank-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 1.5rem;
-                padding: 2.5rem 1.5rem;
-            }
-
-            .rank-card:hover {
-                transform: translateY(-5px);
-            }
-
-            .rank-requirement {
-                font-size: 0.9rem;
-            }
-        }
-
-        .v-badge-info {
-            background: rgba(var(--accent-rgb, 139, 92, 246), 0.06);
-            border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.2);
-            padding: 1.2rem 1.5rem;
-            border-radius: 16px;
-            margin-top: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .player-status {
-            background: rgba(17, 17, 32, 0.7);
-            backdrop-filter: blur(20px);
-            padding: 1.8rem 2rem;
-            border-radius: 20px;
-            margin-bottom: 1.5rem;
+            border: 1px solid var(--photon);
+            margin-bottom: 4rem;
             text-align: center;
-            border: 1px solid rgba(var(--accent-rgb, 139, 92, 246), 0.15);
-            position: relative;
-            overflow: hidden;
+            box-shadow: 0 0 30px var(--photon-glow);
         }
 
-        .player-status::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
+        .current-rank-label {
+            font-size: 0.7rem;
+            letter-spacing: 0.2rem;
+            color: var(--stardust-muted);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
         }
 
         #currentRankDisplay {
-            font-family: 'Outfit', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--accent), var(--accent2));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
         }
 
-        .progress-bar-container {
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 10px;
+        .progress-track {
             height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
             overflow: hidden;
+            margin: 1.5rem 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         #axp-progress-fill {
             height: 100%;
-            border-radius: 10px;
-            background: linear-gradient(90deg, var(--accent), var(--accent2));
-            box-shadow: 0 0 10px rgba(var(--accent-rgb, 139, 92, 246), 0.4);
-            transition: width 0.8s cubic-bezier(0.165, 0.84, 0.44, 1);
+            width: 0%;
+            background: var(--photon);
+            box-shadow: 0 0 15px var(--photon-glow);
+            transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        /* Rank Cards */
+        .rank-card {
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s var(--transition);
+        }
+
+        .rank-card.active {
+            border-color: var(--photon);
+            background: var(--glass-highlight);
+            box-shadow: 0 0 20px var(--photon-glow);
+        }
+
+        .rank-icon {
+            font-size: 2.5rem;
+            width: 80px;
+            height: 80px;
+            background: var(--nebula);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rank-card.active .rank-icon {
+            border-color: var(--photon);
+            color: var(--photon);
+        }
+
+        .rank-info h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .rank-info p {
+            font-size: 0.85rem;
+            color: var(--stardust-muted);
+        }
+
+        .rank-req {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            color: var(--photon);
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 600px) {
+            .ranks-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .rank-card {
+                grid-template-columns: 60px 1fr;
+                gap: 1rem;
+            }
+
+            .rank-req {
+                grid-column: 1/-1;
+                text-align: left;
+                font-size: 0.9rem;
+            }
+
+            .rank-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
         }
     </style>
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
 
-<body class="fade-in">
-    <nav class="navbar"></nav>
+<body>
+    <div class="ranks-container">
+        <header class="ranks-header">
+            <span class="section-label" style="letter-spacing: 0.4rem;">Hierarchical Progression</span>
+            <h1 class="clash">ARENI<br><span class="text-photon">TIERS</span></h1>
+            <p style="color: var(--stardust-muted);">Climb the ranks by securing AXP through global operations.</p>
+        </header>
 
-    <main class="main-content-area">
-        <div class="container">
-            <div class="page-header">
-                <h1>Rank Tiers</h1>
-                <p>Climb the ranks by earning AXP through activities</p>
+        <div class="status-module">
+            <span class="current-rank-label">Active Designation</span>
+            <h2 class="clash text-photon" id="currentRankDisplay">STARTER</h2>
+            <div style="font-weight: 700; color: var(--stardust);" id="axpSummary">0 AXP SECURED</div>
+            <div class="progress-track">
+                <div id="axp-progress-fill"></div>
             </div>
+            <div id="nextRankStatus"
+                style="font-size: 0.8rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 0.1rem;">
+                SCANNING NEXT TIER...</div>
+        </div>
 
-            <div class="player-status glass-card" id="playerStatus">
-                <div class="hud-corner hud-tl"></div>
-                <div class="hud-corner hud-tr"></div>
-                <div class="hud-corner hud-bl"></div>
-                <div class="hud-corner hud-br"></div>
-                <div class="scan-line"></div>
-                <div style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">YOUR CURRENT RANK</div>
-                <div id="currentRankDisplay"
-                    style="font-size: 2.5rem; font-weight: 800; color: var(--accent); margin-bottom: 1rem;">Starter
-                </div>
-                <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
-                    <div id="axpSummary" style="font-weight: 600;">0 AXP Total</div>
-                    <div class="progress-bar-container" style="width: 100%; max-width: 300px;">
-                        <div id="axp-progress-fill" class="progress-bar-fill"></div>
-                    </div>
-                    <div id="nextRankStatus" style="font-size: 0.85rem; color: var(--text-muted);">---</div>
-                </div>
-            </div>
+        <div id="ranksList">
+            <!-- Dynamic Injection -->
+        </div>
 
-            <div id="ranksList">
-                <!-- Tiers will be injected here -->
-            </div>
-
-            <div class="v-badge-info">
-                <div style="font-size: 2rem;">🛡️</div>
-                <div>
-                    <h4
-                        style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent; margin-bottom: 0.2rem;">
-                        The Champion's Proof</h4>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Reach the Champion rank (100,000 AXP) to
-                        unlock your exclusive Verified Badge and special profile effects.</p>
-                </div>
+        <div
+            style="margin-top: 6rem; padding: 2.5rem; border: 1px solid var(--glass-border); border-radius: var(--radius-lg); display: flex; align-items: center; gap: 2rem;">
+            <div style="font-size: 3rem;">🎖️</div>
+            <div>
+                <h3 class="clash" style="color: var(--photon);">THE CHAMPION'S PROOF</h3>
+                <p style="font-size: 0.85rem; color: var(--stardust-muted); line-height: 1.5;">Reach the Champion tier
+                    (100,000 AXP) to unlock the <span class="text-photon">Verified Badge</span> and exclusive neural
+                    profile effects.</p>
             </div>
         </div>
-    </main>
+    </div>
 
-    <nav class="bottom-nav"></nav>
-
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
@@ -261,22 +197,25 @@
 
         function renderRanksList() {
             const list = document.getElementById('ranksList');
-            list.innerHTML = RANKS.map(rank => `
-                <div class="rank-card glass-card" id="rank-${rank.name.toLowerCase()}">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
+            // RANKS constant is defined in app.js / user.js context
+            const rankData = [
+                { name: 'Starter', minAXP: 0, icon: '🔰', desc: 'Entry-level operative.' },
+                { name: 'Rookie', minAXP: 500, icon: '🥉', desc: 'Basic training complete.' },
+                { name: 'Specialist', minAXP: 2500, icon: '🥈', desc: 'Advanced field experience.' },
+                { name: 'Elite', minAXP: 10000, icon: '🥇', desc: 'Top-tier performance metrics.' },
+                { name: 'Master', minAXP: 25000, icon: '💎', desc: 'Legendary status attained.' },
+                { name: 'Grandmaster', minAXP: 50000, icon: '🔥', desc: 'Master of the neural matrix.' },
+                { name: 'Champion', minAXP: 100000, icon: '👑', desc: 'Peak Areni evolution.' }
+            ];
+
+            list.innerHTML = rankData.map(rank => `
+                <div class="pulse-card rank-card" id="rank-${rank.name.toLowerCase()}">
                     <div class="rank-icon">${rank.icon}</div>
                     <div class="rank-info">
-                        <h3>${rank.name}</h3>
-                        <p>${rank.verified ? 'The ultimate proof of dedication.' : 'Advance to higher tiers by earning AXP.'}</p>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top: 0.8rem;">
-                            <span class="hud-chip">Tier Lock</span>
-                            <span class="hud-chip">${rank.minAXP.toLocaleString()} AXP</span>
-                        </div>
+                        <h3 class="clash">${rank.name.toUpperCase()}</h3>
+                        <p>${rank.desc}</p>
                     </div>
-                    <div class="rank-requirement">${rank.minAXP.toLocaleString()} AXP</div>
+                    <div class="rank-req">${rank.minAXP.toLocaleString()} <span style="font-size: 0.6rem; color: var(--stardust-muted);">AXP</span></div>
                 </div>
             `).join('');
         }
@@ -285,28 +224,37 @@
             const stats = User.getStats();
             if (!stats) return;
 
-            const currentRank = stats.rank;
-            const nextRank = RANKS[RANKS.indexOf(currentRank) + 1];
+            const rankData = [
+                { name: 'Starter', minAXP: 0 },
+                { name: 'Rookie', minAXP: 500 },
+                { name: 'Specialist', minAXP: 2500 },
+                { name: 'Elite', minAXP: 10000 },
+                { name: 'Master', minAXP: 25000 },
+                { name: 'Grandmaster', minAXP: 50000 },
+                { name: 'Champion', minAXP: 100000 }
+            ];
 
-            document.getElementById('currentRankDisplay').textContent = currentRank.name;
-            document.getElementById('axpSummary').textContent = `${stats.axp.toLocaleString()} AXP Total`;
+            const currentRankName = stats.rank.name || stats.rank;
+            const currentRankIndex = rankData.findIndex(r => r.name.toLowerCase() === currentRankName.toLowerCase());
+            const currentRank = rankData[currentRankIndex] || rankData[0];
+            const nextRank = rankData[currentRankIndex + 1];
 
-            // Highlight current rank
+            document.getElementById('currentRankDisplay').textContent = currentRank.name.toUpperCase();
+            document.getElementById('axpSummary').textContent = `${stats.axp.toLocaleString()} AXP SECURED`;
+
             document.querySelectorAll('.rank-card').forEach(card => card.classList.remove('active'));
-            const currentCard = document.getElementById(`rank-${currentRank.name.toLowerCase()}`);
-            if (currentCard) currentCard.classList.add('active');
+            const activeCard = document.getElementById(`rank-${currentRank.name.toLowerCase()}`);
+            if (activeCard) activeCard.classList.add('active');
 
-            // Progress bar logic
             if (nextRank) {
-                const totalNeeded = nextRank.minAXP - currentRank.minAXP;
-                const earned = stats.axp - currentRank.minAXP;
-                const percent = Math.min((earned / totalNeeded) * 100, 100);
-
-                document.getElementById('axp-progress-fill').style.width = `${percent}%`;
-                document.getElementById('nextRankStatus').textContent = `${(nextRank.minAXP - stats.axp).toLocaleString()} AXP until ${nextRank.name}`;
+                const range = nextRank.minAXP - currentRank.minAXP;
+                const progress = stats.axp - currentRank.minAXP;
+                const percent = Math.min((progress / range) * 100, 100);
+                document.getElementById('axp-progress-fill').style.width = percent + '%';
+                document.getElementById('nextRankStatus').textContent = `${(nextRank.minAXP - stats.axp).toLocaleString()} AXP UNTIL ${nextRank.name.toUpperCase()}`;
             } else {
-                document.getElementById('axp-progress-fill').style.width = `100%`;
-                document.getElementById('nextRankStatus').textContent = `Maximum Rank Achieved!`;
+                document.getElementById('axp-progress-fill').style.width = '100%';
+                document.getElementById('nextRankStatus').textContent = 'MAXIMUM TIER REACHED';
             }
         }
     </script>

@@ -4,98 +4,231 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Support • XP ARENA</title>
-    <meta name="description"
-        content="Support XP ARENA and help us fund weekly tournaments and community events. Become a backer today.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <title>Neural Fund • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .support-hero {
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+            background: radial-gradient(circle at center, rgba(0, 245, 255, 0.05), transparent 70%);
+        }
+
+        .support-hero h1 {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            line-height: 0.9;
+        }
+
+        .support-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        /* Payment Nodes */
+        .payment-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .payment-node {
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s var(--transition);
+            cursor: pointer;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .payment-node:hover {
+            border-color: var(--photon);
+            background: rgba(0, 245, 255, 0.05);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 245, 255, 0.1);
+        }
+
+        .node-alias {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--stardust-muted);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .node-address {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.4rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        /* Backer Tiers */
+        .tier-card {
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .tier-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tier-icon {
+            font-size: 1.5rem;
+        }
+
+        .tier-label {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 1px;
+        }
+
+        .backer-net {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .backer-tag {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--stardust);
+            font-weight: 700;
+        }
+
+        .tier-gold .tier-label {
+            color: #ffd700;
+        }
+
+        .tier-gold .tier-icon {
+            color: #ffd700;
+        }
+
+        .tier-gold {
+            border-top: 4px solid #ffd700;
+        }
+
+        .tier-silver .tier-label {
+            color: #c0c0c0;
+        }
+
+        .tier-silver .tier-icon {
+            color: #c0c0c0;
+        }
+
+        .tier-silver {
+            border-top: 4px solid #c0c0c0;
+        }
+
+        .tier-bronze .tier-label {
+            color: #cd7f32;
+        }
+
+        .tier-bronze .tier-icon {
+            color: #cd7f32;
+        }
+
+        .tier-bronze {
+            border-top: 4px solid #cd7f32;
+        }
+    </style>
 </head>
 
-<body class="fade-in">
+<body class="page-rebirth">
+    <div class="support-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Infrastructure
+            Sustainment</span>
+        <h1 class="clash">NEURAL<br><span class="text-photon">FUND</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 500px; margin: 2rem auto 0; font-size: 1.1rem;">
+            Power the Arena. Your contributions fuel weekly tournaments, server maintenance, and elite hardware
+            research.
+        </p>
+    </div>
 
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
-
-    <main class="main-content-area">
-        <div class="container">
-            <div class="page-header" data-parallax="8">
-                <h1 class="text-neon">Support XP ARENA</h1>
-                <p>Help us keep the servers running and tournaments funded.</p>
+    <div class="support-section">
+        <div class="payment-matrix">
+            <div class="payment-node">
+                <span class="node-alias">NETWORK (WHATSAPP)</span>
+                <span class="node-address">09082625708</span>
             </div>
 
-            <div class="payment-grid">
-                <div class="payment-card">
-                    <span class="payment-label">WHATSAPP</span>
-                    <span class="payment-val">09082625708</span>
-                </div>
-                <div class="payment-card"
-                    onclick="if(window.Toast) Toast.show('Redirecting to Paystack...', 'info'); setTimeout(() => window.open('https://paystack.com/pay/xparena', '_blank'), 1500);"
-                    style="cursor: pointer;">
-                    <span class="payment-label">PAYSTACK</span>
-                    <span class="payment-val" style="color: var(--accent);">Donate via Paystack &rarr;</span>
-                </div>
-                <div class="payment-card">
-                    <span class="payment-label">OPAY</span>
-                    <span class="payment-val">7045003128</span>
-                </div>
+            <div class="payment-node" onclick="window.open('https://paystack.com/pay/xparena', '_blank')">
+                <span class="node-alias">GATEWAY (PAYSTACK)</span>
+                <span class="node-address text-photon">OPEN LINK &rarr;</span>
             </div>
 
-            <div class="form-card">
-                <h2 style="margin-bottom: 2rem; text-align: center; color: white;">Community Backers</h2>
-
-                <div class="backer-tier tier-gold">
-                    <div class="tier-title">👑 GOLD SUPPORTERS</div>
-                    <div class="backer-list">
-                        <span class="backer-badge"><i class="fas fa-crown"></i> Mystic_Shot</span>
-                        <span class="backer-badge"><i class="fas fa-crown"></i> ApexPredator</span>
-                    </div>
-                </div>
-
-                <div class="backer-tier tier-silver">
-                    <div class="tier-title">⚔️ SILVER SUPPORTERS</div>
-                    <div class="backer-list">
-                        <span class="backer-badge">AlphaWolf</span>
-                        <span class="backer-badge">SniperKing99</span>
-                        <span class="backer-badge">Neon_Ninja</span>
-                    </div>
-                </div>
-
-                <div class="backer-tier tier-bronze">
-                    <div class="tier-title">🛡️ BRONZE SUPPORTERS</div>
-                    <div class="backer-list">
-                        <span class="backer-badge">ShadowSlayer</span>
-                        <span class="backer-badge">ProGamer_XYZ</span>
-                        <span class="backer-badge">NoScope_God</span>
-                        <span class="backer-badge">GlitchBot</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="form-card" style="margin-top:1.5rem">
-                <h3 style="margin-bottom: 0.8rem;">Why your support matters</h3>
-                <ul style="color: var(--text-muted); line-height:1.8">
-                    <li>Weekly prize pools and tournaments</li>
-                    <li>New tools and device coverage</li>
-                    <li>Anti-cheat research and fair play</li>
-                </ul>
-                <div style="margin-top:1rem; display:flex; gap:10px; flex-wrap:wrap">
-                    <a href="help.html" class="btn-secondary" style="width:auto">Help & FAQ</a>
-                    <a href="contact.html" class="btn-secondary" style="width:auto">Contact Us</a>
-                </div>
+            <div class="payment-node">
+                <span class="node-alias">PROTOCOL (OPAY)</span>
+                <span class="node-address">7045003128</span>
             </div>
         </div>
-    </main>
 
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
+        <h2 class="clash" style="text-align: center; margin-bottom: 3rem; font-size: 2rem;">COMMUNITY <span
+                class="text-photon">BACKERS</span></h2>
 
+        <div class="pulse-card tier-card tier-gold">
+            <div class="tier-info">
+                <i class="fas fa-crown tier-icon"></i>
+                <span class="tier-label">SUPREME BACKERS</span>
+            </div>
+            <div class="backer-net">
+                <span class="backer-tag">Mystic_Shot</span>
+                <span class="backer-tag">ApexPredator</span>
+                <span class="backer-tag">Elite_Alpha</span>
+            </div>
+        </div>
+
+        <div class="pulse-card tier-card tier-silver">
+            <div class="tier-info">
+                <i class="fas fa-shield-alt tier-icon"></i>
+                <span class="tier-label">ELITE BACKERS</span>
+            </div>
+            <div class="backer-net">
+                <span class="backer-tag">AlphaWolf</span>
+                <span class="backer-tag">SniperKing99</span>
+                <span class="backer-tag">Neon_Ninja</span>
+            </div>
+        </div>
+
+        <div class="pulse-card tier-card tier-bronze">
+            <div class="tier-info">
+                <i class="fas fa-medal tier-icon"></i>
+                <span class="tier-label">CORE BACKERS</span>
+            </div>
+            <div class="backer-net">
+                <span class="backer-tag">ShadowSlayer</span>
+                <span class="backer-tag">ProGamer_XYZ</span>
+                <span class="backer-tag">NoScope_God</span>
+                <span class="backer-tag">GlitchBot</span>
+            </div>
+        </div>
+
+        <div class="pulse-card" style="margin-top: 5rem; padding: 3rem; text-align: center;">
+            <h3 class="clash" style="margin-bottom: 1.5rem;">WHY SUSTAIN XP ARENA?</h3>
+            <ul
+                style="color: var(--stardust-muted); list-style: none; padding: 0; display: grid; gap: 1rem; font-size: 0.95rem;">
+                <li><i class="fas fa-check text-photon"></i> FUNDING WEEKLY PRIZE POOLS</li>
+                <li><i class="fas fa-check text-photon"></i> ADVANCED DEVICE LATENCY RESEARCH</li>
+                <li><i class="fas fa-check text-photon"></i> GLOBAL SERVER INFRASTRUCTURE</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
     <script>
         localStorage.setItem('xp_visited_support', 'true');
     </script>

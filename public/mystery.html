@@ -4,80 +4,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>??? • XP ARENA</title>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <title>Neural Anomaly • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            padding: 0;
+        :root {
+            --mystery-accent: #ff00ff;
+            --mystery-glow: rgba(255, 0, 255, 0.2);
+        }
+
+        body.page-mystery {
             background-color: #050505;
-            color: #0f0;
-            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
         }
 
-        .terminal-container {
+        .terminal-shell {
             width: 90%;
-            max-width: 800px;
-            height: 80vh;
-            background: rgba(0, 20, 0, 0.8);
-            border: 2px solid #0f0;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2), inset 0 0 20px rgba(0, 255, 0, 0.1);
-            padding: 2rem;
+            max-width: 900px;
+            height: 70vh;
+            padding: 3rem;
             position: relative;
+            background: rgba(10, 5, 10, 0.8);
+            border-color: var(--mystery-accent);
+            box-shadow: 0 0 40px var(--mystery-glow);
+            overflow: hidden;
+        }
+
+        .terminal-content {
+            height: 100%;
             overflow-y: auto;
-            position: relative;
-        }
-
-        .terminal-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(0deg,
-                    rgba(0, 0, 0, 0.15),
-                    rgba(0, 0, 0, 0.15) 1px,
-                    transparent 1px,
-                    transparent 2px);
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        .scanline {
-            width: 100%;
-            height: 100px;
-            z-index: 11;
-            position: absolute;
-            pointer-events: none;
-            background: linear-gradient(0deg, rgba(0, 255, 0, 0) 0%, rgba(0, 255, 0, 0.1) 50%, rgba(0, 255, 0, 0) 100%);
-            opacity: 0.1;
-            animation: scanline 6s linear infinite;
-        }
-
-        @keyframes scanline {
-            0% {
-                top: -100px;
-            }
-
-            100% {
-                top: 100%;
-            }
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--mystery-accent);
+            text-shadow: 0 0 5px var(--mystery-glow);
+            font-size: 1rem;
+            line-height: 1.6;
         }
 
         .output-line {
             margin-bottom: 0.5rem;
-            line-height: 1.4;
             opacity: 0;
-            animation: fadeIn 0.1s forwards;
+            animation: fadeIn 0.3s forwards;
         }
 
         @keyframes fadeIn {
@@ -88,122 +58,82 @@
 
         .input-line {
             display: flex;
-            align-items: center;
-            margin-top: 1rem;
+            gap: 15px;
+            margin-top: 1.5rem;
         }
 
         .prompt {
-            margin-right: 10px;
             color: #fff;
+            opacity: 0.7;
         }
 
-        input {
+        .cmd-input {
             background: transparent;
             border: none;
-            color: #0f0;
+            color: var(--mystery-accent);
             font-family: inherit;
             font-size: 1rem;
             width: 100%;
             outline: none;
-            text-shadow: inherit;
         }
 
-        .blink {
-            animation: blinker 1s linear infinite;
-        }
-
-        @keyframes blinker {
-            50% {
-                opacity: 0;
-            }
-        }
-
-        .glitch-text {
-            animation: textGlitch 2s infinite;
-        }
-
-        @keyframes textGlitch {
-            0% {
-                text-shadow: 0 0 5px #0f0;
-            }
-
-            95% {
-                text-shadow: 0 0 5px #0f0;
-                transform: translate(0);
-            }
-
-            96% {
-                text-shadow: -2px 0 red, 2px 0 blue;
-                transform: translate(-2px, 1px);
-            }
-
-            97% {
-                text-shadow: 2px 0 red, -2px 0 blue;
-                transform: translate(2px, -1px);
-            }
-
-            98% {
-                text-shadow: 0 0 5px #0f0;
-                transform: translate(0);
-            }
-
-            100% {
-                text-shadow: 0 0 5px #0f0;
-            }
-        }
-
-        .reward-container {
+        .reward-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
             display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
             text-align: center;
-            margin-top: 2rem;
-            border: 1px dashed #0f0;
             padding: 2rem;
-            background: rgba(0, 255, 0, 0.05);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-return {
-            background: transparent;
-            border: 1px solid #0f0;
-            color: #0f0;
-            padding: 10px 20px;
-            font-family: inherit;
-            margin-top: 1rem;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s;
+        .reward-token {
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 0 0 20px var(--mystery-accent);
+            margin: 2rem 0;
+            font-family: 'Clash Display', sans-serif;
         }
 
-        .btn-return:hover {
-            background: #0f0;
-            color: #000;
-        }
-
-        #matrix-canvas {
+        .glitch-static {
             position: fixed;
             top: 0;
             left: 0;
-            z-index: -1;
-            opacity: 0.15;
-            display: none;
+            width: 100%;
+            height: 100%;
+            background: url('https://media.giphy.com/media/oEI9uWUicGk58pLRE7/giphy.gif');
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
         }
     </style>
 </head>
 
-<body>
-    <canvas id="matrix-canvas"></canvas>
-    <div class="scanline"></div>
-    <div class="terminal-container" id="terminal">
-        <div id="output"></div>
-        <div class="input-line" id="inputContainer" style="display: none;">
-            <span class="prompt">guest@xp-arena:~$</span>
-            <input type="text" id="cmdInput" autocomplete="off" autofocus>
+<body class="page-rebirth page-mystery">
+    <div class="glitch-static"></div>
+
+    <div class="pulse-card terminal-shell">
+        <div class="terminal-content" id="output">
+            <!-- Boot sequence injected by JS -->
         </div>
 
-        <div class="reward-container" id="reward">
-            <h2><i class="fas fa-unlock-alt blink"></i> ACCESS GRANTED</h2>
-            <p>Hidden protocol initiated. You have discovered the Secret Server.</p>
-            <div style="font-size: 2rem; margin: 1rem 0; color: #fff; text-shadow: 0 0 10px #0f0;">+500 AXP</div>
-            <button class="btn-return" onclick="window.location.href='profile.html'">Return to Profile</button>
+        <div class="input-line" id="inputContainer" style="display: none;">
+            <span class="prompt">areni@anomaly:~$</span>
+            <input type="text" id="cmdInput" class="cmd-input" autocomplete="off" autofocus>
+        </div>
+
+        <div class="reward-overlay" id="reward">
+            <h1 class="clash" style="color: var(--mystery-accent);">ANOMALY STABILIZED</h1>
+            <p style="color: var(--stardust-muted);">You have accessed a restricted neural sector.</p>
+            <div class="reward-token">+500 AXP</div>
+            <button class="btn-rebirth" style="border-color: var(--mystery-accent); color: #fff;"
+                onclick="window.location.href='profile.html'">
+                RETURN TO HUB
+            </button>
         </div>
     </div>
 
@@ -215,202 +145,90 @@
         const inputContainer = document.getElementById('inputContainer');
         const cmdInput = document.getElementById('cmdInput');
 
-        const today = new Date().toISOString().split('T')[0];
         const protocols = [
-            { type: 'DECRYPT', target: 'X-77', desc: 'KERNEL ENCRYPTION DETECTED', cmd: 'decrypt' },
-            { type: 'FIND', target: 'PIXEL-0', desc: 'HIDDEN FRAGMENT LOCATED', cmd: 'find' },
-            { type: 'BYPASS', target: 'FIREWALL', desc: 'SECURITY VULNERABILITY FOUND', cmd: 'bypass' }
+            { cmd: 'decrypt', target: 'X-77', desc: 'KERNEL ENCRYPTION DETECTED' },
+            { cmd: 'find', target: 'PIXEL-0', desc: 'HIDDEN FRAGMENT LOCATED' },
+            { cmd: 'bypass', target: 'VOID-WALL', desc: 'VULNERABILITY FOUND' }
         ];
-        const dayIdx = new Date().getDate() % protocols.length;
-        const currentProtocol = protocols[dayIdx];
+        const currentProto = protocols[new Date().getDate() % protocols.length];
 
         const bootSequence = [
-            "INITIATING SECURE CONNECTION...",
-            "BYPASSING FIREWALL... [SUCCESS]",
-            `XP ARENA MAINFRAME ACCESSED: ${today}`,
-            `WARNING: ${currentProtocol.desc}`,
-            `TYPE '${currentProtocol.cmd}' TO COMMENCE PROTOCOL ${currentProtocol.target}...`,
+            "> INITIALIZING NEURAL UPLINK...",
+            "> BYPASSING STANDARD AUTHENTICATION...",
+            "> ACCESSING RESTRICTED HIVE-MIND SECTOR...",
+            `> WARNING: ${currentProto.desc}`,
+            `> EXECUTE '${currentProto.cmd}' TO ENGAGE ${currentProto.target}...`,
             " "
         ];
 
         let delay = 0;
-        bootSequence.forEach((line, index) => {
+        bootSequence.forEach((line, i) => {
             setTimeout(() => {
                 const div = document.createElement('div');
                 div.className = 'output-line';
-                if (line.includes('WARNING')) div.style.color = '#ff4d4d';
                 div.textContent = line;
                 output.appendChild(div);
-
-                if (index === bootSequence.length - 1) {
+                if (i === bootSequence.length - 1) {
                     inputContainer.style.display = 'flex';
                     cmdInput.focus();
                 }
             }, delay);
-            delay += 800; // 800ms per line
+            delay += 600;
         });
 
-        cmdInput.addEventListener('keypress', function (e) {
+        cmdInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                const val = this.value.trim().toLowerCase();
-                if (window.Sounds) Sounds.play('mystery');
-
+                const val = cmdInput.value.trim().toLowerCase();
                 const div = document.createElement('div');
                 div.className = 'output-line';
-                div.textContent = `guest@xp-arena:~$ ${this.value}`;
+                div.textContent = `areni@anomaly:~$ ${cmdInput.value}`;
                 output.appendChild(div);
-                this.value = '';
+                cmdInput.value = '';
 
-                processCommand(val);
-                terminal.scrollTop = terminal.scrollHeight;
+                if (val === currentProto.cmd) {
+                    triggerSuccess();
+                } else if (val === 'help') {
+                    out("VOLATILE COMMANDS: help, ls, clear, whoami, system, " + currentProto.cmd);
+                } else if (val === 'ls') {
+                    out("root/  etc/  vault/  anomaly_logs/  secret_data/");
+                } else if (val === 'clear') {
+                    output.innerHTML = '';
+                } else if (val === 'whoami') {
+                    out(`IDENTITY: ${Auth.isLoggedIn() ? Auth.getCurrentUser().username : 'GHOST_ARENI'}`);
+                } else if (val === 'system') {
+                    out("OS: REBIRTH_KERNEL v0.9.9");
+                    out("CPU: NEURAL_CHIPSET_8080");
+                    out("LOC: UNDEFINED_SECTOR");
+                } else {
+                    out(`UNRECOGNIZED SIGNAL: ${val}`, '#ff4444');
+                }
+                output.scrollTop = output.scrollHeight;
             }
         });
 
-        function processCommand(cmd) {
-            const out = (text, color = '#0f0') => {
-                const d = document.createElement('div');
-                d.className = 'output-line';
-                d.style.color = color;
-                d.textContent = text;
-                output.appendChild(d);
-            };
-
-            if (cmd === 'hack') {
-                inputContainer.style.display = 'none';
-                executeHack();
-            } else if (cmd === 'help') {
-                out("AVAILABLE COMMANDS:");
-                out("  help     - Show this help menu");
-                out("  ls       - List directory contents");
-                out("  whoami   - Display current session info");
-                out("  clear    - Clear the terminal");
-                out("  matrix   - Initiate Neural-Link visualizer");
-                out("  system   - Kernel information");
-                out("  lore     - Access ancient archives");
-                out("  origin   - Source of AXP energy");
-                out("  " + currentProtocol.cmd + "    - Execute protocol " + currentProtocol.target);
-            } else if (cmd === 'ls') {
-                out("bin/  etc/  home/  logs/  secrets/  usr/  archives/");
-            } else if (cmd === 'whoami') {
-                const user = Auth.isLoggedIn() ? Auth.getCurrentUser().username : "Guest";
-                out(`USER: ${user}`);
-                out(`UID: ${Auth.isLoggedIn() ? Auth.getCurrentUser().id : '0000'}`);
-                out(`ACCESS_LEVEL: ${Auth.isLoggedIn() ? 'ARENI_VERIFIED' : 'GUEST_RESTRICTED'}`);
-            } else if (cmd === 'clear') {
-                output.innerHTML = '';
-            } else if (cmd === 'system') {
-                out("XP ARENA OS v4.0.2-STABLE");
-                out("CPU: Neural-Cortex i9-9900K (Quantum-Clocked)");
-                out("MEM: 512TB Virtual-RAM (L3 cache: 128GB)");
-                out("STORAGE: Petabit SSD (Encrypted)");
-                out("UPTIME: 1,337 days 04:20:00");
-                out("LOCATION: Segment 0, TiDB Hive-Mind");
-            } else if (cmd === 'lore') {
-                out("ACCESSING ARCHIVES...", "#0f0");
-                setTimeout(() => {
-                    out(">>> The Areni were not born of code, but of precision.");
-                    out(">>> Centuries ago, in the Great Ping, the first masters discovered");
-                    out(">>> the flow of the Red Zone. We are their descendants.");
-                    out(">>> We hunt the headshot; we live for the recoil.");
-                }, 500);
-            } else if (cmd === 'origin') {
-                out("AXP: ARENA EXPERIENCE POINTS", "#0f0");
-                setTimeout(() => {
-                    out(">>> AXP is the crystallized essence of victory energy.");
-                    out(">>> Synthesized from the heat of battle and the spark of skill.");
-                    out(">>> It powers the Arena, fueling the evolution of the elite.");
-                }, 500);
-            } else if (cmd === 'matrix') {
-                out("MATRIX INITIALIZED.", "#0f0");
-                startMatrix();
-            } else if (cmd !== '') {
-                out(`Command not found: ${cmd}`, '#ff4d4d');
-            }
+        function out(text, color) {
+            const d = document.createElement('div');
+            d.className = 'output-line';
+            if (color) d.style.color = color;
+            d.textContent = "> " + text;
+            output.appendChild(d);
         }
 
-        function startMatrix() {
-            const canvas = document.getElementById('matrix-canvas');
-            canvas.style.display = 'block';
-            const ctx = canvas.getContext('2d');
-            const W = canvas.width = window.innerWidth;
-            const H = canvas.height = window.innerHeight;
-            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$+-*/=%\"'#&_(),.;:?!\\|{}<>[]^~";
-            const fontSize = 16;
-            const columns = W / fontSize;
-            const drops = Array(Math.floor(columns)).fill(1);
-
-            function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-                ctx.fillRect(0, 0, W, H);
-                ctx.fillStyle = '#0f0';
-                ctx.font = fontSize + 'px Share Tech Mono';
-                for (let i = 0; i < drops.length; i++) {
-                    const text = chars[Math.floor(Math.random() * chars.length)];
-                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                    if (drops[i] * fontSize > H && Math.random() > 0.975) drops[i] = 0;
-                    drops[i]++;
+        async function triggerSuccess() {
+            out("ENGAGING PROTOCOL...", '#ff00ff');
+            setTimeout(async () => {
+                document.getElementById('reward').style.display = 'flex';
+                if (Auth.isLoggedIn()) {
+                    try {
+                        const res = await fetch('/api/user/daily-protocol', {
+                            method: 'POST',
+                            headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
+                        });
+                        const data = await res.json();
+                    } catch (e) { }
                 }
-            }
-            setInterval(draw, 33);
+            }, 1000);
         }
-
-        function executeProtocol(proto) {
-            const lines = [
-                `INITIATING ${proto.type} SEQUENCE...`,
-                `TARGETING ${proto.target}...`,
-                "CONNECTING TO TI-DB CLOUD NODE...",
-                "SCRAMBLING IP ADDRESS... [PROTECTED]",
-                "10%... 45%... 89%... 100%",
-                "PROTOCOL SUCCESSFUL.",
-                "REWARD UPLINK STABILIZED."
-            ];
-
-            let hDelay = 0;
-            lines.forEach((line, index) => {
-                setTimeout(() => {
-                    const div = document.createElement('div');
-                    div.className = 'output-line glitch-text';
-                    div.textContent = line;
-                    output.appendChild(div);
-
-                    if (index === lines.length - 1) {
-                        setTimeout(showReward, 1000);
-                    }
-                }, hDelay);
-                hDelay += 600;
-            });
-        }
-
-        async function showReward() {
-            const rewardDiv = document.getElementById('reward');
-            rewardDiv.style.display = 'block';
-
-            // Secure AXP claim via backend API
-            if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
-                try {
-                    const res = await fetch((window.API_URL || '') + '/api/user/daily-protocol', {
-                        method: 'POST',
-                        headers: { 'Authorization': 'Bearer ' + Auth.getToken() }
-                    });
-                    const data = await res.json();
-                    if (res.ok) {
-                        if (typeof User !== 'undefined') {
-                            User.addAXPLocally(data.axp, 'Secret Protocol Executed');
-                            localStorage.setItem('xp_mystery_protocol', new Date().toISOString().split('T')[0]);
-                        }
-                    } else {
-                        console.log('Easter egg reward error or already claimed:', data.error);
-                    }
-                } catch (e) {
-                    console.error('Failed to claim easter egg:', e);
-                }
-            }
-        }
-
-        // Keep focus
-        document.addEventListener('click', () => {
-            if (inputContainer.style.display !== 'none') cmdInput.focus();
-        });
     </script>
 </body>
 

@@ -4,208 +4,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Daily Rewards – XP Arena</title>
-    <link rel="stylesheet" href="css/main.css">
+    <title>Neural Sync • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .daily-hero {
+            padding: 10rem 2rem 5rem;
+            text-align: center;
+            background: radial-gradient(circle at top right, var(--primary-glow), transparent 70%);
+            transition: background 0.5s ease;
+        }
+
+        .daily-hero h1 {
+            font-size: clamp(3rem, 10vw, 5.5rem);
+            line-height: 0.9;
+        }
+
+        .daily-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        /* Stats Grid */
+        .sync-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .sync-node {
+            padding: 3rem 2rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .sync-node i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+
+        .node-val {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .node-label {
+            font-size: 0.7rem;
+            color: var(--stardust-muted);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: 900;
+        }
+
+        /* Login Grid */
+        .supply-drop {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1.2rem;
+            margin-bottom: 5rem;
+        }
+
+        .drop-node {
+            padding: 2.5rem 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.2rem;
+            opacity: 0.4;
+            transition: all 0.4s var(--transition);
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .drop-node.claimed {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--primary);
+            box-shadow: inset 0 0 20px var(--primary-glow);
+        }
+
+        .drop-node.claimed i {
+            color: var(--primary);
+        }
+
+        .drop-node.current {
+            opacity: 1;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--primary-glow);
+            z-index: 5;
+        }
+
+        .drop-node.current::after {
+            content: 'READY';
+            position: absolute;
+            top: 10px;
+            font-size: 0.5rem;
+            letter-spacing: 2px;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .day-label {
+            font-size: 0.7rem;
+            font-weight: 900;
+            color: var(--stardust-muted);
+            letter-spacing: 1.5px;
+        }
+
+        .reward-label {
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
 
-<body class="fade-in">
+<body class="page-rebirth">
+    <div class="daily-hero">
+        <span class="section-label" style="letter-spacing: 0.6rem; margin-bottom: 2rem;">Uplink Synchronization
+            Protocol</span>
+        <h1 class="clash">SYNC<br><span class="text-photon">TERMINAL</span></h1>
+        <p
+            style="color: var(--stardust-muted); max-width: 550px; margin: 2rem auto 0; font-size: 1.1rem; line-height: 1.7; font-weight: 500;">
+            Maintain your daily synchronization to earn premium <span class="text-photon"
+                style="font-weight: 800;">AXP</span> and secure your tier in the global grid hierarchy.
+        </p>
+    </div>
 
-    <nav class="navbar"></nav>
-
-    <main class="main-content-area auth-page-wrapper">
-        <section class="auth-card-premium" style="max-width: 800px;">
-            <div class="auth-header" style="margin-bottom: 1.5rem;">
-                <div class="auth-badge">Daily Protocol</div>
-                <h1 class="text-neon">COMMAND DASHBOARD</h1>
-                <p>Maintain your daily synchronization to earn premium AXP and Clan bonuses.</p>
+    <div class="daily-section">
+        <div class="sync-matrix">
+            <div class="pulse-card sync-node">
+                <i class="fas fa-fire" style="color: #ff4444;"></i>
+                <div class="node-val" id="dashStreak">0</div>
+                <div class="node-label">SYNCHRONIZED STREAK</div>
             </div>
-
-            <div class="dash-grid-stats">
-                <div class="glass-card"
-                    style="text-align: center; padding: 1.5rem; background: rgba(0, 229, 255, 0.05); border-color: var(--accent);">
-                    <i class="fas fa-fire"
-                        style="color: var(--accent); font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px var(--accent-glow);"></i>
-                    <h3 id="dashStreak" style="margin:0; font-size: 2rem; color: #fff;">0 <span
-                            style="font-size: 1rem; color: var(--text-muted);">DAYS</span></h3>
-                    <p
-                        style="color: var(--accent); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
-                        ACTIVE STREAK</p>
-                </div>
-                <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                    <i class="fas fa-star"
-                        style="color: #ffcc00; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(255,204,0,0.5);"></i>
-                    <h3 id="dashAXP" style="margin:0; font-size: 2rem; color: #fff;">0</h3>
-                    <p
-                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
-                        TOTAL AXP</p>
-                </div>
-                <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                    <i class="fas fa-gift"
-                        style="color: #bf00ff; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(191,0,255,0.5);"></i>
-                    <h3 id="dashNextReward" style="margin:0; font-size: 2rem; color: #fff;">--</h3>
-                    <p
-                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
-                        NEXT MISSION</p>
-                </div>
-                <div class="glass-card" style="text-align: center; padding: 1.5rem;">
-                    <i class="fas fa-chart-line"
-                        style="color: #00ff88; font-size: 2.5rem; margin-bottom: 1rem; text-shadow: 0 0 15px rgba(0,255,136,0.3);"></i>
-                    <h3 id="dashRankXP" style="margin:0; font-size: 2rem; color: #fff;">0</h3>
-                    <p
-                        style="color: var(--text-muted); font-size: 0.8rem; margin: 5px 0 0; font-weight: 800; letter-spacing: 1px;">
-                        RANK XP</p>
-                </div>
+            <div class="pulse-card sync-node">
+                <i class="fas fa-microchip" style="color: var(--primary);"></i>
+                <div class="node-val" id="dashAXP">0</div>
+                <div class="node-label">ACCUMULATED AXP</div>
             </div>
-
-            <style>
-                .dash-grid-stats {
-                    display: grid;
-                    grid-template-columns: repeat(2, 1fr);
-                    gap: 1rem;
-                    margin-bottom: 2.5rem;
-                }
-
-                @media (min-width: 768px) {
-                    .dash-grid-stats {
-                        grid-template-columns: repeat(4, 1fr);
-                    }
-                }
-            </style>
-
-            <h3
-                style="margin-bottom: 1rem; color: #fff; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">
-                7-Day Supply Drop</h3>
-            <div class="login-grid" id="loginGrid"
-                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 1rem; margin-bottom: 2.5rem;">
-                <!-- Days injected by daily-login.js -->
+            <div class="pulse-card sync-node">
+                <i class="fas fa-shuttle-van" style="color: var(--corona);"></i>
+                <div class="node-val" id="dashNextReward">--</div>
+                <div class="node-label">NEXT SUPPLY DROP</div>
             </div>
-
-            <div style="text-align:center;">
-                <button id="claimBtn" class="btn-auth-premium" style="width:auto; padding: 1.2rem 4rem;" disabled>
-                    <span class="btn-text">CLAIM TODAY'S REWARD</span>
-                    <span class="btn-glow"></span>
-                </button>
-                <div id="streakNote" style="margin-top: 0.8rem; font-size:0.8rem; color: var(--text-muted);"></div>
-                <div id="nextBonus" style="margin-top: 0.3rem; font-size:0.75rem; color: var(--accent); font-weight:800;"></div>
-            </div>
-        </section>
         </div>
 
-        <nav class="bottom-nav"></nav>
+        <h2 class="clash" style="text-align: center; margin-bottom: 4rem; font-size: 2.2rem; letter-spacing: 0.2rem;">
+            7-DAY <span class="text-photon">NEURAL DROP</span></h2>
 
-        <script src="js/auth.js"></script>
-        <script src="js/user.js"></script>
-        <script src="js/layout.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                if (typeof Auth !== 'undefined' && !Auth.isLoggedIn()) {
-                    location.href = 'login.html';
-                    return;
+        <div class="supply-drop" id="loginGrid">
+            <!-- Injected by JS -->
+        </div>
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <button id="claimBtn" class="btn-rebirth btn-photon"
+                style="padding: 1.8rem 6rem; font-size: 1.1rem; font-weight: 800; letter-spacing: 2px;" disabled>
+                CLAIM DAILY REWARDS
+            </button>
+            <div id="streakNote"
+                style="margin-top: 2.5rem; font-size: 0.9rem; color: #ff4444; font-weight: 800; letter-spacing: 1px;">
+            </div>
+            <div id="nextBonus"
+                style="margin-top: 1rem; font-size: 0.8rem; color: var(--stardust-muted); letter-spacing: 2px; font-weight: 700;">
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!Auth.isLoggedIn()) {
+                location.href = 'login.html';
+                return;
+            }
+
+            const rewards = [
+                { day: 1, reward: '50 AXP', icon: 'fa-cube' },
+                { day: 2, reward: '75 AXP', icon: 'fa-bolt' },
+                { day: 3, reward: '100 AXP', icon: 'fa-microchip' },
+                { day: 4, reward: '125 AXP', icon: 'fa-satellite' },
+                { day: 5, reward: '150 AXP', icon: 'fa-brain' },
+                { day: 6, reward: '200 AXP', icon: 'fa-star' },
+                { day: 7, reward: '500 AXP', icon: 'fa-trophy' }
+            ];
+
+            const grid = document.getElementById('loginGrid');
+            const claimBtn = document.getElementById('claimBtn');
+
+            function renderGrid() {
+                const stats = User.getStats();
+                const today = new Date().toDateString();
+                let streak = stats.streak || 0;
+
+                if (stats.lastLogin) {
+                    const lastDate = new Date(stats.lastLogin);
+                    const diffDays = Math.floor((new Date().setHours(0, 0, 0, 0) - new Date(lastDate).setHours(0, 0, 0, 0)) / 86400000);
+                    if (diffDays > 1) streak = 0;
                 }
 
-                const rewards = [
-                    { day: 1, reward: '50 AXP', icon: 'fa-box' },
-                    { day: 2, reward: '75 AXP', icon: 'fa-bolt' },
-                    { day: 3, reward: '100 AXP', icon: 'fa-shield-alt' },
-                    { day: 4, reward: '125 AXP', icon: 'fa-crown' },
-                    { day: 5, reward: '150 AXP', icon: 'fa-gem' },
-                    { day: 6, reward: '200 AXP', icon: 'fa-star' },
-                    { day: 7, reward: '500 AXP', icon: 'fa-trophy' }
-                ];
+                let canClaim = true;
+                if (stats.lastLogin) {
+                    const lastLoginDate = new Date(stats.lastLogin).toDateString();
+                    canClaim = lastLoginDate !== today;
+                }
 
-                const grid = document.getElementById('loginGrid');
-                const claimBtn = document.getElementById('claimBtn');
-                function renderGrid() {
-                    const stats = User.getStats();
-                    const today = new Date().toDateString();
-                    let streak = stats.streak || 0;
-                    let missedReset = false;
-                    if (stats.lastLogin) {
-                        const lastDate = new Date(stats.lastLogin);
-                        const diffDays = Math.floor((new Date().setHours(0,0,0,0) - new Date(lastDate).setHours(0,0,0,0)) / 86400000);
-                        if (diffDays > 1) {
-                            missedReset = true;
-                            streak = 0;
-                        }
-                    }
+                document.getElementById('dashStreak').textContent = streak;
+                document.getElementById('dashAXP').textContent = Number(stats.axp || 0).toLocaleString();
 
-                    let canClaim = true; // Assume can claim by default
-                    if (stats.lastLogin) {
-                        const lastLoginDate = new Date(stats.lastLogin).toDateString(); // Convert stored timestamp/date string to date string
-                        canClaim = lastLoginDate !== today;
-                    }
+                const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);
+                document.getElementById('dashNextReward').textContent = rewards[nextDayIdx || 0].reward;
 
-                    document.getElementById('dashStreak').innerHTML = `${streak} <span style="font-size: 1rem; color: var(--text-muted);">DAYS</span>`;
-                    document.getElementById('dashAXP').textContent = Number(stats.axp || 0).toLocaleString();
-                    document.getElementById('dashRankXP').textContent = Number(stats.axp % 500).toLocaleString();
-                    const noteEl = document.getElementById('streakNote');
-                    if (noteEl) {
-                        noteEl.textContent = missedReset ? 'You missed a day — streak resets on next claim.' : '';
-                    }
-                    const bonusEl = document.getElementById('nextBonus');
-                    if (bonusEl) {
-                        const nextDay = (streak % 7) + 1;
-                        if (nextDay === 7) bonusEl.textContent = 'Next bonus: Day 7 — 2× AXP';
-                        else bonusEl.textContent = `Next up: Day ${nextDay} reward ${rewards[(nextDay-1)].reward}`;
-                    }
+                grid.innerHTML = rewards.map((r, i) => {
+                    let status = '';
+                    const dayNum = i + 1;
+                    const effectiveDay = ((streak % 7) || 7);
 
-                    const nextDayIdx = canClaim ? (streak % 7) : ((streak + 1) % 7);
-                    document.getElementById('dashNextReward').textContent = `${rewards[nextDayIdx || 0].reward}`;
+                    // Day Logic refactor for clarity
+                    const cycleDay = (streak % 7) + 1;
+                    if (i < (cycleDay - 1)) status = 'claimed';
+                    else if (i === (cycleDay - 1)) status = canClaim ? 'current' : 'claimed';
 
-                    grid.innerHTML = rewards.map((r, i) => {
-                        let statusClass = '';
-                        const dayIdx = i + 1;
-
-                        if (dayIdx <= streak && !canClaim) statusClass = 'claimed';
-                        else if (dayIdx === (canClaim ? streak + 1 : streak)) statusClass = 'current';
-                        else if (dayIdx > (canClaim ? streak + 1 : streak)) statusClass = '';
-
-                        // Overflow handling: if streak > 7, wrap back
-                        const effectiveDay = ((streak % 7) || 7);
-                        if (dayIdx < effectiveDay) statusClass = 'claimed';
-                        if (dayIdx === effectiveDay && !canClaim) statusClass = 'claimed';
-                        if (dayIdx === (canClaim ? effectiveDay : -1)) statusClass = 'current';
-
-                        return `
-                        <div class="login-day ${statusClass}">
-                            <span class="day-num">Day ${r.day}</span>
-                            <i class="fas ${r.icon} day-icon"></i>
-                            <span class="day-reward">${r.reward}</span>
+                    return `
+                        <div class="pulse-card drop-node ${status}">
+                            <span class="day-label">PHASE 0${r.day}</span>
+                            <i class="fas ${r.icon}" style="font-size: 2.2rem;"></i>
+                            <span class="reward-label">${r.reward}</span>
                         </div>
                     `;
-                    }).join('');
+                }).join('');
 
-                    if (canClaim) {
-                        claimBtn.disabled = false;
-                        claimBtn.textContent = "CLAIM TODAY'S REWARD";
-                    } else {
-                        claimBtn.disabled = true;
-                        claimBtn.textContent = "REWARD CLAIMED";
-                        claimBtn.style.opacity = '0.5';
-                    }
-                }
-
-                claimBtn.addEventListener('click', async () => {
+                if (canClaim) {
+                    claimBtn.disabled = false;
+                    claimBtn.innerHTML = '<i class="fas fa-satellite-dish" style="margin-right: 12px;"></i> SYNC AND CLAIM';
+                } else {
                     claimBtn.disabled = true;
-                    claimBtn.textContent = "CLAIMING...";
-                    try {
-                        const res = await User.claimDailyLogin();
-                        if (res && res.success) {
-                            if (window.Toast) Toast.show('Daily reward claimed!', 'success');
-                            if (window.confetti) confetti();
-                        } else if (window.Toast) {
-                            Toast.show(res.message || 'Already claimed today', 'info');
-                        }
-                    } catch (e) {
-                        if (window.Toast) Toast.show('Network error', 'danger');
-                    }
-                    renderGrid();
-                });
+                    claimBtn.innerHTML = '<i class="fas fa-lock-alt" style="margin-right: 12px;"></i> SIGNAL SECURE';
+                    claimBtn.style.opacity = '0.4';
+                }
+            }
 
-                renderGrid();
+            claimBtn.addEventListener('click', async () => {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> TRANSMITTING...';
+                const res = await User.claimDailyLogin();
+                if (res && res.success) {
+                    if (window.confetti) confetti();
+                    renderGrid();
+                } else {
+                    renderGrid();
+                }
             });
-        </script>
+
+            renderGrid();
+        });
+    </script>
 </body>
 
 </html>

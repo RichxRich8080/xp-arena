@@ -4,33 +4,150 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Database • XP ARENA</title>
-    <link rel="stylesheet" href="css/main.css">
+    <title>Pro Intelligence • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .pro-hero {
+            padding: 10rem 2rem 6rem;
+            text-align: center;
+            background: radial-gradient(circle at bottom right, rgba(0, 245, 255, 0.05), transparent 60%);
+        }
+
+        .pro-hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            line-height: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .pro-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        /* Pro Matrix */
+        .pro-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .pro-intel-card {
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pro-intel-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle at top right, rgba(0, 245, 255, 0.05), transparent 70%);
+            pointer-events: none;
+        }
+
+        .pro-identity {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .pro-glyph {
+            width: 70px;
+            height: 70px;
+            background: var(--glass-highlight);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            border: 1px solid var(--glass-border);
+            color: var(--photon);
+            text-shadow: 0 0 10px var(--photon-glow);
+        }
+
+        .pro-details h3 {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pro-team {
+            color: var(--photon);
+            font-weight: 800;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .intel-block {
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .intel-tag {
+            font-size: 0.6rem;
+            color: var(--stardust-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .intel-val {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.1rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .pro-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .pro-matrix {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 
-<body class="fade-in">
-    <nav class="navbar"></nav>
+<body class="page-rebirth">
+    <div class="pro-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Vanguards of the Digital
+            Arena</span>
+        <h1 class="clash">PRO<br><span class="text-photon">INTELLIGENCE</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
+            Verified protocols from the world's most lethal Arenis. Synchronize your setup with the global elite.
+        </p>
+    </div>
 
-    <main class="main-content-area">
-        <div class="container" style="padding-top: 2rem;">
-            <div class="page-header" style="text-align:center; margin-bottom: 3rem;">
-                <h1 class="text-neon" style="font-size: 2.5rem; margin-bottom: 0.5rem;">PRO PLAYER DATABASE</h1>
-                <p style="color: var(--text-muted);">Verified settings from the world's top-tier Arenis and tournament
-                    champions.</p>
-            </div>
-
-            <div id="pro-grid" class="shop-grid">
-                <!-- Data from API -->
-                <div class="skeleton-card" style="height:250px;"></div>
-                <div class="skeleton-card" style="height:250px;"></div>
-                <div class="skeleton-card" style="height:250px;"></div>
-            </div>
+    <div class="pro-section">
+        <div id="pro-grid" class="pro-matrix">
+            <!-- Data from API -->
+            <div class="pulse-card pro-intel-card skeleton" style="height: 400px; opacity: 0.5;"></div>
+            <div class="pulse-card pro-intel-card skeleton" style="height: 400px; opacity: 0.5;"></div>
+            <div class="pulse-card pro-intel-card skeleton" style="height: 400px; opacity: 0.5;"></div>
         </div>
-    </main>
+    </div>
 
-    <nav class="bottom-nav"></nav>
-
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
@@ -42,63 +159,47 @@
                 const container = document.getElementById('pro-grid');
                 if (res.ok) {
                     container.innerHTML = data.map(p => `
-                        <div class="form-card pro-card">
-                            <div class="pro-header">
-                                <span class="pro-avatar">${p.avatar}</span>
-                                <div class="pro-info">
-                                    <h3 style="margin:0; color:#fff;">${p.name} <span class="v-badge vip-glow" title="Verified Pro">V</span></h3>
-                                    <p style="margin:0; font-size:0.8rem; color:var(--accent); font-weight:800;">${p.team}</p>
+                        <div class="pulse-card pro-intel-card">
+                            <div class="pro-identity">
+                                <div class="pro-glyph">${p.avatar}</div>
+                                <div class="pro-details">
+                                    <h3 class="clash">${p.name} <i class="fas fa-check-circle text-photon" style="font-size: 1rem;" title="Verified Pro"></i></h3>
+                                    <span class="pro-team">${p.team}</span>
                                 </div>
                             </div>
-                            <div class="pro-body" style="margin-top:1.5rem; padding:1rem; background:rgba(255,255,255,0.03); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
-                                <div style="font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px;">Sensitivity</div>
-                                <div style="font-weight:900; color:#fff;">${p.sensitivity}</div>
-                                <div style="margin-top:10px; font-size:0.7rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:5px;">Primary Device</div>
-                                <div style="font-size:0.9rem;">${p.device}</div>
+                            
+                            <div class="pro-stats-grid">
+                                <div class="intel-block">
+                                    <span class="intel-tag">SENSITIVITY</span>
+                                    <div class="intel-val">${p.sensitivity}</div>
+                                </div>
+                                <div class="intel-block">
+                                    <span class="intel-tag">DEVICE</span>
+                                    <div class="intel-val" style="font-size: 0.8rem;">${p.device}</div>
+                                </div>
                             </div>
-                            <button class="btn-primary" style="margin-top:1.5rem; font-size:0.8rem;" onclick="copyProSens('${p.name}', '${p.sensitivity}')">ADOPT SETTINGS</button>
+
+                            <button class="btn-rebirth btn-photon" style="margin-top: auto; justify-content: center;" onclick="copyProSens('${p.name}', '${p.sensitivity}')">
+                                <i class="fas fa-sync-alt"></i> SYNC PROTOCOL
+                            </button>
                         </div>
                     `).join('');
                 }
-            } catch (e) { console.error(e); }
+            } catch (e) {
+                console.error(e);
+                // Fallback UI if API is offline
+                container.innerHTML = `<p style="text-align: center; color: var(--stardust-muted); width: 100%;">INTELLIGENCE FEED DOWN: API UNREACHABLE</p>`;
+            }
         }
 
         function copyProSens(name, sens) {
-            navigator.clipboard.writeText(`PRO SETTINGS: ${name}\n${sens}`).then(() => {
-                if (window.Toast) Toast.show(`Adopted ${name}'s settings!`, 'success');
+            navigator.clipboard.writeText(`PRO PROTOCOL: ${name}\nSENS: ${sens}`).then(() => {
+                Toast.show(`${name}'s protocols synchronized.`, 'success');
             });
         }
 
         document.addEventListener('DOMContentLoaded', loadPros);
     </script>
-    <style>
-        .pro-card {
-            transition: transform 0.3s ease;
-        }
-
-        .pro-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent);
-        }
-
-        .pro-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .pro-avatar {
-            font-size: 2.5rem;
-            background: rgba(0, 229, 255, 0.1);
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            border: 1px solid var(--accent);
-        }
-    </style>
 </body>
 
 </html>

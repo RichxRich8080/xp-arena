@@ -4,171 +4,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Login • XP Arena</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap"
-        rel="stylesheet">
+    <title>Access • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         body {
-            background-color: var(--bg-darker);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            overflow-x: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background-color: var(--void);
+            background: radial-gradient(circle at top right, var(--primary-glow), transparent 70%),
+                var(--void);
+            color: var(--stardust);
+            font-family: 'Urbanist', sans-serif;
             min-height: 100vh;
-            font-family: 'Inter', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
         }
 
         .auth-container {
+            flex: 1;
             width: 100%;
             max-width: 420px;
             padding: 2rem;
-            position: relative;
+            display: flex;
+            align-items: center;
             z-index: 10;
         }
 
         .auth-card {
-            padding: 3.5rem 2.5rem;
+            padding: 4rem 3rem;
             text-align: center;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
         }
 
-        .brand {
-            margin-bottom: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand-logo {
-            width: 60px;
-            height: 60px;
-            background: rgba(var(--accent-rgb), 0.1);
-            border: 1px solid rgba(var(--accent-rgb), 0.2);
-            border-radius: 18px;
+        .brand-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--photon);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--accent);
-            font-size: 1.4rem;
-        }
-
-        .brand h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 900;
-            letter-spacing: -0.5px;
-            margin: 0;
-            color: #fff;
-        }
-
-        .auth-header {
-            margin-bottom: 2rem;
+            margin: 0 auto 2.5rem;
+            color: var(--photon);
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
         }
 
         .auth-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.7rem;
-            font-weight: 800;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
         .auth-header p {
-            color: var(--text-muted);
+            color: var(--stardust-muted);
             font-size: 0.9rem;
+            margin-bottom: 3rem;
+            font-weight: 500;
         }
 
-        .field {
+        .form-group {
             text-align: left;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
 
-        .field label {
+        .form-label {
             display: block;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-dim);
-            margin-bottom: 0.6rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--photon);
+            margin-bottom: 0.8rem;
+            font-weight: 900;
         }
 
-        .input-wrap {
+        .input-node {
             position: relative;
         }
 
-        .input-wrap i {
+        .input-node i {
             position: absolute;
             left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: var(--text-dim);
+            color: var(--stardust-muted);
             font-size: 0.9rem;
+            transition: color 0.3s;
         }
 
-        .input-wrap input {
+        .rebirth-input {
             width: 100%;
-            padding: 1rem 1rem 1rem 3rem;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-stroke);
-            border-radius: var(--radius);
-            color: #fff;
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            color: var(--stardust);
+            font-family: inherit;
             font-size: 1rem;
-            transition: var(--transition);
+            transition: all 0.4s;
         }
 
-        .input-wrap input:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--accent);
+        .rebirth-input:focus {
+            background: rgba(0, 245, 255, 0.03);
+            border-color: var(--photon);
             outline: none;
-            box-shadow: 0 0 0 4px rgba(var(--accent-rgb), 0.1);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
         }
 
-        .pw-toggle {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            cursor: pointer;
-        }
-
-        .auth-footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--glass-stroke);
-            font-size: 0.95rem;
-            color: var(--text-dim);
-        }
-
-        .auth-footer a {
-            color: var(--accent);
-            font-weight: 700;
-            text-decoration: none;
-        }
-
-        .bg-glow {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 60vw;
-            height: 60vw;
-            background: radial-gradient(circle, rgba(var(--accent-rgb), 0.04) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
+        .rebirth-input:focus+i {
+            color: var(--photon);
         }
 
         /* Cinematic Overlay */
-        .cinematic-overlay {
+        #cinematic {
             position: fixed;
             inset: 0;
             z-index: 10000;
-            background: var(--bg-darker);
+            background: var(--void);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -177,169 +132,210 @@
             text-align: center;
         }
 
-        .cinematic-overlay.active {
+        #cinematic.active {
             display: flex;
         }
 
         .cin-line {
-            font-family: 'Outfit', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            letter-spacing: 2px;
-            color: var(--accent);
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            letter-spacing: 0.4rem;
+            color: var(--photon);
             opacity: 0;
-            transform: translateY(10px);
-            transition: 0.5s;
+            transform: translateY(20px);
+            transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .cin-line.show {
             opacity: 1;
             transform: translateY(0);
         }
+
+        #cinProgress {
+            width: 250px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-top: 2rem;
+            position: relative;
+            opacity: 0;
+        }
+
+        #cinProgress.show {
+            opacity: 1;
+        }
+
+        #cinBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--photon);
+            box-shadow: 0 0 15px var(--photon-glow);
+            transition: width 2.5s linear;
+        }
+
+        @keyframes neuralRipple {
+            0% {
+                box-shadow: inset 0 0 0 0 var(--photon-glow);
+            }
+
+            50% {
+                box-shadow: inset 0 0 100px 20px var(--photon-glow);
+            }
+
+            100% {
+                box-shadow: inset 0 0 0 0 var(--photon-glow);
+            }
+        }
     </style>
 </head>
 
-<body>
-    <div class="bg-glow"></div>
-
-    <div class="cinematic-overlay" id="cinematic">
-        <div class="cin-line" id="cin1">IDENTITY VERIFIED</div>
-        <div class="cin-line" id="cin2">Syncing data matrix...</div>
-        <div class="cin-line" id="cin3">Entering the Arena</div>
+<body class="page-rebirth">
+    <div id="cinematic">
+        <div class="cin-line" id="cin1">IDENTITY SECURED</div>
+        <div class="cin-line" id="cin2">WELCOME BACK, ARENI</div>
+        <div class="cin-line" id="cin3" style="font-size: 1.2rem; margin-top: 1rem; color: var(--stardust-muted);">
+            DEPLOYING TO SECTOR 7</div>
+        <div id="cinProgress">
+            <div id="cinBar"></div>
+        </div>
+        <!-- Spark Particles Container -->
+        <div id="sparks-container" style="position: absolute; inset: 0; pointer-events: none;"></div>
     </div>
 
     <div class="auth-container">
-        <div class="auth-card glass-card">
-            <div class="brand">
-                <div class="brand-logo"><i class="fas fa-crosshairs"></i></div>
-                <h1>XP ARENA</h1>
-            </div>
+        <div class="pulse-card auth-card">
+            <div class="brand-icon"><i class="fas fa-microchip"></i></div>
 
-            <div class="auth-header">
-                <h2>Welcome Back</h2>
-                <p>Sync your progress and enter the arena</p>
-            </div>
+            <header class="auth-header">
+                <span class="section-label" style="letter-spacing: 0.4rem; margin-bottom: 2rem;">Security
+                    Interface</span>
+                <h1 class="clash" style="margin-bottom: 0.5rem;">ARENI<br><span class="text-photon">ACCESS</span></h1>
+                <p>Synchronize your neural credentials.</p>
+            </header>
 
             <div id="errorBox"
-                style="display:none; background:rgba(239, 68, 68, 0.1); border:1px solid var(--danger); padding:1rem; border-radius:12px; margin-bottom:1.5rem; color:var(--danger); font-size:0.9rem;">
+                style="display:none; background:rgba(255, 68, 68, 0.05); border:1px solid #ff4444; padding:1.2rem; border-radius:12px; margin-bottom:2rem; color:#ff4444; font-size:0.85rem; font-weight: 700; letter-spacing: 0.5px;">
             </div>
 
-            <form id="loginForm" autocomplete="on">
-                <div class="field">
-                    <label>Username</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-user"></i>
-                        <input type="text" id="username" placeholder="Areni Tag" required>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Areni Tag</label>
+                    <div class="input-node">
+                        <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
+                            autocomplete="username">
+                        <i class="fas fa-user-tag"></i>
                     </div>
                 </div>
 
-                <div class="field">
-                    <label>Security Key</label>
-                    <div class="input-wrap">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" id="password" placeholder="••••••••" required>
-                        <button type="button" class="pw-toggle" id="pwToggle"><i class="fas fa-eye-slash"></i></button>
+                <div class="form-group">
+                    <label class="form-label">Neural Key</label>
+                    <div class="input-node">
+                        <input type="password" id="password" class="rebirth-input" placeholder="••••••••" required
+                            autocomplete="current-password">
+                        <i class="fas fa-key"></i>
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin: 1.5rem 0;">
-                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                        <input type="checkbox" id="remember">
-                        <span style="font-size:0.85rem; color:var(--text-dim);">Keep me synced</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                    <label
+                        style="display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--stardust-muted); cursor: pointer; font-weight: 700;">
+                        <input type="checkbox" id="remember" style="accent-color: var(--photon);"> Persistent Sync
                     </label>
-                    <button type="button" onclick="showForgotModal()"
-                        style="color:var(--accent); font-weight:700; background:none; border:none; cursor:pointer; font-size:0.85rem;">Forgot
-                        Key?</button>
+                    <button type="button" onclick="window.location.href='forgot-password.html'"
+                        style="background: none; border: none; font-size: 0.8rem; font-weight: 800; cursor: pointer; color: var(--photon); letter-spacing: 1px;">KEY
+                        RECOVERY</button>
                 </div>
 
-                <button type="submit" class="btn-primary" id="loginBtn">LOG IN TO ARENA</button>
+                <button type="submit" id="loginBtn" class="btn-rebirth btn-photon"
+                    style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
+                    SYNC AND DEPLOY
+                </button>
             </form>
 
-            <div class="auth-footer">
-                New Areni? <a href="signup.html">Initialize account</a>
+            <div
+                style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--stardust-muted); font-weight: 700; letter-spacing: 1px;">
+                NEW OPERATIVE? <a href="signup.html" class="text-photon"
+                    style="text-decoration: none; font-weight: 900; margin-left: 5px;">INITIALIZE ACCESS</a>
             </div>
         </div>
     </div>
-    </main>
-    <nav class="bottom-nav"></nav>
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
+
+    <!-- Scripts -->
+    ,ReplacementContent:
     <script>
-        const pwToggle = document.getElementById('pwToggle');
-        const pwInput = document.getElementById('password');
-        pwToggle.addEventListener('click', () => {
-            const isHidden = pwInput.type === 'password';
-            pwInput.type = isHidden ? 'text' : 'password';
-            pwToggle.querySelector('i').className = isHidden ? 'fas fa-eye' : 'fas fa-eye-slash';
-        });
-        let pendingUsername = '';
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = document.getElementById('username').value.trim();
             const pass = document.getElementById('password').value;
             const btn = document.getElementById('loginBtn');
             const errBox = document.getElementById('errorBox');
+
             errBox.style.display = 'none';
             btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> SYNCING...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCHRONIZING...';
+
             const result = await Auth.login(user, pass);
             if (result.success) {
                 const cin = document.getElementById('cinematic');
+                const container = document.getElementById('sparks-container');
                 cin.classList.add('active');
-                ['cin1', 'cin2', 'cin3'].forEach((id, i) => setTimeout(() => document.getElementById(id).classList.add('show'), i * 600));
-                setTimeout(() => { document.getElementById('cinProgress').classList.add('show'); setTimeout(() => { document.getElementById('cinBar').style.width = '100%'; }, 100); }, 1200);
-                setTimeout(() => { window.location.href = 'profile.html'; }, 3000);
-            } else if (result.requires_verification) {
-                pendingUsername = user;
-                document.getElementById('verifyOverlay').classList.add('active');
-                document.querySelector('.code-input').focus();
-                btn.disabled = false; btn.innerHTML = 'CONTINUE TO ARENA';
+
+                // Generate Sparks
+                for (let i = 0; i < 30; i++) {
+                    const spark = document.createElement('div');
+                    spark.style.cssText = `
+                        position: absolute;
+                        width: 4px; height: 4px;
+                        background: var(--photon);
+                        box-shadow: 0 0 10px var(--photon-glow);
+                        border-radius: 50%;
+                        left: 50%; top: 50%;
+                        opacity: 0;
+                    `;
+                    container.appendChild(spark);
+
+                    const angle = Math.random() * Math.PI * 2;
+                    const velocity = 2 + Math.random() * 5;
+                    const tx = Math.cos(angle) * velocity * 50;
+                    const ty = Math.sin(angle) * velocity * 50;
+
+                    spark.animate([
+                        { transform: 'translate(0,0) scale(1)', opacity: 1 },
+                        { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                    ], {
+                        duration: 800 + Math.random() * 800,
+                        easing: 'cubic-bezier(0.1, 1, 0.3, 1)',
+                        delay: Math.random() * 500
+                    });
+                }
+
+                ['cin1', 'cin2', 'cin3'].forEach((id, i) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(id);
+                        if (el) el.classList.add('show');
+                        if (id === 'cin2') {
+                            document.body.style.animation = 'neuralRipple 1.5s ease-out';
+                        }
+                    }, i * 700);
+                });
+
+                setTimeout(() => {
+                    document.getElementById('cinProgress').classList.add('show');
+                    document.getElementById('cinBar').style.width = '100%';
+                }, 1400);
+
+                setTimeout(() => window.location.href = 'index.html', 4500);
             } else {
-                errBox.textContent = result.message || 'Login failed';
+                errBox.textContent = result.message || 'Synchronization failed. Check signal strength.';
                 errBox.style.display = 'block';
-                btn.disabled = false; btn.innerHTML = 'CONTINUE TO ARENA';
+                btn.disabled = false;
+                btn.innerHTML = 'RETRY SYNC';
             }
         });
-        const codeInputs = document.querySelectorAll('.code-input');
-        codeInputs.forEach((inp, i) => {
-            inp.addEventListener('input', () => { if (inp.value && i < codeInputs.length - 1) codeInputs[i + 1].focus(); });
-            inp.addEventListener('keydown', (e) => { if (e.key === 'Backspace' && !inp.value && i > 0) codeInputs[i - 1].focus(); });
-        });
-        document.getElementById('verifyBtn').addEventListener('click', async () => {
-            const code = Array.from(codeInputs).map(i => i.value).join('');
-            if (code.length < 6) return;
-            const vBtn = document.getElementById('verifyBtn');
-            vBtn.disabled = true; vBtn.innerHTML = 'VERIFYING...';
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/auth/verify-email', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: pendingUsername, code })
-                });
-                const data = await res.json();
-                if (res.ok && data.success) {
-                    localStorage.setItem('xp_token', data.token);
-                    localStorage.setItem('xp_current_user', JSON.stringify(data.user));
-                    window.location.href = 'profile.html';
-                } else throw new Error(data.error || 'Failed');
-            } catch (err) { document.getElementById('verifyErr').textContent = err.message; document.getElementById('verifyErr').style.display = 'block'; vBtn.disabled = false; vBtn.innerHTML = 'VERIFY & ENTER'; }
-        });
-        function showForgotModal() {
-            const modal = document.createElement('div');
-            modal.style.cssText = 'position:fixed;inset:0;z-index:80000;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.8);backdrop-filter:blur(8px)';
-            modal.innerHTML = `<div class="glass-card" style="padding:2rem;width:90%;max-width:380px;position:relative"><button onclick="this.parentElement.parentElement.remove()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:#fff;cursor:pointer"><i class="fas fa-times"></i></button><h3 style="font-family:'Outfit',sans-serif;font-weight:900;margin-bottom:1rem">Reset Password</h3><div class="field"><label>Username</label><div class="input-wrap"><i class="fas fa-user"></i><input type="text" id="rst-user" placeholder="Your username"></div></div><div class="field"><label>New Password</label><div class="input-wrap"><i class="fas fa-lock"></i><input type="password" id="rst-pass" placeholder="••••••••"></div></div><button id="rstBtn" class="btn-primary" style="margin-top:1rem;width:100%">RESET PASSWORD</button></div>`;
-            document.body.appendChild(modal);
-            document.getElementById('rstBtn').addEventListener('click', async () => {
-                const u = document.getElementById('rst-user').value; const p = document.getElementById('rst-pass').value; if (!u || !p) return;
-                const btn = document.getElementById('rstBtn'); btn.disabled = true; btn.innerHTML = 'RESETTING...';
-                try {
-                    const res = await fetch(`${window.API_URL || ''}/api/auth/reset`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: u, newPassword: p }) });
-                    if (res.ok) { btn.innerHTML = 'DONE!'; setTimeout(() => modal.remove(), 1500); }
-                    else { btn.innerHTML = 'FAILED'; setTimeout(() => { btn.disabled = false; btn.innerHTML = 'RESET PASSWORD'; }, 2000); }
-                } catch { btn.innerHTML = 'ERROR'; }
-            });
-        }
     </script>
 </body>
 

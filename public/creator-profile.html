@@ -5,145 +5,225 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Creator Profile • XP ARENA</title>
-    <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
+        .creator-hero {
+            position: relative;
+            padding: 12rem 2rem 5rem;
+            overflow: hidden;
+            background: radial-gradient(circle at top right, rgba(0, 245, 255, 0.05), transparent 70%);
+        }
+
         .creator-banner {
-            height: 300px;
-            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.8)), url('assets/images/gaming-bg.jpg');
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 350px;
             background-size: cover;
             background-position: center;
-            border-radius: 20px;
-            margin-bottom: -60px;
-            position: relative;
-            border: 1px solid var(--border);
+            opacity: 0.3;
+            mask-image: linear-gradient(to bottom, black 50%, transparent);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent);
         }
 
-        .creator-header {
+        .hero-cluster {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             align-items: flex-end;
-            gap: 20px;
-            padding: 0 40px;
+            gap: 3rem;
             position: relative;
-            z-index: 2;
+            z-index: 5;
         }
 
-        .creator-avatar {
-            width: 120px;
-            height: 120px;
-            background: #111;
-            border: 4px solid var(--accent);
-            border-radius: 50%;
+        .avatar-node {
+            width: 180px;
+            height: 180px;
+            border-radius: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3rem;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            font-size: 4rem;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--photon);
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
         }
 
-        .creator-info {
-            padding-bottom: 20px;
+        .info-node h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            margin-bottom: 0.5rem;
+            line-height: 1;
         }
 
-        .setup-grid {
+        .slug-tag {
+            font-size: 1rem;
+            color: var(--photon);
+            font-weight: 800;
+            letter-spacing: 2px;
+        }
+
+        .profile-grid {
+            max-width: 1200px;
+            margin: 4rem auto 10rem;
+            padding: 0 2rem;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: 350px 1fr;
+            gap: 3rem;
+        }
+
+        .bio-node {
+            padding: 2.5rem;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .social-matrix {
+            display: flex;
+            gap: 1rem;
             margin-top: 2rem;
         }
 
-        .setup-card {
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--stardust-muted);
             transition: all 0.3s;
+            border: 1px solid var(--glass-border);
         }
 
-        .setup-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-5px);
-            background: rgba(0, 229, 255, 0.05);
+        .social-link:hover {
+            color: var(--photon);
+            border-color: var(--photon);
+            transform: translateY(-3px);
+        }
+
+        .stats-strip {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .stat-label {
+            color: var(--stardust-muted);
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: var(--photon);
+            font-weight: 900;
+        }
+
+        .setup-matrix {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .config-node {
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.02);
+            transition: all 0.4s;
+        }
+
+        .config-node:hover {
+            background: rgba(0, 245, 255, 0.03);
+            border-color: var(--photon);
+        }
+
+        @media (max-width: 900px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-cluster {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
         }
     </style>
 </head>
 
-<body class="fade-in">
-    <nav class="navbar"></nav>
-    <main class="main-content-area">
-        <div class="container" style="max-width: 1100px;">
-
-            <div id="loadingProfile" style="text-align:center; padding: 5rem;">
-                <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--accent);"></i>
-                <p style="margin-top:1rem; color: var(--text-muted); letter-spacing: 2px;">SYNCHRONIZING PROFILE...</p>
+<body class="page-rebirth">
+    <div class="creator-hero">
+        <div class="creator-banner" id="pBanner"></div>
+        <div class="hero-cluster">
+            <div class="pulse-card avatar-node" id="pAvatar">👤</div>
+            <div class="info-node">
+                <span class="section-label" style="letter-spacing: 0.4rem; margin-bottom: 1rem;">Verified Creator</span>
+                <h1 class="clash" id="pUsername">ARENI</h1>
+                <div class="slug-tag" id="pSlug">@SLUG</div>
             </div>
-
-            <div id="profileContent" style="display:none;">
-                <div class="creator-banner" id="pBanner"></div>
-                <div class="creator-header">
-                    <div class="creator-avatar" id="pAvatar">👤</div>
-                    <div class="creator-info">
-                        <h1 id="pUsername"
-                            style="font-size: 2.5rem; font-weight: 900; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5);">
-                            ARENI</h1>
-                        <div id="pSlug" style="color: var(--accent); font-weight: 700; letter-spacing: 1px;">@slug</div>
-                    </div>
-                    <div style="margin-left: auto; padding-bottom: 25px;">
-                        <button class="btn-primary" style="width:auto; padding: 10px 25px;" onclick="followCreator()"><i
-                                class="fas fa-plus"></i> FOLLOW</button>
-                    </div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 300px 1fr; gap: 2rem; margin-top: 4rem;">
-                    <aside>
-                        <div class="glass-card">
-                            <div class="hud-corner hud-tl"></div>
-                            <div class="hud-corner hud-tr"></div>
-                            <div class="hud-corner hud-bl"></div>
-                            <div class="hud-corner hud-br"></div>
-                            <h3 style="font-size: 0.8rem; letter-spacing: 2px; color: var(--text-muted);">PERSONA BIO
-                            </h3>
-                            <p id="pBio" style="line-height: 1.6; margin-top: 10px;"></p>
-
-                            <div style="margin-top: 2rem; display: flex; gap: 1rem; font-size: 1.2rem;">
-                                <a id="sInstagram" href="#" style="color: var(--text-muted);"><i
-                                        class="fab fa-instagram"></i></a>
-                                <a id="sTikTok" href="#" style="color: var(--text-muted);"><i
-                                        class="fab fa-tiktok"></i></a>
-                                <a id="sYouTube" href="#" style="color: var(--text-muted);"><i
-                                        class="fab fa-youtube"></i></a>
-                            </div>
-
-                            <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border);">
-                                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                                    <span style="color: var(--text-muted); font-size: 0.8rem;">INFLUENCE</span>
-                                    <span id="pFollowers" style="font-weight: 900; color: var(--accent);">0</span>
-                                </div>
-                            </div>
-                        </div>
-                    </aside>
-
-                    <section>
-                        <h2 style="font-weight: 900; letter-spacing: -1px;">FEATURED SETUPS</h2>
-                        <div id="setupGrid" class="setup-grid"></div>
-                    </section>
-                </div>
+            <div style="margin-left: auto;">
+                <button class="btn-rebirth btn-photon" onclick="followCreator()" style="padding: 1.2rem 2.5rem;">
+                    <i class="fas fa-plus"></i> FOLLOW UPLINK
+                </button>
             </div>
-
-            <div id="notFound" style="display:none; text-align:center; padding: 5rem;">
-                <i class="fas fa-user-secret"
-                    style="font-size: 4rem; color: var(--text-muted); margin-bottom: 2rem;"></i>
-                <h2>UPLINK FAILED</h2>
-                <p style="color: var(--text-muted);">The requested creator profile does not exist in the arena.</p>
-                <a href="index.html" class="btn-secondary"
-                    style="display:inline-block; width:auto; margin-top: 1.5rem;">RETURN TO BASE</a>
-            </div>
-
         </div>
-    </main>
-    <nav class="bottom-nav"></nav>
+    </div>
 
+    <main class="profile-grid">
+        <aside>
+            <div class="pulse-card bio-node">
+                <span class="section-label" style="font-size: 0.6rem; margin-bottom: 1.5rem;">Biometrics & Intent</span>
+                <p id="pBio" style="line-height: 1.8; color: var(--stardust-muted); font-size: 0.95rem;">
+                    Syncing neural profile...
+                </p>
+
+                <div class="social-matrix">
+                    <a id="sInstagram" href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a id="sTikTok" href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
+                    <a id="sYouTube" href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+
+                <div class="stats-strip">
+                    <div class="stat-item">
+                        <span class="stat-label">INFLUENCE</span>
+                        <span class="stat-value" id="pFollowers">0</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <section>
+            <div class="category-label"
+                style="margin-bottom: 2rem; display: flex; align-items: center; gap: 20px; color: var(--stardust-muted); font-size: 0.7rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase;">
+                FEATURED NEURAL CONFIGS
+                <div style="flex: 1; height: 1px; background: var(--glass-border);"></div>
+            </div>
+            <div id="setupGrid" class="setup-matrix"></div>
+        </section>
+    </main>
+
+    <div id="loadingProfile"
+        style="position: fixed; inset: 0; background: var(--void); z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem;">
+        <i class="fas fa-circle-notch fa-spin" style="font-size: 3rem; color: var(--photon);"></i>
+        <span class="section-label" style="letter-spacing: 0.5rem;">Synchronizing Neutral Sector</span>
+    </div>
+
+    <div id="notFound" style="display:none; text-align:center; padding: 10rem 2rem;">
+        <i class="fas fa-user-secret" style="font-size: 4rem; color: var(--stardust-muted); margin-bottom: 2rem;"></i>
+        <h1 class="clash">UPLINK FAILED</h1>
+        <p style="color: var(--stardust-muted); margin-bottom: 3rem;">The requested creator profile does not exist in
+            the arena.</p>
+        <button class="btn-rebirth" onclick="window.location.href='index.html'">RETURN TO HUB</button>
+    </div>
+
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
@@ -168,24 +248,23 @@
                 }
 
                 const c = data.creator;
-                document.getElementById('profileContent').style.display = 'block';
-                document.getElementById('pUsername').innerHTML = c.username + (c.verified ? ' <i class="fas fa-check-circle" style="color:#00ff88; font-size: 1.2rem;"></i>' : '');
-                document.getElementById('pSlug').textContent = '@' + c.slug;
-                document.getElementById('pBio').textContent = c.bio || 'This creator maintains a low profile.';
+                document.getElementById('pUsername').innerHTML = c.username + (c.verified ? ' <i class="fas fa-check-circle" style="color:var(--photon); font-size: 1.5rem; margin-left: 10px;"></i>' : '');
+                document.getElementById('pSlug').textContent = '@' + c.slug.toUpperCase();
+                document.getElementById('pBio').textContent = c.bio || 'This creator maintains a low profile in the neural sector.';
                 document.getElementById('pAvatar').textContent = c.avatar || '👤';
                 document.getElementById('pFollowers').textContent = data.followers || 0;
 
                 if (c.banner_url) {
-                    document.getElementById('pBanner').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${c.banner_url}')`;
+                    document.getElementById('pBanner').style.backgroundImage = `url('${c.banner_url}')`;
                 }
 
                 // Socials
                 if (c.socials) {
                     try {
                         const s = JSON.parse(c.socials);
-                        if (s.instagram) { document.getElementById('sInstagram').href = 'https://instagram.com/' + s.instagram; document.getElementById('sInstagram').style.color = 'var(--accent)'; }
-                        if (s.tiktok) { document.getElementById('sTikTok').href = 'https://tiktok.com/@' + s.tiktok; document.getElementById('sTikTok').style.color = 'var(--accent)'; }
-                        if (s.youtube) { document.getElementById('sYouTube').href = s.youtube; document.getElementById('sYouTube').style.color = 'var(--accent)'; }
+                        if (s.instagram) { document.getElementById('sInstagram').href = 'https://instagram.com/' + s.instagram; document.getElementById('sInstagram').style.color = 'var(--photon)'; }
+                        if (s.tiktok) { document.getElementById('sTikTok').href = 'https://tiktok.com/@' + s.tiktok; document.getElementById('sTikTok').style.color = 'var(--photon)'; }
+                        if (s.youtube) { document.getElementById('sYouTube').href = s.youtube; document.getElementById('sYouTube').style.color = 'var(--photon)'; }
                     } catch (e) { }
                 }
 
@@ -193,21 +272,17 @@
                 const grid = document.getElementById('setupGrid');
                 if (data.setups && data.setups.length > 0) {
                     grid.innerHTML = data.setups.map(s => `
-                <div class="setup-card glass-card">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <div style="font-size: 0.7rem; color: var(--accent); letter-spacing: 2px; margin-bottom: 5px;">${s.mode.toUpperCase()} CONFIG</div>
-                    <div style="font-weight: 800; color: #fff; font-size: 1.1rem; margin-bottom: 10px;">Gen ${s.general} Sensitivity</div>
-                    <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted);">
-                        <span><i class="fas fa-heart"></i> ${s.likes || 0}</span>
-                        <span><i class="fas fa-clone"></i> ${s.copies || 0}</span>
-                    </div>
-                </div>
-            `).join('');
+                        <div class="pulse-card config-node">
+                            <span class="section-label" style="font-size: 0.6rem; margin-bottom: 1rem;">${s.mode.toUpperCase()} CONFIG</span>
+                            <h3 class="clash" style="font-size: 1.2rem; margin-bottom: 1.5rem;">GEN ${s.general} SENSITIVITY</h3>
+                            <div style="display:flex; justify-content: space-between; font-size: 0.8rem; color: var(--stardust-muted);">
+                                <span><i class="fas fa-heart" style="color: #ff4444;"></i> ${s.likes || 0}</span>
+                                <span><i class="fas fa-clone" style="color: var(--photon);"></i> ${s.copies || 0}</span>
+                            </div>
+                        </div>
+                    `).join('');
                 } else {
-                    grid.innerHTML = '<p style="color: var(--text-muted);">No public configurations deployed.</p>';
+                    grid.innerHTML = '<p style="color: var(--stardust-muted); font-style: italic;">No public configurations deployed.</p>';
                 }
 
             } catch (e) {
@@ -219,7 +294,7 @@
 
         async function followCreator() {
             if (!Auth.isLoggedIn()) { window.location.href = 'login.html'; return; }
-            if (window.Toast) Toast.show('Follow system initialization in progress...', 'info');
+            if (window.Toast) Toast.show('Neural alignment protocol initiated...', 'info');
         }
     </script>
 </body>

@@ -481,6 +481,9 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('xp_calc_params', JSON.stringify({ device: resultData.device }));
             localStorage.setItem('xp_calc_results', JSON.stringify(resultData));
 
+            // Force refresh of notification system if available
+            if (window.Toast) Toast.show('NEURAL SYNC COMPLETE. REDIRECTING...', 'success');
+
             // Track Event
             if (window.trackEvent) {
                 window.trackEvent('Tool', 'Calculate', resultData.device);
@@ -488,8 +491,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Redirection with a slight delay for "weight"
             setTimeout(() => {
-                window.location.href = 'result';
-            }, 600);
+                window.location.href = 'result.html'; // Ensure .html extension for local/static routing
+            }, 800);
         });
 
         // --- AI AIM LAB ENGINE ---

@@ -4,110 +4,222 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Creator Dashboard • XP ARENA</title>
-  <link rel="stylesheet" href="css/main.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <title>Creator Command • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .creator-hero {
+      padding: 10rem 2rem 6rem;
+      text-align: center;
+      background: radial-gradient(circle at top, rgba(255, 107, 0, 0.05), transparent 70%);
+    }
+
+    .creator-hero h1 {
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .creator-section {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem 10rem;
+    }
+
+    /* Access Gate */
+    .elite-gate {
+      text-align: center;
+      padding: 8rem 2rem;
+      background: var(--nebula);
+      border-radius: 40px;
+      border: 1px solid var(--glass-border);
+      margin-bottom: 4rem;
+    }
+
+    /* Identity Banner */
+    .identity-banner {
+      display: flex;
+      align-items: center;
+      gap: 3rem;
+      padding: 3rem;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--nebula-solid), var(--void));
+    }
+
+    .identity-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 30px;
+      background: var(--glass-highlight);
+      border: 2px solid var(--photon);
+      box-shadow: 0 0 30px var(--photon-glow);
+    }
+
+    /* Command Cards */
+    .command-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 2rem;
+    }
+
+    .command-card {
+      padding: 2.5rem;
+    }
+
+    .field-group {
+      margin-bottom: 2rem;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.65rem;
+      color: var(--stardust-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 0.75rem;
+      font-weight: 700;
+    }
+
+    .field-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      padding: 1.25rem;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+
+    .field-input:focus {
+      border-color: var(--photon);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .analytics-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .analytics-val {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      color: var(--photon);
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 992px) {
+      .command-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .identity-banner {
+        flex-direction: column;
+        text-align: center;
+        gap: 1.5rem;
+      }
+    }
+  </style>
 </head>
 
-<body class="fade-in">
-  <nav class="navbar"></nav>
-  <main class="main-content-area">
-    <div class="container">
-      <div class="page-header">
-        <h1>Creator Hub</h1>
-        <p>Manage your public persona and tactical influence.</p>
-      </div>
+<body class="page-rebirth">
+  <div class="creator-hero">
+    <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Persona Management Hub</span>
+    <h1 class="clash">CREATOR<br><span class="text-photon">COMMAND</span></h1>
+    <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
+      Orchestrate your tactical influence. Manage your public profile and track your impact on the global arena.
+    </p>
+  </div>
 
-      <!-- ELITE PRO GATE -->
-      <div id="noEliteMsg" class="glass-card" style="display:none; text-align:center; padding: 3rem;">
-        <div class="hud-corner hud-tl"></div>
-        <div class="hud-corner hud-tr"></div>
-        <div class="hud-corner hud-bl"></div>
-        <div class="hud-corner hud-br"></div>
-        <i class="fas fa-lock" style="font-size: 3rem; color: var(--accent); margin-bottom: 1.5rem;"></i>
-        <h2>ELITE ACCESS REQUIRED</h2>
-        <p style="color: var(--text-muted); margin-bottom: 2rem;">The Creator Hub is exclusively for Elite Pro members.
-        </p>
-        <a href="premium.html" class="btn-primary" style="display:inline-block; width:auto;">ASCEND TO ELITE</a>
-      </div>
+  <div class="creator-section">
+    <!-- Elite Pro Gate -->
+    <div id="noEliteMsg" class="elite-gate" style="display:none;">
+      <i class="fas fa-lock" style="font-size: 4rem; color: var(--photon); margin-bottom: 2rem;"></i>
+      <h2 class="clash" style="font-size: 2.5rem;">ELITE ACCESS REQUIRED</h2>
+      <p
+        style="color: var(--stardust-muted); margin-bottom: 3rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+        The Creator Command center is exclusively for Elite Pro members. Ascend now to claim your influence.
+      </p>
+      <button class="btn-rebirth btn-photon" style="padding: 1.5rem 4rem;"
+        onclick="window.location.href='premium.html'">ASCEND TO ELITE</button>
+    </div>
 
-      <div id="creatorAuthArea" style="display:none;">
-        <div class="glass-card neon-border" style="margin-bottom: 2rem;">
-          <div class="hud-corner hud-tl"></div>
-          <div class="hud-corner hud-tr"></div>
-          <div class="hud-corner hud-bl"></div>
-          <div class="hud-corner hud-br"></div>
-          <h3 style="color: var(--accent);"><i class="fas fa-id-card"></i> IDENTITY STATUS</h3>
-          <div id="identityStatus" style="margin-top: 10px; font-weight: 800; font-size: 1.1rem; color: #fff;">
-            PENDING...</div>
-          <div id="identityBio" style="color: var(--text-muted); font-size: 0.9rem; margin-top: 5px;"></div>
+    <div id="creatorAuthArea" style="display:none;">
+      <!-- Identity Banner -->
+      <div class="pulse-card identity-banner">
+        <div class="identity-avatar"></div>
+        <div style="flex: 1;">
+          <span class="section-label"
+            style="font-size: 0.6rem; color: var(--photon); margin-bottom: 0.5rem;">AUTHENTICATED PERSONA</span>
+          <h2 class="clash" id="identityStatus" style="font-size: 2.2rem; color: #fff;">PENDING...</h2>
+          <p id="identityBio" style="color: var(--stardust-muted); margin-top: 0.5rem; max-width: 600px;"></p>
         </div>
+      </div>
 
-        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-          <div class="glass-card">
-            <div class="hud-corner hud-tl"></div>
-            <div class="hud-corner hud-tr"></div>
-            <div class="hud-corner hud-bl"></div>
-            <div class="hud-corner hud-br"></div>
-            <h3><i class="fas fa-edit"></i> PROFILE SETTINGS</h3>
-            <div style="margin-top: 15px;">
-              <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Unique Slug
-                (@)</label>
-              <input id="crSlug" class="settings-input" placeholder="e.g. areni-master" style="margin-top: 5px;">
+      <div class="command-grid">
+        <!-- Settings Card -->
+        <div class="pulse-card command-card">
+          <h3 class="clash" style="font-size: 1.5rem; margin-bottom: 2.5rem;"><i class="fas fa-cog text-photon"></i>
+            PROTOCOL SETTINGS</h3>
 
-              <label
-                style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 15px;">Persona
-                Bio</label>
-              <textarea id="crBio" class="settings-input" placeholder="Tell the arena who you are..."
-                style="margin-top: 5px; height: 100px;"></textarea>
-
-              <label
-                style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; display: block; margin-top: 15px;">Banner
-                Image URL</label>
-              <input id="crBanner" class="settings-input" placeholder="https://..." style="margin-top: 5px;">
-
-              <button class="btn-primary" style="margin-top: 20px;" onclick="enableCreator()">UPDATE PROTOCOL</button>
-            </div>
+          <div class="field-group">
+            <label class="field-label">Unique Identification (@SLUG)</label>
+            <input id="crSlug" class="field-input" placeholder="e.g. areni-master">
           </div>
 
-          <div class="glass-card">
-            <div class="hud-corner hud-tl"></div>
-            <div class="hud-corner hud-tr"></div>
-            <div class="hud-corner hud-bl"></div>
-            <div class="hud-corner hud-br"></div>
-            <h3><i class="fas fa-chart-bar"></i> INFLUENCE ANALYTICS</h3>
-            <div style="margin-top: 20px;">
-              <div
-                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
-                <span style="color: var(--text-muted);">FOLLOWER COUNT</span>
-                <span id="statFollowers" style="font-weight: 900; color: var(--accent);">0</span>
-              </div>
-              <div
-                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
-                <span style="color: var(--text-muted);">SETUP ENDORSEMENTS</span>
-                <span id="statLikes" style="font-weight: 900; color: var(--accent);">0</span>
-              </div>
-              <div
-                style="display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
-                <span style="color: var(--text-muted);">TACTICAL REPLICAS</span>
-                <span id="statCopies" style="font-weight: 900; color: var(--accent);">0</span>
-              </div>
-              <div style="margin-top: 20px; text-align: center;">
-                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">PUBLIC ACCESS LINK:</p>
-                <div id="publicLink"
-                  style="font-family: monospace; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 4px; font-size: 0.8rem; word-break: break-all;">
-                </div>
-                <button class="btn-secondary" style="margin-top: 10px; font-size: 0.7rem; width: auto;"
-                  onclick="copyPublicLink()">COPY LINK</button>
-              </div>
+          <div class="field-group">
+            <label class="field-label">Persona Bio (Transmission)</label>
+            <textarea id="crBio" class="field-input" placeholder="Define your influence..."
+              style="height: 120px; resize: none;"></textarea>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Visual Banner URL</label>
+            <input id="crBanner" class="field-input" placeholder="https://...">
+          </div>
+
+          <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; padding: 1.5rem;"
+            onclick="enableCreator()">UPDATE PROTOCOLS</button>
+        </div>
+
+        <!-- Analytics Card -->
+        <div class="pulse-card command-card">
+          <h3 class="clash" style="font-size: 1.5rem; margin-bottom: 2.5rem;"><i
+              class="fas fa-chart-line text-photon"></i> IMPACT MATRIX</h3>
+
+          <div class="analytics-row">
+            <span class="field-label" style="margin: 0;">TACTICAL FOLLOWERS</span>
+            <span id="statFollowers" class="analytics-val">0</span>
+          </div>
+
+          <div class="analytics-row">
+            <span class="field-label" style="margin: 0;">SETUP ENDORSEMENTS</span>
+            <span id="statLikes" class="analytics-val">0</span>
+          </div>
+
+          <div class="analytics-row">
+            <span class="field-label" style="margin: 0;">PROTOCOL REPLICAS</span>
+            <span id="statCopies" class="analytics-val">0</span>
+          </div>
+
+          <div
+            style="margin-top: 4rem; padding: 2rem; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid var(--glass-border);">
+            <span class="field-label" style="margin-bottom: 0.5rem; text-align: center;">PUBLIC TRANSMISSION LINK</span>
+            <div id="publicLink"
+              style="font-family: monospace; font-size: 0.8rem; word-break: break-all; opacity: 0.7; margin-bottom: 1.5rem; text-align: center;">
             </div>
+            <button class="btn-rebirth"
+              style="width: 100%; justify-content: center; background: rgba(255,255,255,0.05);"
+              onclick="copyPublicLink()">COPY TRANSMISSION LINK</button>
           </div>
         </div>
       </div>
     </div>
-  </main>
-  <nav class="bottom-nav"></nav>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
@@ -134,12 +246,12 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
           body: JSON.stringify({ slug, bio, banner_url })
         });
-        const data = await res.json();
         if (res.ok) {
-          if (window.Toast) Toast.show('Creator Protocol Updated!', 'success');
+          Toast.show('Protocols established.', 'success');
           checkMe();
         } else {
-          if (window.Toast) Toast.show(data.error || 'Error updating profile', 'error');
+          const data = await res.json();
+          Toast.show(data.error || 'Rejection.', 'danger');
         }
       } catch (e) {
         console.error(e);
@@ -148,38 +260,40 @@
 
     async function checkMe() {
       if (!Auth.isLoggedIn()) return;
-      const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
-      const data = await res.json();
+      try {
+        const res = await fetch((window.API_URL || '') + '/api/creators/me', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
+        const data = await res.json();
 
-      const idStatus = document.getElementById('identityStatus');
-      const idBio = document.getElementById('identityBio');
-      const publicLink = document.getElementById('publicLink');
+        const idStatus = document.getElementById('identityStatus');
+        const idBio = document.getElementById('identityBio');
+        const publicLink = document.getElementById('publicLink');
 
-      if (data && data.creator) {
-        const c = data.creator;
-        idStatus.innerHTML = `${c.username.toUpperCase()} <span style="color: var(--accent);">@${c.slug}</span> ${c.verified ? ' <i class="fas fa-check-circle" style="color:#00ff88;"></i>' : ''}`;
-        idBio.textContent = c.bio || 'No bio set.';
-        publicLink.textContent = window.location.origin + '/creator-profile.html?slug=' + c.slug;
+        if (data && data.creator) {
+          const c = data.creator;
+          idStatus.innerHTML = `${c.username.toUpperCase()} <span style="color: var(--photon); opacity: 0.7;">@${c.slug}</span> ${c.verified ? ' <i class="fas fa-check-circle text-photon"></i>' : ''}`;
+          idBio.textContent = c.bio || 'Tactical bio not defined.';
+          publicLink.textContent = window.location.origin + '/creator-profile.html?slug=' + c.slug;
 
-        document.getElementById('crSlug').value = c.slug;
-        document.getElementById('crBio').value = c.bio || '';
-        document.getElementById('crBanner').value = c.banner_url || '';
+          document.getElementById('crSlug').value = c.slug;
+          document.getElementById('crBio').value = c.bio || '';
+          document.getElementById('crBanner').value = c.banner_url || '';
 
-        document.getElementById('statFollowers').textContent = data.followers || 0;
-        document.getElementById('statLikes').textContent = (data.setups || []).reduce((acc, s) => acc + (s.likes || 0), 0);
-        document.getElementById('statCopies').textContent = (data.setups || []).reduce((acc, s) => acc + (s.copies || 0), 0);
-      } else {
-        idStatus.textContent = 'ACCOUNT NOT INITIALIZED';
-        idBio.textContent = 'Enable your creator profile below to start building your influence.';
-        publicLink.textContent = 'N/A';
-      }
+          document.getElementById('statFollowers').textContent = data.followers || 0;
+          document.getElementById('statLikes').textContent = (data.setups || []).reduce((acc, s) => acc + (s.likes || 0), 0);
+          document.getElementById('statCopies').textContent = (data.setups || []).reduce((acc, s) => acc + (s.copies || 0), 0);
+        } else {
+          idStatus.textContent = 'ACCOUNT NOT INITIALIZED';
+          idBio.textContent = 'Enable your creator profile below to start building your tactical influence.';
+          publicLink.textContent = 'N/A';
+        }
+      } catch (err) { console.error(err); }
     }
 
     function copyPublicLink() {
       const link = document.getElementById('publicLink').textContent;
       if (link && link !== 'N/A') {
         navigator.clipboard.writeText(link);
-        if (window.Toast) Toast.show('Link copied to clipboard!', 'success');
+        Toast.show('Transmission link copied.', 'success');
       }
     }
   </script>

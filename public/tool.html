@@ -4,176 +4,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sensitivity Tool • XP ARENA</title>
-    <meta name="description"
-        content="Calculate your perfect pro sensitivity settings for any mobile device in seconds with the XP ARENA sensitivity tool.">
-    <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="css/main.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Engine • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        body {
-            background-color: var(--bg);
-            background-image:
-                radial-gradient(circle at 50% -20%, rgba(var(--accent-rgb), 0.1) 0%, transparent 60%),
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 50% 50%, 40px 40px, 40px 40px;
-            background-attachment: fixed;
-            color: var(--text-white);
+        .engine-container {
+            padding: 8rem 2rem 10rem;
+            max-width: 1000px;
+            margin: 0 auto;
         }
 
-        .ambient-orb {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
-            filter: blur(140px);
-            opacity: 0.05;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .page-header {
+        .engine-header {
             text-align: center;
             margin-bottom: 4rem;
-            position: relative;
-            z-index: 1;
         }
 
-        .page-header h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
-            font-weight: 900;
-            letter-spacing: -3px;
-            text-transform: uppercase;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to bottom, #fff 30%, rgba(255, 255, 255, 0.5));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .engine-header h1 {
+            font-size: 4rem;
+            line-height: 1;
+            margin-bottom: 1rem;
         }
 
-        .page-header .subtitle {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            letter-spacing: 4px;
-            color: var(--accent);
-            font-size: 0.9rem;
-            text-transform: uppercase;
+        .engine-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
         }
 
-        /* Tactical HUD Card */
-        .hud-card {
-            background: var(--surface);
-            backdrop-filter: blur(20px) saturate(160%);
-            -webkit-backdrop-filter: blur(20px) saturate(160%);
-            border: 1px solid var(--border);
+        .personalization-card {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--glass-border) transparent;
+        }
+
+        .personalization-card::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .personalization-card::-webkit-scrollbar-thumb {
+            background-color: var(--glass-border);
+            border-radius: 10px;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .palette-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .palette-item:hover {
+            transform: scale(1.1);
+        }
+
+        .palette-item.active {
+            border-color: #fff;
+            box-shadow: 0 0 10px var(--item-glow);
+        }
+
+        .input-card {
+            background: var(--nebula);
+            border: 1px solid var(--glass-border);
             border-radius: var(--radius-lg);
             padding: 2.5rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
         }
 
-        .hud-card:hover {
-            border-color: rgba(var(--accent-rgb), 0.3);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6), 0 0 20px var(--hud-glow);
-        }
-
-        .hud-corner {
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            border: 2px solid var(--accent);
-            opacity: 0.5;
-        }
-
-        .tl {
-            top: 15px;
-            left: 15px;
-            border-right: 0;
-            border-bottom: 0;
-        }
-
-        .tr {
-            top: 15px;
-            right: 15px;
-            border-left: 0;
-            border-bottom: 0;
-        }
-
-        .bl {
-            bottom: 15px;
-            left: 15px;
-            border-right: 0;
-            border-top: 0;
-        }
-
-        .br {
-            bottom: 15px;
-            right: 15px;
-            border-left: 0;
-            border-top: 0;
-        }
-
-        .form-label {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--accent);
-            letter-spacing: 2px;
+        .section-label {
+            font-size: 0.7rem;
+            color: var(--stardust-muted);
             text-transform: uppercase;
+            letter-spacing: 0.2rem;
             margin-bottom: 1.5rem;
+            display: block;
         }
 
-        /* Precision Inputs */
-        .glass-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.2rem;
-            color: #fff;
-            font-family: inherit;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .glass-input:focus {
-            outline: none;
-            border-color: var(--accent);
-            background: rgba(var(--accent-rgb), 0.05);
-            box-shadow: 0 0 15px var(--hud-glow);
-        }
-
-        /* Precision Sliders */
-        .slider-group {
+        .input-group {
             margin-bottom: 2rem;
         }
 
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.8rem;
+        .input-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--stardust);
         }
 
-        .slider-val {
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            color: #fff;
+        .input-rebirth {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius-sm);
+            color: var(--stardust);
+            font-family: inherit;
+            transition: all 0.3s var(--transition);
         }
 
+        .input-rebirth:focus {
+            outline: none;
+            border-color: var(--photon);
+            box-shadow: 0 0 15px var(--photon-glow);
+        }
+
+        /* Suggestion List */
+        #deviceSuggestions {
+            background: var(--nebula-solid);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            margin-top: 0.5rem;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            position: absolute;
+            width: calc(100% - 3rem);
+            z-index: 100;
+        }
+
+        .suggestion-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--glass-border);
+            transition: background 0.2s;
+        }
+
+        .suggestion-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--photon);
+        }
+
+        .suggestion-item span {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--stardust-muted);
+        }
+
+        /* Slider */
         input[type="range"] {
             -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
+            background: var(--glass-border);
+            border-radius: 10px;
             outline: none;
         }
 
@@ -181,271 +164,407 @@
             -webkit-appearance: none;
             width: 20px;
             height: 20px;
-            background: var(--accent);
-            border: 4px solid #fff;
+            background: var(--photon);
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 0 15px var(--accent-glow);
-            transition: transform 0.2s ease;
+            box-shadow: 0 0 10px var(--photon-glow);
+            border: 4px solid var(--void);
         }
 
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+        .slider-val {
+            float: right;
+            font-family: 'Clash Display', sans-serif;
+            color: var(--photon);
         }
 
-        /* Tactical Button */
-        .btn-calculate {
-            width: 100%;
-            background: var(--accent);
-            color: #000;
-            font-family: 'Rajdhani', sans-serif;
-            font-weight: 800;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            padding: 1.5rem;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            margin-top: 2rem;
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            text-transform: uppercase;
-            box-shadow: 0 10px 40px var(--accent-glow);
-        }
-
-        .btn-calculate:hover {
-            transform: translateY(-5px) scale(1.02);
-            filter: brightness(1.1);
-            box-shadow: 0 20px 60px var(--accent-glow);
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            animation: scan 4s linear infinite;
-            z-index: 2;
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        @keyframes scan {
-            0% {
-                top: 0;
-            }
-
-            100% {
-                top: 100%;
-            }
-        }
-
-        .tool-grid {
+        /* Segmented Control */
+        .segmented-control {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 1;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 0.4rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--glass-border);
         }
 
-        @media (max-width: 768px) {
-            .tool-grid {
+        .segment-btn {
+            background: transparent;
+            border: none;
+            padding: 0.8rem 0.5rem;
+            border-radius: 8px;
+            color: var(--stardust-muted);
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s var(--transition);
+        }
+
+        .segment-btn.active {
+            background: var(--photon);
+            color: var(--void);
+            box-shadow: 0 0 15px var(--photon-glow);
+        }
+
+        .segment-btn:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--stardust);
+        }
+
+        /* Tactile Input */
+        .tactile-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .tactile-input-wrap input {
+            text-align: center;
+            font-family: 'Clash Display', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+
+        .tactile-ctrl {
+            width: 40px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--stardust);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tactile-ctrl:hover {
+            color: var(--photon);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tactile-ctrl.minus {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .tactile-ctrl.plus {
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Context Message Overlay */
+        .context-msg {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: var(--stardust-muted);
+            line-height: 1.5;
+            padding: 0.8rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 2px solid var(--photon);
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        /* Premium Lock */
+        .premium-lock-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(10, 11, 14, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gold);
+        }
+
+        .lock-icon {
+            font-size: 1.5rem;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 600px) {
+            .engine-grid {
                 grid-template-columns: 1fr;
             }
 
-            .page-header h1 {
-                font-size: 3rem;
+            .engine-header h1 {
+                font-size: 2.5rem;
             }
         }
     </style>
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
 </head>
 
-<body class="fade-in">
+<body>
+    <div class="engine-container">
+        <header class="engine-header">
+            <span class="section-label">Neural Calibration Sub-System</span>
+            <h1 class="clash">PRECISION<br><span class="text-photon">ENGINE</span></h1>
+            <p style="color: var(--stardust-muted); max-width: 500px; margin: 0 auto;">
+                Synchronize your device hardware with our neural algorithms to achieve a 1:1 aiming response.
+            </p>
+        </header>
 
-    <nav class="navbar"></nav>
+        <div class="engine-grid">
+            <!-- Left: Hardware Parameters -->
+            <div class="input-card">
+                <span class="section-label">Hardware Profile</span>
 
-    <div class="ambient-orb" style="top: -100px; left: -100px;"></div>
-    <div class="ambient-orb" style="bottom: -100px; right: -100px;"></div>
+                <div class="input-group" style="position: relative;">
+                    <label><i class="fas fa-mobile-alt" style="margin-right: 8px;"></i> Device Identifier</label>
+                    <input type="text" id="deviceSearch" class="input-rebirth"
+                        placeholder="Search device database (e.g. iPhone 15)">
+                    <div id="deviceSuggestions"></div>
+                    <div id="selectedDeviceDisplay"
+                        style="margin-top: 1rem; font-size: 0.8rem; color: var(--photon); font-weight: 700;"></div>
 
-    <main class="main-content-area">
-        <section class="tool-section">
-            <div class="container" style="padding: 0 1.5rem;">
-
-                <div class="page-header reveal">
-                    <div class="subtitle">Tactical Lab Sub-System</div>
-                    <h1 class="text-neon">Precision Calibration</h1>
+                    <!-- Hidden inputs for logic compatibility -->
+                    <input type="hidden" id="selectedBrand">
+                    <input type="hidden" id="selectedSeries">
+                    <input type="hidden" id="selectedModel">
                 </div>
 
-                <div class="tool-grid">
-                    <!-- LEFT COLUMN: Input Params -->
-                    <div class="tool-col reveal">
-                        <div class="hud-card">
-                            <div class="hud-corner tl"></div>
-                            <div class="hud-corner tr"></div>
-                            <div class="hud-corner bl"></div>
-                            <div class="hud-corner br"></div>
-                            <div class="scan-line"></div>
-
-                            <div class="field-item" style="margin-bottom: 2rem;">
-                                <label class="form-label"><i class="fas fa-search"></i> Hardware Identifier</label>
-                                <div class="device-search-wrap">
-                                    <input type="text" id="deviceSearch" class="glass-input"
-                                        placeholder="Search Device Matrix...">
-                                    <div id="deviceSuggestions"></div>
-                                </div>
-                                <div id="selectedDeviceDisplay"></div>
-                            </div>
-
-                            <div class="slider-group">
-                                <div class="slider-header">
-                                    <label class="form-label"><i class="fas fa-memory"></i> Volatile Memory
-                                        (RAM)</label>
-                                    <span class="slider-val"><span id="ramVal">8</span>GB</span>
-                                </div>
-                                <input type="range" id="ramSlider" min="2" max="16" step="2" value="8">
-                            </div>
-
-                            <div class="field-item" style="margin-bottom: 2rem;">
-                                <label class="form-label"><i class="fas fa-hand-pointer"></i> Friction Matrix
-                                    (Grip)</label>
-                                <select id="handSelect" class="glass-input">
-                                    <option value="normal">Standard Protocol</option>
-                                    <option value="hard">High Pressure (Glass)</option>
-                                    <option value="fast">Zero Friction (Liquid)</option>
-                                    <option value="gloves">External Sleeve</option>
-                                    <option value="sweaty">High Micro-Resistance</option>
-                                </select>
-                            </div>
-
-                            <div class="field-item">
-                                <label class="form-label"><i class="fas fa-running"></i> Velocity Profile</label>
-                                <select id="speedSelect" class="glass-input">
-                                    <option value="medium">Balanced Response</option>
-                                    <option value="slow">Low-Sens Precision</option>
-                                    <option value="fast">Aggressive Maneuvers</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- RIGHT COLUMN: Presets & Manual -->
-                    <div class="tool-col reveal">
-                        <div class="hud-card" style="margin-bottom: 2rem;">
-                            <div class="hud-corner tl"></div>
-                            <div class="hud-corner tr"></div>
-                            <div class="hud-corner bl"></div>
-                            <div class="hud-corner br"></div>
-
-                            <label class="form-label"><i class="fas fa-crown"></i> Elite Presets</label>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                                <button class="btn-secondary" onclick="loadProPreset('white444')"
-                                    style="padding:1rem; font-family:'Rajdhani';">WHITE444</button>
-                                <button class="btn-secondary" onclick="loadProPreset('nobru')"
-                                    style="padding:1rem; font-family:'Rajdhani';">NOBRU</button>
-                                <button class="btn-secondary" onclick="loadProPreset('ruok')"
-                                    style="padding:1rem; font-family:'Rajdhani';">RUOK FF</button>
-                                <button class="btn-secondary" onclick="loadProPreset('vincenzo')"
-                                    style="padding:1rem; font-family:'Rajdhani';">VINCENZO</button>
-                            </div>
-                        </div>
-
-                        <div class="hud-card">
-                            <div class="hud-corner tl"></div>
-                            <div class="hud-corner tr"></div>
-                            <div class="hud-corner bl"></div>
-                            <div class="hud-corner br"></div>
-
-                            <label class="form-label"><i class="fas fa-pen"></i> Community Entry</label>
-                            <div
-                                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 1rem;">
-                                <input type="number" id="manGen" placeholder="GEN" class="glass-input"
-                                    style="padding:0.8rem; text-align:center;">
-                                <input type="number" id="manRed" placeholder="RED" class="glass-input"
-                                    style="padding:0.8rem; text-align:center;">
-                                <input type="number" id="man2x" placeholder="2X" class="glass-input"
-                                    style="padding:0.8rem; text-align:center;">
-                                <input type="number" id="man4x" placeholder="4X" class="glass-input"
-                                    style="padding:0.8rem; text-align:center;">
-                                <input type="number" id="man8x" placeholder="8X" class="glass-input"
-                                    style="padding:0.8rem; text-align:center;">
-                            </div>
-                            <textarea id="manComment" class="glass-input"
-                                placeholder="Tactical notes for the community..." style="height: 100px;"></textarea>
-                            <label
-                                style="display:flex; align-items:center; gap:10px; margin: 1rem 0; font-family:'Rajdhani'; font-weight:700; color:rgba(255,255,255,0.5);">
-                                <input type="checkbox" id="manPrivate"> SECURE UPLOAD (PRIVATE)
-                            </label>
-                            <button class="btn-secondary"
-                                style="width:100%; padding:1.2rem; border-color:var(--accent); color:var(--accent);"
-                                onclick="manualSubmit()">TRANSMIT TO LEADERBOARD</button>
-                        </div>
-                    </div>
+                <div class="input-group">
+                    <label><i class="fas fa-memory" style="margin-right: 8px;"></i> Dedicated RAM <span
+                            class="slider-val" id="ramVal">8GB</span></label>
+                    <input type="range" id="ramSlider" min="2" max="16" step="2" value="8">
                 </div>
 
-                <div style="max-width: 1200px; margin: 2rem auto;">
-                    <button id="calculateBtn" class="btn-calculate">Initiate Calibration Sequence</button>
+                <div class="input-group" style="position: relative;">
+                    <label><i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Tactical DPI</label>
+                    <div class="tactile-input-wrap">
+                        <button class="tactile-ctrl minus" onclick="stepDPI(-50)"><i class="fas fa-minus"></i></button>
+                        <input type="number" id="dpiInput" class="input-rebirth" value="800" step="50" min="100"
+                            max="2400" style="border-radius: 0; border-left: none; border-right: none;">
+                        <button class="tactile-ctrl plus" onclick="stepDPI(50)"><i class="fas fa-plus"></i></button>
+                    </div>
+
+                    <!-- Premium Lock for DPI -->
+                    <div class="premium-lock-overlay" id="dpiLock">
+                        <i class="fas fa-crown lock-icon"></i>
+                        <span
+                            style="font-weight: 800; font-size: 0.7rem; color: var(--gold); letter-spacing: 2px;">PREMIUM
+                            ONLY</span>
+                        <p style="font-size: 0.6rem; color: var(--stardust-muted);">Unlock DPI scaling for
+                            ultra-fine-tuning.</p>
+                        <button class="btn-rebirth"
+                            style="font-size: 0.6rem; margin-top: 10px; padding: 0.5rem 1rem; border-color: var(--gold); color:var(--gold);"
+                            onclick="location.href='premium.html'">UPGRADE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Performance Modes -->
+            <div class="input-card">
+                <span class="section-label">Operational Context</span>
+
+                <div class="input-group">
+                    <label>Friction Matrix (Hand/Grip)</label>
+                    <div class="segmented-control" id="gripSegments">
+                        <button class="segment-btn active" data-value="normal">Standard</button>
+                        <button class="segment-btn" data-value="hard">Glass</button>
+                        <button class="segment-btn" data-value="fast">Sleeve</button>
+                    </div>
+                    <input type="hidden" id="handSelect" value="normal">
+                    <div class="context-msg" id="gripContext">The standard grip provides a balanced tactile response for
+                        consistent tracking.</div>
+                </div>
+
+                <div class="input-group">
+                    <label>Response Velocity</label>
+                    <div class="segmented-control" id="velocitySegments">
+                        <button class="segment-btn active" data-value="medium">Balanced</button>
+                        <button class="segment-btn" data-value="slow">Precision</button>
+                        <button class="segment-btn" data-value="fast">Aggressive</button>
+                    </div>
+                    <input type="hidden" id="speedSelect" value="medium">
+                    <div class="context-msg" id="velocityContext">Balanced velocity ensures optimal stability between
+                        micro-adjustments and flicks.</div>
+                </div>
+
+                <div class="pulse-card" style="padding: 1.5rem; background: var(--glass-highlight);">
+                    <h4 class="clash" style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--corona);">AI
+                        DIAGNOSTICS</h4>
+                    <p style="font-size: 0.75rem; color: var(--stardust-muted); line-height: 1.4;" id="aiStatusMsg">
+                        Waiting for calibration sequence initiation...</p>
                 </div>
 
             </div>
-        </section>
-    </main>
+            <div style="margin-top: 3rem;">
+                <button id="calculateBtn" class="btn-rebirth btn-photon"
+                    style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.2rem; letter-spacing: 0.2em;">
+                    INITIATE CALIBRATION
+                </button>
+            </div>
+
+            <!-- Pro Presets -->
+            <div style="margin-top: 5rem; text-align: center;">
+                <span class="section-label">Elite Verified Profiles</span>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-top: 1.5rem;">
+                    <button class="btn-rebirth" onclick="loadProPreset('white444')"
+                        style="font-size: 0.75rem; background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">WHITE444</button>
+                    <button class="btn-rebirth" onclick="loadProPreset('nobru')"
+                        style="font-size: 0.75rem; background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">NOBRU</button>
+                    <button class="btn-rebirth" onclick="loadProPreset('ruok')"
+                        style="font-size: 0.75rem; background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">RUOK
+                        FF</button>
+                    <button class="btn-rebirth" onclick="loadProPreset('vincenzo')"
+                        style="font-size: 0.75rem; background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">VINCENZO</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Scripts -->
+        <script src="js/phones.js"></script>
+        <script src="js/auth.js"></script>
+        <script src="js/user.js"></script>
+        <script src="js/layout.js"></script>
+        <script src="js/app.js"></script>
+        <script>
+            // Local Override for real-time UI feel
+            document.addEventListener('DOMContentLoaded', () => {
+                const ramSlider = document.getElementById('ramSlider');
+                const ramVal = document.getElementById('ramVal');
+                if (ramSlider && ramVal) {
+                    ramSlider.addEventListener('input', () => {
+                        ramVal.textContent = ramSlider.value + 'GB';
+                    });
+                }
+
+                const dpiInput = document.getElementById('dpiInput');
+                if (dpiInput) {
+                    dpiInput.addEventListener('input', () => {
+                        // Optional: feedback
+                    });
+                }
+
+                // Premium Status Check
+                if (typeof User !== 'undefined' && Auth.isLoggedIn()) {
+                    const stats = User.getStats();
+                    if (stats && stats.is_premium) {
+                        const dpiLock = document.getElementById('dpiLock');
+                        if (dpiLock) dpiLock.style.display = 'none';
+                    }
+                }
+
+                // Segmented Controls Logic
+                const gripTexts = {
+                    'normal': 'Standard grip provides a balanced tactile response for consistent tracking across most surfaces.',
+                    'hard': 'Optimized for high-pressure contact on glass surfaces. Minimizes static friction.',
+                    'fast': 'Extreme zero-friction profile. Recommended for sleeve-assisted high-velocity movement.'
+                };
+
+                const velocityTexts = {
+                    'medium': 'Balanced velocity ensures optimal stability between micro-adjustments and quick-flick maneuvers.',
+                    'slow': 'Prioritizes fine-motor control for long-range precision. Ideal for low-sens snipers.',
+                    'fast': 'Maximizes response rate. Designed for high-sens reflex players requiring instant targets.'
+                };
+
+                const setupSegments = (containerId, hiddenInputId, contextId, textMap) => {
+                    const container = document.getElementById(containerId);
+                    const hiddenInput = document.getElementById(hiddenInputId);
+                    const context = document.getElementById(contextId);
+                    if (!container || !hiddenInput) return;
+
+                    container.addEventListener('click', (e) => {
+                        const btn = e.target.closest('.segment-btn');
+                        if (!btn) return;
+
+                        container.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        hiddenInput.value = btn.dataset.value;
+                        if (context && textMap) {
+                            context.style.opacity = '0';
+                            setTimeout(() => {
+                                context.textContent = textMap[btn.dataset.value];
+                                context.style.opacity = '1';
+                            }, 150);
+                        }
+                    });
+                }
+
+                setupSegments('gripSegments', 'handSelect', 'gripContext', gripTexts);
+                setupSegments('velocitySegments', 'speedSelect', 'velocityContext', velocityTexts);
+
+                // Color Customizer Logic
+                const accentColor = document.getElementById('accentColor');
+                const accentHex = document.getElementById('accentHex');
+
+                function updateAccent(color) {
+                    document.documentElement.style.setProperty('--photon', color);
+                    document.documentElement.style.setProperty('--photon-glow', color + '33');
+                    if (accentHex) accentHex.textContent = color.toUpperCase();
+                    localStorage.setItem('xp_accent_color', color);
+
+                    // Notify user with new styling
+                    if (window.Toast) Toast.show('Neural HUD Resynchronized', 'info');
+                }
+
+                if (accentColor) {
+                    accentColor.addEventListener('input', (e) => {
+                        updateAccent(e.target.value);
+                        // Remove active from palette items
+                        document.querySelectorAll('.palette-item').forEach(p => p.classList.remove('active'));
+                    });
+                }
+
+                window.setThemePalette = function (el) {
+                    const color = el.getAttribute('data-color');
+                    updateAccent(color);
+                    if (accentColor) accentColor.value = color;
+
+                    document.querySelectorAll('.palette-item').forEach(p => p.classList.remove('active'));
+                    el.classList.add('active');
+                };
+
+                // Initialize accent color display
+                const savedColor = localStorage.getItem('xp_accent_color') || '#00f5ff';
+                if (accentColor) accentColor.value = savedColor;
+                if (accentHex) accentHex.textContent = savedColor.toUpperCase();
+
+                // Highlight active palette if it matches
+                document.querySelectorAll('.palette-item').forEach(p => {
+                    if (p.getAttribute('data-color').toLowerCase() === savedColor.toLowerCase()) {
+                        p.classList.add('active');
+                    } else {
+                        p.classList.remove('active');
+                    }
+                });
+            });
 
 
-    <!-- BOTTOM NAV -->
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
 
-    <script src="js/phones.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-    <script>
-        function updateDpiInfo() {
-            const dpi = parseInt(document.getElementById('dpiInput')?.value || 800);
-            const factor = (800 / (dpi || 800));
-            const el = document.getElementById('dpiInfo');
-            if (el) el.textContent = `Scaling Factor: ${(factor).toFixed(2)}× vs 800 DPI baseline`;
-        }
-        function setDPIPreset(val) {
-            const input = document.getElementById('dpiInput');
-            if (!input) return;
-            input.value = val;
-            updateDpiInfo();
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-            const dpiEl = document.getElementById('dpiInput');
-            if (dpiEl) {
-                updateDpiInfo();
-                dpiEl.addEventListener('input', updateDpiInfo);
-                dpiEl.addEventListener('change', updateDpiInfo);
+            // --- Diagnostic History Persistence ---
+            function updateDiagHistory() {
+                const historyEl = document.getElementById('diagHistoryList');
+                if (!historyEl) return;
+
+                const lastResults = localStorage.getItem('xp_calc_results');
+                if (lastResults) {
+                    const data = JSON.parse(lastResults);
+                    historyEl.innerHTML = `
+                        <div style="padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="font-weight: 700; font-size: 0.8rem; color: var(--stardust);">${data.device}</div>
+                                <div style="font-size: 0.7rem; color: var(--photon);">${data.general} GEN | ${data.dpi} DPI</div>
+                            </div>
+                            <a href="result.html" class="btn-rebirth" style="padding: 4px 8px; font-size: 0.6rem; background: var(--photon); color: var(--void);">VIEW</a>
+                        </div>
+                    `;
+                }
             }
-        });
-        async function manualSubmit() {
-            if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
-                window.location.href = 'login.html';
-                return;
-            }
-            const payload = {
-                general: document.getElementById('manGen').value,
-                reddot: document.getElementById('manRed').value,
-                scope2x: document.getElementById('man2x').value,
-                scope4x: document.getElementById('man4x').value,
-                scope8x: document.getElementById('man8x').value,
-                comment: document.getElementById('manComment').value,
-                is_private: document.getElementById('manPrivate').checked
-            };
-            const res = await SubmitManualSetup(payload);
-            if (res && res.success) {
-                document.getElementById('manComment').value = '';
-            }
-        }
-    </script>
+
+            updateDiagHistory();
+        </script>
 </body>
 
 </html>

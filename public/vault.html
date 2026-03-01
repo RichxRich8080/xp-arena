@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Global Presets • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .setups-hero {
+      padding: 10rem 2rem 6rem;
+      text-align: center;
+      background: radial-gradient(circle at top right, rgba(0, 245, 255, 0.05), transparent 60%);
+    }
+
+    .setups-hero h1 {
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .setups-section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem 10rem;
+    }
+
+    /* Presets Matrix */
+    .presets-matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+    }
+
+    .preset-card {
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .preset-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .operative-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .operative-token {
+      width: 40px;
+      height: 40px;
+      background: var(--glass-highlight);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--photon);
+      font-weight: 800;
+    }
+
+    .protocol-badge {
+      font-size: 0.6rem;
+      padding: 4px 10px;
+      background: rgba(0, 245, 255, 0.1);
+      color: var(--photon);
+      border-radius: 6px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .stats-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .stat-node {
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+      text-align: center;
+    }
+
+    .node-label {
+      display: block;
+      font-size: 0.6rem;
+      color: var(--stardust-muted);
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .node-val {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.1rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .preset-comment {
+      font-size: 0.85rem;
+      color: var(--stardust-muted);
+      line-height: 1.6;
+      margin-top: 0.5rem;
+    }
+
+    .action-dock {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: auto;
+    }
+
+    @media (max-width: 768px) {
+      .presets-matrix {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="page-rebirth">
+  <div class="setups-hero">
+    <span class="section-label" style="letter-spacing: 0.6rem; margin-bottom: 2rem; opacity: 0.6;">NEURAL VAULT
+      ARCHIVES</span>
+    <h1 class="clash" style="font-size: clamp(3.5rem, 10vw, 7rem); margin-bottom: 3rem;">THE<br><span
+        class="text-photon" style="text-shadow: 0 0 40px var(--photon-glow);">VAULT</span></h1>
+    <p
+      style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem; line-height: 1.8; font-weight: 500;">
+      Access the encrypted technical archives of the global elite. Synchronize and adapt high-fidelity protocols for
+      your hardware.
+    </p>
+  </div>
+
+  <div class="setups-section">
+    <div
+      style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem; padding-bottom: 2rem; border-bottom: 1px solid var(--glass-border);">
+      <h2 class="clash" style="font-size: 1.2rem; letter-spacing: 0.2em;">SECTOR PROTOCOLS</h2>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn-rebirth"
+          style="padding: 0.6rem 1.2rem; font-size: 0.7rem; background: var(--photon); color: var(--void); border-color: var(--photon);">GLOBAL</button>
+        <button class="btn-rebirth" style="padding: 0.6rem 1.2rem; font-size: 0.7rem;">PERSONAL</button>
+      </div>
+    </div>
+    <div id="setupsList" class="presets-matrix">
+      <!-- Data from API -->
+      <div class="pulse-card preset-card skeleton" style="height: 400px; opacity: 0.5;"></div>
+      <div class="pulse-card preset-card skeleton" style="height: 400px; opacity: 0.5;"></div>
+      <div class="pulse-card preset-card skeleton" style="height: 400px; opacity: 0.5;"></div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/setups.js"></script>
+</body>
+
+</html>

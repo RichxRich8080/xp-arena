@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('input', () => {
             const q = input.value.trim().toLowerCase();
             if (q.length < 2) { sugg.style.display = 'none'; return; }
-            const matches = flatDevices.filter(d => `${d.brand} ${d.series} ${d.model}`.toLowerCase().includes(q)).slice(0, 6);
+            const matches = flatDevices.filter(d => `${d.brand} ${d.series} ${d.model}`.toLowerCase().includes(q)).slice(0, 8);
             if (!matches.length) { sugg.style.display = 'none'; return; }
 
             sugg.innerHTML = matches.map(d => `<div class="sugg-item" onclick="selectDev('${isA ? 'A' : 'B'}', '${d.label.replace(/'/g, "\\'")}')">${d.label}</div>`).join('');
@@ -52,16 +52,10 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSearch('searchB', 'suggB', false);
 
     function checkReady() {
-        if (devA && devB) {
-            document.getElementById('compareBtn').disabled = false;
-        } else {
-            document.getElementById('compareBtn').disabled = true;
-        }
+        document.getElementById('compareBtn').disabled = !(devA && devB);
     }
 
-    // Reuse factor calculation logic from app.js to create a tangible visual grade
     const getFactorInfo = (d) => {
-        // Use explicit stats if available
         if (d.stats) {
             return {
                 mult: (1 + (d.stats.score - 50) / 500).toFixed(2),
@@ -78,11 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let mult = 1.0;
         let score = 50;
 
-        if (b.includes('rog') || b.includes('redmagic') || b.includes('black shark') || m.includes('gaming') || m.includes('legion') || b.includes('iqoo')) { mult = 1.08; adv = "Elite Gaming Display (144Hz+) – Massive natural sensitivity advantage. Near-zero touch latency."; score = 95; }
-        else if (m.includes('ultra') || m.includes('pro max') || m.includes('fold') || m.includes('flip') || m.includes('pad pro')) { mult = 1.06; adv = "Flagship Touch Sampling (240Hz+) – Very reactive screen. Great for flick shots."; score = 85; }
-        else if (m.includes('pro') || m.includes('plus') || m.includes(' s ') || m.includes('pad')) { mult = 1.04; adv = "Premium Display – Smooth and consistently responsive. Good drag headshots."; score = 75; }
-        else if (m.includes('lite') || m.includes(' a') || m.includes(' c') || m.includes('smart') || m.includes('pop')) { mult = 0.95; adv = "Budget Panel – Requires higher in-game settings to compensate for touch delay."; score = 40; }
-        else if (m.includes(' 2 ') || m.includes(' 3 ') || m.includes(' 4 ') || m.includes(' 5 ')) { mult = 0.92; adv = "Legacy Hardware – Noticeable touch delay. Harder to execute consistent flick shots."; score = 30; }
+        if (b.includes('rog') || b.includes('redmagic') || b.includes('black shark') || m.includes('gaming') || m.includes('legion') || b.includes('iqoo')) { mult = 1.08; adv = "Elite Gaming Display – Massive natural sensitivity advantage."; score = 95; }
+        else if (m.includes('ultra') || m.includes('pro max') || m.includes('fold') || m.includes('flip') || m.includes('pad pro')) { mult = 1.06; adv = "Flagship Touch Sampling – Very reactive screen."; score = 85; }
+        else if (m.includes('pro') || m.includes('plus') || m.includes(' s ') || m.includes('pad')) { mult = 1.04; adv = "Premium Display – Smooth and consistently responsive."; score = 75; }
+        else if (m.includes('lite') || m.includes(' a') || m.includes(' c') || m.includes('smart') || m.includes('pop')) { mult = 0.95; adv = "Budget Panel – Requires higher in-game settings to compensate."; score = 40; }
+        else if (m.includes(' 2 ') || m.includes(' 3 ') || m.includes(' 4 ') || m.includes(' 5 ')) { mult = 0.92; adv = "Legacy Hardware – Noticeable touch delay."; score = 30; }
 
         return { mult, adv, score, touchSampling: score > 70 ? '240Hz' : '120Hz', latency: score > 70 ? '20ms' : '45ms' };
     };
@@ -94,76 +88,74 @@ document.addEventListener('DOMContentLoaded', () => {
         const fB = getFactorInfo(devB);
 
         const buildCard = (d, f, color) => `
-            <div class="device-card glass-card" style="border-top: 4px solid ${color}; position: relative; overflow: hidden;">
-                <div class="hud-corner hud-tl"></div>
-                <div class="hud-corner hud-tr"></div>
-                <div class="hud-corner hud-bl"></div>
-                <div class="hud-corner hud-br"></div>
-                <div class="scan-line"></div>
+            <div class="pulse-card device-result" style="border-top: 4px solid ${color};">
                 <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                    <h3 style="margin: 0; color: #fff;">${d.label}</h3>
-                    <span class="hud-chip">ANALYZED</span>
+                    <h3 class="clash" style="margin: 0; color: #fff;">${d.label}</h3>
+                    <span class="chip-rebirth" style="background: ${color}22; color: ${color}; border-color: ${color}44;">ANALYZED</span>
                 </div>
-                <p style="color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">${d.series}</p>
-                <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top: 10px;">
-                    <span class="hud-chip">Touch ${f.touchSampling}</span>
-                    <span class="hud-chip">Latency ${f.latency}</span>
-                    <span class="hud-chip">Boost ${f.mult}x</span>
-                </div>
-
-                <div style="font-size: 3rem; font-weight: 900; color: ${color}; margin: 20px 0; text-shadow: 0 0 20px ${color}44;">
-                    ${f.score} <span style="font-size: 0.9rem; color: var(--text-muted); font-weight: 400;">ARENA SCORE</span>
+                <p style="color: var(--stardust-muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">${d.series}</p>
+                
+                <div class="score-display" style="color: ${color}; text-shadow: 0 0 20px ${color}44;">
+                    ${f.score}<span style="font-size: 0.8rem; color: var(--stardust-muted); font-weight: 400; margin-left: 10px;">ARENA SCORE</span>
                 </div>
 
-                <div class="stat-row">
-                    <div class="stat-label"><span>TOUCH SAMPLING</span> <span>${f.touchSampling}</span></div>
-                    <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${parseInt(f.touchSampling) / 8}%; background: ${color};"></div></div>
+                <div class="stat-bar-group">
+                    <div class="stat-meta"><span>TOUCH SAMPLING</span> <span>${f.touchSampling}</span></div>
+                    <div class="bar-bg"><div class="bar-fill" data-width="${parseInt(f.touchSampling) / 8}%" style="background: ${color};"></div></div>
                 </div>
 
-                <div class="stat-row">
-                    <div class="stat-label"><span>INPUT LATENCY</span> <span>${f.latency}</span></div>
-                    <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${100 - parseInt(f.latency)}%; background: ${color};"></div></div>
+                <div class="stat-bar-group">
+                    <div class="stat-meta"><span>INPUT LATENCY</span> <span>${f.latency}</span></div>
+                    <div class="bar-bg"><div class="bar-fill" data-width="${100 - parseInt(f.latency)}%" style="background: ${color};"></div></div>
                 </div>
 
-                <div class="stat-row">
-                    <div class="stat-label"><span>BOOST FACTOR</span> <span>${f.mult}x</span></div>
-                    <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: ${f.mult * 60}%; background: ${color};"></div></div>
+                <div class="stat-bar-group">
+                    <div class="stat-meta"><span>BOOST FACTOR</span> <span>${f.mult}x</span></div>
+                    <div class="bar-bg"><div class="bar-fill" data-width="${f.mult * 60}%" style="background: ${color};"></div></div>
                 </div>
 
-                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1.5rem; font-style: italic; line-height: 1.4;">
+                <p style="font-size: 0.8rem; color: var(--stardust-muted); margin-top: 2rem; font-style: italic; line-height: 1.6; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
                     "${f.adv}"
-                </div>
+                </p>
             </div>
         `;
 
-        document.getElementById('compareCards').innerHTML = buildCard(devA, fA, '#ff4d4d') + buildCard(devB, fB, '#00e5ff');
+        const container = document.getElementById('compareCards');
+        container.innerHTML = buildCard(devA, fA, '#ff4444') + buildCard(devB, fB, '#00f5ff');
 
         const winnerBox = document.getElementById('winnerBanner');
-        if (fA.score > fB.score) winnerBox.innerHTML = `<i class="fas fa-trophy" style="margin-right:10px;"></i> <span style="color:#ff4d4d;">${devA.label}</span> HAS THE ARENA ADVANTAGE`;
-        else if (fB.score > fA.score) winnerBox.innerHTML = `<i class="fas fa-trophy" style="margin-right:10px;"></i> <span style="color:#00e5ff;">${devB.label}</span> HAS THE ARENA ADVANTAGE`;
-        else winnerBox.innerHTML = `⚖️ TACTICAL PARITY DETECTED`;
+        if (fA.score > fB.score) winnerBox.innerHTML = `<h3 class="clash"><i class="fas fa-trophy" style="color:#ff4444;"></i> <span style="color:#ff4444;">${devA.label}</span> DOMINATES THE ARENA</h3>`;
+        else if (fB.score > fA.score) winnerBox.innerHTML = `<h3 class="clash"><i class="fas fa-trophy" style="color:#00f5ff;"></i> <span style="color:#00f5ff;">${devB.label}</span> DOMINATES THE ARENA</h3>`;
+        else winnerBox.innerHTML = `<h3 class="clash">⚖️ TACTICAL PARITY DETECTED</h3>`;
 
         // Render mock comments
         const comments = [
             { user: "Areni_X", text: `I switched to ${fA.score > fB.score ? devA.label : devB.label} last month, the drag-headshots feel way more consistent.`, date: "2 days ago" },
-            { user: "SensitivityMaster", text: `The ${fA.latency < fB.latency ? devA.label : devB.label} latency is actually noticeable in top-tier scrims. Don't sleep on it.`, date: "1 week ago" }
+            { user: "SensitivityMaster", text: `The ${fA.latency < fB.latency ? devA.label : devB.label} latency is actually noticeable in top-tier scrims.`, date: "1 week ago" }
         ];
 
         document.getElementById('comparisonComments').innerHTML = comments.map(c => `
-            <div class="comment-item glass-card">
-                <div class="hud-corner hud-tl"></div>
-                <div class="hud-corner hud-tr"></div>
-                <div class="hud-corner hud-bl"></div>
-                <div class="hud-corner hud-br"></div>
-                <div style="display:flex; justify-content:space-between; margin-bottom: 5px;">
-                    <span style="font-weight: 800; color: var(--accent);">@${c.user}</span>
-                    <span style="color: var(--text-muted); font-size: 0.7rem;">${c.date}</span>
+            <div class="log-entry" style="padding: 1.5rem;">
+                <div style="flex: 1;">
+                    <div style="display:flex; justify-content:space-between; margin-bottom: 10px;">
+                        <span style="font-weight: 800; color: var(--photon);">@${c.user}</span>
+                        <span style="color: var(--stardust-muted); font-size: 0.7rem;">${c.date}</span>
+                    </div>
+                    <div style="color: #fff; font-size: 0.9rem;">${c.text}</div>
                 </div>
-                <div style="color: #fff;">${c.text}</div>
             </div>
         `).join('');
 
-        document.getElementById('resultSection').classList.remove('hidden');
-        document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+        const resultSec = document.getElementById('resultSection');
+        resultSec.style.display = 'block';
+        setTimeout(() => {
+            resultSec.style.opacity = '1';
+            resultSec.style.transform = 'translateY(0)';
+            document.querySelectorAll('.bar-fill').forEach(bar => {
+                bar.style.width = bar.getAttribute('data-width');
+            });
+        }, 100);
+
+        resultSec.scrollIntoView({ behavior: 'smooth' });
     });
 });

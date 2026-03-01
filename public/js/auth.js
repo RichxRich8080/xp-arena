@@ -49,6 +49,7 @@ const Auth = {
             if (res.ok) {
                 localStorage.setItem('xp_token', data.token);
                 localStorage.setItem('xp_current_user', JSON.stringify(data.user));
+                localStorage.setItem('xp_login_success', 'true');
                 window.dispatchEvent(new Event('authChange'));
                 return { success: true };
             }

@@ -4,85 +4,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Knowledge Center • XP ARENA</title>
-  <meta name="description" content="Help center for XP ARENA: account, tool, leaderboard and troubleshooting.">
-  <link rel="stylesheet" href="css/main.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@700;800;900&family=Rajdhani:wght@600;700&display=swap"
-    rel="stylesheet">
+  <title>Knowledge Repository • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
   <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
   <style>
-    body {
-      background: var(--bg);
-      color: #f8fafc;
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-    }
-
-    /* ─── AMBIENT ─── */
-    .ambient-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .orb {
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: var(--accent);
-      filter: blur(150px);
-      opacity: 0.1;
-      top: -200px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-
-    /* ─── LAYOUT ─── */
-    .page-wrapper {
-      position: relative;
-      z-index: 1;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 4rem 1.5rem 8rem;
-    }
-
-    .help-header {
+    .help-hero {
+      padding: 10rem 2rem 5rem;
       text-align: center;
-      margin-bottom: 5rem;
+      background: radial-gradient(circle at top, rgba(0, 245, 255, 0.05), transparent 70%);
     }
 
-    .help-header h1 {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2.5rem, 8vw, 3.8rem);
-      font-weight: 900;
-      letter-spacing: -2px;
-      margin-bottom: 1rem;
+    .help-hero h1 {
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      line-height: 0.9;
+    }
+
+    .help-section {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 2rem 10rem;
     }
 
     .search-container {
       position: relative;
       max-width: 500px;
-      margin: 2rem auto 0;
-    }
-
-    .search-input {
-      width: 100%;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 100px;
-      padding: 1.2rem 1.5rem 1.2rem 3.5rem;
-      color: #fff;
-      font-size: 1.1rem;
-      backdrop-filter: blur(20px);
-      transition: all 0.3s ease;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 30px var(--accent-glow);
+      margin: 3rem auto 0;
     }
 
     .search-container i {
@@ -90,289 +36,194 @@
       left: 1.5rem;
       top: 50%;
       transform: translateY(-50%);
-      color: var(--accent);
-      font-size: 1.2rem;
+      color: var(--photon);
+      opacity: 0.5;
     }
 
-    /* ─── FAQ ACCORDION ─── */
-    .faq-category {
-      margin-bottom: 4rem;
-    }
-
-    .category-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .faq-item {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      margin-bottom: 1rem;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .faq-item:hover {
-      border-color: var(--border-active);
+    .search-node {
+      width: 100%;
       background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+      border-radius: 100px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .search-node:focus {
+      outline: none;
+      border-color: var(--photon);
+      box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+    }
+
+    /* FAQ Grid */
+    .category-net {
+      margin-top: 5rem;
+    }
+
+    .category-label {
+      font-size: 0.65rem;
+      color: var(--stardust-muted);
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      font-weight: 800;
+      margin-bottom: 2rem;
+      display: block;
+      text-align: center;
+    }
+
+    .faq-node {
+      margin-bottom: 1rem;
+      transition: all 0.3s var(--transition);
+    }
+
+    .faq-node.active {
+      border-color: var(--photon);
     }
 
     .faq-trigger {
-      padding: 1.5rem;
       width: 100%;
+      padding: 2rem;
       display: flex;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
       background: none;
       border: none;
       color: #fff;
-      font-size: 1.05rem;
-      font-weight: 700;
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
       text-align: left;
       cursor: pointer;
     }
 
-    .faq-trigger span {
-      flex: 1;
-      padding-right: 20px;
-    }
-
     .faq-icon {
+      transition: transform 0.3s;
+      color: var(--photon);
       font-size: 0.8rem;
-      color: #64748b;
-      transition: transform 0.3s ease;
     }
 
-    .faq-item.open .faq-icon {
+    .faq-node.active .faq-icon {
       transform: rotate(45deg);
-      color: var(--accent);
     }
 
-    .faq-content {
-      padding: 0 1.5rem;
+    .faq-data {
       max-height: 0;
       overflow: hidden;
-      transition: all 0.3s cubic-bezier(0, 1, 0, 1);
-      color: #94a3b8;
-      line-height: 1.8;
+      transition: all 0.4s var(--transition);
+      padding: 0 2rem;
+      color: var(--stardust-muted);
       font-size: 0.95rem;
+      line-height: 1.7;
     }
 
-    .faq-item.open .faq-content {
-      max-height: 1000px;
-      padding-bottom: 1.5rem;
-      transition: all 0.3s cubic-bezier(1, 0, 1, 0);
-    }
-
-    /* ─── QUICK CARDS ─── */
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1.5rem;
-      margin-top: 5rem;
-    }
-
-    .quick-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2rem;
-      text-align: center;
-      text-decoration: none;
-      color: #fff;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
-    }
-
-    .quick-card:hover {
-      transform: translateY(-8px);
-      border-color: var(--accent);
-      background: rgba(var(--accent-rgb, 139, 92, 246), 0.05);
-    }
-
-    .quick-card i {
-      font-size: 2rem;
-      color: var(--accent);
-      margin-bottom: 1.2rem;
-    }
-
-    .quick-card h4 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 800;
-      margin-bottom: 0.5rem;
-    }
-
-    .quick-card p {
-      font-size: 0.8rem;
-      color: #64748b;
+    .faq-node.active .faq-data {
+      max-height: 500px;
+      padding-bottom: 2rem;
     }
   </style>
 </head>
 
-<body class="fade-in">
+<body class="page-rebirth">
+  <div class="help-hero">
+    <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Operational Protocols</span>
+    <h1 class="clash">KNOWLEDGE<br><span class="text-photon">REPOSITORY</span></h1>
 
-  <nav class="navbar"></nav>
-
-  <div class="ambient-bg">
-    <div class="orb"></div>
+    <div class="search-container">
+      <i class="fas fa-search"></i>
+      <input type="text" id="faqSearch" class="search-node" placeholder="Query neural archives...">
+    </div>
   </div>
 
-  <main class="main-content-area">
-    <div class="page-wrapper">
+  <div class="help-section">
+    <div class="category-net">
+      <span class="category-label">Operational Fundamentals</span>
 
-      <div class="help-header reveal">
-        <h1>Arena Intelligence</h1>
-        <p>Everything you need to know to survive and conquer the XP ARENA platform.</p>
-        <div class="search-container">
-          <i class="fas fa-search"></i>
-          <input type="text" class="search-input" placeholder="Search mission protocols..." id="faqSearch">
+      <div class="pulse-card faq-node">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span>Initializing Operative Identity</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-data">
+          Every Areni must establish a unique neural token via the Signup portal. This secures your AXP progression,
+          Vault storage, and historical performance logs across the network.
         </div>
       </div>
 
-      <!-- ACCOUNT SECTION -->
-      <div class="faq-category reveal">
-        <h2 class="category-title"><i class="fas fa-user-shield"></i> Account Protocols</h2>
-
-        <div class="faq-item">
-          <button class="faq-trigger" onclick="toggleFaq(this)">
-            <span>How do I create an account?</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-content">
-            <p>Navigate to the Signup portal, choose a unique operative designation (Username) and secure credentials.
-              After verification, visit your Profile to manage your AXP, Vault, and History.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-trigger" onclick="toggleFaq(this)">
-            <span>Why save Vault and Presets?</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-content">
-            <p>The Vault stores your peak performance sensitivity cards. Presets allow for instant recalibration during
-              high-stakes tournaments and scrims, ensuring consistent lethality.</p>
-          </div>
+      <div class="pulse-card faq-node">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span>The Calibration Methodology</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-data">
+          The Sensitivity Engine synchronizes your physical hardware specs with our performance algorithms. This ensures
+          a 1:1 response ratio, critical for elite-level execution.
         </div>
       </div>
-
-      <!-- COMPETITION SECTION -->
-      <div class="faq-category reveal">
-        <h2 class="category-title"><i class="fas fa-trophy"></i> Competitive Systems</h2>
-
-        <div class="faq-item">
-          <button class="faq-trigger" onclick="toggleFaq(this)">
-            <span>How does the Leaderboard work?</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-content">
-            <p>Operatives ascend the Global Rankings by earning AXP (Arena Experience Points) through participation. Top
-              Arenis are recognized weekly. In technical ties, the operative who achieved the score first retains
-              priority.</p>
-          </div>
-        </div>
-
-        <div class="faq-item">
-          <button class="faq-trigger" onclick="toggleFaq(this)">
-            <span>How do I join a Clan War?</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-content">
-            <p>Clan Wars require an active Clan affiliation. Clan Leaders can apply for war status via the War Command
-              Center. Once active, all members contribute to the war score through specified activity.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- TROUBLESHOOTING -->
-      <div class="faq-category reveal">
-        <h2 class="category-title"><i class="fas fa-tools"></i> Troubleshooting</h2>
-
-        <div class="faq-item">
-          <button class="faq-trigger" onclick="toggleFaq(this)">
-            <span>Persistent Login Failures?</span>
-            <div class="faq-icon"><i class="fas fa-plus"></i></div>
-          </button>
-          <div class="faq-content">
-            <p>Ensure session cookies are authorized for localhost or xp-arena.com. Clear browser cache if assets fail
-              to load. If credentials remain invalid, initiate a secure reset via the Forgot Password protocol.</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- QUICK LINKS -->
-      <div class="quick-grid reveal">
-        <a href="contact.html" class="quick-card">
-          <i class="fas fa-headset"></i>
-          <h4>Human Support</h4>
-          <p>Open a priority ticket</p>
-        </a>
-        <a href="support.html" class="quick-card">
-          <i class="fas fa-heart"></i>
-          <h4>Support Project</h4>
-          <p>Help fund the Arena</p>
-        </a>
-        <a href="tool.html" class="quick-card">
-          <i class="fas fa-crosshairs"></i>
-          <h4>The Tool</h4>
-          <p>Access calibration lab</p>
-        </a>
-      </div>
-
     </div>
-  </main>
 
-  <nav class="bottom-nav"></nav>
+    <div class="category-net">
+      <span class="category-label">The Hierarchy</span>
 
+      <div class="pulse-card faq-node">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span>AXP and Global Standings</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-data">
+          Arena Experience Points (AXP) quantify your operational activity. Higher AXP correlates with superior platform
+          rank and access to restricted sectors of the XP ARENA.
+        </div>
+      </div>
+
+      <div class="pulse-card faq-node">
+        <button class="faq-trigger" onclick="toggleFaq(this)">
+          <span>Clan Integration Protocol</span>
+          <i class="fas fa-plus faq-icon"></i>
+        </button>
+        <div class="faq-data">
+          Clans are collaborative neural networks. Members pool AXP to dominate the global leaderboard and participate
+          in synchronized Clan Operations for massive rewards.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 6rem; text-align: center;">
+      <p style="color: var(--stardust-muted); font-size: 0.95rem;">Archives insufficient? Establish direct uplink.</p>
+      <div style="display: flex; gap: 1.5rem; justify-content: center; margin-top: 2rem;">
+        <button class="btn-rebirth" onclick="window.location.href='contact.html'">SIGNAL SUPPORT</button>
+        <button class="btn-rebirth btn-photon" onclick="window.location.href='index.html'">HUB COMMAND</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
-  <script src="js/app.js"></script>
   <script>
     function toggleFaq(btn) {
-      const item = btn.parentNode;
-      const isOpen = item.classList.contains('open');
+      const item = btn.closest('.faq-node');
+      const isActive = item.classList.contains('active');
 
-      // Close others
-      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
-
-      if (!isOpen) {
-        item.classList.add('open');
-      }
+      document.querySelectorAll('.faq-node').forEach(i => i.classList.remove('active'));
+      if (!isActive) item.classList.add('active');
     }
 
-    // Simple search simulation
-    document.getElementById('faqSearch').addEventListener('input', function (e) {
+    document.getElementById('faqSearch').addEventListener('input', (e) => {
       const term = e.target.value.toLowerCase();
-      document.querySelectorAll('.faq-item').forEach(item => {
+      document.querySelectorAll('.faq-node').forEach(item => {
         const text = item.textContent.toLowerCase();
         item.style.display = text.includes(term) ? 'block' : 'none';
       });
 
-      document.querySelectorAll('.faq-category').forEach(cat => {
-        const visibleItems = cat.querySelectorAll('.faq-item[style="display: block;"]').length;
-        cat.style.display = (visibleItems > 0 || term === '') ? 'block' : 'none';
+      document.querySelectorAll('.category-net').forEach(cat => {
+        const visible = cat.querySelectorAll('.faq-node[style="display: block;"]').length;
+        cat.style.display = (visible > 0 || term === '') ? 'block' : 'none';
       });
     });
-
-    // Scroll Reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry, i) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => entry.target.classList.add('visible'), i * 150);
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
 </body>
 

@@ -4,116 +4,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Submit Clip • XP ARENA</title>
-    <meta name="description"
-        content="Submit your best gameplay clips to the XP ARENA weekly rankings for a chance to win cash prizes and recognition.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/main.css">
+    <title>Rankings Clearance • XP ARENA</title>
+    <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <style>
+        .submit-hero {
+            padding: 10rem 2rem 5rem;
+            text-align: center;
+            background: radial-gradient(circle at bottom left, rgba(255, 68, 68, 0.05), transparent 60%);
+        }
+
+        .submit-hero h1 {
+            font-size: clamp(3rem, 10vw, 5rem);
+            line-height: 0.9;
+        }
+
+        .submit-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem 10rem;
+        }
+
+        .rules-grid {
+            margin-bottom: 3rem;
+        }
+
+        .rule-node {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(255, 68, 68, 0.03);
+            border-left: 2px solid #ff4444;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+            color: var(--stardust-muted);
+        }
+
+        .rule-node i {
+            color: #ff4444;
+        }
+
+        .submission-card {
+            padding: 3rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .input-node {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .input-node label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+            color: var(--stardust-muted);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            color: #fff;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .glass-input:focus {
+            border-color: var(--photon);
+            background: rgba(255, 255, 255, 0.06);
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 245, 255, 0.1);
+        }
+
+        .success-overlay-rebirth {
+            position: fixed;
+            inset: 0;
+            background: var(--void);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .success-overlay-rebirth.active {
+            display: flex;
+        }
+
+        .success-hero {
+            font-size: clamp(3rem, 15vw, 8rem);
+            margin-bottom: 2rem;
+            animation: pulse-photon 2s infinite;
+        }
+
+        @keyframes pulse-photon {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
 
-<body class="fade-in">
+<body class="page-rebirth">
+    <div class="submit-hero">
+        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Intel Submission
+            Corridor</span>
+        <h1 class="clash">RANKINGS<br><span class="text-photon">CLEARANCE</span></h1>
+        <p style="color: var(--stardust-muted); max-width: 500px; margin: 2rem auto 0; font-size: 1.1rem;">
+            Upload your tactical highlights to the neural grid. Secure your position in the weekly rankings.
+        </p>
+    </div>
 
-    <nav class="navbar">
-        <!-- Injected by layout.js -->
-    </nav>
-
-    <main class="main-content-area">
-        <div class="container">
-            <div class="page-header">
-                <h1>Enter Weekly Rankings</h1>
-                <p>Submit your best clip to get featured on the global leaderboard.</p>
-            </div>
-
-            <div
-                style="background: rgba(255, 68, 68, 0.05); border: 1px solid rgba(255, 68, 68, 0.2); padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
-                <h3 style="color: #ff4444; font-size: 1rem; margin-bottom: 0.8rem;">⚠️ Submission Rules</h3>
-                <ul style="list-style-position: inside; color: var(--text-muted); font-size: 0.9rem; line-height: 1.8;">
-                    <li>No background music (Game sound only)</li>
-                    <li>Max clip length: 60 seconds</li>
-                    <li>No cheats/hacks (Instant ban)</li>
-                    <li>Respectful content only</li>
-                </ul>
-            </div>
-
-            <div class="form-card" id="submissionArea">
-                <div id="authGuard" style="display: none; text-align: center; padding: 2rem 1rem;">
-                    <div style="font-size: 3rem; margin-bottom: 1.5rem;">🔒</div>
-                    <h2 style="margin-bottom: 1rem;">Login Required</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 2rem;">You must be logged in to participate in
-                        the
-                        weekly rankings and earn AXP.</p>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <a href="login.html" class="btn-primary">LOGIN NOW</a>
-                        <a href="signup.html" class="btn-secondary">CREATE ACCOUNT</a>
-                    </div>
-                </div>
-
-                <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST" id="submissionForm">
-                    <input type="hidden" name="_subject" value="New Gameplay Submission - XP ARENA">
-                    <input type="hidden" name="_captcha" value="false">
-
-                    <div class="form-group">
-                        <label>Gamer Tag (In-Game Name)</label>
-                        <input type="text" name="gamertag" id="form-gamertag" placeholder="e.g. ShadowSlayer" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Game UID</label>
-                        <input type="text" name="uid" placeholder="e.g. 12345678" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>WhatsApp Number (For Prize Delivery)</label>
-                        <input type="tel" name="whatsapp" placeholder="+234..." required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Clip Link (YouTube/Drive/TikTok)</label>
-                        <input type="url" name="clip_url" placeholder="https://..." required>
-                    </div>
-
-                    <button type="submit" class="btn-primary">SUBMIT ENTRY</button>
-                </form>
+    <div class="submit-section">
+        <!-- Rules -->
+        <div class="rules-grid">
+            <div class="rule-node"><i class="fas fa-volume-mute"></i> Clean Audio Profile (Game Sound Only)</div>
+            <div class="rule-node"><i class="fas fa-hourglass-half"></i> Maximum Runtime: 60 Seconds</div>
+            <div class="rule-node"><i class="fas fa-shield-virus"></i> Integrity Check: No Neural Augmentations (Cheats)
             </div>
         </div>
-    </main>
 
-    <!-- Success Message Overlay -->
-    <div class="success-overlay" id="successOverlay">
-        <div class="success-icon">✅</div>
-        <h2 class="success-title">Submission Successful!</h2>
-        <p class="success-desc">Your clip has been received. Our team will review it, and you might see yourself on the
-            leaderboard soon!</p>
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-primary" onclick="window.location.href='index.html'"
-                style="width: auto; padding: 0.8rem 1.5rem;">Go Home</button>
-            <button class="btn-secondary" onclick="location.reload()"
-                style="width: auto; padding: 0.8rem 1.5rem;">Submit Another</button>
+        <!-- Form Area -->
+        <div class="pulse-card submission-card" id="submissionArea">
+            <div id="authGuard" style="display: none; text-align: center; padding: 2rem 0;">
+                <div style="font-size: 4rem; margin-bottom: 2rem; opacity: 0.3;">🔒</div>
+                <h2 class="clash" style="margin-bottom: 1rem;">ACCESS DENIED</h2>
+                <p style="color: var(--stardust-muted); margin-bottom: 3rem;">Authentication required to submit data and
+                    earn AXP clearance.</p>
+                <div style="display: grid; gap: 1rem; max-width: 300px; margin: 0 auto;">
+                    <a href="identity/login.html" class="btn-rebirth btn-photon" style="justify-content: center;">INITIATE
+                        LOGIN</a>
+                    <a href="identity/signup.html" class="btn-rebirth" style="justify-content: center;">CREATE TOKEN</a>
+                </div>
+            </div>
+
+            <form action="https://formsubmit.co/umarsa8080@gmail.com" method="POST" id="submissionForm"
+                style="display: none;">
+                <input type="hidden" name="_subject" value="Rebirth Submission - XP ARENA">
+                <input type="hidden" name="_captcha" value="false">
+
+                <div class="form-grid">
+                    <div class="input-node">
+                        <label>OPERATIVE IDENTIFIER</label>
+                        <input type="text" name="gamertag" id="form-gamertag" class="glass-input"
+                            placeholder="e.g. ShadowAlpha" required>
+                    </div>
+
+                    <div class="input-node">
+                        <label>NEURAL UID</label>
+                        <input type="text" name="uid" class="glass-input" placeholder="e.g. 10293847" required>
+                    </div>
+
+                    <div class="input-node">
+                        <label>COMMUNICATION LINK (WHATSAPP)</label>
+                        <input type="tel" name="whatsapp" class="glass-input" placeholder="+234..." required>
+                    </div>
+
+                    <div class="input-node">
+                        <label>INTEL URL (YOUTUBE / DRIVE / TIKTOK)</label>
+                        <input type="url" name="clip_url" class="glass-input" placeholder="https://..." required>
+                    </div>
+
+                    <button type="submit" class="btn-rebirth btn-photon"
+                        style="margin-top: 2rem; justify-content: center; height: 3.5rem;">
+                        <i class="fas fa-upload"></i> BROADCAST INTEL
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <nav class="bottom-nav">
-        <!-- Injected by layout.js -->
-    </nav>
+    <!-- Rebirth Success Overlay -->
+    <div class="success-overlay-rebirth" id="successOverlay">
+        <div class="success-hero clash text-photon">UPLOAD COMPLETE</div>
+        <p style="color: var(--stardust-muted); max-width: 500px; margin-bottom: 4rem; font-size: 1.2rem;">
+            Your intel has been successfully broadcasted to the neural grid. High Command will review the logs.
+        </p>
+        <div style="display: flex; gap: 1.5rem;">
+            <button class="btn-rebirth btn-photon" onclick="window.location.href='index.html'">BASE COMMAND</button>
+            <button class="btn-rebirth" onclick="location.reload()">NEW BROADCAST</button>
+        </div>
+    </div>
 
+    <!-- Scripts -->
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
     <script>
         const form = document.getElementById('submissionForm');
         const authGuard = document.getElementById('authGuard');
-        const btn = document.querySelector('#submissionForm .btn-primary');
+        const btn = document.querySelector('#submissionForm button');
         const overlay = document.getElementById('successOverlay');
 
         function checkAuth() {
             if (!Auth.isLoggedIn()) {
-                if (form) form.style.display = 'none';
-                if (authGuard) authGuard.style.display = 'block';
+                form.style.display = 'none';
+                authGuard.style.display = 'block';
             } else {
-                if (form) form.style.display = 'block';
-                if (authGuard) authGuard.style.display = 'none';
+                form.style.display = 'block';
+                authGuard.style.display = 'none';
                 const user = Auth.getCurrentUser();
                 const gamerTagInput = document.getElementById('form-gamertag');
                 if (gamerTagInput && user.username) {
@@ -127,7 +236,7 @@
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();
-            btn.innerHTML = "Sending...";
+            btn.innerHTML = '<i class="fas fa-satellite fa-spin"></i> BROADCASTING...';
             btn.style.opacity = "0.7";
 
             const formData = new FormData(form);
@@ -135,30 +244,28 @@
             fetch(form.action, {
                 method: "POST",
                 body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
+                headers: { 'Accept': 'application/json' }
             })
                 .then(response => {
                     if (response.ok) {
                         overlay.classList.add('active');
                         form.reset();
-                        if (typeof User !== 'undefined' && typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
+                        if (Auth.isLoggedIn()) {
                             User.addClip({
                                 device: formData.get('gamertag') || 'Mobile Areni',
                                 url: formData.get('clip_url')
                             });
                         }
                     } else {
-                        alert("Oops! There was a problem submitting your form. Please try again.");
-                        btn.innerHTML = "SUBMIT ENTRY";
+                        alert("BROADCAST ERROR: Grid interference detected. Please retry.");
+                        btn.innerHTML = '<i class="fas fa-upload"></i> BROADCAST INTEL';
                         btn.style.opacity = "1";
                     }
                 })
                 .catch(error => {
                     console.error("Submission error:", error);
-                    alert("Submission failed. Please check your connection.");
-                    btn.innerHTML = "SUBMIT ENTRY";
+                    alert("NEURAL LINK FAILED: Check your uplink.");
+                    btn.innerHTML = '<i class="fas fa-upload"></i> BROADCAST INTEL';
                     btn.style.opacity = "1";
                 });
         });
