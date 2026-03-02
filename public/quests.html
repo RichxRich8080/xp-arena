@@ -3,359 +3,171 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Operations • XP ARENA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL_BOUNTIES // XP ARENA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=Outfit:wght@400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="css/rebirth.css">
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,400&display=swap" rel="stylesheet">
     <style>
-        .ops-container {
-            padding: 8rem 2rem 10rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .ops-header {
-            text-align: center;
-            margin-bottom: 5rem;
-        }
-
-        .ops-header h1 {
-            font-size: 4rem;
-            line-height: 1;
-            margin-bottom: 1rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            padding: 0 0.5rem;
-        }
-
-        .countdown-pill {
-            background: var(--glass-highlight);
-            border: 1px solid var(--glass-border);
-            padding: 0.5rem 1.2rem;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--stardust);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .countdown-pill span {
-            color: var(--photon);
-            font-family: 'Clash Display', sans-serif;
-        }
-
-        /* Mission Cards */
-        .quest-grid {
+        .bounty-grid {
             display: grid;
             gap: 1.5rem;
-            margin-bottom: 4rem;
+            margin-top: 3rem;
         }
 
-        .mission-card {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        .bounty-card {
+            padding: 2.5rem;
+            display: grid;
+            grid-template-columns: 80px 1fr 150px;
+            align-items: center;
+            gap: 2rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            transition: all 0.3s var(--transition-premium);
         }
 
-        .mission-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+        .bounty-card:hover {
+            border-color: var(--primary);
+            background: var(--nebula);
+            transform: scale(1.02);
         }
 
-        .mission-meta h3 {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .mission-meta p {
-            font-size: 0.9rem;
-            color: var(--stardust-muted);
-            line-height: 1.5;
-        }
-
-        .reward-tag {
-            background: var(--glass-highlight);
-            border: 1px solid var(--photon);
-            color: var(--photon);
-            padding: 0.5rem 1rem;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.8rem;
-            box-shadow: 0 0 10px var(--photon-glow);
-        }
-
-        .progress-container {
+        .bounty-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--nebula-solid);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 1.5rem;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--photon);
         }
 
-        .progress-track {
-            flex: 1;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            overflow: hidden;
+        .bounty-reward {
+            text-align: right;
+            font-family: 'Clash Display', sans-serif;
+            font-size: 1.5rem;
+            color: var(--gold);
         }
 
-        .progress-fill {
-            height: 100%;
-            background: var(--photon);
-            box-shadow: 0 0 10px var(--photon-glow);
-            transition: width 0.6s var(--transition);
-        }
-
-        .progress-text {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--stardust);
-        }
-
-        /* Overlay */
-        #questSheet {
-            position: fixed;
-            bottom: -100%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 500px;
-            background: var(--nebula-solid);
-            border: 1px solid var(--photon);
-            border-radius: var(--radius-lg);
-            padding: 2.5rem;
-            z-index: 1000;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
-            transition: bottom 0.5s var(--transition);
-        }
-
-        #questSheet.active {
-            bottom: 3rem;
-        }
-
-        @media (max-width: 600px) {
-            .ops-header h1 {
-                font-size: 2.5rem;
-            }
+        .bounty-reward span {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--stardust-muted);
+            letter-spacing: 2px;
         }
     </style>
 </head>
 
 <body>
-    <div class="ops-container">
-        <header class="ops-header">
-            <span class="section-label" style="letter-spacing: 0.4rem;">Operational Directives</span>
-            <h1 class="clash">MISSION<br><span class="text-photon">CONTROL</span></h1>
-            <p style="color: var(--stardust-muted); max-width: 500px; margin: 0 auto;">
-                Execute tactical objectives to secure AXP and advance your Areni ranking.
-            </p>
+    <div class="rebirth-container">
+        <header style="margin-bottom: 5rem; display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" class="btn-rebirth"
+                style="padding: 0.8rem 1.5rem; border-radius: 12px; font-size: 0.8rem;">
+                <i class="fas fa-arrow-left"></i> HUB_DIRECTIVE
+            </a>
+            <div style="text-align: right;">
+                <span class="section-label" style="letter-spacing: 5px;">MISSION_LOG</span>
+                <h2 class="clash" style="font-size: 1.5rem; margin-top: 0.5rem;">NEURAL BOUNTIES</h2>
+            </div>
         </header>
 
-        <!-- DAILY MISSIONS -->
-        <div class="section-header">
-            <h2 class="clash" style="font-size: 1.2rem;">DAILY DIRECTIVES</h2>
-            <div class="countdown-pill">
-                <i class="far fa-clock"></i> RESET IN <span id="dailyCountdown">00:00:00</span>
+        <div class="hub-hero active-pulse"
+            style="padding: 3rem; border-radius: 30px; margin-bottom: 4rem; position: relative; overflow: hidden;">
+            <div class="card-grain"></div>
+            <div style="display: flex; align-items: center; gap: 3rem;">
+                <!-- Mentor Agent: D-bee -->
+                <div style="width: 150px; flex-shrink: 0; position: relative;">
+                    <img src="assets/images/[CITYPNG.COM]HD Garena Free Fire D-Bee Character PNG - 1000x1100.png"
+                        style="width: 100%; filter: drop-shadow(0 0 20px var(--photon-glow)); animation: neural-breathe 4s infinite;"
+                        alt="D-bee">
+                </div>
+                <div style="flex: 1;">
+                    <span class="section-label" style="color: var(--primary);">SENTIENT_ASSIGNMENT: D-BEE</span>
+                    <h1 class="clash" style="font-size: 2.5rem; margin: 0.5rem 0;">OPERATIONAL<br>OBJECTIVES</h1>
+                    <div id="questDialogue"
+                        style="font-size: 0.8rem; color: var(--stardust-muted); font-style: italic; margin-bottom: 1rem;">
+                        "The sector rhythm is clear, operative. Complete these tasks to stabilize the matrix."</div>
+                    <p style="color: var(--stardust-muted); font-size: 0.8rem;">Complete daily neural missions to
+                        accelerate your AXP ascension and unlock lore fragments.</p>
+                </div>
+                <div
+                    style="width: 200px; height: 100px; background: rgba(0,245,255,0.02); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: center;">
+                    <span
+                        style="font-size: 0.6rem; color: var(--stardust-muted); letter-spacing: 2px;">TOTAL_REWARDS_AVAILABLE</span>
+                    <b class="clash" style="font-size: 1.8rem; color: var(--gold);">1,800 <span
+                            style="font-size: 0.8rem;">AXP</span></b>
+                </div>
             </div>
         </div>
-        <div id="questList" class="quest-grid"></div>
 
-        <!-- WEEKLY MISSIONS -->
-        <div class="section-header" style="margin-top: 2rem;">
-            <h2 class="clash" style="font-size: 1.2rem; color: var(--corona);">WEEKLY EXPEDITIONS</h2>
-            <div class="countdown-pill" style="border-color: var(--corona);">
-                <i class="fas fa-calendar-alt" style="color: var(--corona);"></i> <span id="weeklyResetCountdown"
-                    style="color: var(--corona);">7 DAYS</span>
-            </div>
-        </div>
-        <div id="weeklyQuestList" class="quest-grid"></div>
-    </div>
-
-    <!-- Claim Modal -->
-    <div id="questSheet">
-        <span class="section-label" style="color: var(--photon); margin-bottom: 1rem;">Protocol Complete</span>
-        <h2 class="clash" id="qsTitle" style="margin-bottom: 1rem;">MISSION COMPLETE</h2>
-        <p id="qsDesc" style="color: var(--stardust-muted); font-size: 0.9rem; margin-bottom: 2rem;"></p>
-        <div style="display: flex; gap: 1rem;">
-            <button id="qsClaim" class="btn-rebirth btn-photon" style="flex: 1; justify-content: center;">CLAIM
-                +AXP</button>
-            <button id="qsClose" class="btn-rebirth"
-                style="border: 1px solid var(--glass-border); color: var(--stardust); padding: 0 1.5rem;">VOID</button>
+        <div class="bounty-grid" id="bountyGrid">
+            <!-- Dynamic Content -->
         </div>
     </div>
 
+    <script src="js/config.js"></script>
+    <script src="js/dom-utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
-
     <script>
-        const QUESTS = [
-            { id: 'explorer', name: 'Platform Explorer', desc: 'Visit 5 different pages today', reward: 100, goal: 5, type: 'visit', icon: '📡' },
-            { id: 'social_star', name: 'Neural Link', desc: 'Link at least one social handle', reward: 150, goal: 1, type: 'social', icon: '🔗' },
-            { id: 'vault_keeper', name: 'Data Archivist', desc: 'Save a calculation to your vault', reward: 80, goal: 1, type: 'vault', icon: '💾' },
-            { id: 'steady_hand', name: 'Operational Pulse', desc: 'Maintain a 2-day streak', reward: 200, goal: 2, type: 'streak', icon: '🔋' }
-        ];
-
-        const WEEKLY_QUESTS = [
-            { id: 'weekly_social_update', name: 'Signal Boost', desc: 'Sync TikTok, Instagram or YouTube handles.', reward: 500, icon: '🛰️', type: 'weekly_social' },
-            { id: 'weekly_streak_3', name: 'Sustained Sync', desc: 'Log in for 3 consecutive days this week.', reward: 400, icon: '🔥', type: 'weekly_streak', goal: 3 },
-            { id: 'weekly_explorer', name: 'Grand Tour', desc: 'Visit Tool, Leaderboard, and Ranks pages.', reward: 350, icon: '🗺️', type: 'weekly_pages', pages: ['tool.html', 'leaderboard.html', 'ranks.html'] }
-        ];
-
-        let QS_DATA = null;
-
         document.addEventListener('DOMContentLoaded', () => {
-            if (!Auth.isLoggedIn()) {
-                window.location.href = 'login.html';
-                return;
-            }
-            startCountdowns();
-            renderAllQuests();
-
-            document.getElementById('qsClose').onclick = () => document.getElementById('questSheet').classList.remove('active');
-            document.getElementById('qsClaim').onclick = () => {
-                if (QS_DATA.weekly) claimWeeklyQuest(QS_DATA.id, QS_DATA.reward);
-                else claimQuest(QS_DATA.id, QS_DATA.reward);
-                document.getElementById('questSheet').classList.remove('active');
-            };
+            renderBounties();
+            handleDbeeDialogue();
         });
 
-        function renderAllQuests() {
-            renderQuests('questList', QUESTS, false);
-            renderQuests('weeklyQuestList', WEEKLY_QUESTS, true);
-        }
-
-        function renderQuests(targetId, questArray, isWeekly) {
-            const stats = User.getStats();
-            const container = document.getElementById(targetId);
-            const completedList = isWeekly ? (stats.weeklyQuests?.completed || []) : (stats.quests?.completed || []);
-
-            container.innerHTML = questArray.map(q => {
-                const isCompleted = completedList.includes(q.id);
-                let progress = 0;
-                let goal = q.goal || 1;
-
-                if (q.type === 'visit') progress = (stats.visitedPages || []).length;
-                if (q.type === 'social' || q.type === 'weekly_social') progress = (stats.socials.tiktok || stats.socials.instagram || stats.socials.youtube) ? 1 : 0;
-                if (q.type === 'vault') progress = (stats.vault || []).length > 0 ? 1 : 0;
-                if (q.type === 'streak' || q.type === 'weekly_streak') progress = stats.streak || 0;
-                if (q.type === 'weekly_pages') {
-                    const visited = stats.visitedPages || [];
-                    progress = q.pages.filter(p => visited.includes(p)).length;
-                    goal = q.pages.length;
-                }
-
-                const percent = Math.min((progress / goal) * 100, 100);
-                const canClaim = progress >= goal && !isCompleted;
-
-                return `
-                    <div class="pulse-card mission-card ${isCompleted ? 'completed' : ''}" style="border-color: ${canClaim ? (isWeekly ? 'var(--corona)' : 'var(--photon)') : 'var(--glass-border)'}; opacity: ${isCompleted ? 0.5 : 1};">
-                        <div class="mission-top">
-                            <div class="mission-meta">
-                                <h3 class="clash">${q.icon} ${q.name}</h3>
-                                <p>${q.desc}</p>
-                            </div>
-                            <div class="reward-tag" style="border-color: ${isWeekly ? 'var(--corona)' : 'var(--photon)'}; color: ${isWeekly ? 'var(--corona)' : 'var(--photon)'}; box-shadow: 0 0 10px ${isWeekly ? 'var(--corona-glow)' : 'var(--photon-glow)'};">
-                                +${q.reward} AXP
-                            </div>
-                        </div>
-                        
-                        <div class="progress-container">
-                            <div class="progress-track">
-                                <div class="progress-fill" style="width: ${percent}%; background: ${isWeekly ? 'var(--corona)' : 'var(--photon)'}; box-shadow: 0 0 10px ${isWeekly ? 'var(--corona-glow)' : 'var(--photon-glow)'};"></div>
-                            </div>
-                            <span class="progress-text">${Math.min(progress, goal)} / ${goal}</span>
-                        </div>
-
-                        ${canClaim ? `
-                            <button class="btn-rebirth ${isWeekly ? 'btn-corona' : 'btn-photon'}" style="width: 100%; justify-content: center;" onclick="promptClaim('${q.id}', ${q.reward}, '${q.name.replace(/'/g, "\\'")}', '${q.desc.replace(/'/g, "\\'")}', ${isWeekly})">
-                                CLAIM REWARD
-                            </button>
-                        ` : (isCompleted ? `
-                            <div style="text-align: center; font-size: 0.8rem; color: var(--stardust-muted); font-weight: 700; letter-spacing: 0.1rem;">MISSION LOGGED</div>
-                        ` : `
-                            <div style="text-align: center; font-size: 0.8rem; color: var(--stardust-muted); opacity: 0.5;">IN PROGRESS...</div>
-                        `)}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function promptClaim(id, reward, name, desc, weekly) {
-            QS_DATA = { id, reward, name, desc, weekly };
-            const sheet = document.getElementById('questSheet');
-            document.getElementById('qsTitle').textContent = name;
-            document.getElementById('qsDesc').textContent = `${desc} • Reward: +${reward} AXP`;
-            sheet.classList.add('active');
-
-            // Set claim button theme
-            const claimBtn = document.getElementById('qsClaim');
-            if (weekly) {
-                claimBtn.className = 'btn-rebirth btn-corona';
-                sheet.style.borderColor = 'var(--corona)';
-            } else {
-                claimBtn.className = 'btn-rebirth btn-photon';
-                sheet.style.borderColor = 'var(--photon)';
+        function handleDbeeDialogue() {
+            const dialogue = document.getElementById('questDialogue');
+            if (!dialogue) return;
+            const stats = typeof User !== 'undefined' ? User.getStats() : null;
+            if (stats && stats.level > 5) {
+                dialogue.textContent = '"Your neural signature is vibrating at a higher frequency. The bounties are yours for the taking."';
             }
         }
 
-        function claimQuest(id, reward) {
-            User.updateStats(stats => {
-                if (!stats.quests.completed) stats.quests.completed = [];
-                stats.quests.completed.push(id);
-            });
-            User.addAXP(reward, `Daily Quest: ${id}`);
-            if (window.Toast) Toast.show(`Directive complete! +${reward} AXP.`, 'success');
-            renderAllQuests();
+        function renderBounties() {
+            const container = document.getElementById('bountyGrid');
+            if (!container || typeof User === 'undefined') return;
+            const bounties = User.getNeuralBounties();
+
+            container.innerHTML = bounties.map(b => `
+                <div class="bounty-card pulse-card" id="bounty-${b.id}">
+                    <div class="bounty-icon" style="background: radial-gradient(circle, rgba(0,245,255,0.1), transparent); color: var(--photon); border-color: rgba(0,245,255,0.3);">
+                        <i class="fas ${b.icon}"></i>
+                    </div>
+                    <div>
+                        <h3 class="clash" style="font-size: 1.4rem;">${b.title.toUpperCase()}</h3>
+                        <p style="color: var(--stardust-muted); font-size: 0.8rem; margin-top: 5px; opacity: 0.8;">${b.desc.toUpperCase()}</p>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; align-items: flex-end;">
+                        <div class="bounty-reward">
+                            <span class="text-photon" style="font-size: 1.5rem; font-weight: 800;">${b.reward}</span> <span style="display:inline; font-size:0.6rem;">AXP</span>
+                        </div>
+                        <button class="btn-rebirth" onclick="claim('${b.id}')" style="font-size: 0.7rem; padding: 0.6rem 1.2rem; border-color: var(--glass-border); text-transform: uppercase;">CLAIM_INTEL</button>
+                    </div>
+                </div>
+            `).join('');
         }
 
-        function claimWeeklyQuest(id, reward) {
-            User.updateStats(stats => {
-                if (!stats.weeklyQuests) stats.weeklyQuests = { weekStart: getWeekStart(), completed: [] };
-                if (!stats.weeklyQuests.completed) stats.weeklyQuests.completed = [];
-                stats.weeklyQuests.completed.push(id);
-            });
-            User.addAXP(reward, `Weekly Quest: ${id}`);
-            if (window.Toast) Toast.show(`Expedition secure! +${reward} AXP.`, 'success');
-            renderAllQuests();
-        }
-
-        function getWeekStart() {
-            const d = new Date();
-            const day = d.getDay();
-            const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-            const mon = new Date(d.setDate(diff));
-            mon.setHours(0, 0, 0, 0);
-            return mon.getTime();
-        }
-
-        function startCountdowns() {
-            setInterval(() => {
-                const now = new Date();
-                // Daily
-                const next = new Date(now);
-                next.setHours(24, 0, 0, 0);
-                const diff = next - now;
-                const h = String(Math.floor(diff / 3600000)).padStart(2, '0');
-                const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-                const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-                document.getElementById('dailyCountdown').textContent = `${h}:${m}:${s}`;
-
-                // Weekly
-                const nextMon = new Date();
-                nextMon.setDate(now.getDate() + (7 - now.getDay() + 1) % 7 || 7);
-                nextMon.setHours(0, 0, 0, 0);
-                const wDiff = nextMon - now;
-                const d = Math.floor(wDiff / 86400000);
-                document.getElementById('weeklyResetCountdown').textContent = `${d} DAYS`;
-            }, 1000);
+        function claim(id) {
+            if (typeof User !== 'undefined' && User.claimBounty(id)) {
+                if (window.Toast) Toast.show('BOUNTY SECURED: AXP Transmission successful.', 'success');
+                if (window.Sounds) Sounds.play('success');
+                const el = document.getElementById(`bounty-${id}`);
+                if (el) {
+                    el.style.opacity = '0.3';
+                    el.style.filter = 'grayscale(100%)';
+                    el.style.pointerEvents = 'none';
+                    el.querySelector('button').textContent = 'SECURED';
+                }
+            }
         }
     </script>
 </body>

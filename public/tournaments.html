@@ -4,100 +4,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tournament Hub • XP ARENA</title>
+    <title>Tournaments • XP ARENA</title>
     <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
-        .tournaments-hero {
-            padding: 10rem 2rem 6rem;
-            text-align: center;
-            background: radial-gradient(circle at top right, rgba(0, 245, 255, 0.05), transparent 60%);
-        }
-
-        .tournaments-hero h1 {
-            font-size: clamp(3rem, 10vw, 6rem);
-            line-height: 0.9;
-            margin-bottom: 2rem;
-        }
-
-        .tournament-section {
-            max-width: 1200px;
+        .tourney-container {
+            padding: 8rem 2rem 10rem;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 2rem 10rem;
         }
 
-        .create-arena-panel {
+        .tourney-header {
+            text-align: center;
             margin-bottom: 6rem;
-            display: grid;
-            grid-template-columns: 1.5fr 1fr;
+        }
+
+        .tourney-header h1 {
+            font-size: clamp(3rem, 8vw, 5rem);
+            line-height: 0.9;
+        }
+
+        /* Bracket System */
+        .bracket-wrapper {
+            display: flex;
             gap: 4rem;
-            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-x: auto;
+            position: relative;
         }
 
-        .forge-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .forge-input {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            padding: 1rem;
-            border-radius: 12px;
-            color: #fff;
-            font-family: inherit;
-        }
-
-        /* Tournament Cards */
-        .arena-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        .round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
             gap: 2rem;
         }
 
-        .arena-card {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
+        .matchup {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            position: relative;
+            transition: all 0.3s;
         }
 
-        .arena-prize {
-            font-family: 'Clash Display', sans-serif;
-            font-size: 1.8rem;
-            color: var(--photon);
+        .matchup:hover {
+            border-color: var(--photon);
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.02);
+        }
+
+        .matchup.active {
+            border-color: var(--corona);
+            box-shadow: 0 0 20px var(--corona-glow);
+        }
+
+        .team-slot {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 12px;
+            padding: 0.5rem;
+            border-radius: 6px;
         }
 
-        .arena-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            padding-top: 1.5rem;
+        .team-slot.winner {
+            color: var(--photon);
+            font-weight: 800;
+        }
+
+        .team-name {
+            font-family: 'Clash Display', sans-serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .score {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .match-meta {
+            margin-top: 1rem;
+            padding-top: 0.5rem;
             border-top: 1px solid var(--glass-border);
-        }
-
-        .arena-stat span {
-            display: block;
-            font-size: 0.65rem;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.6rem;
             color: var(--stardust-muted);
             text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 0.25rem;
+            letter-spacing: 1px;
         }
 
-        .arena-stat strong {
-            font-family: 'Clash Display', sans-serif;
-            font-size: 1.1rem;
+        /* Connector Lines */
+        .connector {
+            position: absolute;
+            background: var(--glass-border);
+            z-index: -1;
         }
 
-        @media (max-width: 992px) {
-            .create-arena-panel {
-                grid-template-columns: 1fr;
-                gap: 2rem;
+        /* Status Tickers */
+        .live-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 50, 50, 0.1);
+            color: #ff3232;
+            padding: 4px 10px;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+        }
+
+        .live-pulse {
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        @media (max-width: 1000px) {
+            .bracket-wrapper {
+                justify-content: flex-start;
             }
         }
     </style>
@@ -106,160 +151,113 @@
 <body class="page-rebirth">
     <div class="hud-scanline"></div>
     <div class="hud-noise"></div>
-    <div class="tournaments-hero">
-        <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Championship Intelligence
-            Hub</span>
-        <h1 class="clash">GLORIOUS<br><span class="text-photon">VICTORIES</span></h1>
-        <p style="color: var(--stardust-muted); max-width: 600px; margin: 0 auto; font-size: 1.1rem;">
-            Commence tactical operations. Join elite community tournaments or forge your own arena for high-stakes
-            competition.
-        </p>
-    </div>
 
-    <div class="tournament-section">
-        <!-- Forge Panel -->
-        <div class="pulse-card create-arena-panel">
-            <div>
-                <h3 class="clash" style="font-size: 1.8rem;"><i class="fas fa-hammer text-photon"></i> FORGE ARENA</h3>
-                <p style="color: var(--stardust-muted); font-size: 0.9rem; margin-top: 0.5rem;">Establish tournament
-                    protocols and define the prize matrix.</p>
-                <div class="forge-grid">
-                    <div style="grid-column: 1 / -1;">
-                        <input id="tName" class="forge-input" style="width: 100%;"
-                            placeholder="Arena Designation (e.g. NEON INVITATIONAL)">
+    <div class="tourney-container">
+        <header class="tourney-header">
+            <div class="live-status">
+                <div class="live-pulse"></div> LIVE_BROADCAST_ACTIVE
+            </div>
+            <h1 class="clash">GLOBAL<br><span class="text-photon">TOURNAMENT</span></h1>
+            <p style="color: var(--stardust-muted); max-width: 600px; margin: 2rem auto;">
+                The peak of competitiveness. Watch elite clans face off in high-frequency neural combat.
+            </p>
+        </header>
+
+        <div class="bracket-wrapper">
+            <!-- Round 1 -->
+            <div class="round">
+                <div class="section-label" style="text-align: center;">QUARTER-FINALS</div>
+                <div class="matchup">
+                    <div class="team-slot winner">
+                        <span class="team-name">VANGUARD</span>
+                        <span class="score">450</span>
                     </div>
-                    <input id="tEntry" class="forge-input" type="number" placeholder="Entry Fee (AXP)">
-                    <input id="tPrize" class="forge-input" type="number" placeholder="Prize Pool (AXP)">
+                    <div class="team-slot" style="opacity: 0.4;">
+                        <span class="team-name">ASTRA_UNIT</span>
+                        <span class="score">320</span>
+                    </div>
+                    <div class="match-meta">
+                        <span>SECTOR: NORTH</span>
+                        <span style="color: var(--photon);">FINAL</span>
+                    </div>
+                </div>
+                <div class="matchup active">
+                    <div class="team-slot">
+                        <span class="team-name">NEBULA_X</span>
+                        <span class="score">--</span>
+                    </div>
+                    <div class="team-slot">
+                        <span class="team-name">TITAN_SQUAD</span>
+                        <span class="score">--</span>
+                    </div>
+                    <div class="match-meta">
+                        <span>SECTOR: WEST</span>
+                        <span class="text-corona">LIVE_SCAN</span>
+                    </div>
                 </div>
             </div>
-            <div style="text-align: right;">
-                <label
-                    style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-bottom: 2rem; cursor: pointer;">
-                    <input id="tPrivate" type="checkbox"
-                        style="accent-color: var(--photon); width: 18px; height: 18px;">
-                    <span style="font-weight: 700; color: var(--stardust-muted);">Private Encrypted Arena</span>
-                </label>
-                <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; padding: 1.5rem;"
-                    onclick="createTournament()">INITIALIZE ARENA</button>
-                <div id="tCreateMsg" style="margin-top: 1rem; font-size: 0.8rem; font-weight: 700;"></div>
+
+            <!-- Round 2 -->
+            <div class="round">
+                <div class="section-label" style="text-align: center;">SEMI-FINALS</div>
+                <div class="matchup" style="margin-top: 5rem;">
+                    <div class="team-slot">
+                        <span class="team-name">VANGUARD</span>
+                        <span class="score">--</span>
+                    </div>
+                    <div class="team-slot" style="opacity: 0.3;">
+                        <span class="team-name">TBD</span>
+                        <span class="score">--</span>
+                    </div>
+                    <div class="match-meta">
+                        <span>SECTOR: CORE</span>
+                        <span>PENDING</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grand Final -->
+            <div class="round">
+                <div class="section-label" style="text-align: center;">GRAND FINALLY</div>
+                <div class="matchup"
+                    style="border-width: 2px; border-color: var(--gold); background: rgba(255, 215, 0, 0.05); margin-top: 10rem;">
+                    <div class="team-slot" style="padding: 1rem 0.5rem;">
+                        <span class="team-name" style="color: var(--gold); font-size: 1.2rem;">ULTREYA_ELITE</span>
+                        <i class="fas fa-crown" style="color: var(--gold);"></i>
+                    </div>
+                    <div class="match-meta">
+                        <span style="color: var(--gold);">APEX_CHAMPION</span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Active Arenas -->
-        <div style="display: flex; align-items: center; gap: 2rem; margin-bottom: 4rem;">
-            <h2 class="clash" style="font-size: 2rem;">ACTIVE <span class="text-photon">ARENAS</span></h2>
-            <div style="flex: 1; height: 1px; background: linear-gradient(to right, var(--glass-border), transparent);">
+        <!-- Tournament Stats -->
+        <div
+            style="margin-top: 8rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div class="pulse-card" style="padding: 2.5rem;">
+                <span class="section-label">Global Participation</span>
+                <div class="clash" style="font-size: 3rem; margin: 1rem 0;">1,420</div>
+                <p style="color: var(--stardust-muted); font-size: 0.8rem;">Registered agents currently synchronized
+                    with tournament nodes.</p>
+            </div>
+            <div class="pulse-card" style="padding: 2.5rem;">
+                <span class="section-label">Prize Pool (AXP)</span>
+                <div class="clash text-photon" style="font-size: 3rem; margin: 1rem 0;">250K+</div>
+                <p style="color: var(--stardust-muted); font-size: 0.8rem;">Allocated rewards for top-tier sector
+                    dominance and mvp performance.</p>
             </div>
         </div>
 
-        <div id="tList" class="arena-grid">
-            <!-- Dynamic Injected -->
-        </div>
     </div>
 
     <!-- Scripts -->
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/layout.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', loadTournaments);
-
-        async function loadTournaments() {
-            const el = document.getElementById('tList');
-            el.innerHTML = `
-                <div style="grid-column: 1/-1; text-align: center; padding: 6rem; background: var(--nebula); border-radius: 32px; border: 1px dashed var(--glass-border);">
-                    <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--photon); margin-bottom: 1.5rem;"></i>
-                    <p style="font-family: 'Clash Display', sans-serif; letter-spacing: 0.2em;">SCANNING ACTIVE ARENAS...</p>
-                </div>
-            `;
-
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/tournaments/list');
-                const rows = res.ok ? await res.json() : [];
-
-                if (rows.length === 0) {
-                    el.innerHTML = `
-                        <div style="grid-column: 1/-1; text-align: center; padding: 6rem; background: var(--nebula); border-radius: 32px; border: 1px dashed var(--glass-border);">
-                            <i class="fas fa-ghost" style="font-size: 2.5rem; color: var(--stardust-muted); margin-bottom: 1.5rem;"></i>
-                            <p style="font-family: 'Clash Display', sans-serif; letter-spacing: 0.2em;">NO DEPLOYED ARENAS DETECTED</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                el.innerHTML = rows.map(t => `
-                    <div class="pulse-card mission-card arena-card" style="border-left-width: 4px;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                            <span class="section-label" style="font-size: 0.55rem; letter-spacing: 2px;">ARENA_PROTO_#${t.id}</span>
-                            ${t.private_only ? '<i class="fas fa-lock" style="color: #ff4444; font-size: 0.9rem;"></i>' : '<i class="fas fa-satellite-dish text-photon" style="font-size: 0.9rem;"></i>'}
-                        </div>
-                        <h3 class="clash" style="font-size: 1.6rem; color: #fff; margin-bottom: 1rem;">${t.name.toUpperCase()}</h3>
-                        <div class="arena-prize" style="margin-bottom: 1.5rem;">
-                            <i class="fas fa-award" style="color: var(--gold);"></i>
-                            <span style="color: var(--gold);">${Number(t.prize_pool_axp || 0).toLocaleString()}</span> <span style="font-size: 0.8rem; opacity: 0.6;">AXP</span>
-                        </div>
-                        
-                        <div class="arena-stats" style="margin-bottom: 2rem;">
-                            <div class="arena-stat">
-                                <span>Entry_Fee</span>
-                                <strong class="text-photon">${Number(t.entry_fee_axp || 0).toLocaleString()}</strong>
-                            </div>
-                            <div class="arena-stat">
-                                <span>Operatives</span>
-                                <strong>${t.participants || 0} / 64</strong>
-                            </div>
-                        </div>
-
-                        <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; padding: 1rem;" onclick="joinTournament(${t.id})">ENLIST_PROTOCOL</button>
-                    </div>
-                `).join('');
-            } catch (err) {
-                el.innerHTML = '<div style="color: var(--corona); font-weight: 700;">PROTOCOL ERROR: Failed to scan Arenas.</div>';
-            }
-        }
-
-        async function createTournament() {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html?redirect=tournaments.html'; return; }
-            const name = document.getElementById('tName').value.trim();
-            const entry_fee_axp = parseInt(document.getElementById('tEntry').value || 0, 10);
-            const prize_pool_axp = parseInt(document.getElementById('tPrize').value || 0, 10);
-            const private_only = document.getElementById('tPrivate').checked;
-
-            if (!name) { Toast.show('Designation required.', 'danger'); return; }
-
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/tournaments/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                    body: JSON.stringify({ name, entry_fee_axp, prize_pool_axp, private_only })
-                });
-                if (res.ok) {
-                    Toast.show('Arena forged.', 'success');
-                    loadTournaments();
-                } else {
-                    const d = await res.json();
-                    Toast.show(d.error || 'Rejection.', 'danger');
-                }
-            } catch (err) { Toast.show('Connection loss.', 'danger'); }
-        }
-
-        async function joinTournament(id) {
-            if (!Auth.isLoggedIn()) { window.location.href = 'login.html?redirect=tournaments.html'; return; }
-            try {
-                const res = await fetch((window.API_URL || '') + '/api/tournaments/join', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + Auth.getToken() },
-                    body: JSON.stringify({ tournament_id: id })
-                });
-                if (res.ok) {
-                    Toast.show('Enlisted.', 'success');
-                    loadTournaments();
-                } else {
-                    const d = await res.json();
-                    Toast.show(d.error || 'Access denied.', 'danger');
-                }
-            } catch (err) { Toast.show('Connection loss.', 'danger'); }
-        }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Optional: Add dynamic bracket interactivity here if needed
+        });
     </script>
 </body>
 

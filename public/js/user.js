@@ -39,9 +39,11 @@ const User = {
                 const user = Auth.getCurrentUser();
                 if (!user || !data.user) return;
 
-                // Construct the stats object
+                // Construct the stats object (Neural Store V1)
                 const stats = {
                     userId: user.id,
+                    version: CONFIG.VERSION,
+                    lastSynced: new Date().toISOString(),
                     axp: data.user.axp || 0,
                     level: Math.floor((data.user.axp || 0) / 500) + 1,
                     avatar: data.user.avatar || '👤',
@@ -69,7 +71,7 @@ const User = {
                     quests: { completed: [], progress: {} }
                 };
 
-                localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+                localStorage.setItem(CONFIG.STORAGE_KEYS.STORAGE_PREFIX + user.id, JSON.stringify(stats));
                 this.updateUI();
 
                 // Dispatch event so dependents know stats are fresh
@@ -92,7 +94,7 @@ const User = {
     getStats() {
         const user = Auth.getCurrentUser();
         if (!user) return null;
-        let stats = JSON.parse(localStorage.getItem(`xp_stats_${user.id}`));
+        let stats = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEYS.STORAGE_PREFIX + user.id));
         if (stats) {
             stats.rank = this.getCurrentRank(stats.axp);
             if (!stats.clips) stats.clips = [];
@@ -137,6 +139,35 @@ const User = {
             }
         } catch (e) {
             return { success: false, message: 'Network Error' };
+        }
+    },
+
+    async useRenameCard(itemId) {
+        const newName = prompt('Enter your new Operative Identity (Nickname):');
+        if (!newName || newName.length < 3) return;
+
+        try {
+            const res = await fetch(`${API_BASE_USER}/api/user/nickname`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({ newUsername: newName, useItem: true, itemId })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                if (window.Toast) Toast.show('Identity Re-Sync Successful.', 'success');
+                localStorage.setItem('xp_token', data.token);
+                localStorage.setItem('xp_current_user', JSON.stringify(data.user));
+                this.updateUI();
+                window.dispatchEvent(new Event('authChange'));
+                window.dispatchEvent(new Event('statsChange'));
+            } else {
+                if (window.Toast) Toast.show(data.error || 'Sync Failure', 'error');
+            }
+        } catch (e) {
+            if (window.Toast) Toast.show('Neural Link Unstable', 'error');
         }
     },
 
@@ -253,7 +284,7 @@ const User = {
     async addSensitivityHistory(entry) {
         this.updateStatsLocally(stats => {
             if (!stats.sensitivityHistory) stats.sensitivityHistory = [];
-            stats.sensitivityHistory.unshift({ ...entry, timestamp: new Date().toISOString() });
+            stats.sensitivityHistory.unshift({ ...entry, id: Date.now(), timestamp: new Date().toISOString() });
             if (stats.sensitivityHistory.length > 20) stats.sensitivityHistory.pop();
             stats.calculations++;
         });
@@ -264,8 +295,73 @@ const User = {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
-            body: JSON.stringify({ device: entry.device, general_mid: entry.general_mid, general_range: entry.general_range })
+            body: JSON.stringify({ device: entry.device, general_mid: entry.general, extra: JSON.stringify(entry) })
         });
+    },
+
+    getHistoricalAnalytics() {
+        const stats = this.getStats();
+        if (!stats || !stats.sensitivityHistory || stats.sensitivityHistory.length < 2) return null;
+
+        const history = stats.sensitivityHistory;
+        const latest = history[0];
+        const previous = history[1];
+
+        // Deviation Logic
+        const deviation = {
+            general: latest.general - previous.general,
+            stability: Math.abs(latest.general - previous.general) < 5 ? 'STABLE' : 'UNSTABLE',
+            trend: (latest.general > previous.general) ? 'UPWARD_SENS' : 'DOWNWARD_SENS'
+        };
+
+        // Predictive Heatmap (Mock logic for Genesis Phase)
+        const heatmap = history.map(h => ({
+            val: h.general,
+            label: new Date(h.timestamp).toLocaleDateString()
+        })).reverse();
+
+        return { deviation, heatmap, totalScans: stats.calculations };
+    },
+
+    getGhostBenchmarks() {
+        return [
+            { id: 'ruok', name: 'RUOK_FF', consistency: 98, color: 'var(--primary)' },
+            { id: 'vincenzo', name: 'VINCENZO', consistency: 94, color: '#ffd700' },
+            { id: 'tatsuya', name: 'TATSUYA', consistency: 91, color: '#bf00ff' }
+        ];
+    },
+
+    getNeuralBounties() {
+        return [
+            { id: 'b1', title: 'ELITE_SYNC', desc: 'Achieve >95% consistency in 3 sessions.', reward: 500, icon: 'fa-bolt' },
+            { id: 'b2', title: 'SHARP_RECOIL', desc: 'Calibrate scope 4X settings twice.', reward: 300, icon: 'fa-crosshairs' },
+            { id: 'b3', title: 'GHOST_CHALLENGER', desc: 'Match a Pro-Player consistency score.', reward: 1000, icon: 'fa-ghost' }
+        ];
+    },
+
+    claimBounty(id) {
+        const bounties = this.getNeuralBounties();
+        const b = bounties.find(x => x.id === id);
+        if (b) {
+            this.updateStats(stats => {
+                stats.axp = (stats.axp || 0) + b.reward;
+            });
+            return true;
+        }
+        return false;
+    },
+
+    getLoreFragment() {
+        const stats = this.getStats();
+        if (!stats) return "IDENTITY_NOT_FOUND";
+        const frags = [
+            "Detected in Eastern Rim: anomalous reflex stability verified.",
+            "Infiltrated Sector_Elite using optimized Ghost benchmarks.",
+            "Operative bypasses standard calibration via Sentient Interface.",
+            "Neural sync reached critical mass during Clan War protocol.",
+            "Final analysis: Combat entity with perfect synchronization."
+        ];
+        return frags[Math.min(stats.level || 1, frags.length) - 1];
     },
 
     async deleteVault(id) {
@@ -458,6 +554,10 @@ const User = {
             backdrop-filter: blur(12px);
             animation: lvlup-in 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
         `;
+        const safeLevel = DOM.escape(level.toString());
+        const safeRankName = DOM.escape(rank.name);
+        const safeRankIcon = DOM.escape(rank.icon);
+
         overlay.innerHTML = `
             <style>
                 @keyframes lvlup-in   { from { opacity:0; transform:scale(0.8); } to { opacity:1; transform:scale(1); } }
@@ -470,9 +570,9 @@ const User = {
                 border-radius: 28px;
                 animation: lvlup-ring 2s infinite;">
                 <div style="font-size: 0.75rem; letter-spacing: 4px; color: rgba(0,229,255,0.7); text-transform: uppercase; margin-bottom: 0.8rem;">⬆ LEVEL UP</div>
-                <div style="font-size: 5rem; line-height:1; animation: lvlup-badge 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;">${rank.icon}</div>
-                <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0.6rem 0 0.2rem; letter-spacing: -0.5px;">LEVEL ${level}</h2>
-                <div style="font-size: 1.1rem; color: var(--accent); font-weight: 800; margin-bottom: 1.5rem;">${rank.name}</div>
+                <div style="font-size: 5rem; line-height:1; animation: lvlup-badge 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;">${safeRankIcon}</div>
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0.6rem 0 0.2rem; letter-spacing: -0.5px;">LEVEL ${safeLevel}</h2>
+                <div style="font-size: 1.1rem; color: var(--accent); font-weight: 800; margin-bottom: 1.5rem;">${safeRankName}</div>
                 <div style="height: 1px; background: rgba(255,255,255,0.1); margin-bottom: 1.5rem;"></div>
                 <button onclick="document.getElementById('xpa-levelup-overlay').remove()" style="
                     background: var(--accent); color: #000; border: none;
@@ -513,7 +613,7 @@ const User = {
             if (window.Celebration) Celebration.fire();
         }
 
-        localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+        localStorage.setItem(CONFIG.STORAGE_KEYS.STORAGE_PREFIX + user.id, JSON.stringify(stats));
         this.checkAchievements(stats);
         window.dispatchEvent(new Event('statsChange'));
     },
@@ -554,7 +654,7 @@ const User = {
 
         if (unlockedNew) {
             const user = Auth.getCurrentUser();
-            localStorage.setItem(`xp_stats_${user.id}`, JSON.stringify(stats));
+            localStorage.setItem(CONFIG.STORAGE_KEYS.STORAGE_PREFIX + user.id, JSON.stringify(stats));
         }
     },
 
@@ -583,14 +683,15 @@ const User = {
         console.log(`LEVEL UP PROTOCOL: ${level}`);
         const overlay = document.createElement('div');
         overlay.className = 'cinematic-overlay active';
+        const safeLevel = DOM.escape(level.toString());
         overlay.innerHTML = `
             <div class="neural-gate" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold-glow);">
                 <div class="gate-spark" style="border-color: var(--gold); animation-delay: 0s;"></div>
                 <i class="fas fa-chevron-circle-up" style="font-size: 5rem; color: var(--gold); filter: drop-shadow(0 0 20px var(--gold-glow));"></i>
             </div>
             <h2 class="clash welcome-text" style="color: var(--gold); text-shadow: 0 0 30px var(--gold-glow);">LEVEL_ASCENDED</h2>
-            <div class="xp-award-text" style="font-size: 6rem;">${level}</div>
-            <p style="color: var(--stardust-muted); margin-top: 1rem; letter-spacing: 0.4rem; font-weight: 800;">PROMOTED TO TIER ${level}</p>
+            <div class="xp-award-text" style="font-size: 6rem;">${safeLevel}</div>
+            <p style="color: var(--stardust-muted); margin-top: 1rem; letter-spacing: 0.4rem; font-weight: 800;">PROMOTED TO TIER ${safeLevel}</p>
         `;
         document.body.appendChild(overlay);
 

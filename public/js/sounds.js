@@ -38,26 +38,71 @@ const Sounds = {
         this.resumeContext();
 
         switch (type) {
+            case 'hover': this.synthHover(); break;
             case 'click': this.synthClick(); break;
+            case 'sector': this.synthSectorEntry(); break;
+            case 'xp': this.synthXP(); break;
             case 'success': this.synthSuccess(); break;
             case 'error': this.synthError(); break;
-            case 'mystery': this.synthMystery(); break;
             case 'rankup': this.synthRankUp(); break;
         }
+    },
+
+    synthHover() {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.frequency.setValueAtTime(200, this.ctx.currentTime);
+        osc.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 0.05);
+        gain.gain.setValueAtTime(0.015, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.05);
     },
 
     synthClick() {
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(600, this.ctx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(100, this.ctx.currentTime + 0.1);
-        gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.1);
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(this.ctx.currentTime + 0.1);
+    },
+
+    synthSectorEntry() {
+        const now = this.ctx.currentTime;
+        [440, 880, 1320].forEach((freq, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(freq, now + i * 0.05);
+            gain.gain.setValueAtTime(0.03, now + i * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.4);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.05);
+            osc.stop(now + i * 0.05 + 0.4);
+        });
+    },
+
+    synthXP() {
+        const now = this.ctx.currentTime;
+        [600, 800, 1000].forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(f, now + i * 0.05);
+            gain.gain.setValueAtTime(0.04, now + i * 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 0.1);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.05);
+            osc.stop(now + i * 0.05 + 0.1);
+        });
     },
 
     synthSuccess() {
@@ -119,6 +164,72 @@ const Sounds = {
         gain.connect(this.ctx.destination);
         osc.start();
         osc.stop(now + 1.2);
+    },
+
+    synthProfessorK() {
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.linearRampToValueAtTime(1200, now + 2);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.02, now + 1);
+        gain.gain.linearRampToValueAtTime(0, now + 2);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 2);
+    },
+
+    synthMaxim() {
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(60, now);
+        osc.frequency.linearRampToValueAtTime(40, now + 1.5);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.03, now + 0.5);
+        gain.gain.linearRampToValueAtTime(0, now + 1.5);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(now + 1.5);
+    },
+
+    synthDbee() {
+        const now = this.ctx.currentTime;
+        [50, 100, 150].forEach((f, i) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.frequency.setValueAtTime(f, now + i * 0.2);
+            gain.gain.setValueAtTime(0, now + i * 0.2);
+            gain.gain.linearRampToValueAtTime(0.05, now + i * 0.2 + 0.1);
+            gain.gain.linearRampToValueAtTime(0, now + i * 0.2 + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + i * 0.2);
+            osc.stop(now + i * 0.2 + 0.3);
+        });
+    },
+
+    synthFinalWhisper() {
+        const now = this.ctx.currentTime;
+        for (let i = 0; i < 20; i++) {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            const freq = 2000 + (Math.random() * 5000);
+            osc.frequency.setValueAtTime(freq, now + (i * 0.05));
+            gain.gain.setValueAtTime(0, now + (i * 0.05));
+            gain.gain.linearRampToValueAtTime(0.005, now + (i * 0.05) + 0.1);
+            gain.gain.linearRampToValueAtTime(0, now + (i * 0.05) + 0.3);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now + (i * 0.05));
+            osc.stop(now + (i * 0.05) + 0.3);
+        }
     }
 };
 

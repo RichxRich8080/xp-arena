@@ -223,7 +223,7 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label">Areni Tag</label>
-                    <div class="input-node">
+                    <div class="input-node id-input-group">
                         <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
                             autocomplete="username">
                         <i class="fas fa-user-tag"></i>
@@ -232,7 +232,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Neural Key</label>
-                    <div class="input-node">
+                    <div class="input-node id-input-group">
                         <input type="password" id="password" class="rebirth-input" placeholder="••••••••" required
                             autocomplete="current-password">
                         <i class="fas fa-key"></i>
@@ -249,7 +249,7 @@
                         RECOVERY</button>
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn-rebirth btn-photon"
+                <button type="submit" id="loginBtn" class="btn-rebirth"
                     style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
                     SYNC AND DEPLOY
                 </button>
@@ -264,7 +264,14 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.injectRebirthLayout) injectRebirthLayout();
+        });
+
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -274,6 +281,8 @@
             const errBox = document.getElementById('errorBox');
 
             errBox.style.display = 'none';
+            document.querySelectorAll('.id-input-group').forEach(el => el.classList.remove('alert-danger'));
+
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCHRONIZING...';
 
@@ -331,6 +340,7 @@
             } else {
                 errBox.textContent = result.message || 'Synchronization failed. Check signal strength.';
                 errBox.style.display = 'block';
+                document.querySelectorAll('.id-input-group').forEach(el => el.classList.add('alert-danger'));
                 btn.disabled = false;
                 btn.innerHTML = 'RETRY SYNC';
             }

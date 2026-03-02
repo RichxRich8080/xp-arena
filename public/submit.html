@@ -152,7 +152,8 @@
                 <p style="color: var(--stardust-muted); margin-bottom: 3rem;">Authentication required to submit data and
                     earn AXP clearance.</p>
                 <div style="display: grid; gap: 1rem; max-width: 300px; margin: 0 auto;">
-                    <a href="identity/login.html" class="btn-rebirth btn-photon" style="justify-content: center;">INITIATE
+                    <a href="identity/login.html" class="btn-rebirth btn-photon"
+                        style="justify-content: center;">INITIATE
                         LOGIN</a>
                     <a href="identity/signup.html" class="btn-rebirth" style="justify-content: center;">CREATE TOKEN</a>
                 </div>
@@ -257,14 +258,14 @@
                             });
                         }
                     } else {
-                        alert("BROADCAST ERROR: Grid interference detected. Please retry.");
+                        Toast.show("BROADCAST ERROR: Grid interference detected. Please retry.", "error");
                         btn.innerHTML = '<i class="fas fa-upload"></i> BROADCAST INTEL';
                         btn.style.opacity = "1";
                     }
                 })
                 .catch(error => {
                     console.error("Submission error:", error);
-                    alert("NEURAL LINK FAILED: Check your uplink.");
+                    Toast.show("NEURAL LINK FAILED: Check your uplink.", "error");
                     btn.innerHTML = '<i class="fas fa-upload"></i> BROADCAST INTEL';
                     btn.style.opacity = "1";
                 });

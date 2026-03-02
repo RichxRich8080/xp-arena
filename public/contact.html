@@ -223,14 +223,14 @@
                         overlay.classList.add('active');
                         form.reset();
                     } else {
-                        alert("ERROR: Signal interference. Please retry.");
+                        Toast.show("ERROR: Signal interference. Please retry.", "error");
                         btn.innerHTML = '<i class="fas fa-satellite-dish"></i> BROADCAST MESSAGE';
                         btn.style.opacity = "1";
                     }
                 })
                 .catch(error => {
                     console.error("Submission error:", error);
-                    alert("CRITICAL LINK FAILURE.");
+                    Toast.show("CRITICAL LINK FAILURE.", "error");
                     btn.innerHTML = '<i class="fas fa-satellite-dish"></i> BROADCAST MESSAGE';
                     btn.style.opacity = "1";
                 });

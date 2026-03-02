@@ -142,6 +142,40 @@
             color: var(--stardust);
             line-height: 1;
             text-shadow: 0 0 20px var(--photon-glow);
+            transition: all 0.3s var(--transition);
+        }
+
+        .result-node:hover .node-val {
+            animation: sentient-glitch 0.4s infinite;
+            color: var(--photon);
+        }
+
+        @keyframes sentient-glitch {
+            0% {
+                transform: translate(0);
+                text-shadow: 0 0 20px var(--photon-glow);
+            }
+
+            20% {
+                transform: translate(-2px, 1px);
+                text-shadow: 2px 0 red, -2px 0 blue;
+            }
+
+            40% {
+                transform: translate(-2px, -1px);
+            }
+
+            60% {
+                transform: translate(2px, 1px);
+            }
+
+            80% {
+                transform: translate(2px, -1px);
+            }
+
+            100% {
+                transform: translate(0);
+            }
         }
 
         /* Dossier Accents */
@@ -276,11 +310,20 @@
     <div class="result-container">
         <!-- Loading -->
         <div id="loading-state">
-            <div class="neural-link-orb">
-                <div class="orb-scanner"></div>
-                <i class="fas fa-brain orb-icon"></i>
+            <div style="position: relative;">
+                <!-- Character Silhouette during scan -->
+                <div class="scan-character-silhouette"
+                    style="position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); opacity: 0.1; transition: opacity 2s;">
+                    <img src="assets/tatsuya.png" style="height: 400px; filter: brightness(0) invert(1) blur(10px);">
+                </div>
+
+                <div class="neural-link-orb">
+                    <div class="orb-scanner"></div>
+                    <i class="fas fa-microchip orb-icon"></i>
+                </div>
             </div>
-            <h2 class="clash" id="status-msg" style="font-size: 2.5rem; letter-spacing: 0.5rem;">NEURAL SYNC</h2>
+            <h2 class="clash" id="status-msg" style="font-size: 2.5rem; letter-spacing: 0.5rem; position: relative;">
+                NEURAL SYNC</h2>
             <p id="status-device"
                 style="color: var(--photon); font-weight: 800; margin-top: 1.5rem; opacity: 0.7; letter-spacing: 2px;">
                 IDENTIFYING HARDWARE</p>
@@ -299,88 +342,87 @@
                         <div class="card-grain"></div>
                         <div class="scanline"></div>
 
-                        <!-- Header Overlay -->
-                        <div style="text-align: center; margin-bottom: 3rem;">
-                            <div class="premium-badge"
-                                style="margin-bottom: 1rem; display: inline-block; padding: 6px 15px; background: var(--photon-glow); border: 1px solid var(--photon); border-radius: 100px; font-size: 0.65rem; color: var(--photon); font-weight: 900; letter-spacing: 2px;">
-                                ELITE VERIFIED</div>
-                            <h2 class="clash" id="final-device"
-                                style="font-size: 2.5rem; color: var(--stardust); letter-spacing: 2px;">Apple iPad Pro
-                                M2</h2>
-                            <p
-                                style="color: var(--photon); font-weight: 800; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase; opacity: 0.8;">
-                                PRO SENSITIVITY DOSSIER</p>
+                        <!-- Character Overlay (Bottom Right) -->
+                        <div class="result-character-uplink"
+                            style="position: absolute; bottom: -50px; right: -50px; opacity: 0.4; pointer-events: none; z-index: 1;">
+                            <img src="assets/tatsuya.png"
+                                style="height: 500px; filter: drop-shadow(0 0 30px var(--photon-glow));">
                         </div>
 
-                        <!-- Main Grid -->
-                        <div class="result-grid" style="grid-template-columns: 1fr; gap: 1.5rem; display: grid;">
+                        <!-- Header Overlay -->
+                        <div
+                            style="text-align: left; margin-bottom: 2rem; position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end;">
+                            <div>
+                                <div class="premium-badge"
+                                    style="margin-bottom: 0.8rem; display: inline-block; padding: 4px 12px; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--photon); border-radius: 100px; font-size: 0.6rem; color: var(--photon); font-weight: 900; letter-spacing: 2px;">
+                                    ARCHIVE_ID: ${Math.floor(Math.random()*900000)}</div>
+                                <h2 class="clash" id="final-device"
+                                    style="font-size: 2.2rem; color: var(--stardust); letter-spacing: -1px; margin: 0; line-height: 1;">
+                                    Apple iPad Pro M2</h2>
+                            </div>
+                            <div style="text-align: right;">
+                                <p
+                                    style="color: var(--photon); font-weight: 800; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin: 0; opacity: 0.6;">
+                                    SENSITIVITY_GRID</p>
+                                <div
+                                    style="font-family: 'Clash Display', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--stardust); opacity: 0.8;">
+                                    v2.0_SYNC</div>
+                            </div>
+                        </div>
 
-                            <!-- Sensitivity Items -->
-                            <div class="sensitivity-item-row"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                        <!-- Main Grid (Compact 2-Column) -->
+                        <div class="result-grid"
+                            style="grid-template-columns: 1fr 1fr; gap: 1rem; display: grid; position: relative; z-index: 2; max-width: 65%;">
+
+                            <!-- Sensitivity Items (Compact Box Style) -->
+                            <div class="sensitivity-item-box"
+                                style="padding: 1rem 1.5rem; background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.1); border-left: 3px solid var(--photon); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
                                 <div class="node-label"
-                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
-                                    General</div>
+                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
+                                    GENERAL</div>
                                 <div class="node-val text-photon" id="res-gen"
-                                    style="font-size: 2.5rem; text-shadow: 0 0 20px var(--photon-glow); font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--photon);">
-                                    100-100</div>
+                                    style="font-size: 1.8rem; color: var(--photon); text-shadow: 0 0 15px var(--photon-glow);">
+                                    100</div>
                             </div>
 
-                            <div class="sensitivity-item-row"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                            <div class="sensitivity-item-box"
+                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
                                 <div class="node-label"
-                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
-                                    Red Dot</div>
-                                <div class="node-val" id="res-red"
-                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--stardust);">
-                                    95-100</div>
+                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
+                                    RED DOT</div>
+                                <div class="node-val" id="res-red" style="font-size: 1.8rem;">95</div>
                             </div>
 
-                            <div class="sensitivity-item-row"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                            <div class="sensitivity-item-box"
+                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
                                 <div class="node-label"
-                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
-                                    2X Scope</div>
-                                <div class="node-val" id="res-2x"
-                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--stardust);">
-                                    88-100</div>
+                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
+                                    2X SCOPE</div>
+                                <div class="node-val" id="res-2x" style="font-size: 1.8rem;">88</div>
                             </div>
 
-                            <div class="sensitivity-item-row"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
+                            <div class="sensitivity-item-box"
+                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
                                 <div class="node-label"
-                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
-                                    4X Scope</div>
-                                <div class="node-val" id="res-4x"
-                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: #4FC3F7;">
-                                    75-100</div>
+                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
+                                    4X SCOPE</div>
+                                <div class="node-val" id="res-4x" style="font-size: 1.8rem;">75</div>
                             </div>
-
-                            <div class="sensitivity-item-row"
-                                style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 20px;">
-                                <div class="node-label"
-                                    style="margin: 0; font-size: 0.85rem; letter-spacing: 1px; color: var(--stardust-muted); text-transform: uppercase; font-weight: 800;">
-                                    8X Scope</div>
-                                <div class="node-val" id="res-8x"
-                                    style="font-size: 2.5rem; font-family: 'Clash Display', sans-serif; font-weight: 700; color: #4DD0E1;">
-                                    60-100</div>
-                            </div>
-
                         </div>
 
                         <!-- Footer Verdict -->
                         <div class="verdict-shell"
-                            style="margin-top: 3rem; background: transparent; border: none; padding: 1rem;">
+                            style="margin-top: 2rem; background: rgba(0,245,255,0.03); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; position: relative; z-index: 2;">
                             <p id="verdict-text"
-                                style="font-size: 0.9rem; color: var(--stardust-muted); font-style: italic; text-align: center; line-height: 1.6;">
+                                style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.6; margin: 0;">
                                 "PRO FILE LOADED: Ruok FF's extreme max sensitivity. Requires incredibly precise finger
                                 control."
                             </p>
                         </div>
 
                         <div
-                            style="text-align: center; margin-top: 1rem; opacity: 0.4; font-size: 0.6rem; letter-spacing: 2px;">
-                            GENERATED AT XPARENA.NET</div>
+                            style="text-align: left; margin-top: 2rem; opacity: 0.4; font-size: 0.6rem; letter-spacing: 2px; position: relative; z-index: 2;">
+                            ARENA_PROTOCOL_v0.2 // ENCRYPTED_RESULT // XPARENA.NET</div>
                     </div>
                 </div>
 
@@ -389,6 +431,23 @@
                     <div class="hw-item"><b>OS:</b> <span id="hw-os">XP-v2.5</span></div>
                     <div class="hw-item"><b>SIG:</b> <span id="hw-sig">ENCRYPTED</span></div>
                     <div class="hw-item"><b>LATENCY:</b> <span class="text-photon">1.2 MS</span></div>
+                </div>
+
+                <!-- Genesis: Performance Heatmap -->
+                <div id="analytics-section"
+                    style="display: none; margin-top: 4rem; border-top: 1px solid var(--glass-border); padding-top: 3rem; position: relative; z-index: 5;">
+                    <span class="section-label"
+                        style="font-size: 0.6rem; color: var(--photon); letter-spacing: 5px;">AI_PERFORMANCE_HEATMAP</span>
+                    <h3 class="clash" style="font-size: 1.5rem; margin: 1rem 0;">NEURAL CONSISTENCY</h3>
+                    <div id="heatmap-container"
+                        style="display: flex; gap: 0.5rem; height: 100px; align-items: flex-end; margin: 2rem 0; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px;">
+                        <!-- Bars Injected -->
+                    </div>
+                    <div id="analytics-meta"
+                        style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase;">
+                        <span id="deviation-stat">DEVIATION: --</span>
+                        <span id="stability-stat">STABILITY: --</span>
+                    </div>
                 </div>
 
                 <!-- Actions -->
@@ -413,11 +472,27 @@
                     </div>
                 </div>
 
-                <button class="btn-rebirth"
-                    style="width: 100%; margin-top: 2rem; background: transparent; border: 1px solid var(--glass-border); color: var(--stardust-muted); font-size: 0.8rem; letter-spacing: 3px; justify-content: center; text-transform: uppercase; font-weight: 800;"
-                    onclick="window.location.href='tool.html'">
-                    INITIATE RE-CALIBRATION
-                </button>
+                <!-- QR Neural Link Overlay (Phase Genesis) -->
+                <div id="qr-overlay"
+                    style="display: none; margin-top: 4rem; text-align: center; background: radial-gradient(circle, var(--nebula-solid), var(--void)); padding: 3rem; border-radius: 24px; border: 1px solid var(--glass-border); position: relative; overflow: hidden;">
+                    <div class="card-grain"></div>
+                    <span class="section-label"
+                        style="font-size: 0.6rem; color: var(--photon); letter-spacing: 5px;">NEURAL_LINK_ESTABLISHED</span>
+                    <h3 class="clash" style="font-size: 1.5rem; margin: 1rem 0;">SCAN TO SYNC</h3>
+                    <div
+                        style="background: white; padding: 1.5rem; border-radius: 12px; display: inline-block; margin: 1rem 0; box-shadow: 0 0 40px rgba(255,255,255,0.1);">
+                        <img id="qr-code-img" src="" alt="Neural Link QR"
+                            style="width: 200px; height: 200px; display: block;">
+                    </div>
+                    <p
+                        style="color: var(--stardust-muted); font-size: 0.8rem; margin-top: 1rem; max-width: 400px; margin-left: auto; margin-right: auto;">
+                        Scanning this link with another Arena Device will instantly uplink your current sensitivity
+                        Matrix.
+                    </p>
+                    <button class="btn-rebirth"
+                        style="margin-top: 2rem; border-color: var(--glass-border); font-size: 0.7rem; justify-content: center;"
+                        onclick="document.getElementById('qr-overlay').style.display='none'">CLOSE_LINK</button>
+                </div>
             </div>
         </div>
     </div>
@@ -484,6 +559,59 @@
 
             document.getElementById('loading-state').style.display = 'none';
             document.getElementById('result-content').style.display = 'block';
+
+            // Log for Genesis Analytics & Render
+            if (window.User && window.Auth.isLoggedIn()) {
+                User.addSensitivityHistory(res);
+                renderAnalytics();
+            }
+        }
+
+        function renderAnalytics() {
+            const data = User.getHistoricalAnalytics();
+            if (!data) return;
+
+            const section = document.getElementById('analytics-section');
+            if (section) section.style.display = 'block';
+
+            const container = document.getElementById('heatmap-container');
+            if (container) {
+                container.innerHTML = '';
+                container.style.position = 'relative'; // For Ghost Overlays
+
+                data.heatmap.forEach(h => {
+                    const bar = document.createElement('div');
+                    bar.style.flex = '1';
+                    bar.style.background = 'var(--primary)';
+                    bar.style.height = `${(Math.min(h.val, 100) / 100) * 100}%`;
+                    bar.style.opacity = '0.3';
+                    bar.style.borderRadius = '2px';
+                    bar.title = `${h.label}: ${h.val}`;
+                    container.appendChild(bar);
+                });
+
+                // Ghost Protocol
+                const ghosts = User.getGhostBenchmarks ? User.getGhostBenchmarks() : [];
+                ghosts.forEach(ghost => {
+                    const line = document.createElement('div');
+                    line.style.position = 'absolute';
+                    line.style.left = '0';
+                    line.style.width = '100%';
+                    line.style.height = '1px';
+                    line.style.borderTop = `1px dashed ${ghost.color}`;
+                    line.style.bottom = `${ghost.consistency}%`;
+                    line.style.opacity = '0.4';
+                    line.style.zIndex = '10';
+                    line.innerHTML = `<span style="position:absolute; right:0; top:-12px; font-size:0.5rem; color:${ghost.color}; letter-spacing:1px;">${ghost.name}_GHOST</span>`;
+                    container.appendChild(line);
+                });
+            }
+
+            const devEl = document.getElementById('deviation-stat');
+            if (devEl) devEl.textContent = `DEVIATION: ${data.deviation.general > 0 ? '+' : ''}${data.deviation.general}`;
+
+            const stabEl = document.getElementById('stability-stat');
+            if (stabEl) stabEl.textContent = `STABILITY: ${data.deviation.stability}`;
         }
 
         function copySettings() {
@@ -505,10 +633,21 @@
             try {
                 const b64 = btoa(JSON.stringify(res));
                 const url = `${location.origin}${location.pathname}#data=${encodeURIComponent(b64)}`;
+
+                // Neural Link QR
+                const overlay = document.getElementById('qr-overlay');
+                const qrImg = document.getElementById('qr-code-img');
+                if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}&color=050508&bgcolor=FFFFFF`;
+                if (overlay) {
+                    overlay.style.display = 'block';
+                    overlay.scrollIntoView({ behavior: 'smooth' });
+                }
+
                 navigator.clipboard.writeText(url).then(() => {
                     if (window.Toast) Toast.show('Neural link beamed to buffer.', 'success');
+                    if (window.Sounds) Sounds.play('success');
                 });
-            } catch { }
+            } catch (e) { console.error('Share error:', e); }
         }
     </script>
 </body>

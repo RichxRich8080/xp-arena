@@ -261,6 +261,19 @@
             </div>
         </div>
 
+        <div class="rebirth-tabs" style="margin-top: 2rem; margin-bottom: 2rem;">
+            <button onclick="switchTab('overview')" class="tab-trigger btn-liquid active">OVERVIEW</button>
+            <button onclick="switchTab('history')" class="tab-trigger btn-liquid">PROGRESSION</button>
+            <button onclick="switchTab('vault')" class="tab-trigger btn-liquid">THE_VAULT</button>
+            <button onclick="switchTab('achievements')" class="tab-trigger btn-liquid">MEDALS</button>
+            <button onclick="switchTab('squad')" class="tab-trigger btn-liquid">CLAN_COMMAND</button>
+            <button onclick="switchTab('settings')" class="tab-trigger btn-liquid">SETTINGS</button>
+        </div>
+
+        <div id="tab-overview" class="tab-content active">
+            <!-- Overview content would go here, current elements are direct children of profile-container -->
+        </div>
+
         <div id="tab-vault" class="tab-content">
             <div id="vaultList"
                 style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
@@ -387,6 +400,17 @@
         });
 
         function switchTab(tabId) {
+            // Trigger Scan Wipe
+            let wipe = document.querySelector('.scan-wipe');
+            if (!wipe) {
+                wipe = document.createElement('div');
+                wipe.className = 'scan-wipe';
+                document.body.appendChild(wipe);
+            }
+            document.body.classList.remove('scanning');
+            void wipe.offsetWidth; // Force reflow
+            document.body.classList.add('scanning');
+
             document.querySelectorAll('.tab-trigger').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
@@ -537,6 +561,11 @@
             if (window.Toast) Toast.show('Socials updated', 'success');
         }
     </script>
+    <script src="js/config.js"></script>
+    <script src="js/dom-utils.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
 </body>
 
 </html>

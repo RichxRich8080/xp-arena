@@ -48,6 +48,75 @@
             color: var(--stardust);
         }
 
+        .shop-grid-wrap {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            position: relative;
+        }
+
+        /* Maxim Character Stylings */
+        .agent-mentor-shop {
+            position: sticky;
+            top: 8rem;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .agent-character {
+            width: 100%;
+            filter: drop-shadow(0 0 30px rgba(191, 0, 255, 0.4));
+            animation: quartermaster-breathe 5s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes quartermaster-breathe {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 0 20px rgba(191, 0, 255, 0.3));
+            }
+
+            50% {
+                transform: translateY(-10px) scale(1.01);
+                filter: drop-shadow(0 0 40px rgba(191, 0, 255, 0.6));
+            }
+        }
+
+        .acquisition-glow {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, var(--photon) 0%, transparent 70%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+            transition: opacity 0.5s;
+        }
+
+        .acquisition-glow.active {
+            animation: glow-burst 1s ease-out forwards;
+        }
+
+        @keyframes glow-burst {
+            0% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+
+            50% {
+                opacity: 0.4;
+                transform: scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1.5);
+            }
+        }
+
         .shop-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -175,8 +244,25 @@
             </div>
         </header>
 
-        <div id="shop-items-grid" class="shop-grid">
-            <!-- Dynamic Injection via shop.js -->
+        <div class="shop-grid-wrap">
+            <!-- Mentor Agent: Maxim -->
+            <div class="agent-mentor-shop">
+                <img src="assets/images/[CITYPNG.COM]Free Fire Garena Maxim Character - 800x800.png"
+                    class="agent-character" alt="Maxim" id="mentorMaxim">
+                <div class="pulse-card"
+                    style="margin-top: -2rem; padding: 1.5rem; width: 100%; border-color: var(--nebula); border-top: 2px solid #bf00ff; text-align: center; background: rgba(191, 0, 255, 0.05);">
+                    <div class="section-label" style="margin-bottom: 0.5rem; color: #bf00ff;">ARMORY_QUARTERMASTER:
+                        MAXIM</div>
+                    <div id="maximDialogue"
+                        style="font-size: 0.75rem; color: var(--stardust-muted); font-style: italic;">"Hardware check
+                        complete. The armory is open for extraction."</div>
+                </div>
+                <div class="acquisition-glow" id="shopGlow"></div>
+            </div>
+
+            <div id="shop-items-grid" class="shop-grid">
+                <!-- Dynamic Injection via shop.js -->
+            </div>
         </div>
 
         <div
@@ -187,6 +273,8 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/dom-utils.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>

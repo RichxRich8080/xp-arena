@@ -27,8 +27,72 @@
 
         .engine-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: 350px 1fr;
             gap: 2rem;
+            position: relative;
+        }
+
+        /* Professor K Character Stylings */
+        .agent-mentor-wrap {
+            position: sticky;
+            top: 8rem;
+            height: fit-content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .agent-character {
+            width: 100%;
+            filter: drop-shadow(0 0 30px var(--photon-glow));
+            animation: neural-breathe 4s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes neural-breathe {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 0 20px var(--photon-glow));
+            }
+
+            50% {
+                transform: translateY(-15px) scale(1.02);
+                filter: drop-shadow(0 0 50px var(--photon-glow));
+            }
+        }
+
+        .logic-streams {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+
+        .logic-streams.active {
+            opacity: 0.3;
+        }
+
+        .stream-line {
+            position: absolute;
+            width: 1px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--photon), transparent);
+            animation: stream-flow 2s linear infinite;
+        }
+
+        @keyframes stream-flow {
+            from {
+                transform: translateY(-100%);
+            }
+
+            to {
+                transform: translateY(100vh);
+            }
         }
 
         .personalization-card {
@@ -314,91 +378,111 @@
             </p>
         </header>
 
+        <div class="logic-streams" id="engineStreams"></div>
+
         <div class="engine-grid">
-            <!-- Left: Hardware Parameters -->
-            <div class="input-card">
-                <span class="section-label">Hardware Profile</span>
-
-                <div class="input-group" style="position: relative;">
-                    <label><i class="fas fa-mobile-alt" style="margin-right: 8px;"></i> Device Identifier</label>
-                    <input type="text" id="deviceSearch" class="input-rebirth"
-                        placeholder="Search device database (e.g. iPhone 15)">
-                    <div id="deviceSuggestions"></div>
-                    <div id="selectedDeviceDisplay"
-                        style="margin-top: 1rem; font-size: 0.8rem; color: var(--photon); font-weight: 700;"></div>
-
-                    <!-- Hidden inputs for logic compatibility -->
-                    <input type="hidden" id="selectedBrand">
-                    <input type="hidden" id="selectedSeries">
-                    <input type="hidden" id="selectedModel">
-                </div>
-
-                <div class="input-group">
-                    <label><i class="fas fa-memory" style="margin-right: 8px;"></i> Dedicated RAM <span
-                            class="slider-val" id="ramVal">8GB</span></label>
-                    <input type="range" id="ramSlider" min="2" max="16" step="2" value="8">
-                </div>
-
-                <div class="input-group" style="position: relative;">
-                    <label><i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Tactical DPI</label>
-                    <div class="tactile-input-wrap">
-                        <button class="tactile-ctrl minus" onclick="stepDPI(-50)"><i class="fas fa-minus"></i></button>
-                        <input type="number" id="dpiInput" class="input-rebirth" value="800" step="50" min="100"
-                            max="2400" style="border-radius: 0; border-left: none; border-right: none;">
-                        <button class="tactile-ctrl plus" onclick="stepDPI(50)"><i class="fas fa-plus"></i></button>
+            <!-- Mentor Agent: Professor K -->
+            <div class="agent-mentor-wrap">
+                <img src="assets/images/[CITYPNG.COM]HD Free Fire K Professor Man Character PNG - 1000x1000.png"
+                    class="agent-character" alt="Professor K" id="mentorK">
+                <div class="pulse-card"
+                    style="margin-top: -2rem; padding: 1rem; width: 100%; border-color: var(--photon); text-align: center;">
+                    <div class="section-label" style="margin-bottom: 0.5rem; color: var(--photon);">AGENT_MENTOR: K
                     </div>
-
-                    <!-- Premium Lock for DPI -->
-                    <div class="premium-lock-overlay" id="dpiLock">
-                        <i class="fas fa-crown lock-icon"></i>
-                        <span
-                            style="font-weight: 800; font-size: 0.7rem; color: var(--gold); letter-spacing: 2px;">PREMIUM
-                            ONLY</span>
-                        <p style="font-size: 0.6rem; color: var(--stardust-muted);">Unlock DPI scaling for
-                            ultra-fine-tuning.</p>
-                        <button class="btn-rebirth"
-                            style="font-size: 0.6rem; margin-top: 10px; padding: 0.5rem 1rem; border-color: var(--gold); color:var(--gold);"
-                            onclick="location.href='premium.html'">UPGRADE</button>
-                    </div>
+                    <div id="mentorDialogue"
+                        style="font-size: 0.75rem; color: var(--stardust-muted); font-style: italic;">"Ready to initiate
+                        neural scan. Data integrity is within parameters."</div>
                 </div>
             </div>
 
-            <!-- Right: Performance Modes -->
-            <div class="input-card">
-                <span class="section-label">Operational Context</span>
+            <div style="display: grid; gap: 2rem;">
+                <div class="input-card">
+                    <span class="section-label">Hardware Profile</span>
 
-                <div class="input-group">
-                    <label>Friction Matrix (Hand/Grip)</label>
-                    <div class="segmented-control" id="gripSegments">
-                        <button class="segment-btn active" data-value="normal">Standard</button>
-                        <button class="segment-btn" data-value="hard">Glass</button>
-                        <button class="segment-btn" data-value="fast">Sleeve</button>
+                    <div class="input-group" style="position: relative;">
+                        <label><i class="fas fa-mobile-alt" style="margin-right: 8px;"></i> Device Identifier</label>
+                        <input type="text" id="deviceSearch" class="input-rebirth"
+                            placeholder="Search device database (e.g. iPhone 15)">
+                        <div id="deviceSuggestions"></div>
+                        <div id="selectedDeviceDisplay"
+                            style="margin-top: 1rem; font-size: 0.8rem; color: var(--photon); font-weight: 700;"></div>
+
+                        <!-- Hidden inputs for logic compatibility -->
+                        <input type="hidden" id="selectedBrand">
+                        <input type="hidden" id="selectedSeries">
+                        <input type="hidden" id="selectedModel">
                     </div>
-                    <input type="hidden" id="handSelect" value="normal">
-                    <div class="context-msg" id="gripContext">The standard grip provides a balanced tactile response for
-                        consistent tracking.</div>
-                </div>
 
-                <div class="input-group">
-                    <label>Response Velocity</label>
-                    <div class="segmented-control" id="velocitySegments">
-                        <button class="segment-btn active" data-value="medium">Balanced</button>
-                        <button class="segment-btn" data-value="slow">Precision</button>
-                        <button class="segment-btn" data-value="fast">Aggressive</button>
+                    <div class="input-group">
+                        <label><i class="fas fa-memory" style="margin-right: 8px;"></i> Dedicated RAM <span
+                                class="slider-val" id="ramVal">8GB</span></label>
+                        <input type="range" id="ramSlider" min="2" max="16" step="2" value="8">
                     </div>
-                    <input type="hidden" id="speedSelect" value="medium">
-                    <div class="context-msg" id="velocityContext">Balanced velocity ensures optimal stability between
-                        micro-adjustments and flicks.</div>
+
+                    <div class="input-group" style="position: relative;">
+                        <label><i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Tactical DPI</label>
+                        <div class="tactile-input-wrap">
+                            <button class="tactile-ctrl minus" onclick="stepDPI(-50)"><i
+                                    class="fas fa-minus"></i></button>
+                            <input type="number" id="dpiInput" class="input-rebirth" value="800" step="50" min="100"
+                                max="2400" style="border-radius: 0; border-left: none; border-right: none;">
+                            <button class="tactile-ctrl plus" onclick="stepDPI(50)"><i class="fas fa-plus"></i></button>
+                        </div>
+
+                        <!-- Premium Lock for DPI -->
+                        <div class="premium-lock-overlay" id="dpiLock">
+                            <i class="fas fa-crown lock-icon"></i>
+                            <span
+                                style="font-weight: 800; font-size: 0.7rem; color: var(--gold); letter-spacing: 2px;">PREMIUM
+                                ONLY</span>
+                            <p style="font-size: 0.6rem; color: var(--stardust-muted);">Unlock DPI scaling for
+                                ultra-fine-tuning.</p>
+                            <button class="btn-rebirth"
+                                style="font-size: 0.6rem; margin-top: 10px; padding: 0.5rem 1rem; border-color: var(--gold); color:var(--gold);"
+                                onclick="location.href='premium.html'">UPGRADE</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="pulse-card" style="padding: 1.5rem; background: var(--glass-highlight);">
-                    <h4 class="clash" style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--corona);">AI
-                        DIAGNOSTICS</h4>
-                    <p style="font-size: 0.75rem; color: var(--stardust-muted); line-height: 1.4;" id="aiStatusMsg">
-                        Waiting for calibration sequence initiation...</p>
-                </div>
+                <!-- Right: Performance Modes -->
+                <div class="input-card">
+                    <span class="section-label">Operational Context</span>
 
-            </div>
+                    <div class="input-group">
+                        <label>Friction Matrix (Hand/Grip)</label>
+                        <div class="segmented-control" id="gripSegments">
+                            <button class="segment-btn active" data-value="normal">Standard</button>
+                            <button class="segment-btn" data-value="hard">Glass</button>
+                            <button class="segment-btn" data-value="fast">Sleeve</button>
+                        </div>
+                        <input type="hidden" id="handSelect" value="normal">
+                        <div class="context-msg" id="gripContext">The standard grip provides a balanced tactile response
+                            for
+                            consistent tracking.</div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Response Velocity</label>
+                        <div class="segmented-control" id="velocitySegments">
+                            <button class="segment-btn active" data-value="medium">Balanced</button>
+                            <button class="segment-btn" data-value="slow">Precision</button>
+                            <button class="segment-btn" data-value="fast">Aggressive</button>
+                        </div>
+                        <input type="hidden" id="speedSelect" value="medium">
+                        <div class="context-msg" id="velocityContext">Balanced velocity ensures optimal stability
+                            between
+                            micro-adjustments and flicks.</div>
+                    </div>
+
+                    <div class="pulse-card" style="padding: 1.5rem; background: var(--glass-highlight);">
+                        <h4 class="clash" style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--corona);">AI
+                            DIAGNOSTICS</h4>
+                        <p style="font-size: 0.75rem; color: var(--stardust-muted); line-height: 1.4;" id="aiStatusMsg">
+                            Waiting for calibration sequence initiation...</p>
+                    </div>
+
+                </div> <!-- Close right column -->
+            </div> <!-- Close engine-grid -->
             <div style="margin-top: 3rem;">
                 <button id="calculateBtn" class="btn-rebirth btn-photon"
                     style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1.2rem; letter-spacing: 0.2em;">
@@ -545,22 +629,63 @@
 
             // --- Diagnostic History Persistence ---
             function updateDiagHistory() {
-                const historyEl = document.getElementById('diagHistoryList');
-                if (!historyEl) return;
-
-                const lastResults = localStorage.getItem('xp_calc_results');
-                if (lastResults) {
-                    const data = JSON.parse(lastResults);
-                    historyEl.innerHTML = `
-                        <div style="padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-weight: 700; font-size: 0.8rem; color: var(--stardust);">${data.device}</div>
-                                <div style="font-size: 0.7rem; color: var(--photon);">${data.general} GEN | ${data.dpi} DPI</div>
-                            </div>
-                            <a href="result.html" class="btn-rebirth" style="padding: 4px 8px; font-size: 0.6rem; background: var(--photon); color: var(--void);">VIEW</a>
-                        </div>
-                    `;
+                const results = JSON.parse(localStorage.getItem('xp_calc_history') || '[]');
+                const statusMsg = document.getElementById('aiStatusMsg');
+                if (statusMsg && results.length > 0) {
+                    const last = results[results.length - 1];
+                    statusMsg.textContent = `LAST_CALIBRATION: ${last.device.toUpperCase()} [${last.general}] - ACCURACY: ${last.ai_sync === 'ELITE BOOST' ? '99' : '94'}%`;
                 }
+            }
+            // Logic Streams Engine
+            function initLogicStreams() {
+                const container = document.getElementById('engineStreams');
+                if (!container) return;
+                container.classList.add('active');
+
+                for (let i = 0; i < 20; i++) {
+                    const stream = document.createElement('div');
+                    stream.className = 'stream-line';
+                    stream.style.left = `${Math.random() * 100}%`;
+                    stream.style.animationDuration = `${1 + Math.random() * 2}s`;
+                    stream.style.animationDelay = `${Math.random() * 2}s`;
+                    container.appendChild(stream);
+                }
+
+                setTimeout(() => {
+                    container.classList.remove('active');
+                    container.innerHTML = '';
+                }, 4000);
+            }
+
+            function updateMentorDialogue(status) {
+                const dialogue = document.getElementById('mentorDialogue');
+                if (!dialogue) return;
+
+                const lines = {
+                    'start': '"Initiating neural handshake. Stabilizing data frequency..."',
+                    'scanning': '"Analyzing recoil coefficient. Optimal sync predicted."',
+                    'complete': '"Calibration finalized. Your neural signature is now elite."'
+                };
+
+                dialogue.style.opacity = '0';
+                setTimeout(() => {
+                    dialogue.textContent = lines[status] || lines['start'];
+                    dialogue.style.opacity = '1';
+                }, 300);
+            }
+
+            // Hook into Calculate Button for Sensory FX
+            const calcBtn = document.getElementById('calculateBtn');
+            if (calcBtn) {
+                calcBtn.addEventListener('click', () => {
+                    initLogicStreams();
+                    updateMentorDialogue('scanning');
+                    if (window.Sounds) Sounds.play('ping');
+
+                    setTimeout(() => {
+                        updateMentorDialogue('complete');
+                    }, 3500);
+                });
             }
 
             updateDiagHistory();

@@ -2,9 +2,7 @@
  * Auth System for XP Arena (JWT + Node.js backend)
  */
 
-const API_BASE_AUTH = (typeof window !== 'undefined' && typeof window.API_URL !== 'undefined')
-    ? window.API_URL
-    : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+const API_BASE_AUTH = CONFIG.API_BASE;
 
 const Auth = {
     async signup(username, email, password, ref = null) {

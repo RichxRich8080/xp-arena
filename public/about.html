@@ -8,11 +8,18 @@
     <link rel="stylesheet" href="css/rebirth.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
+        .manifesto-canvas {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
         .about-hero {
-            padding: 12rem 2rem 6rem;
+            padding: 15rem 2rem 8rem;
             text-align: center;
-            background: radial-gradient(circle at bottom center, var(--primary-glow), transparent 70%);
-            transition: background 0.5s ease;
+            position: relative;
         }
 
         .about-hero h1 {
@@ -124,31 +131,36 @@
 </head>
 
 <body class="page-rebirth">
+    <canvas id="digitalRain" class="manifesto-canvas"></canvas>
+    <div class="hud-scanline"></div>
+
     <div class="about-hero">
-        <span class="section-label" style="letter-spacing: 0.7rem; margin-bottom: 2.5rem;">Theoretical Alignment
-            Protocol</span>
-        <h1 class="clash">PRECISION<br><span class="text-photon">ARCHITECTURE</span></h1>
-        <p
-            style="color: var(--stardust-muted); max-width: 550px; margin: 2rem auto 0; font-size: 1.2rem; line-height: 1.7; font-weight: 500;">
-            Decoding the competitive singularity. Empowering elite cohorts through neural synchronization and hardware
-            transparency.
-        </p>
+        <div data-neural-stagger>
+            <span class="section-label"
+                style="letter-spacing: 0.8rem; margin-bottom: 2.5rem;">TERMINAL_VISION_v4.0</span>
+            <h1 class="clash">XP ARENA<br><span class="text-photon">ASCENSION</span></h1>
+            <p
+                style="color: var(--stardust-muted); max-width: 650px; margin: 2rem auto 0; font-size: 1.25rem; line-height: 1.8; font-weight: 500;">
+                We are the ghost in the machine. The precision layer between competitive potential and hardware reality.
+            </p>
+        </div>
     </div>
 
     <div class="about-section">
-        <div class="pulse-card manifesto-card">
-            <p>
-                XP ARENA is not a destination; it's a <span class="accent-text">tactical imperative</span>. We emerged
-                to neutralize the performance gap in mobile athletics, revealing true competitive potential through deep
-                hardware analysis and community-driven data.
-            </p>
-            <p>
-                Whether deploying on a legacy budget device or the latest specialized mobile hardware, skill should be
-                the only variable. Our systems bridge the gap between hardware constraints and human potential, creating
-                an even playing field for all Arenis.
-            </p>
+        <div class="pulse-card manifesto-card" style="background: rgba(0,0,0,0.4); backdrop-filter: blur(20px);">
+            <div data-neural-stagger>
+                <p>
+                    XP ARENA is not a destination; it's a <span class="accent-text">tactical imperative</span>. We
+                    emerged to neutralize the performance gap in mobile athletics, revealing true competitive potential
+                    through deep hardware analysis and community-driven data.
+                </p>
+                <p>
+                    In the binary logic of the Arena, skill is the only valid currency. Our mission is the absolute
+                    eradication of hardware inequality.
+                </p>
+            </div>
 
-            <h2 class="manifesto-title">CORE NETWORKS</h2>
+            <h2 class="manifesto-title">THE ASCENSION NODES</h2>
 
             <div class="protocol-grid">
                 <div class="pulse-card protocol-node">
@@ -194,6 +206,47 @@
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
+    <script>
+        const canvas = document.getElementById('digitalRain');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const hex = '0123456789ABCDEF';
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#00f5ff';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = hex.charAt(Math.floor(Math.random() * hex.length));
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 33);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
 </body>
 
 </html>

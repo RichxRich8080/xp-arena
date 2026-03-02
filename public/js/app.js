@@ -111,7 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- ANALYTICS HOOKS ---
     window.trackEvent = function (category, action, label) {
-        console.log(`[Analytics] ${category} | ${action} | ${label}`);
         if (typeof gtag !== 'undefined') {
             gtag('event', action, { 'event_category': category, 'event_label': label });
         }
@@ -492,10 +491,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Redirection with a slight delay for "weight"
-            setTimeout(() => {
-                window.location.href = 'result.html'; // Ensure .html extension for local/static routing
-            }, 800);
+            showCalibrationOverlay(() => {
+                window.location.href = 'result.html';
+            });
         });
+
+        function showCalibrationOverlay(callback) {
+            const overlay = document.createElement('div');
+            overlay.className = 'calibration-overlay';
+            overlay.style.cssText = `
+                position: fixed; inset: 0; z-index: 100000;
+                background: #000; display: flex; flex-direction: column;
+                align-items: center; justify-content: center; opacity: 0;
+                transition: opacity 0.5s;
+            `;
+            overlay.innerHTML = `
+                <div class="orb-scanner" style="width: 200px; height: 2px; background: var(--photon); box-shadow: 0 0 20px var(--photon-glow); position: relative; margin-bottom: 2rem;"></div>
+                <div class="clash" style="font-size: 1.5rem; letter-spacing: 5px; color: var(--photon);">CALIBRATION_ACTIVE</div>
+                <div style="font-size: 0.7rem; color: var(--stardust-muted); margin-top: 1rem;">UPLINKING TO NEURAL_LAB_SECTOR_7...</div>
+            `;
+            document.body.appendChild(overlay);
+            requestAnimationFrame(() => {
+                overlay.style.opacity = '1';
+                setTimeout(callback, 1500);
+            });
+        }
 
         // --- AI AIM LAB ENGINE ---
         const AimLab = {
@@ -843,10 +863,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function generateShareImage(result) {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
-    canvas.height = 1350; // Instagram Portrait size for premium feel
+    canvas.height = 1350; // Instagram Portrait
     const ctx = canvas.getContext('2d');
 
-    // --- Background Layer ---
+    // --- Background Stage ---
     const bg = ctx.createLinearGradient(0, 0, 0, 1350);
     bg.addColorStop(0, '#06090f');
     bg.addColorStop(0.5, '#0b0f17');
@@ -854,7 +874,6 @@ function generateShareImage(result) {
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 1080, 1350);
 
-    // --- Decorative Glows ---
     function drawGlow(x, y, radius, color) {
         const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
         g.addColorStop(0, color);
@@ -862,148 +881,121 @@ function generateShareImage(result) {
         ctx.fillStyle = g;
         ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
     }
-    drawGlow(1080, 0, 600, 'rgba(0, 229, 255, 0.15)');
+    drawGlow(1080, 0, 600, 'rgba(0, 245, 255, 0.15)');
     drawGlow(0, 1350, 600, 'rgba(191, 0, 255, 0.1)');
 
-    // --- Main Card Frame ---
+    // Frame
     ctx.strokeStyle = 'rgba(0, 229, 255, 0.3)';
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.roundRect(60, 60, 960, 1230, 40);
     ctx.stroke();
 
-    // Inner subtle border
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(80, 80, 920, 1190, 30);
-    ctx.stroke();
+    // Load Character
+    const charImg = new Image();
+    charImg.crossOrigin = "anonymous";
+    charImg.src = 'assets/images/[CITYPNG.COM]HD Tatsuya FF Agent Character PNG - 1500x1500.png';
 
-    // --- Header ---
-    ctx.font = 'bold 46px Inter, sans-serif';
-    ctx.fillStyle = '#00e5ff';
-    ctx.textAlign = 'center';
-    ctx.fillText('XP ARENA', 540, 160);
+    charImg.onload = () => {
+        ctx.save();
+        ctx.globalAlpha = 0.4;
+        // Draw character positioned bottom right inside card
+        ctx.drawImage(charImg, 400, 400, 800, 800);
+        ctx.restore();
+        renderText();
+    };
+    charImg.onerror = () => renderText();
 
-    ctx.font = '800 24px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-    ctx.letterSpacing = '4px';
-    ctx.fillText('PRO SENSITIVITY CARD', 540, 200);
+    function renderText() {
+        // Logo
+        ctx.font = 'bold 46px Inter, sans-serif';
+        ctx.fillStyle = '#00e5ff';
+        ctx.textAlign = 'center';
+        ctx.fillText('XP ARENA', 540, 160);
 
-    // --- Device Info Box ---
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-    ctx.beginPath();
-    ctx.roundRect(140, 260, 800, 180, 20);
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0, 229, 255, 0.2)';
-    ctx.stroke();
+        ctx.font = '800 24px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.letterSpacing = 'Tracking 4px';
+        ctx.fillText('SIGNATURE SENSITIVITY CARD', 540, 200);
 
-    ctx.font = 'bold 42px Inter, sans-serif';
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(result.device || 'Unknown Device', 540, 340);
-
-    ctx.font = '600 22px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
-    ctx.fillText(`${result.ram || '8'}GB RAM • ${String(result.speed || 'Medium').toUpperCase()} SPEED`, 540, 385);
-
-    // --- Settings Grid ---
-    const settings = [
-        { label: 'GENERAL', value: result.general },
-        { label: 'RED DOT', value: result.reddot },
-        { label: '2X SCOPE', value: result.scope2x },
-        { label: '4X SCOPE', value: result.scope4x },
-        { label: '8X SCOPE', value: result.scope8x || '45-50' },
-    ];
-
-    const startY = 520;
-    const rowHeight = 130;
-
-    settings.forEach((s, i) => {
-        const y = startY + (i * rowHeight);
-
-        // Row Background
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+        // Device Info
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
         ctx.beginPath();
-        ctx.roundRect(140, y, 800, 100, 15);
+        ctx.roundRect(140, 260, 800, 180, 20);
         ctx.fill();
 
-        // Label
-        ctx.textAlign = 'left';
-        ctx.font = '800 22px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.fillText(s.label, 180, y + 60);
+        ctx.font = 'bold 42px Inter, sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(result.device || 'Unknown Hardware', 540, 340);
 
-        // Value
-        ctx.textAlign = 'right';
-        ctx.font = 'bold 44px Inter, sans-serif';
-        ctx.fillStyle = '#00e5ff';
-        ctx.shadowBlur = 15;
-        ctx.shadowColor = 'rgba(0, 229, 255, 0.5)';
-        ctx.fillText(s.value, 900, y + 65);
-        ctx.shadowBlur = 0; // reset
-    });
+        ctx.font = '600 22px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
+        ctx.fillText(`${result.ram || '8'}GB RAM • ${String(result.speed || 'Calibration').toUpperCase()} MODE`, 540, 385);
 
-    // --- Verdict Area ---
-    if (result.verdict) {
-        const vY = 1180;
-        ctx.textAlign = 'center';
-        ctx.font = 'italic 24px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+        // Settings Grid
+        const settings = [
+            { label: 'GENERAL', value: result.general },
+            { label: 'RED DOT', value: result.reddot },
+            { label: '2X SCOPE', value: result.scope2x },
+            { label: '4X SCOPE', value: result.scope4x },
+            { label: '8X SCOPE', value: result.scope8x || '60' },
+        ];
 
-        // Wrap text
-        const maxWidth = 760;
-        const words = result.verdict.split(' ');
-        let line = '';
-        let currY = vY;
+        const startY = 520;
+        const rowHeight = 110;
 
-        words.forEach(word => {
-            const test = line + word + ' ';
-            if (ctx.measureText(test).width > maxWidth) {
-                ctx.fillText(line, 540, currY);
-                line = word + ' ';
-                currY += 35;
-            } else {
-                line = test;
-            }
+        settings.forEach((s, i) => {
+            const y = startY + (i * rowHeight);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
+            ctx.beginPath();
+            ctx.roundRect(140, y, 500, 90, 15);
+            ctx.fill();
+
+            ctx.textAlign = 'left';
+            ctx.font = '800 20px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.fillText(s.label, 180, y + 55);
+
+            ctx.textAlign = 'right';
+            ctx.font = 'bold 44px Inter, sans-serif';
+            ctx.fillStyle = '#00e5ff';
+            ctx.fillText(s.value, 600, y + 60);
         });
-        ctx.fillText(line, 540, currY);
-    }
 
-    // --- Footer ---
-    ctx.textAlign = 'center';
-    ctx.font = '600 20px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-    ctx.fillText('GENERATED AT XPARENA.NET', 540, 1260);
+        // Verdict
+        if (result.verdict) {
+            ctx.textAlign = 'center';
+            ctx.font = 'italic 24px Inter, sans-serif';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
 
-    // --- Final Export ---
-    canvas.toBlob(blob => {
-        const filename = `XP-ARENA-${(result.device || 'Settings').replace(/\s+/g, '-')}.png`;
-        const file = new File([blob], filename, { type: 'image/png' });
-
-        if (navigator.share && navigator.canShare({ files: [file] })) {
-            navigator.share({
-                title: 'My XP Arena Sensitivity',
-                text: `Optimized settings for ${result.device}`,
-                files: [file]
-            }).catch(e => {
-                // Fallback to download if share cancelled/failed
-                triggerDownload(blob, filename);
-            });
-        } else {
-            triggerDownload(blob, filename);
+            const words = result.verdict.split(' ');
+            let line = '';
+            let y = 1150;
+            for (let n = 0; n < words.length; n++) {
+                let testLine = line + words[n] + ' ';
+                let metrics = ctx.measureText(testLine);
+                if (metrics.width > 800 && n > 0) {
+                    ctx.fillText(line, 540, y);
+                    line = words[n] + ' ';
+                    y += 35;
+                } else {
+                    line = testLine;
+                }
+            }
+            ctx.fillText(line, 540, y);
         }
-    }, 'image/png', 1.0);
 
-    function triggerDownload(blob, name) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = name;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        if (window.Toast) Toast.show('Premium Card Saved!', 'success');
+        ctx.font = 'bold 20px Inter, sans-serif';
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillText('XPARENA.NET // ENCRYPTED_RESULT', 540, 1300);
+
+        // Export
+        const dataUrl = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = `XP-ARENA-${result.device.replace(/\s+/g, '-')}.png`;
+        link.href = dataUrl;
+        link.click();
+        if (window.Toast) Toast.show('Premium Card Exported!', 'success');
     }
 }
 
@@ -1110,7 +1102,6 @@ const ProLabDiagnostics = {
         );
 
         window.estimatedTouchSamplingRate = this.estimatedRate;
-        console.log(`[PRO LAB] Estimated Touch Sampling Rate: ${this.estimatedRate}Hz`);
 
         // Update UI if on tool page
         const hzDisplay = document.getElementById('hz-display');

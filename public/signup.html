@@ -243,7 +243,7 @@
             <form id="signupForm">
                 <div class="form-group">
                     <label class="form-label">Operative Alias</label>
-                    <div class="input-node">
+                    <div class="input-node id-input-group">
                         <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
                             autocomplete="username">
                         <i class="fas fa-id-badge"></i>
@@ -252,7 +252,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Neural Uplink Email</label>
-                    <div class="input-node">
+                    <div class="input-node id-input-group">
                         <input type="email" id="email" class="rebirth-input" placeholder="operative@arena.net" required
                             autocomplete="email">
                         <i class="fas fa-envelope"></i>
@@ -261,7 +261,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Security Protocol (Key)</label>
-                    <div class="input-node">
+                    <div class="input-node id-input-group">
                         <input type="password" id="password" class="rebirth-input" placeholder="Encryption Key" required
                             autocomplete="new-password">
                         <i class="fas fa-lock"></i>
@@ -281,7 +281,7 @@
                     </label>
                 </div>
 
-                <button type="submit" id="signupBtn" class="btn-rebirth btn-photon"
+                <button type="submit" id="signupBtn" class="btn-rebirth"
                     style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
                     INITIALIZE PROFILE
                 </button>
@@ -296,7 +296,14 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.injectRebirthLayout) injectRebirthLayout();
+        });
+
         document.getElementById('password').addEventListener('input', function () {
             const v = this.value;
             const fill = document.getElementById('strengthFill');
@@ -337,6 +344,7 @@
             errBox.style.display = 'none';
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING...';
+            document.querySelectorAll('.id-input-group').forEach(el => el.classList.remove('alert-danger'));
 
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();

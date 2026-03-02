@@ -25,6 +25,13 @@
     --secondary: var(--corona);
     --secondary-glow: var(--corona-glow);
 
+    /* Expanded Theme Surface Tokens */
+    --theme-surface: rgba(10, 11, 14, 0.6);
+    --theme-border: rgba(255, 255, 255, 0.1);
+    --theme-text: var(--stardust);
+    --theme-accent-raw: 0, 245, 255;
+    /* For HSL/RGBA manipulation */
+
     /* System Tokens */
     --glass: rgba(10, 10, 20, 0.4);
     --glass-border: rgba(255, 255, 255, 0.08);
@@ -39,8 +46,90 @@
     --gold: #ffcc00;
     --gold-glow: rgba(255, 204, 0, 0.4);
 
+    /* Sector Tokens (Atmospheric Shifting) */
+    --sector-hub: #00f5ff;
+    /* Cyan */
+    --sector-armory: #ff9d00;
+    /* Amber */
+    --sector-elite: #bf00ff;
+    /* Purple */
+    --sector-engine: #00ff9d;
+    /* Neural Green */
+    --sector-lab: #4fc3f7;
+    /* Lab Sky */
+
+    /* Singularity: Sentient Ticker */
+    --transmission-h: 30px;
+    --transmission-bg: rgba(5, 5, 8, 0.8);
+
     --transition: cubic-bezier(0.4, 0, 0.2, 1);
     --transition-premium: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.global-transmission-ticker {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--transmission-h);
+    background: var(--transmission-bg);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--glass-border);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: var(--stardust-muted);
+}
+
+.ticker-label {
+    background: var(--primary);
+    color: var(--void);
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    margin-right: 1.5rem;
+    position: relative;
+}
+
+.ticker-label::after {
+    content: '';
+    position: absolute;
+    right: -10px;
+    top: 0;
+    border-left: 10px solid var(--primary);
+    border-bottom: var(--transmission-h) solid transparent;
+}
+
+.ticker-content {
+    display: flex;
+    white-space: nowrap;
+    animation: transmission-scroll 40s linear infinite;
+}
+
+.transmission-item {
+    padding-right: 4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.transmission-item b {
+    color: var(--photon);
+}
+
+@keyframes transmission-scroll {
+    from {
+        transform: translateX(100vw);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 /* Premium Tokens */
@@ -140,10 +229,13 @@ h4,
     font-family: 'Clash Display', sans-serif;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     cursor: pointer;
-    transition: all 0.3s var(--transition);
-    border: none;
+    transition: all 0.4s var(--transition-premium);
+    /* Default: High-Fidelity Outline */
+    background: transparent;
+    color: var(--stardust);
+    border: 1px solid var(--theme-border);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -152,15 +244,24 @@ h4,
     overflow: hidden;
 }
 
+.btn-rebirth:hover {
+    border-color: var(--primary);
+    background: rgba(var(--theme-accent-raw), 0.05);
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: translateY(-2px);
+}
+
 .btn-photon {
     background: var(--primary);
     color: var(--void);
+    border: none;
     box-shadow: 0 4px 20px var(--primary-glow);
 }
 
 .btn-photon:hover {
     background: #fff;
-    transform: translateY(-2px);
+    color: var(--void);
+    transform: translateY(-4px);
     box-shadow: 0 8px 30px var(--primary-glow);
 }
 
@@ -1240,4 +1341,299 @@ input:checked+.slider:before {
     box-shadow: 0 0 15px var(--photon-glow);
     width: 0%;
     transition: width 1.5s var(--transition-premium);
+}
+
+/* ─── PHASE: OMNISCIENCE ─── (Liquid Aesthetics & Global Intel) */
+
+/* Neural Boot Transition (Enhanced Chromatic Aberration) */
+@keyframes neural-boot {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+        filter: blur(20px) brightness(2);
+        text-shadow: 2px 0 0 rgba(255, 0, 0, 0.5), -2px 0 0 rgba(0, 0, 255, 0.5);
+    }
+
+    50% {
+        text-shadow: 1px 0 0 rgba(255, 0, 0, 0.3), -1px 0 0 rgba(0, 0, 255, 0.3);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0) brightness(1);
+        text-shadow: 0 0 0 transparent;
+    }
+}
+
+.page-rebirth {
+    animation: neural-boot 1.2s var(--transition-premium) forwards;
+    position: relative;
+}
+
+/* Ambient Tactical HUD (Global) */
+.hud-ambient-grid {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+    opacity: 0.3;
+}
+
+.hud-coord {
+    position: absolute;
+    font-family: 'Clash Display', sans-serif;
+    font-size: 0.6rem;
+    color: var(--photon);
+    letter-spacing: 2px;
+    white-space: nowrap;
+    animation: coord-drift linear infinite;
+    pointer-events: none;
+}
+
+@keyframes coord-drift {
+    from {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    to {
+        transform: translateY(-100px) rotate(5deg);
+        opacity: 0;
+    }
+}
+
+.hud-fragment {
+    position: absolute;
+    border: 1px solid rgba(0, 245, 255, 0.1);
+    background: rgba(0, 245, 255, 0.02);
+    animation: fragment-float ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+@keyframes fragment-float {
+    from {
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    to {
+        transform: translate(20px, 20px) rotate(10deg);
+    }
+}
+
+/* Character Uplink Styling */
+.hero-character-uplink {
+    position: absolute;
+    bottom: -100px;
+    right: -10%;
+    height: 120%;
+    z-index: -1;
+    opacity: 0;
+    filter: drop-shadow(0 0 50px var(--photon-glow)) brightness(0.8);
+    mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
+    -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 95%);
+    transition: all 1.5s var(--transition-premium);
+    transform: translateX(50px) scale(1.1);
+    pointer-events: none;
+}
+
+[data-neural-stagger].booted .hero-character-uplink {
+    opacity: 0.6;
+    transform: translateX(0) scale(1);
+}
+
+@keyframes neural-breathe {
+    from {
+        transform: translateY(0) scale(1);
+        filter: brightness(0.8) drop-shadow(0 0 50px var(--photon-glow));
+    }
+
+    to {
+        transform: translateY(-20px) scale(1.02);
+        filter: brightness(1) drop-shadow(0 0 80px var(--photon-glow));
+    }
+}
+
+.hero-character-uplink img {
+    height: 100%;
+    width: auto;
+    animation: neural-breathe 4s ease-in-out infinite alternate;
+}
+
+/* Cinematic Scan Wipe */
+.scan-wipe {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--photon), transparent);
+    box-shadow: 0 0 20px var(--photon-glow);
+    z-index: 200000;
+    pointer-events: none;
+    opacity: 0;
+}
+
+@keyframes scan-animate {
+    from {
+        top: 0;
+        opacity: 1;
+    }
+
+    to {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+.scanning .scan-wipe {
+    animation: scan-animate 0.6s var(--transition-premium) forwards;
+}
+
+/* Liquid Fill Buttons (V4) */
+.btn-liquid {
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    transition: color 0.4s var(--transition-premium);
+}
+
+.btn-liquid::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300%;
+    height: 300%;
+    background: var(--primary);
+    transform: translate(-50%, -50%) scale(0) rotate(45deg);
+    transition: transform 0.6s var(--transition-premium);
+    z-index: -1;
+    border-radius: 40%;
+}
+
+.btn-liquid:hover {
+    color: var(--void);
+    border-color: var(--primary);
+}
+
+.btn-liquid:hover::before {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+}
+
+/* Ambient Glow Cards */
+.pulse-card {
+    box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        inset 0 0 0 1px var(--glass-border),
+        inset 0 0 20px rgba(0, 245, 255, 0.02);
+}
+
+.pulse-card:hover {
+    box-shadow:
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 0 30px rgba(0, 245, 255, 0.05);
+}
+
+/* Skeleton Modules (Tactical) */
+.skeleton-module {
+    background: linear-gradient(90deg,
+            rgba(255, 255, 255, 0.02) 25%,
+            rgba(255, 255, 255, 0.06) 50%,
+            rgba(255, 255, 255, 0.02) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s infinite linear;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+}
+
+@keyframes skeleton-pulse {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Sector Map (Global Nav Overlay) */
+.sector-map-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 5, 8, 0.95);
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    z-index: 100000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--transition-premium);
+    display: flex;
+    padding: 10vh 5vw;
+    overflow-y: auto;
+}
+
+.sector-map-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.sector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 3rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.sector-group h4 {
+    color: var(--photon);
+    font-size: 0.7rem;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0.6;
+}
+
+.sector-link {
+    display: block;
+    color: var(--stardust);
+    font-family: 'Clash Display', sans-serif;
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+    opacity: 0.8;
+    transition: all 0.3s;
+    cursor: pointer;
+    text-decoration: none !important;
+}
+
+.sector-link:hover {
+    opacity: 1;
+    transform: translateX(10px);
+    color: var(--photon);
+}
+
+/* Neural Stagger Delay Utilities */
+[data-neural-stagger]>* {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.6s var(--transition-premium);
+}
+
+[data-neural-stagger].booted>* {
+    opacity: 1;
+    transform: translateY(0);
 }

@@ -4,9 +4,7 @@
  */
 
 // Global API Configuration
-window.API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    ? 'http://localhost:3000'
-    : '';
+window.API_URL = CONFIG.API_BASE;
 
 // Helper to get root-relative paths
 function getRootPath(path) {
@@ -25,8 +23,22 @@ if (!document.querySelector(`link[href="${cssPath}"]`)) {
     document.head.appendChild(link);
 }
 
+const sfxPath = 'js/sounds.js';
+if (!document.querySelector(`script[src="${sfxPath}"]`)) {
+    const script = document.createElement('script');
+    script.src = sfxPath;
+    document.head.appendChild(script);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Failsafe: Ensure content is visible within 2s even if JS errors occur
+    setTimeout(() => {
+        document.body.classList.add('booted');
+        document.querySelectorAll('[data-neural-stagger]').forEach(el => el.classList.add('booted'));
+    }, 2000);
+
     applyCustomAccent();
+    initNeuralBridge();
 
     if (typeof Auth !== 'undefined') {
         injectRebirthLayout();
@@ -39,9 +51,361 @@ document.addEventListener('DOMContentLoaded', () => {
             User.checkDailyLogin();
         }
     } else {
-        injectRebirthLayout();
+        // Fallback for pages where Auth might be missing but layout is needed
+        document.body.classList.add('page-rebirth');
     }
+
+    // Initialize HUD Depth & Haptics
+    initHUDDepth();
+    initNeuralHaptics();
+
+    // Genesis: Sector Atmosphere & SFX
+    initSectorAtmosphere();
+    initGlobalSFX();
+
+    // Singularity: Global Transmissions
+    initGlobalTransmissions();
+
+    // Final Visual Boot
+    initNeuralStagger();
+    initSectorMap();
+    initAmbientHUD();
 });
+
+/**
+ * Genesis: Atmospheric Sector Shifting
+ */
+function initSectorAtmosphere() {
+    const path = window.location.pathname;
+    let sector = 'hub';
+    let color = 'var(--sector-hub)';
+
+    if (path.includes('tool') || path.includes('result')) {
+        sector = 'engine';
+        color = 'var(--sector-engine)';
+    } else if (path.includes('shop') || path.includes('premium') || path.includes('vault')) {
+        sector = 'armory';
+        color = 'var(--sector-armory)';
+    } else if (path.includes('leaderboard') || path.includes('ranks')) {
+        sector = 'elite';
+        color = 'var(--sector-elite)';
+    } else if (path.includes('profile') || path.includes('guilds')) {
+        sector = 'lab';
+        color = 'var(--sector-lab)';
+    }
+
+    document.documentElement.style.setProperty('--primary', color);
+    document.documentElement.style.setProperty('--primary-glow', `rgba(${hexToRgb(getComputedStyle(document.documentElement).getPropertyValue(color.replace('var(', '').replace(')', '')))}, 0.3)`);
+
+    // Play entry sound
+    if (window.Sounds) {
+        setTimeout(() => {
+            Sounds.play('sector');
+            if (sector === 'engine') Sounds.synthProfessorK();
+            if (sector === 'armory') Sounds.synthMaxim();
+            if (sector === 'lab') Sounds.synthDbee();
+        }, 1000);
+    }
+
+}
+
+function hexToRgb(hex) {
+    hex = hex.trim();
+    if (hex.startsWith('#')) hex = hex.slice(1);
+    if (hex.length === 3) hex = hex.split('').map(s => s + s).join('');
+    const bigint = parseInt(hex, 16);
+    return `${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}`;
+}
+
+/**
+ * Genesis: Global Neural Audio Wiring
+ */
+function initGlobalSFX() {
+    if (!window.Sounds) return;
+
+    // Global Click
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('button, a, .clickable, i')) {
+            Sounds.play('click');
+        }
+    });
+
+    // Global Hover (Debounced)
+    let hoverTimeout;
+    document.addEventListener('mouseover', (e) => {
+        const el = e.target.closest('button, a, .clickable, .nav-item');
+        if (el) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(() => Sounds.play('hover'), 50);
+        }
+    });
+}
+
+/**
+ * Singularity: Global Transmissions (Sentient Feed)
+ */
+function initGlobalTransmissions() {
+    if (document.querySelector('.global-transmission-ticker')) return;
+
+    const ticker = document.createElement('div');
+    ticker.className = 'global-transmission-ticker';
+
+    const feed = [
+        "OPERATIVE_RUOK HAS CAPTURED SECTOR_CORE",
+        "NEW ELITE CALIBRATION DETECTED: 99.4% SYNC",
+        "WAR PROTOCOL ENGAGED BY CLAN [VANGUARD]",
+        "NEURAL MATRIX STABILITY: 98.2% // ALL SYSTEMS NOMINAL",
+        "OPERATIVE_TATSUYA ADDED TO GLOBAL_WHITELIST",
+        "SECTOR_ELITE REACHED CRITICAL_MASS",
+        "NEW BOUNTY: ELITE_SNIPER_PROTOCOL_ACTIVATED"
+    ];
+
+    ticker.innerHTML = `
+        <div class="ticker-label">GLOBAL_TRANSMISSION</div>
+        <div class="ticker-content">
+            ${feed.map(f => `<div class="transmission-item"><span>//</span> ${f} <b>ACT_NOW</b></div>`).join('')}
+            ${feed.map(f => `<div class="transmission-item"><span>//</span> ${f} <b>ACT_NOW</b></div>`).join('')}
+        </div>
+    `;
+
+    document.body.prepend(ticker);
+    document.body.style.marginTop = 'var(--transmission-h)';
+}
+
+/**
+ * Genesis: Global Mouse Tracking (Refraction Logic)
+ */
+document.addEventListener('mousemove', (e) => {
+    const cards = document.querySelectorAll('.pulse-card');
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mouse-x', `${x}%`);
+        card.style.setProperty('--mouse-y', `${y}%`);
+    });
+});
+
+/**
+ * Ambient HUD: Drifting Tactical Coordinates
+ */
+function initAmbientHUD() {
+    const container = document.createElement('div');
+    container.className = 'hud-ambient-grid';
+    document.body.appendChild(container);
+
+    const labels = ['SCAN_MODE: 01', 'COORD_X: ', 'COORD_Y: ', 'NEURAL_STRENGTH: 94%', 'UPLINK_STATUS: OK', 'PROTOCOL: TITAN', 'SECTOR_ID: HUB'];
+
+    for (let i = 0; i < 15; i++) {
+        createCoord(container, labels);
+    }
+
+    // Add HUD Fragments
+    for (let i = 0; i < 5; i++) {
+        const frag = document.createElement('div');
+        frag.className = 'hud-fragment';
+        const size = 50 + Math.random() * 150;
+        frag.style.width = `${size}px`;
+        frag.style.height = `${size}px`;
+        frag.style.left = `${Math.random() * 100}%`;
+        frag.style.top = `${Math.random() * 100}%`;
+        frag.style.animationDuration = `${5 + Math.random() * 10}s`;
+        frag.style.animationDelay = `${Math.random() * 5}s`;
+        container.appendChild(frag);
+    }
+}
+
+function createCoord(container, labels) {
+    const el = document.createElement('div');
+    el.className = 'hud-coord';
+    const label = labels[Math.floor(Math.random() * labels.length)];
+    el.textContent = label + (label.includes(': ') && !label.split(': ')[1] ? Math.floor(Math.random() * 1000) : '');
+
+    el.style.left = `${Math.random() * 100}%`;
+    el.style.top = `${Math.random() * 100}%`;
+    el.style.animationDuration = `${10 + Math.random() * 20}s`;
+    el.style.animationDelay = `${Math.random() * 10}s`;
+
+    container.appendChild(el);
+
+    el.addEventListener('animationiteration', () => {
+        el.style.left = `${Math.random() * 100}%`;
+        el.style.top = `${Math.random() * 100}%`;
+    });
+}
+
+/**
+ * Neural Staggering: Sequential Interface Boot
+ */
+function initNeuralStagger() {
+    const containers = document.querySelectorAll('[data-neural-stagger]');
+    containers.forEach(container => {
+        const children = container.children;
+        Array.from(children).forEach((child, i) => {
+            child.style.transitionDelay = `${(i + 1) * 0.1}s`;
+        });
+
+        // Boot after a short delay
+        setTimeout(() => container.classList.add('booted'), 100);
+    });
+}
+
+/**
+ * Sector Map: The $10T Global Navigation
+ */
+function initSectorMap() {
+    if (document.getElementById('sectorMap')) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'sector-map-overlay';
+    overlay.id = 'sectorMap';
+
+    const sectors = [
+        {
+            title: 'CORE_SECTOR',
+            pages: [
+                { name: 'Hub', url: 'index.html' },
+                { name: 'Neural Engine', url: 'tool.html' },
+                { name: 'Profile Uplink', url: 'profile.html' },
+                { name: 'Global Intel', url: 'leaderboard.html' },
+                { name: 'Tournaments', url: 'tournaments.html' }
+            ]
+        },
+        {
+            title: 'TACTICAL_SECTOR',
+            pages: [
+                { name: 'Quests', url: 'quests.html' },
+                { name: 'Tournaments', url: 'tournaments.html' },
+                { name: 'Rank Matrix', url: 'ranks.html' },
+                { name: 'Combat Clips', url: 'clips.html' }
+            ]
+        },
+        {
+            title: 'ECONOMY_SECTOR',
+            pages: [
+                { name: 'Resource Shop', url: 'shop.html' },
+                { name: 'Premium Protocol', url: 'premium.html' },
+                { name: 'The Vault', url: 'vault.html' },
+                { name: 'Sponsorships', url: 'sponsors.html' }
+            ]
+        },
+        {
+            title: 'SOCIAL_SECTOR',
+            pages: [
+                { name: 'Clan Command', url: 'guilds.html' },
+                { name: 'Creator Hub', url: 'creators.html' },
+                { name: 'Pro Databases', url: 'pro-players.html' },
+                { name: 'Support Uplink', url: 'support.html' }
+            ]
+        }
+    ];
+
+    overlay.innerHTML = `
+        <div style="position: absolute; top: 3.5rem; right: 5vw; z-index: 10;">
+            <button onclick="toggleSectorMap()" class="btn-rebirth" style="background: transparent; color: var(--photon); border: 1px solid rgba(0,245,255,0.2);">CLOSE_MAP</button>
+        </div>
+        <div class="sector-grid">
+            ${sectors.map(s => `
+                <div class="sector-group">
+                    <h4>${s.title}</h4>
+                    ${s.pages.map(p => `<a href="${p.url}" class="sector-link">${p.name}</a>`).join('')}
+                </div>
+            `).join('')}
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+}
+
+function toggleSectorMap() {
+    const map = document.getElementById('sectorMap');
+    if (map) map.classList.toggle('active');
+}
+
+// Override legacy toggleSettings
+window.toggleSettings = toggleSectorMap;
+
+/**
+ * HUD Depth: Reactive 3D Parallax
+ */
+function initHUDDepth() {
+    if (window.innerWidth < 768) return; // Disable on mobile for perf
+
+    document.addEventListener('mousemove', (e) => {
+        const cards = document.querySelectorAll('.pulse-card, .gamer-card');
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cardX = rect.left + rect.width / 2;
+            const cardY = rect.top + rect.height / 2;
+
+            const angleX = (mouseY - cardY) / 30;
+            const angleY = (cardX - mouseX) / 30;
+
+            card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
+        });
+    });
+}
+
+/**
+ * Neural Bridge: Global Cinematic Navigation
+ */
+function initNeuralBridge() {
+    // Intercept clicks for internal links
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link || !link.href || link.target === '_blank' || link.href.includes('#') || link.href.startsWith('javascript:')) return;
+
+        // Only internal links
+        const url = new URL(link.href);
+        if (url.origin !== window.location.origin) return;
+
+        e.preventDefault();
+
+        // Trigger Glitch Overlay
+        showNeuralGlitch(() => {
+            window.location.href = link.href;
+        });
+    });
+}
+
+function showNeuralGlitch(callback) {
+    const glitch = document.createElement('div');
+    glitch.style.cssText = `
+        position: fixed; inset: 0; z-index: 100000;
+        background: var(--void); pointer-events: none;
+        opacity: 0; transition: opacity 0.2s;
+        display: flex; align-items: center; justify-content: center;
+        overflow: hidden;
+    `;
+
+    // Add some random static lines
+    for (let i = 0; i < 10; i++) {
+        const line = document.createElement('div');
+        line.style.cssText = `
+            position: absolute; width: 100%; height: 2px;
+            background: var(--photon); opacity: ${Math.random()};
+            top: ${Math.random() * 100}%; left: 0;
+            transform: scaleX(${0.5 + Math.random()});
+        `;
+        glitch.appendChild(line);
+    }
+
+    const label = document.createElement('div');
+    label.className = 'clash';
+    label.style.cssText = 'font-size: 0.7rem; letter-spacing: 5px; color: var(--photon); opacity: 0.8;';
+    label.textContent = 'NEURAL_LINK_TRANSFER...';
+    glitch.appendChild(label);
+
+    document.body.appendChild(glitch);
+
+    requestAnimationFrame(() => {
+        glitch.style.opacity = '1';
+        setTimeout(callback, 300);
+    });
+}
 
 function injectRebirthLayout() {
     const user = Auth.getCurrentUser();
@@ -582,5 +946,80 @@ function applyCustomAccent() {
     if (savedColor) {
         document.documentElement.style.setProperty('--photon', savedColor);
         document.documentElement.style.setProperty('--photon-glow', savedColor + '33');
+    }
+
+    /**
+     * ThemeManager V2: Universal HUD Sync
+     */
+    window.ThemeManager = {
+        init() {
+            this.applyTheme();
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'xp_accent_color') this.applyTheme();
+            });
+        },
+        applyTheme() {
+            const color = localStorage.getItem('xp_accent_color') || '#00f5ff';
+            document.documentElement.style.setProperty('--primary', color);
+            document.documentElement.style.setProperty('--primary-glow', color + '33');
+
+            // Extract RGB for the --theme-accent-raw variable
+            const rgb = this.hexToRgb(color);
+            if (rgb) {
+                document.documentElement.style.setProperty('--theme-accent-raw', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+            }
+
+            // Sync color overlay if it exists
+            const hexDisplay = document.getElementById('overlayHexDisplay');
+            if (hexDisplay) hexDisplay.textContent = color.toUpperCase();
+        },
+        hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : null;
+        }
+    };
+
+    ThemeManager.init();
+
+    /**
+     * Navigational Auditor: Neutralize Dead-ends
+     */
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && (link.getAttribute('href') === '#' || link.getAttribute('href') === '')) {
+            e.preventDefault();
+            if (window.Toast) {
+                Toast.show('SECTOR ACCESS RESTRICTED: Dead-end neutralized.', 'info');
+            }
+            console.warn('[NavAudit] Neutralized dead-end link:', link);
+        }
+    });
+
+    /**
+     * Neural Haptics: Tactile HUD Feedback
+     */
+    function initNeuralHaptics() {
+        document.addEventListener('mousedown', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+            position: fixed; width: 40px; height: 40px;
+            border: 2px solid var(--photon); border-radius: 50%;
+            pointer-events: none; z-index: 100001;
+            left: ${e.clientX - 20}px; top: ${e.clientY - 20}px;
+            opacity: 0.5; transform: scale(0.5);
+            transition: all 0.4s var(--transition-premium);
+        `;
+            document.body.appendChild(ripple);
+
+            requestAnimationFrame(() => {
+                ripple.style.opacity = '0';
+                ripple.style.transform = 'scale(2.5)';
+                setTimeout(() => ripple.remove(), 400);
+            });
+        });
     }
 }

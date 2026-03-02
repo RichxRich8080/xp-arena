@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 let LB_SCOPE = 'global';
 let LB_TYPE = 'users';
-window.setLeaderboardScope = function(scope) {
+window.setLeaderboardScope = function (scope) {
     LB_SCOPE = scope;
     document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('active'));
     const btn = document.querySelector(`.scope-btn[data-scope="${scope}"]`);
@@ -61,24 +61,26 @@ async function renderLeaderboard() {
         };
     });
 
-    // Seed with realistic placeholder players if very few real data
+    // Seed with realistic professional operatives if real data is scarce
     if (players.length < 5) {
         const seeds = [
-            { username: 'PRO_PLAYER_77', axp: 22500, avatar: '👑', streak: 21 },
-            { username: 'Shadow_Slayer', axp: 21000, avatar: '🎯', streak: 18 },
-            { username: 'Ghost_Aim', axp: 19800, avatar: '👻', streak: 14 },
-            { username: 'AimBot_Pro', axp: 17000, avatar: '🤖', streak: 10 },
-            { username: 'SnipeKing', axp: 14200, avatar: '⚡️', streak: 8 },
+            { username: 'ELITE_RUOK', axp: 28500, avatar: '👑', streak: 45, badges: { verified_setup: true } },
+            { username: 'TATSUYA_PRIME', axp: 26200, avatar: '🎯', streak: 32, badges: { premium: true } },
+            { username: 'OPERATIVE_NOBRU', axp: 24800, avatar: '⚡', streak: 28, badges: { v_badge: true } },
+            { username: 'WHITE_444_GHOST', axp: 22100, avatar: '💀', streak: 21 },
+            { username: 'VINCENZO_MASTER', axp: 19500, avatar: '🛡️', streak: 15 },
         ];
-        for (let i = 0; i < seeds.length && players.length < 5; i++) {
+        for (let i = 0; i < seeds.length && players.length < 10; i++) {
             const s = seeds[i];
             if (!players.find(p => p.username === s.username)) {
                 players.push({
                     ...s,
+                    id: 'seed-' + i,
                     level: Math.floor(s.axp / 500) + 1,
                     rank: getRank(s.axp),
                     isMe: false,
-                    submissions: Math.floor(s.axp / 200)
+                    submissions: Math.floor(s.axp / 150),
+                    setup_type: 'MOBILE_PRO'
                 });
             }
         }
@@ -204,18 +206,18 @@ async function renderLeaderboard() {
                     <div style="font-size:0.8rem; color: var(--stardust-muted);">Pos #${myPosition + 1}</div>
                 </div>
                 ${windowSlice.map((p, i) => {
-                    const pos = start + i + 1;
-                    const isMe = p.isMe;
-                    return `
+            const pos = start + i + 1;
+            const isMe = p.isMe;
+            return `
                     <div style="display:grid; grid-template-columns:48px 1fr auto; align-items:center; gap:1rem; padding:0.8rem 1.0rem; border-radius:12px; margin-bottom:6px; background:${isMe ? 'linear-gradient(90deg, rgba(0,245,255,0.12), rgba(0,245,255,0.04))' : 'rgba(255,255,255,0.02)'}; border:1px solid ${isMe ? 'var(--photon)' : 'var(--glass-border)'};">
                         <div style="text-align:center; font-weight:800; color:${isMe ? 'var(--photon)' : 'var(--stardust-muted)'}">#${pos}</div>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:1.2rem;">${p.avatar}</span>
                             <div style="font-weight:800;">${p.username}${isMe ? ' <span style="font-size:0.7rem; background: var(--photon); color: #000; padding: 1px 6px; border-radius:4px;">YOU</span>' : ''}</div>
                         </div>
-                        <div style="text-align:right; font-weight:900; color:${isMe ? 'var(--photon)' : 'var(--stardust)'}">${(p.axp||0).toLocaleString()}</div>
+                        <div style="text-align:right; font-weight:900; color:${isMe ? 'var(--photon)' : 'var(--stardust)'}">${(p.axp || 0).toLocaleString()}</div>
                     </div>`;
-                }).join('')}
+        }).join('')}
             </div>
         `;
     }

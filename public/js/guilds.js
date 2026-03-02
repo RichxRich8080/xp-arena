@@ -5,11 +5,19 @@
 
 const Clan = {
     async init() {
-        console.log("Clan System: Synchronizing...");
+        this.renderSkeletons();
         await this.loadLeaderboard();
         if (Auth.isLoggedIn()) {
             await this.syncUserClan();
         }
+    },
+
+    renderSkeletons() {
+        const el = document.getElementById('guildLeaderboard');
+        if (!el) return;
+        el.innerHTML = Array(4).fill(0).map(() => `
+            <div class="pulse-card mission-card skeleton-module" style="height: 100px; margin-bottom: 1rem; opacity: 0.4;"></div>
+        `).join('');
     },
 
     async syncUserClan() {
@@ -22,9 +30,7 @@ const Clan = {
                 const clan = data.guild;
                 this.renderUI(clan);
             }
-        } catch (e) {
-            console.error("Clan sync error:", e);
-        }
+        } catch (e) { }
     },
 
     renderUI(clan) {
@@ -94,12 +100,8 @@ const Clan = {
                 await User.loadStats();
                 this.syncUserClan();
                 this.loadLeaderboard();
-            } else {
-                if (window.Toast) Toast.show(data.error || 'Activation failed', 'error');
             }
-        } catch (e) {
-            console.error("Create error:", e);
-        }
+        } catch (e) { }
     },
 
     async join(guildId, inviteCode) {
@@ -125,12 +127,8 @@ const Clan = {
                 await User.loadStats();
                 this.syncUserClan();
                 this.loadLeaderboard();
-            } else {
-                if (window.Toast) Toast.show(data.error || 'Deployment failed', 'error');
             }
-        } catch (e) {
-            console.error("Join error:", e);
-        }
+        } catch (e) { }
     },
 
     async leave() {
@@ -146,9 +144,7 @@ const Clan = {
                 this.syncUserClan();
                 this.loadLeaderboard();
             }
-        } catch (e) {
-            console.error("Leave error:", e);
-        }
+        } catch (e) { }
     },
 
     async loadLeaderboard() {
@@ -158,20 +154,22 @@ const Clan = {
             const res = await fetch((window.API_URL || '') + '/api/guilds/leaderboard');
             if (res.ok) {
                 const rows = await res.json();
-                el.innerHTML = rows.map((g, i) => `
-                    <div class="pulse-card mission-card" style="display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 1.5rem; margin-bottom: 1rem; border-left-width: 4px;">
-                        <div class="clash" style="font-size: 1.5rem; color: var(--stardust-muted); opacity: 0.5;">#${(i + 1).toString().padStart(2, '0')}</div>
-                        <div>
-                            <div class="clash" style="font-size: 1.25rem; color: #fff; letter-spacing: 1px;">${g.badge ? g.badge + ' ' : ''}${g.name.toUpperCase()}</div>
-                            <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">OPERATIVES: ${g.members} • MATRIX_POWER: <span class="text-photon">${g.axp.toLocaleString()}</span></div>
+                el.innerHTML = rows.map((g, i) => {
+                    const safeName = DOM.escape(g.name);
+                    const safeBadge = g.badge ? DOM.escape(g.badge) : '';
+                    return `
+                        <div class="pulse-card mission-card" style="display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 1.5rem; margin-bottom: 1rem; border-left-width: 4px;">
+                            <div class="clash" style="font-size: 1.5rem; color: var(--stardust-muted); opacity: 0.5;">#${(i + 1).toString().padStart(2, '0')}</div>
+                            <div>
+                                <div class="clash" style="font-size: 1.25rem; color: #fff; letter-spacing: 1px;">${safeBadge ? safeBadge + ' ' : ''}${safeName.toUpperCase()}</div>
+                                <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">OPERATIVES: ${g.members} • MATRIX_POWER: <span class="text-photon">${(g.axp || 0).toLocaleString()}</span></div>
+                            </div>
+                            <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.6rem 1.2rem; letter-spacing: 1px;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('guildIdInput').dispatchEvent(new Event('input'));">DEPLOY</button>
                         </div>
-                        <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.6rem 1.2rem; letter-spacing: 1px;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('guildIdInput').dispatchEvent(new Event('input'));">DEPLOY</button>
-                    </div>
-                `).join('') || '<div style="text-align: center; color: var(--stardust-muted); padding: 4rem; letter-spacing: 2px;">SCANNING_MATRIX_FOR_CLANS...</div>';
+                    `;
+                }).join('') || '<div style="text-align: center; color: var(--stardust-muted); padding: 4rem; letter-spacing: 2px;">SCANNING_MATRIX_FOR_CLANS...</div>';
             }
-        } catch (e) {
-            console.error("Leaderboard load error:", e);
-        }
+        } catch (e) { }
     },
 
     async loadMembers(gid) {
@@ -183,15 +181,19 @@ const Clan = {
             });
             if (res.ok) {
                 const members = await res.json();
-                el.innerHTML = members.map(m => `
-                    <div class="pulse-card mission-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; margin-bottom: 0.5rem; border-left-color: ${m.role === 'leader' ? 'var(--photon)' : 'var(--glass-border)'}">
-                        <div>
-                            <div class="clash" style="font-size: 1.1rem; color: #fff;">${m.username} <span style="font-size: 0.65rem; color: var(--photon); opacity: 0.8; letter-spacing: 1px;">[${m.role.toUpperCase()}]</span></div>
-                            <div style="font-size: 0.7rem; color: var(--stardust-muted); letter-spacing: 1px;">CAPACITY: ${m.axp.toLocaleString()} AXP</div>
+                el.innerHTML = members.map(m => {
+                    const safeUsername = DOM.escape(m.username);
+                    const safeRole = DOM.escape(m.role || 'member');
+                    return `
+                        <div class="pulse-card mission-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; margin-bottom: 0.5rem; border-left-color: ${m.role === 'leader' ? 'var(--photon)' : 'var(--glass-border)'}">
+                            <div>
+                                <div class="clash" style="font-size: 1.1rem; color: #fff;">${safeUsername} <span style="font-size: 0.65rem; color: var(--photon); opacity: 0.8; letter-spacing: 1px;">[${safeRole.toUpperCase()}]</span></div>
+                                <div style="font-size: 0.7rem; color: var(--stardust-muted); letter-spacing: 1px;">CAPACITY: ${(m.axp || 0).toLocaleString()} AXP</div>
+                            </div>
+                            ${m.role !== 'leader' ? `<button class="btn-rebirth" style="border: 1px solid var(--glass-border); color: #ff4444; font-size: 0.65rem; padding: 0.4rem 0.8rem;" onclick="Clan.removeMember(${gid}, ${m.id})">DISCHARGE</button>` : ''}
                         </div>
-                        ${m.role !== 'leader' ? `<button class="btn-rebirth" style="border: 1px solid var(--glass-border); color: #ff4444; font-size: 0.65rem; padding: 0.4rem 0.8rem;" onclick="Clan.removeMember(${gid}, ${m.id})">DISCHARGE</button>` : ''}
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         } catch (e) { }
     },
