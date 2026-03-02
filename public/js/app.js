@@ -379,6 +379,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Show simple loader before redirect
             calculateBtn.textContent = "PREPARING ENGINES...";
             calculateBtn.disabled = true;
+            calculateBtn.classList.add('loading');
 
             // --- Calculation Logic (moved here to prepare for result page) ---
             let baseGeneral = 95;

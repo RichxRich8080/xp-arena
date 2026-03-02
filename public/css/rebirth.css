@@ -164,6 +164,30 @@ h4,
     box-shadow: 0 8px 30px var(--primary-glow);
 }
 
+/* Loading/disabled outline style so buttons stay visible */
+.btn-rebirth:disabled {
+    background: transparent !important;
+    color: var(--stardust) !important;
+    border: 1px solid var(--glass-border) !important;
+    opacity: 0.85 !important;
+    cursor: wait !important;
+    box-shadow: none !important;
+}
+
+.btn-rebirth.loading::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--glass-border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 /* Legend Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;

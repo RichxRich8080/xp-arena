@@ -49,6 +49,67 @@ router.get('/leaderboard', async (req, res) => {
 });
 
 /**
+ * Leaderboard (Weekly delta): Order by AXP gained in last 7 days
+ * Uses axp_history snapshots; falls back to 0 when history is missing
+ */
+router.get('/leaderboard/weekly', async (req, res) => {
+    try {
+        const rows = await db.all(`
+            SELECT 
+                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp,
+                GREATEST(COALESCE(t.axp, 0) - COALESCE(w.axp, 0), 0) AS axp
+            FROM users u
+            LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = CURDATE()) t ON t.user_id = u.id
+            LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = DATE_SUB(CURDATE(), INTERVAL 7 DAY)) w ON w.user_id = u.id
+            WHERE u.email_verified = 1
+            ORDER BY axp DESC
+            LIMIT 100
+        `, []);
+        const formatted = rows.map(u => ({
+            ...u,
+            badges: {
+                premium: !!u.is_premium,
+                v_badge: !!u.vip_badge
+            }
+        }));
+        res.json(formatted);
+    } catch (err) {
+        console.error('[Leaderboard Weekly] Error:', err);
+        res.status(500).json({ error: 'Failed to fetch weekly leaderboard' });
+    }
+});
+
+/**
+ * Leaderboard (Today delta): Order by AXP gained today
+ */
+router.get('/leaderboard/today', async (req, res) => {
+    try {
+        const rows = await db.all(`
+            SELECT 
+                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp,
+                GREATEST(COALESCE(t.axp, 0) - COALESCE(y.axp, 0), 0) AS axp
+            FROM users u
+            LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = CURDATE()) t ON t.user_id = u.id
+            LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)) y ON y.user_id = u.id
+            WHERE u.email_verified = 1
+            ORDER BY axp DESC
+            LIMIT 100
+        `, []);
+        const formatted = rows.map(u => ({
+            ...u,
+            badges: {
+                premium: !!u.is_premium,
+                v_badge: !!u.vip_badge
+            }
+        }));
+        res.json(formatted);
+    } catch (err) {
+        console.error('[Leaderboard Today] Error:', err);
+        res.status(500).json({ error: 'Failed to fetch today leaderboard' });
+    }
+});
+
+/**
  * Pro Player Database
  */
 router.get('/pro-players', async (req, res) => {

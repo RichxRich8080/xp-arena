@@ -12,13 +12,28 @@ document.addEventListener('DOMContentLoaded', () => {
     renderLeaderboard();
 });
 
+let LB_SCOPE = 'global';
+let LB_TYPE = 'users';
+window.setLeaderboardScope = function(scope) {
+    LB_SCOPE = scope;
+    document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.scope-btn[data-scope="${scope}"]`);
+    if (btn) btn.classList.add('active');
+    // Re-render based on current tab type
+    if (LB_TYPE === 'guilds') renderGuildLeaderboard(); else renderLeaderboard();
+};
+
 async function renderLeaderboard() {
     const list = document.getElementById('leaderboardList');
+    const podium = document.getElementById('leaderboardPodium');
     if (!list) return;
 
     let dbPlayers = [];
     try {
-        const res = await fetch(`${API_BASE_LB}/api/leaderboard`);
+        let path = '/api/leaderboard';
+        if (LB_SCOPE === 'weekly') path = '/api/leaderboard/weekly';
+        else if (LB_SCOPE === 'today') path = '/api/leaderboard/today';
+        const res = await fetch(`${API_BASE_LB}${path}`);
         if (res.ok) {
             dbPlayers = await res.json();
         }
@@ -27,12 +42,14 @@ async function renderLeaderboard() {
     }
 
     const players = dbPlayers.map(p => {
+        const baseAxp = (typeof p.total_axp === 'number') ? p.total_axp : (p.axp || 0);
         const rankName = p.rank || null;
-        const rankObj = rankName ? getRankByName(rankName) : getRank(p.axp || 0);
+        const rankObj = rankName ? getRankByName(rankName) : getRank(baseAxp);
         return {
             id: p.id,
             username: p.username,
-            axp: p.axp || 0,
+            axp: p.axp || 0,          // current scope value (global or delta)
+            total_axp: baseAxp,       // absolute total for rank context
             level: p.level || 1,
             streak: p.streak || 0,
             avatar: p.avatar || '👤',
@@ -71,6 +88,29 @@ async function renderLeaderboard() {
 
     const top10 = players.slice(0, 10);
 
+    // Render Podium (top 3)
+    if (podium) {
+        const top3 = players.slice(0, 3);
+        const scopeLabel = (LB_SCOPE === 'global') ? 'AXP' : (LB_SCOPE === 'weekly' ? 'AXP (7d)' : 'AXP (Today)');
+        podium.innerHTML = top3.map((p, idx) => {
+            const total = (p.total_axp || p.axp || 0);
+            const delta = (LB_SCOPE === 'global') ? null : (p.axp || 0);
+            return `
+                <div class="podium-card rank-${idx + 1}">
+                    <div class="rank-badge">${idx + 1}</div>
+                    <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
+                        <div style="font-size:2.2rem;">${p.avatar}</div>
+                        <div style="font-weight:900; font-size:1.1rem;">${p.username}</div>
+                        <div style="font-size:0.8rem; color: var(--text-muted);">${p.rank.icon} ${p.rank.name} • Lv.${p.level}</div>
+                        <div style="font-size:1.2rem; font-weight:900; color: var(--accent);">${total.toLocaleString()}</div>
+                        <div style="font-size:0.7rem; color: var(--text-muted);">Total AXP</div>
+                        ${delta !== null ? `<div style="font-size:0.75rem; color: var(--stardust-muted);">Δ +${delta.toLocaleString()} ${scopeLabel}</div>` : ''}
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
     // Find current user's position overall
     let myPosition = -1;
     if (typeof Auth !== 'undefined' && Auth.isLoggedIn()) {
@@ -86,7 +126,17 @@ async function renderLeaderboard() {
         const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
         const posColor = isTop3 ? medalColors[idx] : 'var(--text-muted)';
         const posLabel = isTop3 ? ['🥇', '🥈', '🥉'][idx] : `#${pos}`;
-        const axpProgress = (p.axp % 500) / 500 * 100;
+        const axpProgress = ((p.total_axp || p.axp) % 500) / 500 * 100;
+        const bg = p.isMe
+            ? 'linear-gradient(90deg, rgba(0,245,255,0.12), rgba(0,245,255,0.04))'
+            : (pos === 1
+                ? 'linear-gradient(90deg, rgba(255,58,58,0.18), rgba(255,58,58,0.06))'
+                : (isTop3
+                    ? 'linear-gradient(90deg, rgba(255,58,58,0.10), rgba(255,58,58,0.04))'
+                    : 'rgba(255,255,255,0.02)'));
+        const border = p.isMe
+            ? 'var(--photon)'
+            : (isTop3 ? 'rgba(255,58,58,0.35)' : 'rgba(255,255,255,0.08)');
 
         const badgeChips = [
             p.badges && p.badges.v_badge ? '<span style="font-size:0.7rem;background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.4);color:#ffd700;padding:2px 6px;border-radius:6px;">VIP</span>' : '',
@@ -103,11 +153,11 @@ async function renderLeaderboard() {
                 padding: 1rem 1.2rem;
                 border-radius: 14px;
                 margin-bottom: 0.6rem;
-                background: ${p.isMe ? 'rgba(var(--accent-rgb, 255, 85, 0), 0.08)' : isTop3 ? 'rgba(255,255,255,0.03)' : 'transparent'};
-                border: 1px solid ${p.isMe ? 'var(--accent)' : isTop3 ? 'rgba(255,255,255,0.1)' : 'var(--border)'};
+                background: ${bg};
+                border: 1px solid ${border};
                 transition: all 0.2s;
                 cursor: pointer;
-            " class="lb-row hud-table-row glass-card" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
+            " class="lb-row hud-table-row glass-card rank-${pos}" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
                 <div class="hud-corner hud-tl"></div>
                 <div class="hud-corner hud-tr"></div>
                 <div class="hud-corner hud-bl"></div>
@@ -134,46 +184,38 @@ async function renderLeaderboard() {
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${p.axp.toLocaleString()}</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">AXP</div>
+                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${(p.axp || 0).toLocaleString()}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">${LB_SCOPE === 'global' ? 'AXP' : (LB_SCOPE === 'weekly' ? 'AXP (7d)' : 'AXP (Today)')}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.8;">Total ${(p.total_axp || p.axp || 0).toLocaleString()}</div>
+                    <button title="Share" onclick="shareRow('${p.username}', ${(p.axp || 0)})" style="margin-top:6px; background: transparent; border:1px solid var(--glass-border); color: var(--stardust); padding:6px 10px; border-radius:8px; cursor:pointer;"><i class="fas fa-share-alt"></i></button>
                 </div>
             </div>
         `;
     }).join('');
 
-    // Show "You are #N" footer if user is outside top 10
-    if (myPosition >= 10) {
-        const me = players[myPosition];
+    // "Near You" window: show slice around the user if outside top10
+    if (myPosition >= 0) {
+        const start = Math.max(0, myPosition - 2);
+        const windowSlice = players.slice(start, start + 5);
         list.innerHTML += `
-            <div style="border-top: 1px solid var(--border); margin-top: 1rem; padding-top: 1rem;">
-                <div style="text-align: center; color: var(--text-muted); font-size: 0.85rem; margin-bottom: 0.5rem;">Your position</div>
-                <div style="
-                    display: grid;
-                    grid-template-columns: 48px 1fr auto;
-                    align-items: center;
-                    gap: 1rem;
-                    padding: 1rem 1.2rem;
-                    border-radius: 14px;
-                    background: rgba(var(--accent-rgb, 255, 85, 0), 0.08);
-                    border: 1px solid var(--accent);
-                " class="hud-table-row glass-card">
-                    <div class="hud-corner hud-tl"></div>
-                    <div class="hud-corner hud-tr"></div>
-                    <div class="hud-corner hud-bl"></div>
-                    <div class="hud-corner hud-br"></div>
-                    <div style="font-size: 1rem; font-weight: 800; color: var(--accent); text-align: center;">#${myPosition + 1}</div>
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.4rem;">${me.avatar}</span>
-                        <div>
-                            <div style="font-weight: 800; color: var(--accent);">${me.username} <span style="font-size: 0.7rem; background: var(--accent); color: #000; padding: 1px 6px; border-radius: 4px;">YOU</span></div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">${me.rank.icon} ${me.rank.name} • Lv.${me.level}</div>
-                        </div>
-                    </div>
-                    <div style="text-align: right;">
-                        <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${me.axp.toLocaleString()}</div>
-                        <div style="font-size: 0.7rem; color: var(--text-muted);">AXP</div>
-                    </div>
+            <div style="border-top: 1px solid var(--glass-border); margin-top: 1.2rem; padding-top: 1rem;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.6rem;">
+                    <div class="clash" style="font-size:1rem; letter-spacing:0.2em; color: var(--stardust);">NEAR YOU</div>
+                    <div style="font-size:0.8rem; color: var(--stardust-muted);">Pos #${myPosition + 1}</div>
                 </div>
+                ${windowSlice.map((p, i) => {
+                    const pos = start + i + 1;
+                    const isMe = p.isMe;
+                    return `
+                    <div style="display:grid; grid-template-columns:48px 1fr auto; align-items:center; gap:1rem; padding:0.8rem 1.0rem; border-radius:12px; margin-bottom:6px; background:${isMe ? 'linear-gradient(90deg, rgba(0,245,255,0.12), rgba(0,245,255,0.04))' : 'rgba(255,255,255,0.02)'}; border:1px solid ${isMe ? 'var(--photon)' : 'var(--glass-border)'};">
+                        <div style="text-align:center; font-weight:800; color:${isMe ? 'var(--photon)' : 'var(--stardust-muted)'}">#${pos}</div>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <span style="font-size:1.2rem;">${p.avatar}</span>
+                            <div style="font-weight:800;">${p.username}${isMe ? ' <span style="font-size:0.7rem; background: var(--photon); color: #000; padding: 1px 6px; border-radius:4px;">YOU</span>' : ''}</div>
+                        </div>
+                        <div style="text-align:right; font-weight:900; color:${isMe ? 'var(--photon)' : 'var(--stardust)'}">${(p.axp||0).toLocaleString()}</div>
+                    </div>`;
+                }).join('')}
             </div>
         `;
     }
@@ -288,10 +330,12 @@ window.switchLeaderboard = function (type) {
     list.innerHTML = '<div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div>';
 
     if (type === 'guilds') {
+        LB_TYPE = 'guilds';
         colName.textContent = 'Clan';
         colExtra.textContent = 'Badge';
         renderGuildLeaderboard();
     } else {
+        LB_TYPE = 'users';
         colName.textContent = 'Areni';
         colExtra.textContent = 'Device';
         renderLeaderboard();
@@ -300,6 +344,7 @@ window.switchLeaderboard = function (type) {
 
 async function renderGuildLeaderboard() {
     const list = document.getElementById('leaderboardList');
+    const podium = document.getElementById('leaderboardPodium');
     if (!list) return;
 
     try {
@@ -309,6 +354,21 @@ async function renderGuildLeaderboard() {
             if (guilds.length === 0) {
                 list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted);">No clans founded yet. Be the first to start a legacy!</div>';
                 return;
+            }
+            if (podium) {
+                const top3 = guilds.slice(0, 3);
+                podium.innerHTML = top3.map((g, idx) => `
+                    <div class="podium-card rank-${idx + 1}">
+                        <div class="rank-badge">${idx + 1}</div>
+                        <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
+                            <div style="font-size:2rem;">🛡️</div>
+                            <div style="font-weight:900; font-size:1.1rem;">${g.name}</div>
+                            <div style="font-size:0.8rem; color: var(--text-muted);">${g.members || 0} Members</div>
+                            <div style="font-size:1.2rem; font-weight:900; color: var(--accent);">${(g.axp || 0).toLocaleString()}</div>
+                            <div style="font-size:0.7rem; color: var(--text-muted);">Total AXP</div>
+                        </div>
+                    </div>
+                `).join('');
             }
             list.innerHTML = guilds.map((g, idx) => {
                 const pos = idx + 1;
@@ -355,3 +415,14 @@ async function renderGuildLeaderboard() {
         list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--danger);">Error loading Clan Race.</div>';
     }
 }
+
+window.shareRow = function (username, axp) {
+    const scope = (LB_SCOPE === 'global') ? 'Global AXP' : (LB_SCOPE === 'weekly' ? 'Weekly AXP' : 'Today AXP');
+    const text = `XP ARENA — ${username}: ${axp} ${scope}`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text);
+        if (window.Toast) Toast.show('Share text copied!', 'success');
+    } else {
+        if (window.Toast) Toast.show(text, 'info');
+    }
+};

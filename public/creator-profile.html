@@ -185,9 +185,9 @@
                 </p>
 
                 <div class="social-matrix">
-                    <a id="sInstagram" href="#" class="social-link"><i class="fab fa-instagram"></i></a>
-                    <a id="sTikTok" href="#" class="social-link"><i class="fab fa-tiktok"></i></a>
-                    <a id="sYouTube" href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                    <a id="sInstagram" href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i> <span id="sInstagramTxt" style="font-size:0.8rem;">Instagram</span></a>
+                    <a id="sTikTok" href="#" class="social-link" title="TikTok"><i class="fab fa-tiktok"></i> <span id="sTikTokTxt" style="font-size:0.8rem;">TikTok</span></a>
+                    <a id="sYouTube" href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i> <span id="sYouTubeTxt" style="font-size:0.8rem;">YouTube</span></a>
                 </div>
 
                 <div class="stats-strip">
@@ -255,16 +255,31 @@
                 document.getElementById('pFollowers').textContent = data.followers || 0;
 
                 if (c.banner_url) {
-                    document.getElementById('pBanner').style.backgroundImage = `url('${c.banner_url}')`;
+                    document.getElementById('pBanner').style.backgroundImage = `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.8)), url('${c.banner_url}')`;
                 }
 
                 // Socials
                 if (c.socials) {
                     try {
                         const s = JSON.parse(c.socials);
-                        if (s.instagram) { document.getElementById('sInstagram').href = 'https://instagram.com/' + s.instagram; document.getElementById('sInstagram').style.color = 'var(--photon)'; }
-                        if (s.tiktok) { document.getElementById('sTikTok').href = 'https://tiktok.com/@' + s.tiktok; document.getElementById('sTikTok').style.color = 'var(--photon)'; }
-                        if (s.youtube) { document.getElementById('sYouTube').href = s.youtube; document.getElementById('sYouTube').style.color = 'var(--photon)'; }
+                        if (s.instagram) { 
+                            const a = document.getElementById('sInstagram'); 
+                            a.href = 'https://instagram.com/' + s.instagram; 
+                            const t = document.getElementById('sInstagramTxt'); 
+                            if (t) t.textContent = '@' + s.instagram; 
+                        }
+                        if (s.tiktok) { 
+                            const a = document.getElementById('sTikTok'); 
+                            a.href = 'https://tiktok.com/@' + s.tiktok; 
+                            const t = document.getElementById('sTikTokTxt'); 
+                            if (t) t.textContent = '@' + s.tiktok; 
+                        }
+                        if (s.youtube) { 
+                            const a = document.getElementById('sYouTube'); 
+                            a.href = s.youtube; 
+                            const t = document.getElementById('sYouTubeTxt'); 
+                            if (t) t.textContent = 'YouTube'; 
+                        }
                     } catch (e) { }
                 }
 

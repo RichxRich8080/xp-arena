@@ -140,15 +140,15 @@
         /* List Rows */
         .areni-leaderboard-row {
             display: grid;
-            grid-template-columns: 80px 1fr 180px 100px 150px;
+            grid-template-columns: 64px 1fr 120px;
             align-items: center;
-            padding: 1.5rem 2.5rem;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 1.2rem 1.6rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px;
-            margin-bottom: 1.2rem;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 20px;
+            margin-bottom: 1rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
@@ -184,23 +184,9 @@
             color: var(--stardust-muted);
         }
 
-        .operative-info {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
+        .operative-info { display: flex; align-items: center; gap: 1rem; }
 
-        .op-avatar {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
-            background: var(--glass-highlight);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-        }
+        .op-avatar { width: 44px; height: 44px; border-radius: 12px; background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; position: relative; }
 
         .op-name {
             font-family: 'Outfit', sans-serif;
@@ -250,8 +236,8 @@
             }
 
             .areni-leaderboard-row {
-                grid-template-columns: 50px 1fr 100px;
-                padding: 1rem;
+                grid-template-columns: 50px 1fr 88px;
+                padding: 1rem 1.2rem;
             }
 
             .hide-mobile {
@@ -297,6 +283,11 @@
             style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 4rem; border-bottom: 1px solid var(--glass-border);">
             <button class="tab-btn active" onclick="switchLeaderboard('users')">ARENI CORPS</button>
             <button class="tab-btn" onclick="switchLeaderboard('guilds')">CLAN MATRIX</button>
+        </div>
+        <div id="lb-scope-tabs" style="display:flex; justify-content:center; gap: 0.6rem; margin: -2rem 0 2rem;">
+            <button class="tab-btn scope-btn active" data-scope="global" onclick="window.setLeaderboardScope('global')">GLOBAL</button>
+            <button class="tab-btn scope-btn" data-scope="weekly" onclick="window.setLeaderboardScope('weekly')">WEEKLY</button>
+            <button class="tab-btn scope-btn" data-scope="today" onclick="window.setLeaderboardScope('today')">TODAY</button>
         </div>
 
         <!-- Podium Showcase -->

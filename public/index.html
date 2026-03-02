@@ -582,9 +582,15 @@
 
         <!-- NEW: Live Sector Standings -->
         <div class="pulse-card" style="grid-column: 1 / -1; padding: 2.5rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-            <h3 class="clash" style="font-size: 1.2rem; letter-spacing: 0.1em; color: var(--stardust);"><i
-                class="fas fa-bolt" style="color: var(--photon); margin-right: 10px;"></i> LIVE SECTOR STANDINGS</h3>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; gap: 10px;">
+            <div>
+              <h3 class="clash" style="font-size: 1.2rem; letter-spacing: 0.1em; color: var(--stardust); margin:0;"><i
+                  class="fas fa-bolt" style="color: var(--photon); margin-right: 10px;"></i> LIVE SECTOR STANDINGS</h3>
+              <div style="display:inline-flex; gap:6px; margin-top:6px;">
+                <button id="lsUsersBtn" class="btn-rebirth btn-photon" style="padding:0.4rem 0.8rem; font-size:0.7rem;">USERS</button>
+                <button id="lsClansBtn" class="btn-rebirth" style="padding:0.4rem 0.8rem; font-size:0.7rem; background:transparent; border:1px solid var(--glass-border); color: var(--stardust);">CLANS</button>
+              </div>
+            </div>
             <a href="leaderboard.html"
               style="font-size: 0.7rem; color: var(--photon); text-decoration: none; font-weight: 800; letter-spacing: 1px;">VIEW
               MATRIX <i class="fas fa-arrow-right"></i></a>
@@ -709,7 +715,72 @@
         setTimeout(() => overlay.classList.remove('active'), 4000);
       }
     }
+  
+    // LIVE SECTOR STANDINGS: fetch real verified users
+    async function renderLiveStandings(mode = 'users') {
+      const wrap = document.getElementById('live-standings-container');
+      if (!wrap) return;
+      try {
+        let rows = [];
+        if (mode === 'clans') {
+          const res = await fetch((window.API_URL || '') + '/api/guilds/leaderboard');
+          rows = res.ok ? await res.json() : [];
+        } else {
+          const res = await fetch((window.API_URL || '') + '/api/leaderboard');
+          rows = res.ok ? await res.json() : [];
+        }
+        const meId = (Auth.isLoggedIn() && Auth.getCurrentUser()) ? Auth.getCurrentUser().id : null;
+        const list = (rows || [])
+          .filter(u => u && (mode === 'clans' ? u.name : u.username))
+          .sort((a, b) => ((b.axp || b.total_axp || 0) - (a.axp || a.total_axp || 0)));
+
+        const mineIdx = list.findIndex(u => u.id === meId);
+        const items = [];
+        if (list[0]) items.push({ ...list[0], pos: 1, highlight: 'gold' });
+        if (mineIdx !== -1 && mode === 'users') items.push({ ...list[mineIdx], pos: mineIdx + 1, highlight: 'me' });
+        if (list[1] && items.length < 3) items.push({ ...list[1], pos: 2, highlight: 'silver' });
+        if (list[2] && items.length < 3) items.push({ ...list[2], pos: 3, highlight: 'bronze' });
+
+        if (!items.length) {
+          wrap.innerHTML = '<div style="padding:1rem; color:var(--stardust-muted);">No verified operatives yet.</div>';
+          return;
+        }
+
+        wrap.innerHTML = items.map(u => {
+          const badgeStyle = u.highlight === 'gold'
+            ? 'color:#ffd700; border-color: rgba(255,215,0,0.4); background: rgba(255,215,0,0.08);'
+            : u.highlight === 'silver'
+              ? 'color:#c0c0c0; border-color: rgba(192,192,192,0.4); background: rgba(192,192,192,0.08);'
+              : u.highlight === 'bronze'
+                ? 'color:#cd7f32; border-color: rgba(205,127,50,0.4); background: rgba(205,127,50,0.08);'
+                : 'color:var(--photon); border-color: var(--photon); background: rgba(0,245,255,0.05);';
+          const posLabel = u.pos.toString().padStart(2, '0');
+          return `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background: rgba(255,255,255,0.02); border-radius:12px; border:1px solid var(--glass-border);">
+              <div style="display:flex; align-items:center; gap:15px;">
+                <span style="font-family:'Clash Display',sans-serif; ${u.highlight==='me'?'color:var(--photon);':''}">${'#'+posLabel}</span>
+                <div style="width:30px; height:30px; border-radius:8px; ${badgeStyle} display:flex; align-items:center; justify-content:center;">
+                  ${mode==='clans' ? '🛡️' : (u.avatar || '👤')}
+                </div>
+                <span style="font-weight:800; font-size:0.9rem;">${mode==='clans' ? u.name : u.username}</span>
+              </div>
+              <span style="font-family:'Clash Display',sans-serif; ${u.highlight==='me'?'color:var(--photon);':''}">${Number(u.axp||u.total_axp||0).toLocaleString()} <span style="font-size:0.6rem; opacity:0.5;">AXP</span></span>
+            </div>
+          `;
+        }).join('');
+      } catch(e) {
+        console.error('Live standings error', e);
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLiveStandings('users');
+      const ub = document.getElementById('lsUsersBtn');
+      const cb = document.getElementById('lsClansBtn');
+      if (ub && cb) {
+        ub.addEventListener('click', () => { ub.classList.add('btn-photon'); cb.classList.remove('btn-photon'); renderLiveStandings('users'); });
+        cb.addEventListener('click', () => { cb.classList.add('btn-photon'); ub.classList.remove('btn-photon'); renderLiveStandings('clans'); });
+      }
+    });
   </script>
 </body>
-
 </html>
