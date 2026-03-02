@@ -69,33 +69,51 @@ const Shop = {
             const isOwned = inventory.includes(item.id);
 
             return `
-                <div class="pulse-card mission-card shop-item-card" data-id="${item.id}" style="border-left-width: 4px; border-left-color: ${item.rarity === 'legendary' ? '#ffd700' : (item.rarity === 'epic' ? '#bf00ff' : 'var(--photon)')
-                }">
+                <div class="pulse-card mission-card shop-item-card" data-id="${item.id}" 
+                    style="border-left: 4px solid ${item.rarity === 'legendary' ? '#ffd700' : (item.rarity === 'epic' ? '#bf00ff' : 'var(--photon)')};
+                           background: rgba(255, 255, 255, 0.01); backdrop-filter: blur(10px); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);">
                     <div class="rarity-badge rarity-${DOM.escape(item.rarity)}">${rarityLabel}</div>
-                    <div class="module-visual" style="background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent); border-radius: 20px;">${visual}</div>
-                    <div class="item-meta">
-                        <div style="font-size: 0.6rem; color: var(--stardust-muted); letter-spacing: 2px; margin-bottom: 0.5rem;">MODULE_PROTO_#${item.id}</div>
-                        <h3 class="clash" style="margin-bottom: 0.5rem; font-size: 1.4rem; color: #fff;">${safeName.toUpperCase()}</h3>
-                        <p style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.6; margin-bottom: 1.5rem;">${safeDesc.toUpperCase()}</p>
-                        <div class="spec-tags">
-                            <span class="spec-tag" style="background: rgba(0,245,255,0.05); color: var(--photon); border-color: rgba(0,245,255,0.2);">TYP: ${typeLabel}</span>
-                            <span class="spec-tag">STK: ${stockLabel}</span>
+                    
+                    <div class="module-visual" style="border-radius: 24px; position: relative; overflow: hidden; height: 200px; background: rgba(0,0,0,0.2);">
+                        <div class="glint-overlay" style="position: absolute; inset: 0; background: linear-gradient(135deg, transparent 45%, rgba(255,255,255,0.1) 50%, transparent 55%); background-size: 250% 250%; animation: glint 4s infinite;"></div>
+                        ${visual}
+                    </div>
+
+                    <div class="item-meta" style="padding: 0.5rem 0.2rem;">
+                        <div style="font-size: 0.55rem; color: var(--stardust-muted); letter-spacing: 3px; font-weight: 800; margin-bottom: 0.8rem; opacity: 0.7;">
+                            NODE_IDENTIFIER // BATCH_${item.id}
+                        </div>
+                        <h3 class="clash" style="margin-bottom: 0.6rem; font-size: 1.5rem; color: var(--stardust); line-height: 1.1;">
+                            ${safeName.toUpperCase()}
+                        </h3>
+                        <p style="font-size: 0.75rem; color: var(--stardust-muted); line-height: 1.6; margin-bottom: 1.5rem; font-weight: 500;">
+                            ${safeDesc.toUpperCase()}
+                        </p>
+                        <div class="spec-tags" style="gap: 0.6rem;">
+                            <span class="spec-tag" style="background: rgba(0,245,255,0.08); color: var(--photon); border-color: rgba(0,245,255,0.1); padding: 5px 12px; border-radius: 8px;">
+                                <i class="fas fa-microchip" style="font-size:0.6rem; margin-right:4px;"></i> ${typeLabel}
+                            </span>
+                            <span class="spec-tag" style="padding: 5px 12px; border-radius: 8px;">
+                                <i class="fas fa-layer-group" style="font-size:0.6rem; margin-right:4px;"></i> ${stockLabel}
+                            </span>
                         </div>
                     </div>
-                    <div class="shop-item-footer" style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
-                        <div class="price-tag" style="font-size: 1.25rem;">
-                            <span class="text-photon">${item.price_axp.toLocaleString()}</span> <span style="font-size: 0.7rem; opacity: 0.6;">AXP</span>
+
+                    <div class="shop-item-footer" style="padding-top: 2rem; border-top: 1px dashed var(--glass-border); display: flex; align-items: center; justify-content: space-between;">
+                        <div class="price-tag">
+                            <span style="font-size: 1.4rem; color: var(--stardust); font-weight: 900;">${item.price_axp.toLocaleString()}</span>
+                            <span style="font-size: 0.65rem; color: var(--photon); font-weight: 800; margin-left: 4px;">AXP</span>
                         </div>
                         ${isRenameCard && isOwned ? `
-                            <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.7rem 1.2rem; letter-spacing: 1px;" onclick="User.useRenameCard(${item.id})">
+                            <button class="btn-rebirth btn-photon" style="font-size: 0.65rem; padding: 0.8rem 1.8rem; border-radius: 12px;" onclick="User.useRenameCard(${item.id})">
                                 SYNC_IDENTITY
                             </button>
                         ` : `
                             <button class="btn-rebirth ${this.canAfford(item.price_axp) ? 'btn-photon' : ''}" 
-                                    style="font-size: 0.7rem; padding: 0.7rem 1.2rem; letter-spacing: 1px; ${!this.canAfford(item.price_axp) ? 'opacity: 0.5; background: rgba(255,255,255,0.02);' : ''}"
+                                    style="font-size: 0.65rem; padding: 0.8rem 1.8rem; border-radius: 12px; ${!this.canAfford(item.price_axp) ? 'opacity: 0.4;' : ''}"
                                     onclick="Shop.buy(${item.id}, '${safeName}', ${item.price_axp})" 
                                     ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
-                                ${this.canAfford(item.price_axp) ? 'ACQUIRE_MODULE' : 'LOCKED'}
+                                ${this.canAfford(item.price_axp) ? 'DEPLOY_MODULE' : 'LOCKED'}
                             </button>
                         `}
                     </div>

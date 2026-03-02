@@ -152,65 +152,97 @@
   <div class="admin-section">
     <!-- Global Metrics -->
     <div id="metrics" class="metrics-matrix">
-      <div class="pulse-card metric-card skeleton"></div>
-      <div class="pulse-card metric-card skeleton"></div>
-      <div class="pulse-card metric-card skeleton"></div>
-      <div class="pulse-card metric-card skeleton"></div>
+      <div class="pulse-card metric-card"
+        style="border-bottom: 2px solid var(--photon); background: rgba(0, 245, 255, 0.02);">
+        <span class="metric-val">SCANNING...</span>
+        <span class="metric-label">OPERATIVE_COUNT</span>
+      </div>
+      <div class="pulse-card metric-card">
+        <span class="metric-val">--</span>
+        <span class="metric-label">NEURAL_PROTOCOLS</span>
+      </div>
+      <div class="pulse-card metric-card">
+        <span class="metric-val">--</span>
+        <span class="metric-label">ACTIVE_ARENAS</span>
+      </div>
+      <div class="pulse-card metric-card">
+        <span class="metric-val">--</span>
+        <span class="metric-label">SECTOR_GUILDS</span>
+      </div>
     </div>
 
     <div class="admin-grid">
       <!-- Operative Controls -->
-      <div class="pulse-card control-panel">
-        <h3 class="clash" style="font-size: 1.3rem; margin-bottom: 2rem;"><i class="fas fa-user-shield text-photon"></i>
-          OPERATIVE INTERVENTION</h3>
+      <div class="pulse-card control-panel"
+        style="border-top: 4px solid var(--photon); background: rgba(255, 255, 255, 0.01);">
+        <h3 class="clash" style="font-size: 1.5rem; margin-bottom: 2.5rem; letter-spacing: 1px;">
+          <i class="fas fa-user-shield text-photon" style="margin-right: 15px;"></i>OPERATIVE INTERVENTION
+        </h3>
 
         <div class="field-group">
           <label class="field-label">Target Operative (Alias Search)</label>
-          <div style="display: flex; gap: 10px;">
-            <input id="admSearch" class="field-input" placeholder="Search designations...">
-            <button class="btn-rebirth btn-photon" style="padding: 0 1.5rem;" onclick="admSearch()"><i
-                class="fas fa-search"></i></button>
+          <div style="display: flex; gap: 12px;">
+            <input id="admSearch" class="field-input" placeholder="Search designations..."
+              style="border-radius: 12px; padding: 1.2rem;">
+            <button class="btn-rebirth btn-photon" style="padding: 0 1.8rem; border-radius: 12px;"
+              onclick="admSearch()">
+              <i class="fas fa-satellite-dish"></i>
+            </button>
           </div>
         </div>
 
-        <div id="admSearchRes" style="margin-bottom: 2rem;"></div>
+        <div id="admSearchRes" style="margin-bottom: 2.5rem; display: grid; gap: 8px;"></div>
 
-        <div class="field-group">
+        <div class="field-group"
+          style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 15px; border: 1px solid var(--glass-border);">
           <label class="field-label">Directive Target ID</label>
-          <input id="admUid" class="field-input" placeholder="Neural ID Override">
-        </div>
-
-        <div class="action-row">
-          <div>
-            <label class="field-label">AXP Delta</label>
-            <input id="admAxp" class="field-input" placeholder="Value">
-            <button class="btn-rebirth" style="width: 100%; margin-top: 0.5rem;" onclick="admGiveAXP()">GRANT</button>
-          </div>
-          <div>
-            <label class="field-label">Premium Status</label>
-            <button class="btn-rebirth" style="width: 100%; margin-bottom: 0.5rem;"
-              onclick="admSetPremium(1)">ENABLE</button>
-            <button class="btn-rebirth" style="width: 100%; background: rgba(255, 68, 68, 0.1);"
-              onclick="admSetPremium(0)">DISABLE</button>
-          </div>
+          <input id="admUid" class="field-input" placeholder="Neural ID Override"
+            style="font-family: 'Clash Display', sans-serif; font-weight: 700; color: var(--photon); font-size: 1.2rem; background: transparent; border: none; padding: 0;">
         </div>
 
         <div class="action-row" style="margin-top: 2rem;">
-          <div>
-            <label class="field-label">Ban Protocol</label>
-            <input id="admBanReason" class="field-input" placeholder="Violation Code">
-            <button class="btn-rebirth" style="width: 100%; margin-top: 0.5rem; background: #ff4444; color: #fff;"
-              onclick="admBan()">TERMINATE</button>
+          <div
+            style="background: rgba(255,255,255,0.01); padding: 1.5rem; border-radius: 15px; border: 1px solid var(--glass-border);">
+            <label class="field-label">AXP Delta</label>
+            <input id="admAxp" class="field-input" placeholder="Value" style="margin-bottom: 1rem;">
+            <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; font-size: 0.65rem;"
+              onclick="admGiveAXP()">SYNC_GRANT</button>
           </div>
-          <div>
-            <label class="field-label">Elite Badge</label>
-            <button class="btn-rebirth" style="width: 100%; margin-bottom: 0.5rem;" onclick="admSetVIP(1)">GRANT
-              VIP</button>
-            <button class="btn-rebirth" style="width: 100%;" onclick="admSetAdmin(1)">MAKE ADMIN</button>
+          <div
+            style="background: rgba(255,255,255,0.01); padding: 1.5rem; border-radius: 15px; border: 1px solid var(--glass-border);">
+            <label class="field-label">Neural Access</label>
+            <button class="btn-rebirth"
+              style="width: 100%; margin-bottom: 0.8rem; justify-content: center; font-size: 0.65rem; border-color: var(--photon); color: var(--photon);"
+              onclick="admSetPremium(1)">UPGRADE_PRO</button>
+            <button class="btn-rebirth"
+              style="width: 100%; justify-content: center; font-size: 0.65rem; border-color: rgba(255, 68, 68, 0.3); color: #ff4444;"
+              onclick="admSetPremium(0)">REVOKE_ACCESS</button>
+          </div>
+        </div>
+
+        <div class="action-row" style="margin-top: 1.5rem;">
+          <div
+            style="background: rgba(255, 68, 68, 0.05); padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(255, 68, 68, 0.1);">
+            <label class="field-label" style="color: #ff4444;">Termination Protocol</label>
+            <input id="admBanReason" class="field-input" placeholder="Violation Code"
+              style="margin-bottom: 1rem; border-color: rgba(255, 68, 68, 0.2);">
+            <button class="btn-rebirth"
+              style="width: 100%; justify-content: center; background: #ff4444; color: #fff; font-size: 0.65rem; border: none;"
+              onclick="admBan()">EXECUTE_BAN</button>
+          </div>
+          <div
+            style="background: rgba(255,255,255,0.01); padding: 1.5rem; border-radius: 15px; border: 1px solid var(--glass-border);">
+            <label class="field-label">Elite Forging</label>
+            <button class="btn-rebirth"
+              style="width: 100%; margin-bottom: 0.8rem; justify-content: center; font-size: 0.65rem; border-color: #ffd700; color: #ffd700;"
+              onclick="admSetVIP(1)">FORGE_VIP</button>
+            <button class="btn-rebirth"
+              style="width: 100%; justify-content: center; font-size: 0.65rem; border-color: var(--stardust-muted);"
+              onclick="admSetAdmin(1)">ELEVATE_ADMIN</button>
           </div>
         </div>
         <div id="admMsg"
-          style="margin-top: 1.5rem; text-align: center; color: var(--photon); font-size: 0.8rem; font-weight: 700;">
+          style="margin-top: 2rem; text-align: center; color: var(--photon); font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; min-height: 1rem;">
         </div>
       </div>
 

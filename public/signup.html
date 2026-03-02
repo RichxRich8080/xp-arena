@@ -14,55 +14,81 @@
                 var(--void);
             color: var(--stardust);
             font-family: 'Urbanist', sans-serif;
-            min-height: 100vh;
+            min-height: 100dvh;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             overflow-x: hidden;
         }
 
         .auth-container {
-            flex: 1;
             width: 100%;
-            max-width: 440px;
-            padding: 2rem;
+            max-width: 420px;
+            padding: 1rem;
             display: flex;
             align-items: center;
+            justify-content: center;
             z-index: 10;
         }
 
         .auth-card {
-            padding: 4rem 3rem;
+            padding: 2rem 1.75rem;
             text-align: center;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.01);
             border: 1px solid var(--glass-border);
+            width: 100%;
+            position: relative;
         }
 
-        .brand-icon {
-            width: 70px;
-            height: 70px;
+        .auth-palette-trigger {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--photon);
-            border-radius: 20px;
+            border: 1px solid var(--glass-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 2rem;
             color: var(--photon);
-            font-size: 1.8rem;
-            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .auth-palette-trigger:hover {
+            border-color: var(--photon);
+            background: rgba(0, 245, 255, 0.05);
+            transform: scale(1.1);
+        }
+
+        .brand-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--photon);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            color: var(--photon);
+            font-size: 1.3rem;
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
         }
 
         .auth-header h2 {
-            font-size: clamp(1.8rem, 5vw, 2.3rem);
-            margin-bottom: 0.5rem;
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
             line-height: 1;
         }
 
         .auth-header p {
             color: var(--stardust-muted);
-            font-size: 0.9rem;
-            margin-bottom: 3rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.5rem;
             font-weight: 500;
         }
 
@@ -97,13 +123,13 @@
 
         .rebirth-input {
             width: 100%;
-            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
-            background: rgba(255, 255, 255, 0.02);
+            padding: 0.9rem 1.2rem 0.9rem 3.2rem;
+            background: rgba(255, 255, 255, 0.01);
             border: 1px solid var(--glass-border);
-            border-radius: 16px;
+            border-radius: 12px;
             color: var(--stardust);
             font-family: inherit;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.4s;
         }
 
@@ -228,6 +254,9 @@
 
     <div class="auth-container">
         <div class="pulse-card auth-card">
+            <div class="auth-palette-trigger" onclick="toggleColorOverlay()" title="Neural Personalization">
+                <i class="fas fa-palette"></i>
+            </div>
             <div class="brand-icon"><i class="fas fa-satellite-dish"></i></div>
 
             <header class="auth-header">

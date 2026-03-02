@@ -157,14 +157,35 @@ const Clan = {
                 el.innerHTML = rows.map((g, i) => {
                     const safeName = DOM.escape(g.name);
                     const safeBadge = g.badge ? DOM.escape(g.badge) : '';
+                    const rank = i + 1;
+                    const isTop3 = rank <= 3;
+
                     return `
-                        <div class="pulse-card mission-card" style="display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 1.5rem; margin-bottom: 1rem; border-left-width: 4px;">
-                            <div class="clash" style="font-size: 1.5rem; color: var(--stardust-muted); opacity: 0.5;">#${(i + 1).toString().padStart(2, '0')}</div>
-                            <div>
-                                <div class="clash" style="font-size: 1.25rem; color: #fff; letter-spacing: 1px;">${safeBadge ? safeBadge + ' ' : ''}${safeName.toUpperCase()}</div>
-                                <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">OPERATIVES: ${g.members} • MATRIX_POWER: <span class="text-photon">${(g.axp || 0).toLocaleString()}</span></div>
+                        <div class="pulse-card mission-card clan-tactical-row" style="display: grid; grid-template-columns: 80px 1fr auto; align-items: center; gap: 2rem; margin-bottom: 1.2rem; padding: 1.5rem 2rem; border-left: 4px solid ${isTop3 ? 'var(--photon)' : 'var(--glass-border)'}; background: rgba(255,255,255,0.01); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); position: relative; overflow: hidden;">
+                            ${isTop3 ? `<div class="top-rank-glow" style="position: absolute; inset: 0; background: linear-gradient(90deg, var(--photon-glow), transparent 30%); opacity: 0.1; pointer-events: none;"></div>` : ''}
+                            
+                            <div class="clash" style="font-size: 2rem; color: ${isTop3 ? 'var(--photon)' : 'var(--stardust-muted)'}; opacity: ${isTop3 ? '1' : '0.4'}; text-shadow: ${isTop3 ? '0 0 10px var(--photon-glow)' : 'none'};">
+                                ${rank.toString().padStart(2, '0')}
                             </div>
-                            <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.6rem 1.2rem; letter-spacing: 1px;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('guildIdInput').dispatchEvent(new Event('input'));">DEPLOY</button>
+
+                            <div style="position: relative; z-index: 2;">
+                                <div style="display: flex; align-items: center; gap: 1rem;">
+                                    <div class="clan-badge-mini" style="font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2));">${safeBadge || '🛡️'}</div>
+                                    <div class="clash" style="font-size: 1.4rem; color: var(--stardust); letter-spacing: 2px; text-shadow: 0 0 15px rgba(255,255,255,0.1);">${safeName.toUpperCase()}</div>
+                                    ${isTop3 ? `<span class="section-label" style="font-size: 0.5rem; padding: 2px 6px; background: rgba(0,245,255,0.1); color: var(--photon); border: 1px solid var(--photon); border-radius: 4px; letter-spacing: 1px;">ELITE_SQUAD</span>` : ''}
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 8px; font-weight: 700;">
+                                    <span style="opacity: 0.6;">OPERATIVES:</span> <b style="color: var(--stardust);">${g.members}</b> 
+                                    <span style="margin: 0 10px; opacity: 0.3;">|</span>
+                                    <span style="opacity: 0.6;">MATRIX_POWER:</span> <b class="text-photon">${(g.axp || 0).toLocaleString()}</b>
+                                </div>
+                            </div>
+
+                            <div style="position: relative; z-index: 2;">
+                                <button class="btn-rebirth" style="border: 1px solid var(--glass-border); font-size: 0.65rem; padding: 0.8rem 1.5rem; border-radius: 12px; transition: all 0.3s;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('guildIdInput').dispatchEvent(new Event('input'));">
+                                    INFILTRATE
+                                </button>
+                            </div>
                         </div>
                     `;
                 }).join('') || '<div style="text-align: center; color: var(--stardust-muted); padding: 4rem; letter-spacing: 2px;">SCANNING_MATRIX_FOR_CLANS...</div>';
