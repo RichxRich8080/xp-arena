@@ -197,7 +197,7 @@ const User = {
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify(clipData)
-        }, () => {});
+        }, () => { });
     },
 
     async saveToVault(result) {
@@ -220,7 +220,7 @@ const User = {
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify({ settings: result })
-        }, () => {});
+        }, () => { });
 
         if (window.Toast) Toast.show('Saved to Vault!', 'success');
     },
@@ -245,7 +245,7 @@ const User = {
                 'Authorization': `Bearer ${Auth.getToken()}`
             },
             body: JSON.stringify({ name, settings: result })
-        }, () => {});
+        }, () => { });
 
         if (window.Toast) Toast.show(`Preset "${name}" saved!`, 'success');
     },
@@ -559,12 +559,47 @@ const User = {
     },
 
     addAXPLocally(amount, reason) {
+        const oldLevel = this.getLevel(this.state.axp);
         this.updateStatsLocally(stats => {
             stats.axp += amount;
+            const newLevel = this.getLevel(stats.axp);
+
+            if (newLevel > oldLevel) {
+                stats.level = newLevel;
+                this.triggerLevelUpCinematic(newLevel);
+            }
+
             if (window.Toast) {
-                Toast.show(`+${amount} AXP: ${reason}`, 'xp', 2000);
+                Toast.show(`${reason}: +${amount} AXP`, 'xp', 3000);
             }
         });
+    },
+
+    getLevel(axp) {
+        return Math.floor(axp / 1000) + 1;
+    },
+
+    triggerLevelUpCinematic(level) {
+        console.log(`LEVEL UP PROTOCOL: ${level}`);
+        const overlay = document.createElement('div');
+        overlay.className = 'cinematic-overlay active';
+        overlay.innerHTML = `
+            <div class="neural-gate" style="border-color: var(--gold); box-shadow: 0 0 50px var(--gold-glow);">
+                <div class="gate-spark" style="border-color: var(--gold); animation-delay: 0s;"></div>
+                <i class="fas fa-chevron-circle-up" style="font-size: 5rem; color: var(--gold); filter: drop-shadow(0 0 20px var(--gold-glow));"></i>
+            </div>
+            <h2 class="clash welcome-text" style="color: var(--gold); text-shadow: 0 0 30px var(--gold-glow);">LEVEL_ASCENDED</h2>
+            <div class="xp-award-text" style="font-size: 6rem;">${level}</div>
+            <p style="color: var(--stardust-muted); margin-top: 1rem; letter-spacing: 0.4rem; font-weight: 800;">PROMOTED TO TIER ${level}</p>
+        `;
+        document.body.appendChild(overlay);
+
+        if (window.Celebration) Celebration.fire();
+
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 500);
+        }, 4000);
     },
 
     async addAXP(amount, reason) {
@@ -604,6 +639,34 @@ const User = {
             return { success: true, until: data.until };
         }
         return { success: false, message: data.error || 'Error' };
+    },
+
+    async useRenameCard(itemId) {
+        const newName = prompt('Enter your new operative designation:');
+        if (!newName || newName.length < 3) return;
+
+        try {
+            const res = await fetch(`${API_BASE_USER}/api/user/use-item`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Auth.getToken()}`
+                },
+                body: JSON.stringify({ itemId, extra: { newUsername: newName } })
+            });
+            const data = await res.json();
+            if (data.success) {
+                if (data.token) localStorage.setItem('xp_token', data.token);
+                if (data.user) localStorage.setItem('xp_current_user', JSON.stringify(data.user));
+                if (window.Toast) Toast.show('Identity Uplink Successful', 'success');
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                throw new Error(data.error || 'Uplink failed');
+            }
+        } catch (err) {
+            console.error('Rename error:', err);
+            if (window.Toast) Toast.show(err.message, 'error');
+        }
     }
 };
 

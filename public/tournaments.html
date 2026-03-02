@@ -104,6 +104,8 @@
 </head>
 
 <body class="page-rebirth">
+    <div class="hud-scanline"></div>
+    <div class="hud-noise"></div>
     <div class="tournaments-hero">
         <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Championship Intelligence
             Hub</span>
@@ -186,29 +188,29 @@
                 }
 
                 el.innerHTML = rows.map(t => `
-                    <div class="pulse-card arena-card">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                            <span class="section-label" style="font-size: 0.5rem;">ARENA #${t.id}</span>
-                            ${t.private_only ? '<i class="fas fa-lock" style="color: var(--corona); font-size: 0.8rem;"></i>' : '<i class="fas fa-globe text-photon" style="font-size: 0.8rem;"></i>'}
+                    <div class="pulse-card mission-card arena-card" style="border-left-width: 4px;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                            <span class="section-label" style="font-size: 0.55rem; letter-spacing: 2px;">ARENA_PROTO_#${t.id}</span>
+                            ${t.private_only ? '<i class="fas fa-lock" style="color: #ff4444; font-size: 0.9rem;"></i>' : '<i class="fas fa-satellite-dish text-photon" style="font-size: 0.9rem;"></i>'}
                         </div>
-                        <h3 class="clash" style="font-size: 1.5rem;">${t.name}</h3>
-                        <div class="arena-prize">
-                            <i class="fas fa-trophy"></i>
-                            ${Number(t.prize_pool_axp || 0).toLocaleString()} AXP
+                        <h3 class="clash" style="font-size: 1.6rem; color: #fff; margin-bottom: 1rem;">${t.name.toUpperCase()}</h3>
+                        <div class="arena-prize" style="margin-bottom: 1.5rem;">
+                            <i class="fas fa-award" style="color: var(--gold);"></i>
+                            <span style="color: var(--gold);">${Number(t.prize_pool_axp || 0).toLocaleString()}</span> <span style="font-size: 0.8rem; opacity: 0.6;">AXP</span>
                         </div>
                         
-                        <div class="arena-stats">
+                        <div class="arena-stats" style="margin-bottom: 2rem;">
                             <div class="arena-stat">
-                                <span>Entry Protocol</span>
-                                <strong>${Number(t.entry_fee_axp || 0).toLocaleString()} AXP</strong>
+                                <span>Entry_Fee</span>
+                                <strong class="text-photon">${Number(t.entry_fee_axp || 0).toLocaleString()}</strong>
                             </div>
                             <div class="arena-stat">
                                 <span>Operatives</span>
-                                <strong>${t.participants || 0} ENLISTED</strong>
+                                <strong>${t.participants || 0} / 64</strong>
                             </div>
                         </div>
 
-                        <button class="btn-rebirth" style="width: 100%; justify-content: center; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);" onclick="joinTournament(${t.id})">ENLIST NOW</button>
+                        <button class="btn-rebirth btn-photon" style="width: 100%; justify-content: center; padding: 1rem;" onclick="joinTournament(${t.id})">ENLIST_PROTOCOL</button>
                     </div>
                 `).join('');
             } catch (err) {

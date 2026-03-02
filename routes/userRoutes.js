@@ -146,7 +146,7 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
                 if (!ach) {
                     await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
                 }
-            } catch {}
+            } catch { }
             return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
         }
 
@@ -364,6 +364,48 @@ router.post('/easter-egg', authenticateToken, async (req, res) => {
         res.json({ success: true, axp: 500 });
     } catch (err) {
         res.status(500).json({ error: 'DB Error' });
+    }
+});
+
+router.post('/use-item', authenticateToken, async (req, res) => {
+    const { itemId, extra } = req.body;
+    if (!itemId) return res.status(400).json({ error: 'Item ID required' });
+
+    try {
+        // 1. Check if user owns the item
+        const inventoryItem = await db.get(`
+            SELECT ui.id, si.name, si.type 
+            FROM user_inventory ui 
+            JOIN shop_items si ON ui.item_id = si.id 
+            WHERE ui.user_id = ? AND ui.item_id = ?
+        `, [req.user.id, itemId]);
+
+        if (!inventoryItem) return res.status(404).json({ error: 'Item not found in inventory' });
+
+        // 2. Handle specific item logic
+        if (inventoryItem.name === 'Rename Card') {
+            const { newUsername } = extra || {};
+            if (!newUsername || newUsername.length < 3) {
+                return res.status(400).json({ error: 'Invalid new username provided' });
+            }
+
+            // Check if username taken
+            const taken = await db.get('SELECT id FROM users WHERE username = ?', [newUsername]);
+            if (taken) return res.status(400).json({ error: 'Username already taken' });
+
+            // Atomic update: Change name, remove card, log activity
+            await db.run('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
+            await db.run('DELETE FROM user_inventory WHERE id = ?', [inventoryItem.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Used Rename Card to change identity to ${newUsername}`]);
+
+            const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
+            return res.json({ success: true, message: 'Identity successfully updated', token, user: { id: req.user.id, username: newUsername } });
+        }
+
+        res.status(400).json({ error: 'Item not usable or logic not implemented' });
+    } catch (err) {
+        console.error('[User] Use item error:', err);
+        res.status(500).json({ error: 'Server error using item' });
     }
 });
 

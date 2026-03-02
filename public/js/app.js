@@ -445,14 +445,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let genMin = Math.floor(adjustedSens - 2);
             let genMax = Math.ceil(adjustedSens + 2);
-            if (genMax > 100) genMax = 100;
+            if (genMax > 200) genMax = 200;
 
             const calcScope = (baseVal, percentage) => {
                 const center = baseVal * percentage;
                 let min = Math.floor(center - 3);
                 let max = Math.ceil(center + 3);
-                if (max > 100) max = 100;
+                if (max > 200) max = 200;
                 if (min > max) min = max - 5;
+                if (min < 0) min = 0;
                 return `${min}-${max}`;
             };
 

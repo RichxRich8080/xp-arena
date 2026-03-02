@@ -203,56 +203,61 @@
     </style>
 </head>
 
-<body>
+<body class="page-rebirth">
+    <div class="hud-scanline"></div>
+    <div class="hud-noise"></div>
     <div class="profile-container">
-        <!-- Header -->
-        <header class="profile-header">
-            <div class="avatar-glow" onclick="switchTab('settings')">
-                <span id="avatarImage">👤</span>
-                <div class="avatar-edit-icon"><i class="fas fa-pen"></i></div>
-            </div>
-            <div class="profile-meta">
-                <div class="profile-badge"><i class="fas fa-shield-alt"></i> <span id="profile-rank">STARTER</span>
+        <!-- Gamer Card (Ascension Protocol) -->
+        <div class="gamer-card">
+            <div class="identity-header">
+                <div class="identity-avatar-frame" id="avatar-uplink" onclick="switchTab('settings')">
+                    <span id="avatarImage" style="font-size: 5rem;">👤</span>
+                    <div class="avatar-edit-icon"><i class="fas fa-sync-alt"></i></div>
                 </div>
-                <h1 class="clash" id="profile-username">ARENI</h1>
-                <p id="profile-bio" style="color: var(--stardust-muted);">Operational Status: Active</p>
-                <div id="profile-socials" style="margin-top: 0.6rem; display:flex; gap:8px; flex-wrap:wrap;"></div>
+                <div class="identity-meta">
+                    <div class="identity-rank-badge" id="identity-rank">
+                        <i class="fas fa-shield-alt"></i> <span>RECRUIT</span>
+                    </div>
+                    <h1 class="clash identity-username" id="profile-username">OPERATIVE</h1>
+                    <p
+                        style="color: var(--stardust-muted); letter-spacing: 2px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase;">
+                        STATUS: <span class="text-photon">ACTIVE_UPLINK</span> • SECTOR: 01
+                    </p>
+                    <div id="profile-socials" style="margin-top: 1.5rem; display:flex; gap:12px;"></div>
+                </div>
             </div>
-        </header>
 
-        <!-- Navigation Tabs -->
-        <div class="rebirth-tabs">
-            <button class="tab-trigger active" onclick="switchTab('overview')">Dossier</button>
-            <button class="tab-trigger" onclick="switchTab('vault')">Vault</button>
-            <button class="tab-trigger" onclick="switchTab('achievements')">Medals</button>
-            <button class="tab-trigger" onclick="switchTab('history')">Archives</button>
-            <button class="tab-trigger" onclick="switchTab('squad')">Clan</button>
-            <button class="tab-trigger" onclick="switchTab('settings')">Systems</button>
+            <div class="identity-stats-grid">
+                <div class="id-stat-box">
+                    <div class="id-stat-val text-photon" id="axpDisplay">0</div>
+                    <div class="id-stat-label">Total AXP</div>
+                </div>
+                <div class="id-stat-box">
+                    <div class="id-stat-val" id="diag-level-value">1</div>
+                    <div class="id-stat-label">Combat Level</div>
+                </div>
+                <div class="id-stat-box">
+                    <div class="id-stat-val" id="diag-streak-value">0</div>
+                    <div class="id-stat-label">Bounty Streak</div>
+                </div>
+            </div>
+
+            <div class="progression-track">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
+                    <span class="id-stat-label">NEXT_ASCENSION_PROGRESS</span>
+                    <span class="id-stat-label" id="progression-percent">0%</span>
+                </div>
+                <div class="track-bar">
+                    <div class="track-fill" id="identity-track-fill"></div>
+                </div>
+            </div>
         </div>
 
-        <!-- Content Area -->
-        <div id="tab-overview" class="tab-content active">
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-label">Total AXP</div>
-                    <div class="stat-value text-photon" id="axpDisplay">0</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Combat Level</div>
-                    <div class="stat-value" id="diag-level-value">1</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">Bounty Streak</div>
-                    <div class="stat-value" id="diag-streak-value">0</div>
-                </div>
-            </div>
-
-            <div class="pulse-card">
-                <h3 class="clash" style="margin-bottom: 1.5rem;">Recent Logs</h3>
-                <div id="recentActivityList">
-                    <p style="color: var(--stardust-muted); font-size: 0.9rem;" id="noActivity">Initial sync complete.
-                        No further logs detected.</p>
-                </div>
+        <div class="pulse-card mission-card" style="margin-top: 2rem;">
+            <h3 class="clash" style="margin-bottom: 1.5rem; font-size: 1rem; letter-spacing: 2px;">LOG_ARCHIVE</h3>
+            <div id="recentActivityList">
+                <p style="color: var(--stardust-muted); font-size: 0.8rem; letter-spacing: 1px;" id="noActivity">
+                    INITIAL_SYNC COMPLETE. NO ADDITIONAL LOGS DETECTED.</p>
             </div>
         </div>
 
@@ -341,7 +346,8 @@
                         <input type="text" id="soc-instagram" class="input-rebirth" placeholder="Instagram @handle">
                         <input type="text" id="soc-tiktok" class="input-rebirth" placeholder="TikTok @handle">
                         <input type="text" id="soc-youtube" class="input-rebirth" placeholder="YouTube channel URL">
-                        <button class="btn-rebirth btn-photon" onclick="saveSocials()" style="width: 220px;">Save Socials</button>
+                        <button class="btn-rebirth btn-photon" onclick="saveSocials()" style="width: 220px;">Save
+                            Socials</button>
                     </div>
                 </div>
 
@@ -437,12 +443,22 @@
             User.updateUI(); // Core user.js update
 
             // Sync Rebirth-specific elements
-            document.getElementById('profile-username').textContent = Auth.getCurrentUser().username;
+            document.getElementById('profile-username').textContent = Auth.getCurrentUser()?.username || 'OPERATIVE';
             document.getElementById('avatarImage').textContent = stats.avatar || '👤';
-            document.getElementById('profile-rank').textContent = (stats.rank || 'STARTER').toUpperCase();
-            document.getElementById('axpDisplay').textContent = stats.axp;
+
+            const rankName = (stats.rank?.name || 'RECRUIT').toUpperCase();
+            const rankEl = document.getElementById('identity-rank');
+            if (rankEl) rankEl.querySelector('span').textContent = rankName;
+
+            document.getElementById('axpDisplay').textContent = stats.axp.toLocaleString();
             document.getElementById('diag-level-value').textContent = stats.level;
             document.getElementById('diag-streak-value').textContent = stats.streak || 0;
+
+            const percent = ((stats.axp % 500) / 500) * 100;
+            const fill = document.getElementById('identity-track-fill');
+            const percText = document.getElementById('progression-percent');
+            if (fill) fill.style.width = `${percent}%`;
+            if (percText) percText.textContent = `${Math.floor(percent)}%`;
 
             const si = document.getElementById('soc-instagram');
             const st = document.getElementById('soc-tiktok');

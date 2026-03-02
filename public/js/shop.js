@@ -54,28 +54,40 @@ const Shop = {
                 ? `<img src="${imageUrl}" alt="${item.name}" loading="lazy" />`
                 : `<i class="${item.icon}"></i>`;
 
+            const isRenameCard = item.name === 'Rename Card';
+            const inventory = (typeof User !== 'undefined' && User.getStats()) ? (User.getStats().inventory || []) : [];
+            const isOwned = inventory.includes(item.id);
+
             return `
-                <div class="pulse-card shop-item-card" data-id="${item.id}">
+                <div class="pulse-card mission-card shop-item-card" data-id="${item.id}" style="border-left-width: 4px; border-left-color: ${item.rarity === 'legendary' ? '#ffd700' : (item.rarity === 'epic' ? '#bf00ff' : 'var(--photon)')
+                }">
                     <div class="rarity-badge rarity-${item.rarity}">${rarityLabel}</div>
-                    <div class="module-visual">${visual}</div>
+                    <div class="module-visual" style="background: radial-gradient(circle at center, rgba(255,255,255,0.05), transparent); border-radius: 20px;">${visual}</div>
                     <div class="item-meta">
-                        <h3 class="clash" style="margin-bottom: 0.5rem;">${item.name}</h3>
-                        <p style="font-size: 0.85rem; color: var(--stardust-muted); margin-bottom: 1rem;">${item.description}</p>
+                        <div style="font-size: 0.6rem; color: var(--stardust-muted); letter-spacing: 2px; margin-bottom: 0.5rem;">MODULE_PROTO_#${item.id}</div>
+                        <h3 class="clash" style="margin-bottom: 0.5rem; font-size: 1.4rem; color: #fff;">${item.name.toUpperCase()}</h3>
+                        <p style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.6; margin-bottom: 1.5rem;">${item.description.toUpperCase()}</p>
                         <div class="spec-tags">
-                            <span class="spec-tag">TYP: ${typeLabel}</span>
+                            <span class="spec-tag" style="background: rgba(0,245,255,0.05); color: var(--photon); border-color: rgba(0,245,255,0.2);">TYP: ${typeLabel}</span>
                             <span class="spec-tag">STK: ${stockLabel}</span>
                         </div>
                     </div>
-                    <div class="shop-item-footer">
-                        <div class="price-tag">
-                            <span class="text-photon">${item.price_axp.toLocaleString()}</span> AXP
+                    <div class="shop-item-footer" style="padding-top: 1.5rem; border-top: 1px solid var(--glass-border);">
+                        <div class="price-tag" style="font-size: 1.25rem;">
+                            <span class="text-photon">${item.price_axp.toLocaleString()}</span> <span style="font-size: 0.7rem; opacity: 0.6;">AXP</span>
                         </div>
-                        <button class="btn-rebirth ${this.canAfford(item.price_axp) ? 'btn-photon' : ''}" 
-                                style="font-size: 0.75rem; padding: 0.6rem 1rem;"
-                                onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" 
-                                ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
-                            ${this.canAfford(item.price_axp) ? 'ACQUIRE' : 'INSUFFICIENT'}
-                        </button>
+                        ${isRenameCard && isOwned ? `
+                            <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.7rem 1.2rem; letter-spacing: 1px;" onclick="User.useRenameCard(${item.id})">
+                                SYNC_IDENTITY
+                            </button>
+                        ` : `
+                            <button class="btn-rebirth ${this.canAfford(item.price_axp) ? 'btn-photon' : ''}" 
+                                    style="font-size: 0.7rem; padding: 0.7rem 1.2rem; letter-spacing: 1px; ${!this.canAfford(item.price_axp) ? 'opacity: 0.5; background: rgba(255,255,255,0.02);' : ''}"
+                                    onclick="Shop.buy(${item.id}, '${item.name}', ${item.price_axp})" 
+                                    ${this.canAfford(item.price_axp) ? '' : 'disabled'}>
+                                ${this.canAfford(item.price_axp) ? 'ACQUIRE_MODULE' : 'LOCKED'}
+                            </button>
+                        `}
                     </div>
                 </div>
             `;
@@ -107,14 +119,14 @@ const Shop = {
 
             const data = await res.json();
             if (res.ok) {
-                if (window.Toast) Toast.show(`Purchased ${itemName}!`, 'success');
+                if (window.Toast) Toast.show(`ACQUISITION COMPLETE: ${itemName}`, 'success');
                 if (window.Celebration) Celebration.fire();
 
                 // Refresh stats and UI
                 await User.loadStats();
                 this.render();
             } else {
-                if (window.Toast) Toast.show(data.error || 'Purchase failed', 'error');
+                if (window.Toast) Toast.show(data.error || 'ACQUISITION FAILED', 'error');
             }
         } catch (e) {
             console.error('Purchase error:', e);

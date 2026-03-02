@@ -143,7 +143,7 @@
             grid-template-columns: 64px 1fr 120px;
             align-items: center;
             padding: 1.2rem 1.6rem;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 20px;
@@ -184,9 +184,23 @@
             color: var(--stardust-muted);
         }
 
-        .operative-info { display: flex; align-items: center; gap: 1rem; }
+        .operative-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
 
-        .op-avatar { width: 44px; height: 44px; border-radius: 12px; background: rgba(0,0,0,0.25); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; position: relative; }
+        .op-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
         .op-name {
             font-family: 'Outfit', sans-serif;
@@ -285,9 +299,12 @@
             <button class="tab-btn" onclick="switchLeaderboard('guilds')">CLAN MATRIX</button>
         </div>
         <div id="lb-scope-tabs" style="display:flex; justify-content:center; gap: 0.6rem; margin: -2rem 0 2rem;">
-            <button class="tab-btn scope-btn active" data-scope="global" onclick="window.setLeaderboardScope('global')">GLOBAL</button>
-            <button class="tab-btn scope-btn" data-scope="weekly" onclick="window.setLeaderboardScope('weekly')">WEEKLY</button>
-            <button class="tab-btn scope-btn" data-scope="today" onclick="window.setLeaderboardScope('today')">TODAY</button>
+            <button class="tab-btn scope-btn active" data-scope="global"
+                onclick="window.setLeaderboardScope('global')">GLOBAL</button>
+            <button class="tab-btn scope-btn" data-scope="weekly"
+                onclick="window.setLeaderboardScope('weekly')">WEEKLY</button>
+            <button class="tab-btn scope-btn" data-scope="today"
+                onclick="window.setLeaderboardScope('today')">TODAY</button>
         </div>
 
         <!-- Podium Showcase -->
@@ -322,41 +339,6 @@
             const list = document.getElementById('leaderboardList');
             if (!list) return;
 
-            list.innerHTML = data.map((item, index) => {
-                if (index < 3) return ''; // Skip podium ranks in list
-
-                const rank = index + 1;
-                const name = item.username || item.name;
-                const score = (item.axp || item.total_axp || 0).toLocaleString();
-                const extra = item.rank_name || (item.member_count ? `${item.member_count} OPERATIVES` : 'ARENI');
-
-                const trendIndicator = Math.random() > 0.3 ? '<i class="fas fa-arrow-up" style="color: #00ff88;"></i>' : '<i class="fas fa-arrow-down" style="color: #ff4444;"></i>';
-
-                return `
-                    <div class="areni-leaderboard-row">
-                        <div class="rank-num">
-                             <span style="opacity: 0.3; font-size: 0.8rem;">#</span>${rank}
-                        </div>
-                        <div class="operative-info">
-                            <div class="op-avatar">
-                                <i class="fas fa-user-astronaut" style="font-size: 1.4rem; opacity: 0.4;"></i>
-                            </div>
-                            <div style="display: flex; flex-direction: column;">
-                                <div class="op-name">${name}</div>
-                                <div style="font-size: 0.65rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px;">SECURE UPLINK 99%</div>
-                            </div>
-                        </div>
-                        <div class="hide-mobile" style="color: var(--stardust-muted); font-size: 0.75rem; font-weight: 800; opacity: 0.8; letter-spacing: 2px;">
-                            <i class="fas fa-medal" style="margin-right: 8px; color: var(--photon);"></i> ${extra}
-                        </div>
-                        <div style="text-align: center; font-size: 1.1rem; opacity: 0.8;">
-                            ${trendIndicator}
-                        </div>
-                        <div class="score-val">${score} <span style="font-size: 0.65rem; opacity: 0.5;">AXP</span></div>
-                    </div>
-                `;
-            }).join('');
-
             // Handle Podium
             const podium = document.getElementById('leaderboardPodium');
             if (podium && data.length >= 3) {
@@ -367,35 +349,54 @@
                 podium.innerHTML = `
                     <div class="podium-card rank-2">
                         <div class="rank-badge">2</div>
-                        <div class="op-avatar" style="margin: 0 auto 1.5rem; width: 80px; height: 80px; border-color: currentColor; background: rgba(226, 232, 240, 0.05);">
-                            <i class="fas fa-shield-alt" style="font-size: 2.5rem; opacity: 0.8; color: currentColor;"></i>
+                        <div class="op-avatar" style="margin: 0 auto 1.5rem; width: 100px; height: 100px; border-radius: 30px; border: 2px solid currentColor;">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${p2.username || p2.name}&backgroundColor=transparent" style="width: 100%; height: 100%;" alt="avatar">
                         </div>
-                        <div class="op-name" style="font-size: 1.3rem;">${p2.username || p2.name}</div>
-                        <div class="score-val" style="text-align: center; margin-top: 0.5rem; color: currentColor;">${(p2.axp || p2.total_axp).toLocaleString()}</div>
-                        <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 1rem;">Elite Tier</div>
+                        <div class="op-name" style="font-size: 1.4rem;">${p2.username || p2.name}</div>
+                        <div class="score-val" style="text-align: center; margin-top: 1rem;">${(p2.axp || p2.total_axp).toLocaleString()} <span style="font-size: 0.7rem; color: var(--stardust-muted);">AXP</span></div>
                     </div>
                     
                     <div class="podium-card rank-1">
-                        <div class="rank-badge"><i class="fas fa-crown" style="font-size: 1.2rem; margin-right: 5px;"></i>1</div>
-                        <div class="op-avatar" style="margin: 0 auto 1.5rem; width: 110px; height: 110px; border: 2px solid currentColor; background: rgba(255, 215, 0, 0.05); box-shadow: 0 0 30px rgba(255,215,0,0.2);">
-                            <i class="fas fa-crown" style="font-size: 3.5rem; opacity: 0.9; color: currentColor;"></i>
+                        <div class="rank-badge" style="background: var(--photon); color: var(--void);"><i class="fas fa-crown"></i></div>
+                        <div class="op-avatar" style="margin: 0 auto 2rem; width: 130px; height: 130px; border-radius: 40px; border: 3px solid var(--photon); box-shadow: 0 0 30px var(--photon-glow);">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${p1.username || p1.name}&backgroundColor=transparent" style="width: 100%; height: 100%;" alt="avatar">
                         </div>
-                        <div class="op-name" style="font-size: 1.8rem; font-weight: 900; color: currentColor;">${p1.username || p1.name}</div>
-                        <div class="score-val" style="text-align: center; margin-top: 0.5rem; font-size: 1.6rem; color: currentColor;">${(p1.axp || p1.total_axp).toLocaleString()}</div>
-                        <div style="font-size: 0.75rem; color: currentColor; text-transform: uppercase; letter-spacing: 3px; margin-top: 1.5rem; opacity: 0.8;">Champion Tier</div>
+                        <div class="op-name" style="font-size: 1.8rem; letter-spacing: 1px;">${p1.username || p1.name}</div>
+                        <div class="score-val" style="text-align: center; margin-top: 1.2rem; font-size: 1.8rem;">${(p1.axp || p1.total_axp).toLocaleString()} <span style="font-size: 0.8rem; color: var(--stardust-muted);">AXP</span></div>
                     </div>
                     
                     <div class="podium-card rank-3">
                         <div class="rank-badge">3</div>
-                        <div class="op-avatar" style="margin: 0 auto 1.5rem; width: 70px; height: 70px; border-color: currentColor; background: rgba(205, 127, 50, 0.05);">
-                            <i class="fas fa-crosshairs" style="font-size: 2rem; opacity: 0.8; color: currentColor;"></i>
+                        <div class="op-avatar" style="margin: 0 auto 1.2rem; width: 90px; height: 90px; border-radius: 25px; border: 2px solid currentColor;">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${p3.username || p3.name}&backgroundColor=transparent" style="width: 100%; height: 100%;" alt="avatar">
                         </div>
-                        <div class="op-name" style="font-size: 1.2rem;">${p3.username || p3.name}</div>
-                        <div class="score-val" style="text-align: center; margin-top: 0.5rem; color: currentColor;">${(p3.axp || p3.total_axp).toLocaleString()}</div>
-                        <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 2px; margin-top: 1rem;">Vanguard Tier</div>
+                        <div class="op-name" style="font-size: 1.3rem;">${p3.username || p3.name}</div>
+                        <div class="score-val" style="text-align: center; margin-top: 0.8rem;">${(p3.axp || p3.total_axp).toLocaleString()} <span style="font-size: 0.7rem; color: var(--stardust-muted);">AXP</span></div>
                     </div>
                 `;
             }
+
+            list.innerHTML = data.map((item, index) => {
+                if (index < 3) return ''; // Skip podium ranks in list
+
+                const rank = index + 1;
+                const name = item.username || item.name;
+                const score = (item.axp || item.total_axp || 0).toLocaleString();
+                const avatar = `https://api.dicebear.com/7.x/avataaars/svg?seed=${name}&backgroundColor=transparent`;
+
+                return `
+                    <div class="areni-leaderboard-row">
+                        <div class="rank-num">${rank}</div>
+                        <div class="operative-info">
+                            <div class="op-avatar">
+                                <img src="${avatar}" style="width: 100%; height: 100%;" alt="av">
+                            </div>
+                            <div class="op-name">${name}</div>
+                        </div>
+                        <div class="score-val">${score} <span style="font-size: 0.6rem; opacity: 0.5;">AXP</span></div>
+                    </div>
+                `;
+            }).join('');
         };
     </script>
 </body>

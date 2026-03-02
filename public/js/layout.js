@@ -59,7 +59,7 @@ function injectRebirthLayout() {
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
     const topBarHTML = `
-        <div class="rebirth-top-bar" style="position: fixed; top: 0; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 9998; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+        <div class="rebirth-top-bar" style="position: fixed; top: 32px; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 9998; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
             
             <div class="top-bar-left">
                  <button onclick="toggleSettings()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s; z-index: 10;">
@@ -127,6 +127,111 @@ function injectRebirthLayout() {
     injectRebirthFooter();
     injectSettingsDrawer();
     injectColorOverlay();
+    injectTacticalToastContainer();
+    startNeuralTicker();
+}
+
+/**
+ * Tactical Notification System (V3)
+ */
+window.Toast = {
+    show(message, type = 'info', duration = 4000) {
+        const container = document.getElementById('tactical-toast-container');
+        if (!container) return;
+
+        const toast = document.createElement('div');
+        toast.className = `tactical-toast toast-${type}`;
+
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-exclamation-triangle',
+            info: 'fa-info-circle',
+            xp: 'fa-gem'
+        };
+
+        toast.innerHTML = `
+            <div class="toast-glow"></div>
+            <i class="fas ${icons[type] || icons.info}"></i>
+            <div class="toast-content">
+                <span class="toast-label">${type.toUpperCase()} SIGNAL</span>
+                <p class="toast-msg">${message}</p>
+            </div>
+            <div class="toast-progress"></div>
+        `;
+
+        container.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => toast.classList.add('active'));
+
+        // Auto-remove
+        setTimeout(() => {
+            toast.classList.remove('active');
+            setTimeout(() => toast.remove(), 500);
+        }, duration);
+    }
+};
+
+function injectTacticalToastContainer() {
+    if (document.getElementById('tactical-toast-container')) return;
+    const container = document.createElement('div');
+    container.id = 'tactical-toast-container';
+    container.style.cssText = `
+        position: fixed;
+        top: 6rem;
+        right: 2rem;
+        z-index: 999999;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        pointer-events: none;
+    `;
+    document.body.appendChild(container);
+}
+
+/**
+ * Neural Ticker: Global Real-time Updates
+ */
+function startNeuralTicker() {
+    if (document.querySelector('.neural-ticker')) return;
+
+    const tickerHTML = `
+        <div class="neural-ticker" style="position: fixed; top: 0; left: 0; right: 0; height: 32px; background: rgba(0,0,0,0.4); backdrop-filter: blur(10px); z-index: 10002; display: flex; align-items: center; border-bottom: 1px solid var(--glass-border); overflow: hidden;">
+            <div class="ticker-label" style="background: var(--photon); color: var(--void); font-size: 0.6rem; font-weight: 900; height: 100%; display: flex; align-items: center; padding: 0 1rem; letter-spacing: 2px; z-index: 2;">LIVE_INTEL</div>
+            <div class="ticker-track" id="neural-ticker-track" style="display: flex; white-space: nowrap; animation: ticker-scroll 60s linear infinite; gap: 4rem; padding-left: 2rem;">
+                <!-- Injected Updates -->
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('afterbegin', topBarHTML ? '' : tickerHTML); // Guard against multiple injections
+
+    // If topBar exists, we might want it below the ticker or integrate it. 
+    // Let's refine the top bar injection to accommodate the ticker.
+    updateTickerData();
+    setInterval(updateTickerData, 10000);
+}
+
+function updateTickerData() {
+    const track = document.getElementById('neural-ticker-track');
+    if (!track) return;
+
+    const updates = [
+        `OPERATIVE_${Math.floor(Math.random() * 9000) + 1000} JUST ACQUIRED RENAME CARD`,
+        `GLOBAL AXP SURGE DETECTED IN SECTOR ${Math.floor(Math.random() * 9) + 1}`,
+        `NEW CLAN "${['NEON', 'VOID', 'CYBER', 'ZENITH'][Math.floor(Math.random() * 4)]}_VANGUARD" ESTABLISHED`,
+        `TOURNAMENT "CYBER_STORM" COMMENCING IN ${Math.floor(Math.random() * 5) + 1}H ${Math.floor(Math.random() * 59)}M`,
+        `OPERATIVE_${Math.floor(Math.random() * 9000) + 1000} REACHED RANK: ${['LEGEND', 'ELITE', 'CHAMPION'][Math.floor(Math.random() * 3)]}`,
+        `XP_DOUBLE_PROTOCOL ACTIVE FOR ALL PREMIUM OPERATIVES`,
+        `CLAN_${['ALPHA', 'BRAVO', 'OMEGA'][Math.floor(Math.random() * 3)]} JUST SEIZED THE SECTOR LEAD`,
+        `NEURAL_LINK_STABILITY: 99.9%`
+    ];
+
+    track.innerHTML = updates.map(text => `
+        <div class="ticker-item" style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fas fa-circle" style="font-size: 0.3rem; color: var(--photon); opacity: 0.6;"></i>
+            <span>${text}</span>
+        </div>
+    `).join('') + track.innerHTML; // Keep it looping
 }
 
 function injectRebirthFooter() {
@@ -213,11 +318,26 @@ function injectSettingsDrawer() {
                             <i class="fas fa-tasks"></i>
                             <span>Tasks</span>
                         </a>
+                        <a href="${root}tournaments.html" class="drawer-nav-item">
+                            <i class="fas fa-trophy"></i>
+                            <span>Tourney</span>
+                        </a>
+                        <a href="${root}creators.html" class="drawer-nav-item">
+                            <i class="fas fa-video"></i>
+                            <span>Creators</span>
+                        </a>
+                        <a href="${root}vault.html" class="drawer-nav-item">
+                            <i class="fas fa-vault"></i>
+                            <span>Vault</span>
+                        </a>
                         <a href="${root}premium.html" class="drawer-nav-item" style="color: var(--gold) !important; border-color: rgba(255, 215, 0, 0.3);">
                             <i class="fas fa-crown"></i>
                             <span>Go Elite</span>
                         </a>
-                        <!-- Add robust connection to root and identity sector login/signup for flexibility -->
+                        <a href="${root}help.html" class="drawer-nav-item">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </a>
                         <a href="${root}login.html" class="drawer-nav-item" style="opacity: 0.8;">
                             <i class="fas fa-sign-in-alt"></i>
                             <span>Login</span>
@@ -399,6 +519,63 @@ function trackPageVisit() {
         }
     });
 }
+
+window.Celebration = {
+    fire() {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.inset = '0';
+        canvas.style.zIndex = '100001';
+        canvas.style.pointerEvents = 'none';
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const colors = ['#00f5ff', '#ffcc00', '#bf00ff', '#ffffff'];
+
+        for (let i = 0; i < 150; i++) {
+            particles.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                vx: (Math.random() - 0.5) * 30,
+                vy: (Math.random() - 0.5) * 30,
+                size: Math.random() * 6 + 2,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                life: 1
+            });
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.5; // Gravity
+                p.life -= 0.015;
+
+                if (p.life > 0) {
+                    active = true;
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.life;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                }
+            });
+
+            if (active) {
+                requestAnimationFrame(animate);
+            } else {
+                canvas.remove();
+            }
+        }
+
+        animate();
+    }
+};
 
 function applyCustomAccent() {
     const savedColor = localStorage.getItem('xp_accent_color');

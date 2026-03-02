@@ -477,7 +477,10 @@
 
             const syncTitle = res.ai_sync === 'ELITE BOOST' ? 'ELITE SYNC' : (res.ai_sync === 'AUTO-NERFED' ? 'SIGNAL INTERFERENCE' : 'SYNC SECURE');
             const pct = res.ai_sync === 'ELITE BOOST' ? 99 : (res.ai_sync === 'AUTO-NERFED' ? 62 : 94);
-            document.getElementById('confidence-pill').innerHTML = `<i class="fas fa-shield-check"></i> ${syncTitle}: ${pct}%`;
+            const cpEl = document.getElementById('confidence-pill');
+            if (cpEl) {
+                cpEl.innerHTML = `<i class="fas fa-shield-check"></i> ${syncTitle}: ${pct}%`;
+            }
 
             document.getElementById('loading-state').style.display = 'none';
             document.getElementById('result-content').style.display = 'block';

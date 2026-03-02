@@ -64,7 +64,8 @@ async function resetDatabase() {
             ['Premium Theme: Gold', 'Unlock the luxurious Gold accent theme', 2500, 'cosmetic', 'fas fa-palette', 'epic'],
             ['VIP Badge', 'Exclusive V verified badge next to your name', 5000, 'badge', 'fas fa-check-circle', 'legendary'],
             ['Areni Pro Avatar', 'Special pro player silhouette avatar', 1200, 'avatar', 'fas fa-user-astronaut', 'rare'],
-            ['Global Premium Upgrade', 'One-time AXP purchase for permanent Premium status', 25000, 'cosmetic', 'fas fa-gem', 'legendary']
+            ['Global Premium Upgrade', 'One-time AXP purchase for permanent Premium status', 25000, 'cosmetic', 'fas fa-gem', 'legendary'],
+            ['Rename Card', 'Change your operative identity. Single use.', 1000, 'cosmetic', 'fas fa-id-card', 'rare']
         ];
 
         for (const item of shopItems) {

@@ -184,6 +184,8 @@
 </head>
 
 <body class="page-rebirth">
+    <div class="hud-scanline"></div>
+    <div class="hud-noise"></div>
     <div class="guilds-hero">
         <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 2rem;">Collaborative Neural
             Network</span>
@@ -194,31 +196,37 @@
     </div>
 
     <div class="guilds-grid">
-        <!-- Active Clan Section (Dynamic) -->
-        <div id="homeBlock" class="pulse-card active-clan-card" style="display: none;">
-            <div id="homeBadge" class="clan-emblem-large">🛡️</div>
+        <!-- Active Clan Section (Dynamic Identity Card) -->
+        <div id="homeBlock" class="gamer-card active-clan-card"
+            style="display: none; border-color: var(--photon); margin-bottom: 4rem;">
+            <div id="homeBadge" class="identity-avatar-frame" style="width: 140px; height: 140px; font-size: 5rem;">🛡️
+            </div>
             <div style="flex: 1;">
-                <h2 id="homeName" class="clash" style="font-size: 2.5rem; margin-bottom: 0.5rem;">CLAN NAME</h2>
-                <div class="clan-meta-grid">
-                    <div class="meta-item">
-                        <span>Operatives</span>
-                        <strong id="memberCount">--</strong>
+                <div class="identity-rank-badge" style="margin-bottom: 1.5rem;"><i class="fas fa-shield-alt"></i>
+                    <span>UNIT_ACTIVE</span>
+                </div>
+                <h2 id="homeName" class="clash identity-username" style="font-size: 3rem; margin-bottom: 1rem;">CLAN
+                    NAME</h2>
+                <div class="identity-stats-grid">
+                    <div class="id-stat-box">
+                        <div class="id-stat-val" id="memberCount">--</div>
+                        <div class="id-stat-label">Operatives</div>
                     </div>
-                    <div class="meta-item">
-                        <span>Matrix Power</span>
-                        <strong id="matrixPower">--</strong>
+                    <div class="id-stat-box">
+                        <div class="id-stat-val text-photon" id="matrixPower">--</div>
+                        <div class="id-stat-label">Matrix Power</div>
                     </div>
-                    <div class="meta-item">
-                        <span>Global Rank</span>
-                        <strong id="globalRank">#--</strong>
+                    <div class="id-stat-box">
+                        <div class="id-stat-val" id="globalRank">#--</div>
+                        <div class="id-stat-label">Global Rank</div>
                     </div>
                 </div>
-                <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                    <button class="btn-rebirth btn-photon" onclick="alert('War protocol engaging...')">DEPLOY
-                        WAR</button>
+                <div style="margin-top: 2.5rem; display: flex; gap: 1.5rem;">
+                    <button class="btn-rebirth btn-photon"
+                        onclick="alert('War protocol engaging...')">DEPLOY_WAR</button>
                     <button class="btn-rebirth"
-                        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);"
-                        onclick="Clan.leave()">ABANDON UNIT</button>
+                        style="background: rgba(255,50,50,0.1); border: 1px solid rgba(255,50,50,0.2); color: #ff5050;"
+                        onclick="Clan.leave()">ABANDON_UNIT</button>
                 </div>
             </div>
         </div>

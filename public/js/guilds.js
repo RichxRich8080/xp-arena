@@ -159,15 +159,15 @@ const Clan = {
             if (res.ok) {
                 const rows = await res.json();
                 el.innerHTML = rows.map((g, i) => `
-                    <div class="pulse-card" style="display: grid; grid-template-columns: 40px 1fr auto; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                        <div class="clash" style="font-size: 1.2rem; color: var(--stardust-muted);">#${i + 1}</div>
+                    <div class="pulse-card mission-card" style="display: grid; grid-template-columns: 60px 1fr auto; align-items: center; gap: 1.5rem; margin-bottom: 1rem; border-left-width: 4px;">
+                        <div class="clash" style="font-size: 1.5rem; color: var(--stardust-muted); opacity: 0.5;">#${(i + 1).toString().padStart(2, '0')}</div>
                         <div>
-                            <div class="clash" style="font-size: 1.1rem; color: var(--stardust);">${g.badge ? g.badge + ' ' : ''}${g.name}</div>
-                            <div style="font-size: 0.8rem; color: var(--stardust-muted);">Operatives: ${g.members} • Matrix Power: ${g.axp.toLocaleString()}</div>
+                            <div class="clash" style="font-size: 1.25rem; color: #fff; letter-spacing: 1px;">${g.badge ? g.badge + ' ' : ''}${g.name.toUpperCase()}</div>
+                            <div style="font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase; letter-spacing: 1px; margin-top: 4px;">OPERATIVES: ${g.members} • MATRIX_POWER: <span class="text-photon">${g.axp.toLocaleString()}</span></div>
                         </div>
-                        <button class="btn-rebirth" style="font-size: 0.7rem; padding: 0.5rem 1rem;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('inviteCodeInput').value='G${g.id}';">DEPLOY</button>
+                        <button class="btn-rebirth btn-photon" style="font-size: 0.7rem; padding: 0.6rem 1.2rem; letter-spacing: 1px;" onclick="document.getElementById('guildIdInput').value='${g.id}'; document.getElementById('guildIdInput').dispatchEvent(new Event('input'));">DEPLOY</button>
                     </div>
-                `).join('') || '<div style="text-align: center; color: var(--stardust-muted);">Scanning matrix for clans...</div>';
+                `).join('') || '<div style="text-align: center; color: var(--stardust-muted); padding: 4rem; letter-spacing: 2px;">SCANNING_MATRIX_FOR_CLANS...</div>';
             }
         } catch (e) {
             console.error("Leaderboard load error:", e);
@@ -184,12 +184,12 @@ const Clan = {
             if (res.ok) {
                 const members = await res.json();
                 el.innerHTML = members.map(m => `
-                    <div class="pulse-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; margin-bottom: 0.5rem;">
+                    <div class="pulse-card mission-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1.25rem; margin-bottom: 0.5rem; border-left-color: ${m.role === 'leader' ? 'var(--photon)' : 'var(--glass-border)'}">
                         <div>
-                            <div class="clash" style="font-size: 1rem;">${m.username} <span style="font-size: 0.6rem; color: var(--photon); opacity: 0.6;">[${m.role}]</span></div>
-                            <div style="font-size: 0.75rem; color: var(--stardust-muted);">${m.axp.toLocaleString()} AXP</div>
+                            <div class="clash" style="font-size: 1.1rem; color: #fff;">${m.username} <span style="font-size: 0.65rem; color: var(--photon); opacity: 0.8; letter-spacing: 1px;">[${m.role.toUpperCase()}]</span></div>
+                            <div style="font-size: 0.7rem; color: var(--stardust-muted); letter-spacing: 1px;">CAPACITY: ${m.axp.toLocaleString()} AXP</div>
                         </div>
-                        <button class="btn-rebirth" style="border: 1px solid var(--glass-border); color: var(--stardust-muted); font-size: 0.65rem;" onclick="Clan.removeMember(${gid}, ${m.id})">REMOVE</button>
+                        ${m.role !== 'leader' ? `<button class="btn-rebirth" style="border: 1px solid var(--glass-border); color: #ff4444; font-size: 0.65rem; padding: 0.4rem 0.8rem;" onclick="Clan.removeMember(${gid}, ${m.id})">DISCHARGE</button>` : ''}
                     </div>
                 `).join('');
             }
