@@ -97,10 +97,14 @@ router.post('/verify-email', strictLimiter, async (req, res) => {
     if (!username || !code) return res.status(400).json({ error: 'Username and code required' });
 
     try {
-        const user = await db.get('SELECT id, username FROM users WHERE username = ? OR email = ?', [username, username]);
+        const user = await db.get('SELECT id, username, verification_token, verification_expires FROM users WHERE username = ? OR email = ?', [username, username]);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        // Accept any code — mark as verified
+        if (user.verification_token !== code) return res.status(400).json({ error: 'Invalid verification code' });
+
+        const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
+        if (user.verification_expires < now) return res.status(400).json({ error: 'Verification code has expired' });
+
         await db.run('UPDATE users SET email_verified = 1, verification_token = NULL, verification_expires = NULL WHERE id = ?', [user.id]);
 
         const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
@@ -182,7 +186,7 @@ router.post('/forgot-password', strictLimiter, async (req, res) => {
             return res.json({ success: true, message: 'If that email exists, a reset link was sent.' });
         }
 
-        const token = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits for easier entry
+        const token = crypto.randomBytes(4).toString('hex').toUpperCase(); // 8 chars for easier entry than full hash but secure enough
         const expires = getFutureDateTime(30);
 
         await db.run('UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE id = ?', [token, expires, user.id]);

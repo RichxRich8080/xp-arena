@@ -60,7 +60,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
         const user = await db.get('SELECT * FROM users WHERE id = ?', [req.user.id]);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
-        const [activities, vault, presets, history, clips, achievements, setups, guild] = await Promise.all([
+        const [activities, vault, presets, history, clips, achievements, setups, guild, transactions] = await Promise.all([
             db.all('SELECT * FROM activity WHERE user_id = ? ORDER BY timestamp DESC LIMIT 20', [req.user.id]),
             db.all('SELECT * FROM vault WHERE user_id = ? ORDER BY timestamp DESC', [req.user.id]),
             db.all('SELECT * FROM presets WHERE user_id = ? ORDER BY timestamp DESC', [req.user.id]),
@@ -68,19 +68,30 @@ router.get('/profile', authenticateToken, async (req, res) => {
             db.all('SELECT * FROM clips WHERE user_id = ? ORDER BY timestamp DESC', [req.user.id]),
             db.all('SELECT achievement_id FROM user_achievements WHERE user_id = ?', [req.user.id]),
             db.all('SELECT id, mode, general, reddot, scope2x, scope4x, scope8x, likes, copies, created_at FROM setups WHERE user_id = ? ORDER BY created_at DESC LIMIT 20', [req.user.id]),
-            db.get('SELECT g.id, g.name, g.badge FROM guilds g JOIN users u ON u.guild_id = g.id WHERE u.id = ?', [req.user.id])
+            db.get('SELECT g.id, g.name, g.badge FROM guilds g JOIN users u ON u.guild_id = g.id WHERE u.id = ?', [req.user.id]),
+            db.all(`SELECT ui.id, ui.item_id, ui.purchased_at, s.name, s.price_axp, s.rarity, s.type
+                    FROM user_inventory ui
+                    JOIN shop_items s ON ui.item_id = s.id
+                    WHERE ui.user_id = ?
+                    ORDER BY ui.purchased_at DESC`, [req.user.id])
         ]);
+
+        const safeParse = (str, fallback = []) => {
+            try { return str ? JSON.parse(str) : fallback; }
+            catch (e) { return fallback; }
+        };
 
         res.json({
             user,
             activities: activities || [],
-            vault: vault ? vault.map(v => ({ ...JSON.parse(v.settings_json), id: v.id, timestamp: v.timestamp })) : [],
-            presets: presets ? presets.map(p => ({ ...JSON.parse(p.settings_json), id: p.id, name: p.name, timestamp: p.timestamp })) : [],
+            vault: vault ? vault.map(v => ({ ...safeParse(v.settings_json, {}), id: v.id, timestamp: v.timestamp })) : [],
+            presets: presets ? presets.map(p => ({ ...safeParse(p.settings_json, {}), id: p.id, name: p.name, timestamp: p.timestamp })) : [],
             history: history || [],
             clips: clips || [],
             achievements: achievements ? achievements.map(a => a.achievement_id) : [],
             setups: setups || [],
-            guild: guild || null
+            guild: guild || null,
+            transactions: transactions || []
         });
     } catch (err) {
         console.error(err);
@@ -266,6 +277,13 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
         const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
         if (!u || !u.is_premium) return res.status(403).json({ error: 'Premium required' });
         if (!url || !/^https?:\/\//i.test(url)) return res.status(400).json({ error: 'Invalid URL' });
+
+        // Basic SSRF Protection
+        const ssrfBlacklist = ['localhost', '127.0.0.1', '10.', '172.16.', '172.17.', '172.18.', '172.19.', '172.2', '172.3', '192.168.'];
+        if (ssrfBlacklist.some(b => url.includes(b))) {
+            return res.status(400).json({ error: 'Restricted URL' });
+        }
+
         await db.run('UPDATE users SET avatar = ? WHERE id = ?', [url, req.user.id]);
         res.json({ success: true });
     } catch (err) {

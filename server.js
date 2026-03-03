@@ -28,39 +28,30 @@ app.use((req, res, next) => {
 
 app.disable('x-powered-by');
 app.use(helmet({
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            imgSrc: ["'self'", "data:", "https:*"],
+            connectSrc: ["'self'", "https:*"],
+        },
+    },
 }));
 app.use(compression());
 const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
-if (allowedOrigins.length > 0) {
-    const allowAll = allowedOrigins.includes('*');
-    const isProd = process.env.NODE_ENV === 'production';
-    const corsOptions = allowAll && !isProd
-        ? {
-            origin: '*',
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization']
-        }
-        : {
-            origin: (origin, callback) => {
-                if (!origin) return callback(null, true);
-                if (allowAll && isProd) return callback(new Error('Wildcard CORS disabled in production'));
-                if (allowedOrigins.includes(origin)) return callback(null, true);
-                return callback(new Error('Not allowed by CORS'));
-            },
-            methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-            allowedHeaders: ['Content-Type', 'Authorization']
-        };
-    app.use(cors(corsOptions));
-}
-    app.use(cors({
-        origin: (origin, callback) => {
-            if (!origin) return callback(null, true);
-            return callback(null, true);
-        },
-        methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-        allowedHeaders: ['Content-Type', 'Authorization']
-    }));
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') return callback(null, true);
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+        return callback(new Error('Not allowed by CORS'));
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 

@@ -264,6 +264,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/dom-utils.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
@@ -287,12 +288,15 @@
       if (!q || q.length < 2) { box.innerHTML = '<p style="color:var(--stardust-muted); font-size:0.8rem;">Minimum 2 characters required.</p>'; return; }
       const res = await fetch((window.API_URL || '') + '/api/admin/search-users?q=' + encodeURIComponent(q), { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const rows = res.ok ? await res.json() : [];
-      box.innerHTML = rows.map(u => `
+      box.innerHTML = rows.map(u => {
+        const safeName = (typeof DOM !== 'undefined' && DOM.escape) ? DOM.escape(u.username) : u.username;
+        return `
                 <div class="log-entry" style="margin-bottom: 5px;">
-                    <div><b>${u.username}</b> <span style="opacity:0.6;">(ID ${u.id})</span></div>
+                    <div><b>${safeName}</b> <span style="opacity:0.6;">(ID ${u.id})</span></div>
                     <button class="btn-rebirth" style="padding: 0.5rem 1rem; font-size: 0.7rem;" onclick="document.getElementById('admUid').value='${u.id}'">SELECT</button>
                 </div>
-            `).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No operatives found.</p>';
+            `;
+      }).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No operatives found.</p>';
     }
 
     async function admGiveAXP() {
@@ -348,36 +352,46 @@
       const el = document.getElementById('activityLog');
       const res = await fetch((window.API_URL || '') + '/api/admin/activity', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const rows = res.ok ? await res.json() : [];
-      el.innerHTML = rows.map(r => `
+      el.innerHTML = rows.map(r => {
+        const safeName = (typeof DOM !== 'undefined' && DOM.escape) ? DOM.escape(r.username) : r.username;
+        const safeText = (typeof DOM !== 'undefined' && DOM.escape) ? DOM.escape(r.text) : r.text;
+        return `
                 <div class="log-entry">
-                    <div><b>${r.username}</b> <span style="opacity:0.6;">${r.text}</span></div>
+                    <div><b>${safeName}</b> <span style="opacity:0.6;">${safeText}</span></div>
                     <span class="log-time">${new Date(r.timestamp).toLocaleTimeString()}</span>
                 </div>
-            `).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No recent neural activity.</p>';
+            `;
+      }).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No recent neural activity.</p>';
     }
 
     async function loadSetups() {
       const el = document.getElementById('setupList');
       const res = await fetch((window.API_URL || '') + '/api/admin/popular-setups', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const rows = res.ok ? await res.json() : [];
-      el.innerHTML = rows.map(s => `
+      el.innerHTML = rows.map(s => {
+        const safeName = (typeof DOM !== 'undefined' && DOM.escape) ? DOM.escape(s.username) : s.username;
+        return `
                 <div class="log-entry">
-                    <div><b>${s.username}</b> <span style="opacity:0.6;">Used ${s.copies}x</span></div>
+                    <div><b>${safeName}</b> <span style="opacity:0.6;">Used ${s.copies}x</span></div>
                     <span class="log-time">${s.likes} LIKES</span>
                 </div>
-            `).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No protocol data.</p>';
+            `;
+      }).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No protocol data.</p>';
     }
 
     async function loadWars() {
       const el = document.getElementById('warApps');
       const res = await fetch((window.API_URL || '') + '/api/admin/guild-war-apps', { headers: { 'Authorization': 'Bearer ' + Auth.getToken() } });
       const rows = res.ok ? await res.json() : [];
-      el.innerHTML = rows.map(r => `
+      el.innerHTML = rows.map(r => {
+        const safeName = (typeof DOM !== 'undefined' && DOM.escape) ? DOM.escape(r.name) : r.name;
+        return `
                 <div class="log-entry">
-                    <div><b>${r.name}</b> <span style="opacity:0.6;">War Application</span></div>
+                    <div><b>${safeName}</b> <span style="opacity:0.6;">War Application</span></div>
                     <span class="log-time">${new Date(r.created_at).toLocaleDateString()}</span>
                 </div>
-            `).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No war declarations.</p>';
+            `;
+      }).join('') || '<p style="color:var(--stardust-muted); font-size:0.8rem;">No war declarations.</p>';
     }
   </script>
 </body>

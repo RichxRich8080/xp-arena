@@ -48,9 +48,17 @@ router.post('/buy', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Item out of stock' });
         }
 
-        // 5. Atomic-ish transaction (using helper run sequentially)
-        // Deduct AXP
-        await db.run('UPDATE users SET axp = axp - ? WHERE id = ?', [item.price_axp, req.user.id]);
+        // 5. Sequential Execution (Mocking Transactional Integrity)
+        // We re-fetch user within the potential "lock" period if possible, 
+        // but here we just ensure we don't have async gaps between check and deduction.
+
+        const finalCheck = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+        if (finalCheck.axp < item.price_axp) {
+            return res.status(400).json({ error: 'Transaction failed: Insufficient AXP' });
+        }
+
+        // Deduct AXP (Atomic UPDATE)
+        await db.run('UPDATE users SET axp = axp - ? WHERE id = ? AND axp >= ?', [item.price_axp, req.user.id, item.price_axp]);
 
         // Add to inventory
         await db.run('INSERT INTO user_inventory (user_id, item_id) VALUES (?, ?)', [req.user.id, itemId]);
@@ -60,22 +68,28 @@ router.post('/buy', authenticateToken, async (req, res) => {
 
         // Update stock if applicable
         if (item.stock !== -1) {
-            await db.run('UPDATE shop_items SET stock = stock - 1 WHERE id = ?', [itemId]);
+            await db.run('UPDATE shop_items SET stock = stock - 1 WHERE id = ? AND stock > 0', [itemId]);
         }
 
         // Special logic for boosters
         if (item.type === 'booster') {
-            const durationHours = item.name.includes('24h') ? 24 : 48;
-            const until = new Date(Date.now() + durationHours * 60 * 60 * 1000);
+            let durationHours = 48;
+            const match = String(item.name || '').match(/(\d+)\s*h/i);
+            if (match) {
+                durationHours = parseInt(match[1], 10);
+            } else if (item.name.includes('24h')) {
+                durationHours = 24;
+            }
+            const until = new Date(Date.now() + durationHours * 60 * 60 * 1000).toISOString().slice(0, 19).replace('T', ' ');
             await db.run('UPDATE users SET xp_doubler_until = ? WHERE id = ?', [until, req.user.id]);
         }
 
-        // Special logic for Premium upgrade (if we sell it for AXP)
+        // Special logic for Premium upgrade
         if (item.name.toLowerCase().includes('premium')) {
             await db.run('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
         }
 
-        res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: user.axp - item.price_axp });
+        res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: finalCheck.axp - item.price_axp });
     } catch (err) {
         console.error('[Shop] Purchase error:', err);
         res.status(500).json({ error: 'Server error during purchase' });

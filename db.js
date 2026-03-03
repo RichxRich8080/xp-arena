@@ -14,7 +14,7 @@ const pool = mysql.createPool({
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
     ssl: {
-        rejectUnauthorized: false // Required for TiDB Cloud
+        rejectUnauthorized: process.env.NODE_ENV === 'production' ? true : false // Enforce certificate validation in production
     }
 });
 

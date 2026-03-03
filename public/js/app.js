@@ -300,8 +300,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     device: "Apple iPad Pro M2",
                     brand: "Apple", series: "iPad", model: "iPad Pro M2",
                     ram: 8, hand: "fast", speed: "fast",
-                    general: "100-100", reddot: "100-100", scope2x: "100-100", scope4x: "95-100", scope8x: "60-65",
-                    verdict: "PRO FILE LOADED: Ruok FF's extreme max sensitivity. Requires incredibly precise finger control."
+                    general: "200", reddot: "200", scope2x: "200", scope4x: "190-200", scope8x: "120-130",
+                    verdict: "PRO FILE LOADED: Ruok FF's extreme max sensitivity. Calibrated for the new 200-cap threshold."
                 },
                 'vincenzo': {
                     name: "Vincenzo",
@@ -439,12 +439,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (samplingRate > 240) adjustedSens -= 1.5;
             else if (samplingRate < 90) adjustedSens += 2.5;
 
-            if (adjustedSens > 200) adjustedSens = 200; // Cap higher for DPI variation
+            if (adjustedSens > 200) adjustedSens = 200;
             if (adjustedSens < 10) adjustedSens = 10;
 
             let genMin = Math.floor(adjustedSens - 2);
             let genMax = Math.ceil(adjustedSens + 2);
             if (genMax > 200) genMax = 200;
+            if (genMin < 0) genMin = 0;
 
             const calcScope = (baseVal, percentage) => {
                 const center = baseVal * percentage;
@@ -453,7 +454,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (max > 200) max = 200;
                 if (min > max) min = max - 5;
                 if (min < 0) min = 0;
-                return `${min}-${max}`;
+                return (min === max) ? `${max}` : `${min}-${max}`;
             };
 
             const generalRange = `${genMin}-${genMax}`;
@@ -862,141 +863,139 @@ document.addEventListener('DOMContentLoaded', () => {
 // =======================================
 function generateShareImage(result) {
     const canvas = document.createElement('canvas');
-    canvas.width = 1080;
-    canvas.height = 1350; // Instagram Portrait
+    canvas.width = 1200;
+    canvas.height = 1200;
     const ctx = canvas.getContext('2d');
-
-    // --- Background Stage ---
-    const bg = ctx.createLinearGradient(0, 0, 0, 1350);
-    bg.addColorStop(0, '#06090f');
-    bg.addColorStop(0.5, '#0b0f17');
-    bg.addColorStop(1, '#06090f');
+    const cyan = '#00f5ff';
+    const bg = '#0a0e16';
+    const grid = 'rgba(0, 245, 255, 0.06)';
+    const white = '#ffffff';
+    const muted = 'rgba(255,255,255,0.55)';
     ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, 1080, 1350);
-
-    function drawGlow(x, y, radius, color) {
-        const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
-        g.addColorStop(0, color);
-        g.addColorStop(1, 'transparent');
-        ctx.fillStyle = g;
-        ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    ctx.fillRect(0, 0, 1200, 1200);
+    ctx.strokeStyle = grid;
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 1200; i += 50) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1200); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1200, i); ctx.stroke();
     }
-    drawGlow(1080, 0, 600, 'rgba(0, 245, 255, 0.15)');
-    drawGlow(0, 1350, 600, 'rgba(191, 0, 255, 0.1)');
-
-    // Frame
-    ctx.strokeStyle = 'rgba(0, 229, 255, 0.3)';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.roundRect(60, 60, 960, 1230, 40);
-    ctx.stroke();
-
-    // Load Character
-    const charImg = new Image();
-    charImg.crossOrigin = "anonymous";
-    charImg.src = 'assets/images/[CITYPNG.COM]HD Tatsuya FF Agent Character PNG - 1500x1500.png';
-
-    charImg.onload = () => {
-        ctx.save();
-        ctx.globalAlpha = 0.4;
-        // Draw character positioned bottom right inside card
-        ctx.drawImage(charImg, 400, 400, 800, 800);
-        ctx.restore();
-        renderText();
-    };
-    charImg.onerror = () => renderText();
-
-    function renderText() {
-        // Logo
-        ctx.font = 'bold 46px Inter, sans-serif';
-        ctx.fillStyle = '#00e5ff';
-        ctx.textAlign = 'center';
-        ctx.fillText('XP ARENA', 540, 160);
-
-        ctx.font = '800 24px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-        ctx.letterSpacing = 'Tracking 4px';
-        ctx.fillText('SIGNATURE SENSITIVITY CARD', 540, 200);
-
-        // Device Info
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-        ctx.beginPath();
-        ctx.roundRect(140, 260, 800, 180, 20);
-        ctx.fill();
-
-        ctx.font = 'bold 42px Inter, sans-serif';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText(result.device || 'Unknown Hardware', 540, 340);
-
-        ctx.font = '600 22px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.8)';
-        ctx.fillText(`${result.ram || '8'}GB RAM • ${String(result.speed || 'Calibration').toUpperCase()} MODE`, 540, 385);
-
-        // Settings Grid
-        const settings = [
-            { label: 'GENERAL', value: result.general },
-            { label: 'RED DOT', value: result.reddot },
-            { label: '2X SCOPE', value: result.scope2x },
-            { label: '4X SCOPE', value: result.scope4x },
-            { label: '8X SCOPE', value: result.scope8x || '60' },
-        ];
-
-        const startY = 520;
-        const rowHeight = 110;
-
-        settings.forEach((s, i) => {
-            const y = startY + (i * rowHeight);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
-            ctx.beginPath();
-            ctx.roundRect(140, y, 500, 90, 15);
-            ctx.fill();
-
-            ctx.textAlign = 'left';
-            ctx.font = '800 20px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
-            ctx.fillText(s.label, 180, y + 55);
-
-            ctx.textAlign = 'right';
-            ctx.font = 'bold 44px Inter, sans-serif';
-            ctx.fillStyle = '#00e5ff';
-            ctx.fillText(s.value, 600, y + 60);
-        });
-
-        // Verdict
-        if (result.verdict) {
-            ctx.textAlign = 'center';
-            ctx.font = 'italic 24px Inter, sans-serif';
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
-
-            const words = result.verdict.split(' ');
-            let line = '';
-            let y = 1150;
-            for (let n = 0; n < words.length; n++) {
-                let testLine = line + words[n] + ' ';
-                let metrics = ctx.measureText(testLine);
-                if (metrics.width > 800 && n > 0) {
-                    ctx.fillText(line, 540, y);
-                    line = words[n] + ' ';
-                    y += 35;
-                } else {
-                    line = testLine;
-                }
+    ctx.strokeStyle = cyan;
+    ctx.lineWidth = 10;
+    ctx.beginPath(); ctx.moveTo(60, 60); ctx.lineTo(240, 60); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(60, 60); ctx.lineTo(60, 240); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1140, 60); ctx.lineTo(960, 60); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1140, 60); ctx.lineTo(1140, 240); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(60, 1140); ctx.lineTo(240, 1140); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(60, 1140); ctx.lineTo(60, 960); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1140, 1140); ctx.lineTo(960, 1140); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(1140, 1140); ctx.lineTo(1140, 960); ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.fillStyle = white;
+    ctx.font = '900 92px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('SIGNATURE', 100, 220);
+    ctx.fillText('SENSITIVITY CARD', 100, 310);
+    ctx.font = '900 64px "Clash Display", sans-serif';
+    ctx.fillStyle = cyan;
+    ctx.fillText('XP ARENA', 100, 400);
+    ctx.font = '800 26px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = white;
+    ctx.fillText('PRO PLAYER ACCESS', 430, 395);
+    const id = (typeof Auth !== 'undefined' && Auth.isLoggedIn()) ? (Auth.getCurrentUser()?.username || 'OPERATIVE') : 'OPERATIVE';
+    ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = muted;
+    ctx.fillText(`PLAYER ID: ${id.toUpperCase()}  |  REGION: GLOBAL`, 100, 470);
+    ctx.font = '800 30px "Clash Display", sans-serif';
+    ctx.fillStyle = white;
+    ctx.fillText('SENSITIVITY PROFILE', 100, 560);
+    ctx.strokeStyle = cyan; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(100, 575); ctx.lineTo(420, 575); ctx.stroke();
+    const settings = [
+        { label: 'GENERAL SENSITIVITY', value: result.general },
+        { label: 'RED DOT & HOLOGRAPHIC', value: result.reddot },
+        { label: '2X OPTIC', value: result.scope2x },
+        { label: '4X OPTIC', value: result.scope4x }
+    ];
+    settings.forEach((s, i) => {
+        const y = 640 + (i * 120);
+        ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = muted;
+        ctx.fillText(s.label, 100, y);
+        ctx.textAlign = 'right';
+        ctx.font = '900 46px "Clash Display", sans-serif';
+        ctx.fillStyle = cyan;
+        ctx.fillText(s.value, 600, y + 10);
+        ctx.textAlign = 'left';
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(100, y + 30, 500, 12);
+        const valNum = parseInt(String(s.value).split('-').pop());
+        const width = Math.max(0, Math.min(500, (valNum / 200) * 500));
+        const grad = ctx.createLinearGradient(100, 0, 600, 0);
+        grad.addColorStop(0, '#bf5af2');
+        grad.addColorStop(1, cyan);
+        ctx.fillStyle = grad;
+        ctx.fillRect(100, y + 30, width, 12);
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.font = '800 12px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('0', 100, y + 58);
+        ctx.fillText('100', 340, y + 58);
+        ctx.fillText('200', 580, y + 58);
+    });
+    ctx.fillStyle = 'rgba(255,255,255,0.06)';
+    ctx.fillRect(700, 560, 400, 360);
+    ctx.strokeStyle = 'rgba(0,245,255,0.25)';
+    ctx.strokeRect(700, 560, 400, 360);
+    ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = muted;
+    ctx.fillText('ACTIVE PRESET:', 720, 610);
+    ctx.fillStyle = white;
+    ctx.font = '700 26px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText(result.device || 'Unknown Hardware', 720, 646);
+    ctx.fillStyle = cyan;
+    ctx.font = '700 18px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('PRO SNIPER [MOD 4.2]', 720, 676);
+    ctx.fillStyle = muted;
+    ctx.font = '700 22px "Plus Jakarta Sans", sans-serif';
+    ctx.fillText('VERTICAL MULTIPLIER:', 720, 750);
+    ctx.fillStyle = white;
+    ctx.font = '900 36px "Clash Display", sans-serif';
+    ctx.fillText(String(result.vertical_multiplier || '1.15'), 720, 792);
+    ctx.font = 'italic 22px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    const verdict = result.verdict || 'Standard calibration active.';
+    const wrap = (t, x, y, w, lh) => {
+        const words = t.split(' ');
+        let line = '';
+        for (let i = 0; i < words.length; i++) {
+            const test = line + words[i] + ' ';
+            if (ctx.measureText(test).width > w && i > 0) {
+                ctx.fillText(line, x, y);
+                line = words[i] + ' ';
+                y += lh;
+            } else {
+                line = test;
             }
-            ctx.fillText(line, 540, y);
         }
-
-        ctx.font = 'bold 20px Inter, sans-serif';
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.fillText('XPARENA.NET // ENCRYPTED_RESULT', 540, 1300);
-
-        // Export
-        const dataUrl = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = `XP-ARENA-${result.device.replace(/\s+/g, '-')}.png`;
-        link.href = dataUrl;
-        link.click();
-        if (window.Toast) Toast.show('Premium Card Exported!', 'success');
-    }
+        ctx.fillText(line, x, y);
+    };
+    wrap(`"${verdict}"`, 100, 1070, 500, 30);
+    ctx.font = '700 20px "Plus Jakarta Sans", sans-serif';
+    ctx.fillStyle = cyan;
+    ctx.fillText('XP ARENA YT', 100, 1140);
+    ctx.fillText('XP ARENA IG', 300, 1140);
+    ctx.fillText('XP ARENA', 520, 1140);
+    ctx.textAlign = 'right';
+    ctx.font = '900 24px "Clash Display", sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.fillText('XP ARENA // HIGH-FIDELITY ASSET', 1100, 1100);
+    ctx.fillStyle = white;
+    const bx = 1000, by = 1120;
+    [2,1,4,1,2,6,1,3,1,4].forEach((w,i)=>{ctx.globalAlpha=0.3;ctx.fillRect(bx+(i*10),by,w,30);});
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.download = `XP-ARENA-CARD-${(result.device || 'UNKNOWN').replace(/\s+/g, '-')}.png`;
+    link.href = dataUrl;
+    link.click();
+    if (window.Toast) Toast.show('Card exported', 'success');
 }
 
 async function SubmitManualSetup(payload) {

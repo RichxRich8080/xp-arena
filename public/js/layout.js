@@ -3,8 +3,8 @@
  * This script injects the new Command Dock and Top Bar UI.
  */
 
-// Global API Configuration
-window.API_URL = CONFIG.API_BASE;
+const SAFE_CONFIG = window.CONFIG || {};
+window.API_URL = SAFE_CONFIG.API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
 
 // Helper to get root-relative paths
 function getRootPath(path) {
@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
     applyCustomAccent();
     initNeuralBridge();
 
+    injectRebirthLayout();
     if (typeof Auth !== 'undefined') {
-        injectRebirthLayout();
         highlightActiveLinks();
         syncGlobalXP();
         trackPageVisit();
@@ -50,9 +50,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof User !== 'undefined' && Auth.isLoggedIn()) {
             User.checkDailyLogin();
         }
-    } else {
-        // Fallback for pages where Auth might be missing but layout is needed
-        document.body.classList.add('page-rebirth');
     }
 
     // Initialize HUD Depth & Haptics
@@ -70,6 +67,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initNeuralStagger();
     initSectorMap();
     initAmbientHUD();
+
+    enableGlobalOverlayDismiss();
 });
 
 /**
@@ -357,6 +356,7 @@ function initNeuralBridge() {
     document.addEventListener('click', (e) => {
         const link = e.target.closest('a');
         if (!link || !link.href || link.target === '_blank' || link.href.includes('#') || link.href.startsWith('javascript:')) return;
+        if (link.dataset.noTransition === 'true' || document.body?.dataset?.noTransitions === 'true') return;
 
         // Only internal links
         const url = new URL(link.href);
@@ -372,43 +372,32 @@ function initNeuralBridge() {
 }
 
 function showNeuralGlitch(callback) {
-    const glitch = document.createElement('div');
-    glitch.style.cssText = `
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
         position: fixed; inset: 0; z-index: 100000;
-        background: var(--void); pointer-events: none;
-        opacity: 0; transition: opacity 0.2s;
+        background: radial-gradient(circle at top, rgba(0,245,255,0.12), rgba(5,5,8,0.95) 60%);
+        backdrop-filter: blur(16px);
+        opacity: 0; transition: opacity 0.25s ease;
         display: flex; align-items: center; justify-content: center;
-        overflow: hidden;
+        pointer-events: none;
     `;
-
-    // Add some random static lines
-    for (let i = 0; i < 10; i++) {
-        const line = document.createElement('div');
-        line.style.cssText = `
-            position: absolute; width: 100%; height: 2px;
-            background: var(--photon); opacity: ${Math.random()};
-            top: ${Math.random() * 100}%; left: 0;
-            transform: scaleX(${0.5 + Math.random()});
-        `;
-        glitch.appendChild(line);
-    }
 
     const label = document.createElement('div');
     label.className = 'clash';
-    label.style.cssText = 'font-size: 0.7rem; letter-spacing: 5px; color: var(--photon); opacity: 0.8;';
-    label.textContent = 'NEURAL_LINK_TRANSFER...';
-    glitch.appendChild(label);
+    label.style.cssText = 'font-size: 0.7rem; letter-spacing: 5px; color: var(--photon); opacity: 0.85;';
+    label.textContent = 'NEURAL_LINK_SYNC...';
+    overlay.appendChild(label);
 
-    document.body.appendChild(glitch);
+    document.body.appendChild(overlay);
 
     requestAnimationFrame(() => {
-        glitch.style.opacity = '1';
-        setTimeout(callback, 300);
+        overlay.style.opacity = '1';
+        setTimeout(callback, 220);
     });
 }
 
 function injectRebirthLayout() {
-    const user = Auth.getCurrentUser();
+    const user = (typeof Auth !== 'undefined') ? Auth.getCurrentUser() : null;
     const isLoggedIn = !!user;
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
     const isIndex = currentPage === 'index.html' || currentPage === '';
@@ -423,7 +412,7 @@ function injectRebirthLayout() {
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
     const topBarHTML = `
-        <div class="rebirth-top-bar" style="position: fixed; top: 32px; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 9998; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
+        <div class="rebirth-top-bar" style="position: fixed; top: 32px; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 100001; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
             
             <div class="top-bar-left">
                  <button onclick="toggleSettings()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s; z-index: 10;">
@@ -445,6 +434,9 @@ function injectRebirthLayout() {
                     <i class="fas ${isLoggedIn ? 'fa-user' : 'fa-user-circle'}" style="font-size: 1.4rem; ${isLoggedIn ? 'text-shadow: 0 0 10px var(--photon-glow);' : ''}"></i>
                     ${isLoggedIn ? '<div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--photon); box-shadow: 0 -2px 10px var(--photon-glow);"></div>' : ''}
                 </a>
+                <button onclick="toggleQuickActions()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
             </div>
         </div>
     `;
@@ -454,7 +446,8 @@ function injectRebirthLayout() {
     }
 
     // Inject Floating Back Button
-    if (!isIndex && !document.querySelector('.back-link-float')) {
+    const shouldShowBack = document.body?.dataset?.showBack === 'true' || document.body?.classList?.contains('show-back');
+    if (shouldShowBack && !document.querySelector('.back-link-float')) {
         const backBtnHTML = `
             <a href="javascript:history.back()" class="back-link-float">
                 <i class="fas fa-chevron-left"></i>
@@ -469,14 +462,14 @@ function injectRebirthLayout() {
         { icon: 'fa-microchip', label: 'Engine', link: root + 'tool.html', id: 'nav-tool' },
         { icon: 'fa-shopping-cart', label: 'Shop', link: root + 'shop.html', id: 'nav-shop' },
         { icon: 'fa-trophy', label: 'Elite', link: root + 'leaderboard.html', id: 'nav-leaderboard' },
-        { icon: 'fa-shield-alt', label: 'Clan', link: root + 'guilds.html', id: 'nav-guilds' },
-        { icon: 'fa-tasks', label: 'Tasks', link: root + 'quests.html', id: 'nav-quests' }
+        { icon: 'fa-shield-alt', label: 'Clan', link: root + 'guilds.html', id: 'nav-guilds', requiresAuth: true },
+        { icon: 'fa-tasks', label: 'Tasks', link: root + 'quests.html', id: 'nav-quests', requiresAuth: true }
     ];
 
     const dockHTML = `
         <div class="command-dock" style="grid-template-columns: repeat(6, 1fr);">
             ${navItems.map(item => `
-                <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''}" id="${item.id}">
+                <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
                     <i class="fas ${item.icon}"></i>
                     <span class="dock-label">${item.label}</span>
                 </a>
@@ -493,6 +486,10 @@ function injectRebirthLayout() {
     injectColorOverlay();
     injectTacticalToastContainer();
     startNeuralTicker();
+    if (window.Toast) {
+        // Sticky info toast to confirm HUD sync
+        Toast.show('Neural HUD Resynchronized', 'info', 0);
+    }
 }
 
 /**
@@ -505,6 +502,7 @@ window.Toast = {
 
         const toast = document.createElement('div');
         toast.className = `tactical-toast toast-${type}`;
+        toast.style.pointerEvents = 'auto';
 
         const icons = {
             success: 'fa-check-circle',
@@ -520,7 +518,7 @@ window.Toast = {
                 <span class="toast-label">${type.toUpperCase()} SIGNAL</span>
                 <p class="toast-msg">${message}</p>
             </div>
-            <div class="toast-progress"></div>
+            ${duration > 0 ? '<div class="toast-progress"></div>' : '<button aria-label="Dismiss" style="background:none;border:none;color:#94a3b8;font-weight:800;cursor:pointer;">×</button>'}
         `;
 
         container.appendChild(toast);
@@ -528,11 +526,19 @@ window.Toast = {
         // Animate in
         requestAnimationFrame(() => toast.classList.add('active'));
 
-        // Auto-remove
-        setTimeout(() => {
-            toast.classList.remove('active');
-            setTimeout(() => toast.remove(), 500);
-        }, duration);
+        // Sticky or timed removal
+        if (duration && duration > 0) {
+            setTimeout(() => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 500);
+            }, duration);
+        } else {
+            const closeBtn = toast.querySelector('button');
+            if (closeBtn) closeBtn.addEventListener('click', () => {
+                toast.classList.remove('active');
+                setTimeout(() => toast.remove(), 300);
+            });
+        }
     }
 };
 
@@ -553,6 +559,81 @@ function injectTacticalToastContainer() {
     document.body.appendChild(container);
 }
 
+function toggleQuickActions() {
+    let panel = document.getElementById('quick-actions-panel');
+    if (panel) {
+        const visible = panel.style.opacity === '1';
+        panel.style.opacity = visible ? '0' : '1';
+        panel.style.pointerEvents = visible ? 'none' : 'auto';
+        return;
+    }
+    panel = document.createElement('div');
+    panel.id = 'quick-actions-panel';
+    panel.style.cssText = `
+        position: fixed; top: 88px; right: 22px; z-index: 99999;
+        background: rgba(10, 10, 20, 0.9); backdrop-filter: blur(18px);
+        border: 1px solid var(--glass-border); border-radius: 12px;
+        padding: 0.5rem; display: grid; gap: 6px; width: 220px;
+        opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    `;
+    const mkBtn = (icon, label, handler) => {
+        const b = document.createElement('button');
+        b.style.cssText = 'display:flex;align-items:center;gap:10px;padding:0.6rem;border:1px solid var(--glass-border);border-radius:10px;background:rgba(255,255,255,0.04);color:#fff;cursor:pointer;';
+        b.innerHTML = `<i class="fas ${icon}"></i><span style="font-weight:800;letter-spacing:1px;font-size:0.8rem;">${label}</span>`;
+        b.onclick = handler;
+        return b;
+    };
+    panel.appendChild(mkBtn('fa-vault', 'Add to Vault', () => { if (typeof addToVaultFromResults === 'function') addToVaultFromResults(); }));
+    panel.appendChild(mkBtn('fa-image', 'Download Image', () => {
+        const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+        if (res && typeof generateShareImage === 'function') generateShareImage(res);
+    }));
+    panel.appendChild(mkBtn('fa-palette', 'Theme Pocket', () => {
+        const fab = document.querySelector('.theme-fab');
+        const overlay = document.querySelector('.theme-selector-overlay');
+        if (overlay) overlay.classList.toggle('active'); else if (fab) fab.click();
+    }));
+    document.body.appendChild(panel);
+    requestAnimationFrame(() => { panel.style.opacity = '1'; panel.style.pointerEvents = 'auto'; });
+}
+
+function enableGlobalOverlayDismiss() {
+    const removeIfPresent = (sel) => {
+        const el = document.querySelector(sel);
+        if (el) {
+            el.classList?.remove('active');
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 200);
+        }
+    };
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            [
+                '#player-card-modal',
+                '#theater-overlay',
+                '.success-overlay.active',
+                '.success-overlay-rebirth.active',
+                '.cinematic-overlay.active',
+                '#verifyOverlay',
+                '#rewardOverlay'
+            ].forEach(removeIfPresent);
+        }
+    });
+    document.addEventListener('click', (e) => {
+        const dismissTargets = ['#player-card-modal', '#theater-overlay', '.success-overlay', '.success-overlay-rebirth', '.cinematic-overlay', '#verifyOverlay', '#rewardOverlay'];
+        for (const sel of dismissTargets) {
+            const el = document.querySelector(sel);
+            if (el && el.contains(e.target)) {
+                // If clicked directly on overlay (not on an inner card/button), close
+                const inner = el.querySelector('.pulse-card');
+                if (!inner || !inner.contains(e.target)) {
+                    removeIfPresent(sel);
+                }
+            }
+        }
+    }, true);
+}
+
 /**
  * Neural Ticker: Global Real-time Updates
  */
@@ -567,7 +648,7 @@ function startNeuralTicker() {
             </div>
         </div>
     `;
-    document.body.insertAdjacentHTML('afterbegin', topBarHTML ? '' : tickerHTML); // Guard against multiple injections
+    document.body.insertAdjacentHTML('afterbegin', tickerHTML);
 
     // If topBar exists, we might want it below the ticker or integrate it. 
     // Let's refine the top bar injection to accommodate the ticker.

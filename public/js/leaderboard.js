@@ -13,43 +13,59 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 let LB_SCOPE = 'global';
-let LB_TYPE = 'users';
-window.setLeaderboardScope = function (scope) {
+window.setLeaderboardScope = function(scope) {
     LB_SCOPE = scope;
     document.querySelectorAll('.scope-btn').forEach(b => b.classList.remove('active'));
     const btn = document.querySelector(`.scope-btn[data-scope="${scope}"]`);
     if (btn) btn.classList.add('active');
-    // Re-render based on current tab type
-    if (LB_TYPE === 'guilds') renderGuildLeaderboard(); else renderLeaderboard();
+    // Data is currently global-only; re-render for now
+    const active = document.querySelector('.tab-btn.active')?.id?.includes('guilds') ? 'guilds' : 'users';
+    if (active === 'guilds') renderGuildLeaderboard(); else renderLeaderboard();
 };
 
 async function renderLeaderboard() {
     const list = document.getElementById('leaderboardList');
-    const podium = document.getElementById('leaderboardPodium');
     if (!list) return;
+
+    if (!list.dataset.boot) {
+        list.dataset.boot = '1';
+        list.innerHTML = Array(6).fill(0).map(() => `
+            <div style="display:grid;grid-template-columns:48px 1fr auto;gap:1rem;padding:1rem;border:1px solid var(--glass-border);border-radius:14px;background:rgba(255,255,255,0.02);opacity:0.5;">
+                <div style="width:48px;height:16px;background:rgba(255,255,255,0.06);border-radius:4px;"></div>
+                <div style="height:16px;background:rgba(255,255,255,0.06);border-radius:4px;"></div>
+                <div style="width:80px;height:16px;background:rgba(255,255,255,0.06);border-radius:4px;"></div>
+            </div>
+        `).join('');
+    }
 
     let dbPlayers = [];
     try {
         let path = '/api/leaderboard';
         if (LB_SCOPE === 'weekly') path = '/api/leaderboard/weekly';
         else if (LB_SCOPE === 'today') path = '/api/leaderboard/today';
-        const res = await fetch(`${API_BASE_LB}${path}`);
-        if (res.ok) {
-            dbPlayers = await res.json();
+        const cacheKey = `lb_cache_${LB_SCOPE}`;
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || 'null');
+        const now = Date.now();
+        if (cached && (now - cached.ts) < 30000) {
+            dbPlayers = cached.data || [];
+        } else {
+            const res = await fetch(`${API_BASE_LB}${path}`);
+            if (res.ok) {
+                dbPlayers = await res.json();
+                localStorage.setItem(cacheKey, JSON.stringify({ ts: now, data: dbPlayers }));
+            }
         }
     } catch (e) {
         console.error('Leaderboard Fetch Error:', e);
     }
 
     const players = dbPlayers.map(p => {
-        const baseAxp = (typeof p.total_axp === 'number') ? p.total_axp : (p.axp || 0);
         const rankName = p.rank || null;
-        const rankObj = rankName ? getRankByName(rankName) : getRank(baseAxp);
+        const rankObj = rankName ? getRankByName(rankName) : getRank(p.axp || 0);
         return {
             id: p.id,
             username: p.username,
-            axp: p.axp || 0,          // current scope value (global or delta)
-            total_axp: baseAxp,       // absolute total for rank context
+            axp: p.axp || 0,
             level: p.level || 1,
             streak: p.streak || 0,
             avatar: p.avatar || '👤',
@@ -61,26 +77,24 @@ async function renderLeaderboard() {
         };
     });
 
-    // Seed with realistic professional operatives if real data is scarce
+    // Seed with realistic placeholder players if very few real data
     if (players.length < 5) {
         const seeds = [
-            { username: 'ELITE_RUOK', axp: 28500, avatar: '👑', streak: 45, badges: { verified_setup: true } },
-            { username: 'TATSUYA_PRIME', axp: 26200, avatar: '🎯', streak: 32, badges: { premium: true } },
-            { username: 'OPERATIVE_NOBRU', axp: 24800, avatar: '⚡', streak: 28, badges: { v_badge: true } },
-            { username: 'WHITE_444_GHOST', axp: 22100, avatar: '💀', streak: 21 },
-            { username: 'VINCENZO_MASTER', axp: 19500, avatar: '🛡️', streak: 15 },
+            { username: 'PRO_PLAYER_77', axp: 22500, avatar: '👑', streak: 21 },
+            { username: 'Shadow_Slayer', axp: 21000, avatar: '🎯', streak: 18 },
+            { username: 'Ghost_Aim', axp: 19800, avatar: '👻', streak: 14 },
+            { username: 'AimBot_Pro', axp: 17000, avatar: '🤖', streak: 10 },
+            { username: 'SnipeKing', axp: 14200, avatar: '⚡️', streak: 8 },
         ];
-        for (let i = 0; i < seeds.length && players.length < 10; i++) {
+        for (let i = 0; i < seeds.length && players.length < 5; i++) {
             const s = seeds[i];
             if (!players.find(p => p.username === s.username)) {
                 players.push({
                     ...s,
-                    id: 'seed-' + i,
                     level: Math.floor(s.axp / 500) + 1,
                     rank: getRank(s.axp),
                     isMe: false,
-                    submissions: Math.floor(s.axp / 150),
-                    setup_type: 'MOBILE_PRO'
+                    submissions: Math.floor(s.axp / 200)
                 });
             }
         }
@@ -89,29 +103,6 @@ async function renderLeaderboard() {
     players.sort((a, b) => b.axp - a.axp);
 
     const top10 = players.slice(0, 10);
-
-    // Render Podium (top 3)
-    if (podium) {
-        const top3 = players.slice(0, 3);
-        const scopeLabel = (LB_SCOPE === 'global') ? 'AXP' : (LB_SCOPE === 'weekly' ? 'AXP (7d)' : 'AXP (Today)');
-        podium.innerHTML = top3.map((p, idx) => {
-            const total = (p.total_axp || p.axp || 0);
-            const delta = (LB_SCOPE === 'global') ? null : (p.axp || 0);
-            return `
-                <div class="podium-card rank-${idx + 1}">
-                    <div class="rank-badge">${idx + 1}</div>
-                    <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
-                        <div style="font-size:2.2rem;">${p.avatar}</div>
-                        <div style="font-weight:900; font-size:1.1rem;">${p.username}</div>
-                        <div style="font-size:0.8rem; color: var(--text-muted);">${p.rank.icon} ${p.rank.name} • Lv.${p.level}</div>
-                        <div style="font-size:1.2rem; font-weight:900; color: var(--accent);">${total.toLocaleString()}</div>
-                        <div style="font-size:0.7rem; color: var(--text-muted);">Total AXP</div>
-                        ${delta !== null ? `<div style="font-size:0.75rem; color: var(--stardust-muted);">Δ +${delta.toLocaleString()} ${scopeLabel}</div>` : ''}
-                    </div>
-                </div>
-            `;
-        }).join('');
-    }
 
     // Find current user's position overall
     let myPosition = -1;
@@ -128,7 +119,7 @@ async function renderLeaderboard() {
         const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
         const posColor = isTop3 ? medalColors[idx] : 'var(--text-muted)';
         const posLabel = isTop3 ? ['🥇', '🥈', '🥉'][idx] : `#${pos}`;
-        const axpProgress = ((p.total_axp || p.axp) % 500) / 500 * 100;
+        const axpProgress = (p.axp % 500) / 500 * 100;
         const bg = p.isMe
             ? 'linear-gradient(90deg, rgba(0,245,255,0.12), rgba(0,245,255,0.04))'
             : (pos === 1
@@ -186,10 +177,8 @@ async function renderLeaderboard() {
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${(p.axp || 0).toLocaleString()}</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted);">${LB_SCOPE === 'global' ? 'AXP' : (LB_SCOPE === 'weekly' ? 'AXP (7d)' : 'AXP (Today)')}</div>
-                    <div style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.8;">Total ${(p.total_axp || p.axp || 0).toLocaleString()}</div>
-                    <button title="Share" onclick="shareRow('${p.username}', ${(p.axp || 0)})" style="margin-top:6px; background: transparent; border:1px solid var(--glass-border); color: var(--stardust); padding:6px 10px; border-radius:8px; cursor:pointer;"><i class="fas fa-share-alt"></i></button>
+                    <div style="font-size: 1.1rem; font-weight: 900; color: var(--accent);">${p.axp.toLocaleString()}</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">AXP</div>
                 </div>
             </div>
         `;
@@ -206,18 +195,18 @@ async function renderLeaderboard() {
                     <div style="font-size:0.8rem; color: var(--stardust-muted);">Pos #${myPosition + 1}</div>
                 </div>
                 ${windowSlice.map((p, i) => {
-            const pos = start + i + 1;
-            const isMe = p.isMe;
-            return `
+                    const pos = start + i + 1;
+                    const isMe = p.isMe;
+                    return `
                     <div style="display:grid; grid-template-columns:48px 1fr auto; align-items:center; gap:1rem; padding:0.8rem 1.0rem; border-radius:12px; margin-bottom:6px; background:${isMe ? 'linear-gradient(90deg, rgba(0,245,255,0.12), rgba(0,245,255,0.04))' : 'rgba(255,255,255,0.02)'}; border:1px solid ${isMe ? 'var(--photon)' : 'var(--glass-border)'};">
                         <div style="text-align:center; font-weight:800; color:${isMe ? 'var(--photon)' : 'var(--stardust-muted)'}">#${pos}</div>
                         <div style="display:flex; align-items:center; gap:10px;">
                             <span style="font-size:1.2rem;">${p.avatar}</span>
                             <div style="font-weight:800;">${p.username}${isMe ? ' <span style="font-size:0.7rem; background: var(--photon); color: #000; padding: 1px 6px; border-radius:4px;">YOU</span>' : ''}</div>
                         </div>
-                        <div style="text-align:right; font-weight:900; color:${isMe ? 'var(--photon)' : 'var(--stardust)'}">${(p.axp || 0).toLocaleString()}</div>
+                        <div style="text-align:right; font-weight:900; color:${isMe ? 'var(--photon)' : 'var(--stardust)'}">${(p.axp||0).toLocaleString()}</div>
                     </div>`;
-        }).join('')}
+                }).join('')}
             </div>
         `;
     }
@@ -332,12 +321,10 @@ window.switchLeaderboard = function (type) {
     list.innerHTML = '<div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div><div class="skeleton skeleton-row"></div>';
 
     if (type === 'guilds') {
-        LB_TYPE = 'guilds';
         colName.textContent = 'Clan';
         colExtra.textContent = 'Badge';
         renderGuildLeaderboard();
     } else {
-        LB_TYPE = 'users';
         colName.textContent = 'Areni';
         colExtra.textContent = 'Device';
         renderLeaderboard();
@@ -346,7 +333,6 @@ window.switchLeaderboard = function (type) {
 
 async function renderGuildLeaderboard() {
     const list = document.getElementById('leaderboardList');
-    const podium = document.getElementById('leaderboardPodium');
     if (!list) return;
 
     try {
@@ -356,21 +342,6 @@ async function renderGuildLeaderboard() {
             if (guilds.length === 0) {
                 list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--text-muted);">No clans founded yet. Be the first to start a legacy!</div>';
                 return;
-            }
-            if (podium) {
-                const top3 = guilds.slice(0, 3);
-                podium.innerHTML = top3.map((g, idx) => `
-                    <div class="podium-card rank-${idx + 1}">
-                        <div class="rank-badge">${idx + 1}</div>
-                        <div style="display:flex; flex-direction:column; align-items:center; gap: 10px;">
-                            <div style="font-size:2rem;">🛡️</div>
-                            <div style="font-weight:900; font-size:1.1rem;">${g.name}</div>
-                            <div style="font-size:0.8rem; color: var(--text-muted);">${g.members || 0} Members</div>
-                            <div style="font-size:1.2rem; font-weight:900; color: var(--accent);">${(g.axp || 0).toLocaleString()}</div>
-                            <div style="font-size:0.7rem; color: var(--text-muted);">Total AXP</div>
-                        </div>
-                    </div>
-                `).join('');
             }
             list.innerHTML = guilds.map((g, idx) => {
                 const pos = idx + 1;
@@ -417,14 +388,3 @@ async function renderGuildLeaderboard() {
         list.innerHTML = '<div style="text-align:center; padding:3rem; color:var(--danger);">Error loading Clan Race.</div>';
     }
 }
-
-window.shareRow = function (username, axp) {
-    const scope = (LB_SCOPE === 'global') ? 'Global AXP' : (LB_SCOPE === 'weekly' ? 'Weekly AXP' : 'Today AXP');
-    const text = `XP ARENA — ${username}: ${axp} ${scope}`;
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text);
-        if (window.Toast) Toast.show('Share text copied!', 'success');
-    } else {
-        if (window.Toast) Toast.show(text, 'info');
-    }
-};

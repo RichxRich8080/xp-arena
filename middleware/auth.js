@@ -1,8 +1,10 @@
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
-const JWT_SECRET = process.env.NODE_ENV === 'production'
-    ? process.env.JWT_SECRET
-    : (process.env.JWT_SECRET || 'xpare123secretkey');
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
+    console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication disabled for safety.');
+    process.exit(1);
+}
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];

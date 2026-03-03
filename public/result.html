@@ -1,655 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Diagnostic Report • XP ARENA</title>
-    <link rel="stylesheet" href="css/rebirth.css">
-    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
-    <style>
-        .result-container {
-            padding: 8rem 2rem 10rem;
-            max-width: 850px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        #loading-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 500px;
-        }
-
-        .neural-link-orb {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--photon-glow) 0%, transparent 70%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            margin-bottom: 4rem;
-        }
-
-        .orb-scanner {
-            position: absolute;
-            width: 100%;
-            height: 2px;
-            background: var(--photon);
-            box-shadow: 0 0 15px var(--photon-glow);
-            animation: scan 3s linear infinite;
-            top: 0;
-            opacity: 0.5;
-        }
-
-        @keyframes scan {
-            0% {
-                top: 0;
-                opacity: 0;
-            }
-
-            50% {
-                opacity: 0.8;
-            }
-
-            100% {
-                top: 100%;
-                opacity: 0;
-            }
-        }
-
-        .neural-link-orb::after {
-            content: '';
-            position: absolute;
-            inset: -15px;
-            border: 1px dashed var(--photon);
-            border-radius: 50%;
-            animation: rotate 10s linear infinite;
-            opacity: 0.3;
-        }
-
-        .orb-icon {
-            font-size: 3.5rem;
-            color: var(--photon);
-            filter: drop-shadow(0 0 15px var(--photon-glow));
-        }
-
-        #result-content {
-            display: none;
-            animation: slideUpFade 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-        }
-
-        .diagnostic-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px;
-            padding: 4rem;
-            position: relative;
-            overflow: hidden;
-            text-align: left;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        .card-grain {
-            position: absolute;
-            inset: 0;
-            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-            opacity: 0.03;
-            pointer-events: none;
-        }
-
-        .result-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2rem;
-            margin-top: 3rem;
-        }
-
-        .result-node {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 2rem;
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-            transition: all 0.4s var(--transition);
-        }
-
-        .result-node:hover {
-            transform: translateY(-8px);
-            background: rgba(0, 245, 255, 0.03);
-            border-color: var(--photon);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .node-label {
-            font-size: 0.75rem;
-            color: var(--stardust-muted);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 0.8rem;
-            display: block;
-            font-weight: 800;
-        }
-
-        .node-val {
-            font-family: 'Clash Display', sans-serif;
-            font-size: 3.2rem;
-            font-weight: 700;
-            color: var(--stardust);
-            line-height: 1;
-            text-shadow: 0 0 20px var(--photon-glow);
-            transition: all 0.3s var(--transition);
-        }
-
-        .result-node:hover .node-val {
-            animation: sentient-glitch 0.4s infinite;
-            color: var(--photon);
-        }
-
-        @keyframes sentient-glitch {
-            0% {
-                transform: translate(0);
-                text-shadow: 0 0 20px var(--photon-glow);
-            }
-
-            20% {
-                transform: translate(-2px, 1px);
-                text-shadow: 2px 0 red, -2px 0 blue;
-            }
-
-            40% {
-                transform: translate(-2px, -1px);
-            }
-
-            60% {
-                transform: translate(2px, 1px);
-            }
-
-            80% {
-                transform: translate(2px, -1px);
-            }
-
-            100% {
-                transform: translate(0);
-            }
-        }
-
-        /* Dossier Accents */
-        .dossier-stamp {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            border: 3px solid var(--photon);
-            color: var(--photon);
-            padding: 0.5rem 1rem;
-            font-family: 'Clash Display', sans-serif;
-            font-weight: 900;
-            font-size: 1.2rem;
-            transform: rotate(15deg);
-            opacity: 0;
-            pointer-events: none;
-            text-transform: uppercase;
-            animation: stampIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards 2s;
-            background: rgba(0, 245, 255, 0.05);
-        }
-
-        @keyframes stampIn {
-            0% {
-                transform: scale(5) rotate(45deg);
-                opacity: 0;
-            }
-
-            100% {
-                transform: scale(1) rotate(15deg);
-                opacity: 0.6;
-            }
-        }
-
-        .hologram-fringe {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(0, 245, 255, 0.05), transparent);
-            background-size: 200% 100%;
-            animation: holoSlide 4s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes holoSlide {
-            0% {
-                background-position: -200% 0;
-            }
-
-            100% {
-                background-position: 200% 0;
-            }
-        }
-
-        .hardware-profile {
-            margin-top: 2rem;
-            padding-top: 2rem;
-            border-top: 1px dashed var(--glass-border);
-            display: flex;
-            gap: 2rem;
-            font-size: 0.75rem;
-            color: var(--stardust-muted);
-            font-family: monospace;
-        }
-
-        .hw-item b {
-            color: var(--photon);
-            margin-right: 5px;
-        }
-
-        .scanline {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, transparent 50%, rgba(255, 255, 255, 0.02) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            opacity: 0.1;
-        }
-
-        .confidence-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 245, 255, 0.08);
-            color: var(--photon);
-            padding: 8px 16px;
-            border-radius: 100px;
-            font-size: 0.75rem;
-            font-weight: 900;
-            letter-spacing: 1.5px;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(0, 245, 255, 0.2);
-        }
-
-        .verdict-shell {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-top: 3rem;
-            border: 1px solid var(--glass-border);
-            position: relative;
-        }
-
-        .verdict-shell::before {
-            content: 'AI ANALYSIS';
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            background: var(--void);
-            padding: 0 10px;
-            font-size: 0.6rem;
-            letter-spacing: 2px;
-            color: var(--photon);
-            font-weight: 900;
-        }
-
-        @media (max-width: 600px) {
-            .result-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .diagnostic-card {
-                padding: 2.5rem 1.5rem;
-            }
-
-            .node-val {
-                font-size: 2.2rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Result • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .result-wrap {
+      padding: 8rem 2rem 10rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 2rem;
+    }
+    .result-hero {
+      text-align: center;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+    }
+    .result-card {
+      padding: 2rem;
+    }
+    .result-values {
+      display: grid;
+      gap: 1rem;
+    }
+    .value-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .value-label {
+      font-size: 0.75rem;
+      color: var(--stardust-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-weight: 800;
+    }
+    .value-num {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--photon);
+      text-shadow: 0 0 12px var(--photon-glow);
+    }
+    .brand-block {
+      display: grid;
+      gap: 1.2rem;
+    }
+    .brand-line {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+    }
+    .action-bar {
+      display: grid;
+      gap: 1rem;
+    }
+    .card-image-preview {
+      aspect-ratio: 1/1;
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.02);
+      display: grid;
+      place-items: center;
+    }
+    @media (max-width: 980px) {
+      .result-grid { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
+<body class="page-rebirth" data-show-back="true">
+  <div class="result-wrap">
+    <header class="result-hero">
+      <span class="section-label" style="letter-spacing: 0.5rem; margin-bottom: 1rem;">Signature Calibration</span>
+      <h1 class="clash">Sensitivity <span class="text-photon">Result</span></h1>
+    </header>
 
-<body class="page-rebirth">
-    <div class="result-container">
-        <!-- Loading -->
-        <div id="loading-state">
-            <div style="position: relative;">
-                <!-- Character Silhouette during scan -->
-                <div class="scan-character-silhouette"
-                    style="position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); opacity: 0.1; transition: opacity 2s;">
-                    <img src="assets/tatsuya.png" style="height: 400px; filter: brightness(0) invert(1) blur(10px);">
-                </div>
-
-                <div class="neural-link-orb">
-                    <div class="orb-scanner"></div>
-                    <i class="fas fa-microchip orb-icon"></i>
-                </div>
-            </div>
-            <h2 class="clash" id="status-msg" style="font-size: 2.5rem; letter-spacing: 0.5rem; position: relative;">
-                NEURAL SYNC</h2>
-            <p id="status-device"
-                style="color: var(--photon); font-weight: 800; margin-top: 1.5rem; opacity: 0.7; letter-spacing: 2px;">
-                IDENTIFYING HARDWARE</p>
+    <div class="result-grid">
+      <div class="pulse-card result-card">
+        <div class="brand-block">
+          <div class="brand-line">
+            <div style="width: 36px; height: 36px; background: var(--photon); color: var(--void); border-radius: 10px; display:flex; align-items:center; justify-content:center; font-weight:900;">X</div>
+            <div style="font-weight:900; font-size:1.1rem;">XP ARENA</div>
+          </div>
+          <div style="display:flex; gap:1rem; flex-wrap:wrap; font-size:0.85rem; color: var(--stardust-muted);">
+            <span id="deviceLabel"></span>
+            <span style="opacity:0.6;">•</span>
+            <span>Region: GLOBAL</span>
+          </div>
         </div>
 
-        <!-- Result -->
-        <div id="result-content">
-            <div class="diagnostic-card"
-                style="padding: 0; position: relative; border: none; background: transparent; backdrop-filter: none; -webkit-backdrop-filter: none;">
-
-                <!-- Premium Perspective Card -->
-                <div class="premium-sensitivity-container" style="padding: 2rem; perspective: 1000px;">
-                    <div class="pulse-card"
-                        style="padding: 3rem; background: rgba(14, 15, 25, 0.8); border: 1px solid var(--glass-border); border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); position: relative; overflow: hidden;">
-
-                        <div class="card-grain"></div>
-                        <div class="scanline"></div>
-
-                        <!-- Character Overlay (Bottom Right) -->
-                        <div class="result-character-uplink"
-                            style="position: absolute; bottom: -50px; right: -50px; opacity: 0.4; pointer-events: none; z-index: 1;">
-                            <img src="assets/tatsuya.png"
-                                style="height: 500px; filter: drop-shadow(0 0 30px var(--photon-glow));">
-                        </div>
-
-                        <!-- Header Overlay -->
-                        <div
-                            style="text-align: left; margin-bottom: 2rem; position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end;">
-                            <div>
-                                <div class="premium-badge"
-                                    style="margin-bottom: 0.8rem; display: inline-block; padding: 4px 12px; background: rgba(0, 245, 255, 0.1); border: 1px solid var(--photon); border-radius: 100px; font-size: 0.6rem; color: var(--photon); font-weight: 900; letter-spacing: 2px;">
-                                    ARCHIVE_ID: ${Math.floor(Math.random()*900000)}</div>
-                                <h2 class="clash" id="final-device"
-                                    style="font-size: 2.2rem; color: var(--stardust); letter-spacing: -1px; margin: 0; line-height: 1;">
-                                    Apple iPad Pro M2</h2>
-                            </div>
-                            <div style="text-align: right;">
-                                <p
-                                    style="color: var(--photon); font-weight: 800; font-size: 0.6rem; letter-spacing: 3px; text-transform: uppercase; margin: 0; opacity: 0.6;">
-                                    SENSITIVITY_GRID</p>
-                                <div
-                                    style="font-family: 'Clash Display', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--stardust); opacity: 0.8;">
-                                    v2.0_SYNC</div>
-                            </div>
-                        </div>
-
-                        <!-- Main Grid (Compact 2-Column) -->
-                        <div class="result-grid"
-                            style="grid-template-columns: 1fr 1fr; gap: 1rem; display: grid; position: relative; z-index: 2; max-width: 65%;">
-
-                            <!-- Sensitivity Items (Compact Box Style) -->
-                            <div class="sensitivity-item-box"
-                                style="padding: 1rem 1.5rem; background: rgba(0,245,255,0.05); border: 1px solid rgba(0,245,255,0.1); border-left: 3px solid var(--photon); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
-                                <div class="node-label"
-                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
-                                    GENERAL</div>
-                                <div class="node-val text-photon" id="res-gen"
-                                    style="font-size: 1.8rem; color: var(--photon); text-shadow: 0 0 15px var(--photon-glow);">
-                                    100</div>
-                            </div>
-
-                            <div class="sensitivity-item-box"
-                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
-                                <div class="node-label"
-                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
-                                    RED DOT</div>
-                                <div class="node-val" id="res-red" style="font-size: 1.8rem;">95</div>
-                            </div>
-
-                            <div class="sensitivity-item-box"
-                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
-                                <div class="node-label"
-                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
-                                    2X SCOPE</div>
-                                <div class="node-val" id="res-2x" style="font-size: 1.8rem;">88</div>
-                            </div>
-
-                            <div class="sensitivity-item-box"
-                                style="padding: 1rem 1.5rem; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; flex-direction: column; gap: 0.3rem;">
-                                <div class="node-label"
-                                    style="margin: 0; font-size: 0.65rem; color: var(--stardust-muted); font-weight: 800;">
-                                    4X SCOPE</div>
-                                <div class="node-val" id="res-4x" style="font-size: 1.8rem;">75</div>
-                            </div>
-                        </div>
-
-                        <!-- Footer Verdict -->
-                        <div class="verdict-shell"
-                            style="margin-top: 2rem; background: rgba(0,245,255,0.03); border: 1px solid var(--glass-border); padding: 1.5rem; border-radius: 12px; position: relative; z-index: 2;">
-                            <p id="verdict-text"
-                                style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.6; margin: 0;">
-                                "PRO FILE LOADED: Ruok FF's extreme max sensitivity. Requires incredibly precise finger
-                                control."
-                            </p>
-                        </div>
-
-                        <div
-                            style="text-align: left; margin-top: 2rem; opacity: 0.4; font-size: 0.6rem; letter-spacing: 2px; position: relative; z-index: 2;">
-                            ARENA_PROTOCOL_v0.2 // ENCRYPTED_RESULT // XPARENA.NET</div>
-                    </div>
-                </div>
-
-                <div class="hardware-profile" style="margin-top: 3rem;">
-                    <div class="hw-item"><b>CORE:</b> <span id="hw-core">NEURAL-8</span></div>
-                    <div class="hw-item"><b>OS:</b> <span id="hw-os">XP-v2.5</span></div>
-                    <div class="hw-item"><b>SIG:</b> <span id="hw-sig">ENCRYPTED</span></div>
-                    <div class="hw-item"><b>LATENCY:</b> <span class="text-photon">1.2 MS</span></div>
-                </div>
-
-                <!-- Genesis: Performance Heatmap -->
-                <div id="analytics-section"
-                    style="display: none; margin-top: 4rem; border-top: 1px solid var(--glass-border); padding-top: 3rem; position: relative; z-index: 5;">
-                    <span class="section-label"
-                        style="font-size: 0.6rem; color: var(--photon); letter-spacing: 5px;">AI_PERFORMANCE_HEATMAP</span>
-                    <h3 class="clash" style="font-size: 1.5rem; margin: 1rem 0;">NEURAL CONSISTENCY</h3>
-                    <div id="heatmap-container"
-                        style="display: flex; gap: 0.5rem; height: 100px; align-items: flex-end; margin: 2rem 0; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px;">
-                        <!-- Bars Injected -->
-                    </div>
-                    <div id="analytics-meta"
-                        style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--stardust-muted); text-transform: uppercase;">
-                        <span id="deviation-stat">DEVIATION: --</span>
-                        <span id="stability-stat">STABILITY: --</span>
-                    </div>
-                </div>
-
-                <!-- Actions -->
-                <div style="margin-top: 5rem; display: grid; gap: 1.5rem;">
-                    <button class="btn-rebirth btn-photon"
-                        style="width: 100%; justify-content: center; padding: 1.6rem; font-size: 1rem; box-shadow: 0 10px 40px var(--photon-glow);"
-                        onclick="copySettings()">
-                        <i class="fas fa-microchip" style="margin-right: 12px;"></i> DOWNLOAD CONFIG
-                    </button>
-
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-                        <button class="btn-rebirth"
-                            style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--stardust); justify-content: center; padding: 1.4rem; border-radius: 20px;"
-                            onclick="exportImage()">
-                            <i class="fas fa-file-invoice" style="margin-right: 10px;"></i> ARCHIVE DOSSIER
-                        </button>
-                        <button class="btn-rebirth"
-                            style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--stardust); justify-content: center; padding: 1.4rem; border-radius: 20px;"
-                            onclick="shareLink()">
-                            <i class="fas fa-broadcast-tower" style="margin-right: 10px;"></i> BEAM SIGNAL
-                        </button>
-                    </div>
-                </div>
-
-                <!-- QR Neural Link Overlay (Phase Genesis) -->
-                <div id="qr-overlay"
-                    style="display: none; margin-top: 4rem; text-align: center; background: radial-gradient(circle, var(--nebula-solid), var(--void)); padding: 3rem; border-radius: 24px; border: 1px solid var(--glass-border); position: relative; overflow: hidden;">
-                    <div class="card-grain"></div>
-                    <span class="section-label"
-                        style="font-size: 0.6rem; color: var(--photon); letter-spacing: 5px;">NEURAL_LINK_ESTABLISHED</span>
-                    <h3 class="clash" style="font-size: 1.5rem; margin: 1rem 0;">SCAN TO SYNC</h3>
-                    <div
-                        style="background: white; padding: 1.5rem; border-radius: 12px; display: inline-block; margin: 1rem 0; box-shadow: 0 0 40px rgba(255,255,255,0.1);">
-                        <img id="qr-code-img" src="" alt="Neural Link QR"
-                            style="width: 200px; height: 200px; display: block;">
-                    </div>
-                    <p
-                        style="color: var(--stardust-muted); font-size: 0.8rem; margin-top: 1rem; max-width: 400px; margin-left: auto; margin-right: auto;">
-                        Scanning this link with another Arena Device will instantly uplink your current sensitivity
-                        Matrix.
-                    </p>
-                    <button class="btn-rebirth"
-                        style="margin-top: 2rem; border-color: var(--glass-border); font-size: 0.7rem; justify-content: center;"
-                        onclick="document.getElementById('qr-overlay').style.display='none'">CLOSE_LINK</button>
-                </div>
-            </div>
+        <div class="result-values" style="margin-top:1rem;">
+          <div class="value-row">
+            <span class="value-label">General Sensitivity</span>
+            <span class="value-num" id="valGeneral">-</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">Red Dot & Holo</span>
+            <span class="value-num" id="valRedDot">-</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">2x Optic</span>
+            <span class="value-num" id="val2x">-</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">4x Optic</span>
+            <span class="value-num" id="val4x">-</span>
+          </div>
         </div>
+
+        <div style="margin-top:1.5rem; display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+          <div class="value-row">
+            <span class="value-label">Vertical Multiplier</span>
+            <span class="value-num" id="valVM">1.15</span>
+          </div>
+          <div class="value-row">
+            <span class="value-label">Social • TT/YT/IG</span>
+            <span class="value-num">XP ARENA</span>
+          </div>
+        </div>
+
+        <div class="action-bar" style="margin-top:2rem;">
+          <button class="btn-rebirth btn-photon" style="justify-content:center;" onclick="addToVaultFromResults()">
+            <i class="fas fa-vault"></i> ADD TO VAULT
+          </button>
+          <button class="btn-rebirth btn-glass" style="justify-content:center;" onclick="downloadImage()">
+            <i class="fas fa-image"></i> DOWNLOAD IMAGE
+          </button>
+        </div>
+      </div>
+
+      <div class="pulse-card result-card">
+        <div class="card-image-preview">
+          <div style="text-align:center;">
+            <div class="clash" style="font-size:1.2rem; letter-spacing:0.2em; margin-bottom:0.5rem;">Preview</div>
+            <div style="font-size:0.8rem; color:var(--stardust-muted);">Generated image uses the new XP ARENA card layout with socials embedded.</div>
+          </div>
+        </div>
+        <div style="margin-top:1rem; color:var(--stardust-muted); font-size:0.9rem;">
+          The final export includes your device, sensitivity bands, vertical multiplier, and XP ARENA socials. Gyroscope readout is removed.
+        </div>
+      </div>
     </div>
-    </div>
+  </div>
 
-    <!-- Scripts -->
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
-    <script src="js/app.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const hash = (location.hash || '').replace(/^#/, '');
-            if (hash.startsWith('data=')) {
-                try {
-                    const b64 = decodeURIComponent(hash.slice(5));
-                    const data = JSON.parse(atob(b64));
-                    localStorage.setItem('xp_calc_results', JSON.stringify(data));
-                } catch { }
-            }
-
-            const results = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            if (!results.device) {
-                window.location.href = 'tool.html';
-                return;
-            }
-
-            document.getElementById('status-device').textContent = results.device.toUpperCase();
-
-            // Progress Sequence
-            const statusMsg = document.getElementById('status-msg');
-            const stages = ["NEURAL SYNC", "DECRYPTING BIOS", "OPTIMIZING NODES", "CALIBRATED"];
-            let idx = 0;
-
-            const seq = setInterval(() => {
-                idx++;
-                if (idx < stages.length) {
-                    statusMsg.textContent = stages[idx];
-                    statusMsg.style.animation = 'none';
-                    void statusMsg.offsetWidth;
-                    statusMsg.style.animation = 'pulse 0.4s ease';
-                } else {
-                    clearInterval(seq);
-                    reveal(results);
-                }
-            }, 900);
-        });
-
-        function reveal(res) {
-            document.getElementById('res-gen').textContent = res.general;
-            document.getElementById('res-red').textContent = res.reddot;
-            document.getElementById('res-2x').textContent = res.scope2x;
-            document.getElementById('res-4x').textContent = res.scope4x;
-            document.getElementById('final-device').textContent = res.device;
-            document.getElementById('verdict-text').textContent = res.verdict || res.ai_verdict || "Standard calibration active.";
-
-            const syncTitle = res.ai_sync === 'ELITE BOOST' ? 'ELITE SYNC' : (res.ai_sync === 'AUTO-NERFED' ? 'SIGNAL INTERFERENCE' : 'SYNC SECURE');
-            const pct = res.ai_sync === 'ELITE BOOST' ? 99 : (res.ai_sync === 'AUTO-NERFED' ? 62 : 94);
-            const cpEl = document.getElementById('confidence-pill');
-            if (cpEl) {
-                cpEl.innerHTML = `<i class="fas fa-shield-check"></i> ${syncTitle}: ${pct}%`;
-            }
-
-            document.getElementById('loading-state').style.display = 'none';
-            document.getElementById('result-content').style.display = 'block';
-
-            // Log for Genesis Analytics & Render
-            if (window.User && window.Auth.isLoggedIn()) {
-                User.addSensitivityHistory(res);
-                renderAnalytics();
-            }
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    function hydrate() {
+      const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+      document.getElementById('deviceLabel').textContent = res.device || 'Unknown Hardware';
+      document.getElementById('valGeneral').textContent = res.general || '-';
+      document.getElementById('valRedDot').textContent = res.reddot || '-';
+      document.getElementById('val2x').textContent = res.scope2x || '-';
+      document.getElementById('val4x').textContent = res.scope4x || '-';
+      document.getElementById('valVM').textContent = (res.vertical_multiplier || '1.15');
+    }
+    function downloadImage() {
+      const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+      generateShareImage(res);
+    }
+    async function addToVaultFromResults() {
+      try {
+        const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+        if (!window.Auth || !Auth.isLoggedIn()) {
+          window.location.href = 'login.html?redirect=result.html';
+          return;
         }
-
-        function renderAnalytics() {
-            const data = User.getHistoricalAnalytics();
-            if (!data) return;
-
-            const section = document.getElementById('analytics-section');
-            if (section) section.style.display = 'block';
-
-            const container = document.getElementById('heatmap-container');
-            if (container) {
-                container.innerHTML = '';
-                container.style.position = 'relative'; // For Ghost Overlays
-
-                data.heatmap.forEach(h => {
-                    const bar = document.createElement('div');
-                    bar.style.flex = '1';
-                    bar.style.background = 'var(--primary)';
-                    bar.style.height = `${(Math.min(h.val, 100) / 100) * 100}%`;
-                    bar.style.opacity = '0.3';
-                    bar.style.borderRadius = '2px';
-                    bar.title = `${h.label}: ${h.val}`;
-                    container.appendChild(bar);
-                });
-
-                // Ghost Protocol
-                const ghosts = User.getGhostBenchmarks ? User.getGhostBenchmarks() : [];
-                ghosts.forEach(ghost => {
-                    const line = document.createElement('div');
-                    line.style.position = 'absolute';
-                    line.style.left = '0';
-                    line.style.width = '100%';
-                    line.style.height = '1px';
-                    line.style.borderTop = `1px dashed ${ghost.color}`;
-                    line.style.bottom = `${ghost.consistency}%`;
-                    line.style.opacity = '0.4';
-                    line.style.zIndex = '10';
-                    line.innerHTML = `<span style="position:absolute; right:0; top:-12px; font-size:0.5rem; color:${ghost.color}; letter-spacing:1px;">${ghost.name}_GHOST</span>`;
-                    container.appendChild(line);
-                });
-            }
-
-            const devEl = document.getElementById('deviation-stat');
-            if (devEl) devEl.textContent = `DEVIATION: ${data.deviation.general > 0 ? '+' : ''}${data.deviation.general}`;
-
-            const stabEl = document.getElementById('stability-stat');
-            if (stabEl) stabEl.textContent = `STABILITY: ${data.deviation.stability}`;
-        }
-
-        function copySettings() {
-            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            const text = `ARENI CALIBRATION [${res.device}]\nGen: ${res.general}\nRed Dot: ${res.reddot}\n2x: ${res.scope2x}\n4x: ${res.scope4x}`;
-            navigator.clipboard.writeText(text).then(() => {
-                if (window.Toast) Toast.show('Decrypted config copied to buffer.', 'success');
-            });
-        }
-
-        function exportImage() {
-            if (window.Toast) Toast.show('Generating high-res archival dossier...', 'info');
-            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            if (typeof generateShareImage === 'function') generateShareImage(res);
-        }
-
-        function shareLink() {
-            const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
-            try {
-                const b64 = btoa(JSON.stringify(res));
-                const url = `${location.origin}${location.pathname}#data=${encodeURIComponent(b64)}`;
-
-                // Neural Link QR
-                const overlay = document.getElementById('qr-overlay');
-                const qrImg = document.getElementById('qr-code-img');
-                if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}&color=050508&bgcolor=FFFFFF`;
-                if (overlay) {
-                    overlay.style.display = 'block';
-                    overlay.scrollIntoView({ behavior: 'smooth' });
-                }
-
-                navigator.clipboard.writeText(url).then(() => {
-                    if (window.Toast) Toast.show('Neural link beamed to buffer.', 'success');
-                    if (window.Sounds) Sounds.play('success');
-                });
-            } catch (e) { console.error('Share error:', e); }
-        }
-    </script>
+        await User.saveToVault(res);
+        if (window.Toast) Toast.show('Saved to Vault', 'success');
+      } catch (e) {
+        if (window.Toast) Toast.show('Unable to save to Vault', 'error');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', hydrate);
+  </script>
 </body>
-
 </html>

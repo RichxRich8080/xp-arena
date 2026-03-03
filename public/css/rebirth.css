@@ -36,6 +36,8 @@
     --glass: rgba(10, 10, 20, 0.4);
     --glass-border: rgba(255, 255, 255, 0.08);
     --glass-highlight: rgba(255, 255, 255, 0.03);
+    --glass-strong: rgba(15, 18, 28, 0.65);
+    --glass-soft: rgba(255, 255, 255, 0.06);
 
     /* Layout */
     --radius-sm: 12px;
@@ -169,6 +171,18 @@ body {
     line-height: 1.6;
     overflow-x: hidden;
     min-height: 100vh;
+    transform: none !important;
+    perspective: none !important;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* Base Typography */
@@ -184,7 +198,7 @@ h4,
 
 /* The Pulse Card System */
 .pulse-card {
-    background: var(--nebula);
+    background: var(--glass-strong);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     border: 1px solid var(--glass-border);
@@ -251,6 +265,37 @@ h4,
     transform: translateY(-2px);
 }
 
+.btn-glass {
+    background: var(--glass-soft);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.btn-glass:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+}
+
+.glass-panel {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(26px);
+    -webkit-backdrop-filter: blur(26px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+.action-stack {
+    display: grid;
+    gap: 1rem;
+}
+
+.action-stack .btn-rebirth {
+    width: 100%;
+    justify-content: center;
+}
 .btn-photon {
     background: var(--primary);
     color: var(--void);
@@ -324,8 +369,26 @@ h4,
     padding: 0.75rem;
     display: flex;
     gap: 0.5rem;
-    z-index: 9999;
+    z-index: 100000;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 640px) {
+    .command-dock {
+        bottom: 1rem;
+        padding: 0.5rem;
+        gap: 0.35rem;
+        max-width: calc(100vw - 2rem);
+    }
+
+    .dock-item {
+        padding: 0.6rem 0.9rem;
+        font-size: 0.75rem;
+    }
+
+    .dock-item i {
+        font-size: 1rem;
+    }
 }
 
 .dock-item {
@@ -348,6 +411,8 @@ h4,
 .dock-item.active {
     background: rgba(255, 255, 255, 0.05);
     color: var(--photon);
+    box-shadow: 0 0 12px var(--primary-glow);
+    animation: activePulse 2.4s ease-in-out infinite;
 }
 
 .dock-item:hover:not(.active) {
@@ -355,9 +420,19 @@ h4,
     background: rgba(255, 255, 255, 0.03);
 }
 
+@keyframes activePulse {
+    0%, 100% { transform: translateY(0); box-shadow: 0 0 12px var(--primary-glow); }
+    50% { transform: translateY(-2px); box-shadow: 0 0 18px var(--primary-glow); }
+}
+
+.dock-item.locked {
+    opacity: 0.6;
+    filter: grayscale(0.2);
+    pointer-events: none;
+}
 /* Page Transitions */
 .page-rebirth {
-    animation: fadeIn 0.8s var(--transition);
+    animation: fadeUpSoft 0.6s var(--transition-premium);
 }
 
 @keyframes fadeIn {
@@ -367,6 +442,25 @@ h4,
 
     to {
         opacity: 1;
+    }
+}
+
+@keyframes fadeUpSoft {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+        scroll-behavior: auto !important;
     }
 }
 

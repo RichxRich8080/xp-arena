@@ -59,6 +59,7 @@ async function resetDatabase() {
         // 5. Seed Shop Items
         console.log('💎 Seeding Armory Items...');
         const shopItems = [
+            ['XP Doubler (1h)', 'Double your AXP gain for 1 hour', 100, 'booster', 'fas fa-hourglass-half', 'common'],
             ['XP Booster (24h)', 'Double your AXP gain for 24 hours', 500, 'booster', 'fas fa-bolt', 'rare'],
             ['XP Booster (48h)', 'Double your AXP gain for 48 hours', 800, 'booster', 'fas fa-bolt', 'epic'],
             ['Premium Theme: Gold', 'Unlock the luxurious Gold accent theme', 2500, 'cosmetic', 'fas fa-palette', 'epic'],

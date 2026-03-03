@@ -60,6 +60,7 @@ const User = {
                     presets: data.presets || [],
                     sensitivityHistory: data.history || [],
                     clips: data.clips || [],
+                    transactions: data.transactions || [],
                     achievements: data.achievements || [],
                     badges: [],
                     submissions: (data.clips || []).length,
@@ -101,6 +102,7 @@ const User = {
             if (!stats.vault) stats.vault = [];
             if (!stats.presets) stats.presets = [];
             if (!stats.sensitivityHistory) stats.sensitivityHistory = [];
+            if (!stats.transactions) stats.transactions = [];
             if (!stats.weeklyQuests) stats.weeklyQuests = {};
             if (!stats.axpLog) stats.axpLog = [];
             if (!stats.quests) stats.quests = { completed: [], progress: {} };
@@ -143,7 +145,7 @@ const User = {
     },
 
     async useRenameCard(itemId) {
-        const newName = prompt('Enter your new Operative Identity (Nickname):');
+        const newName = await DOM.prompt('Enter your new Operative Identity (Nickname):');
         if (!newName || newName.length < 3) return;
 
         try {
@@ -253,7 +255,7 @@ const User = {
             body: JSON.stringify({ settings: result })
         }, () => { });
 
-        if (window.Toast) Toast.show('Saved to Vault!', 'success');
+        if (window.Toast) Toast.show('Saved to Vault!', 'success', 0);
     },
 
     async savePreset(name, result) {
@@ -421,9 +423,9 @@ const User = {
         });
     },
 
-    openAvatarModal() {
-        const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '🐺', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
-        const icon = prompt(`Select your avatar:\n${avatars.join(' ')}`);
+    async openAvatarModal() {
+        const avatars = ['🕹️', '🎮', '🎧', '🎯', '⚔️', '🛡️', '👑', '🔥', '⚡', '💎', '☠️', '👾', '🤖', '狼', '🐉', '🛰️', '🏆', '🥇', '🎲', '🧠'];
+        const icon = await DOM.prompt(`Select your avatar:`, avatars.join(' '));
         if (icon && avatars.includes(icon)) {
             this.updateAvatar(icon);
         }
@@ -722,6 +724,7 @@ const User = {
         if (res.ok) {
             this.addAXPLocally(data.axp, 'Daily login');
             this.updateStatsLocally(s => { s.streak = data.streak; s.lastLogin = data.date; });
+            if (window.Toast) Toast.show(`Daily reward claimed +${data.axp} AXP`, 'xp', 0);
             return { success: true };
         }
         return { success: false, message: data.error || 'Error' };
@@ -743,7 +746,7 @@ const User = {
     },
 
     async useRenameCard(itemId) {
-        const newName = prompt('Enter your new operative designation:');
+        const newName = await DOM.prompt('Enter your new operative designation:');
         if (!newName || newName.length < 3) return;
 
         try {

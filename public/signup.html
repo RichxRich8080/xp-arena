@@ -14,81 +14,55 @@
                 var(--void);
             color: var(--stardust);
             font-family: 'Urbanist', sans-serif;
-            min-height: 100dvh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             overflow-x: hidden;
         }
 
         .auth-container {
+            flex: 1;
             width: 100%;
-            max-width: 420px;
-            padding: 1rem;
+            max-width: 440px;
+            padding: 2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
             z-index: 10;
         }
 
         .auth-card {
-            padding: 2rem 1.75rem;
+            padding: 4rem 3rem;
             text-align: center;
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
-            width: 100%;
-            position: relative;
-        }
-
-        .auth-palette-trigger {
-            position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--photon);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .auth-palette-trigger:hover {
-            border-color: var(--photon);
-            background: rgba(0, 245, 255, 0.05);
-            transform: scale(1.1);
         }
 
         .brand-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.02);
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--photon);
-            border-radius: 14px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.2rem;
+            margin: 0 auto 2rem;
             color: var(--photon);
-            font-size: 1.3rem;
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
         }
 
         .auth-header h2 {
-            font-size: 1.8rem;
-            margin-bottom: 0.2rem;
+            font-size: clamp(1.8rem, 5vw, 2.3rem);
+            margin-bottom: 0.5rem;
             line-height: 1;
         }
 
         .auth-header p {
             color: var(--stardust-muted);
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
             font-weight: 500;
         }
 
@@ -123,13 +97,13 @@
 
         .rebirth-input {
             width: 100%;
-            padding: 0.9rem 1.2rem 0.9rem 3.2rem;
-            background: rgba(255, 255, 255, 0.01);
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border-radius: 16px;
             color: var(--stardust);
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 1rem;
             transition: all 0.4s;
         }
 
@@ -254,9 +228,6 @@
 
     <div class="auth-container">
         <div class="pulse-card auth-card">
-            <div class="auth-palette-trigger" onclick="toggleColorOverlay()" title="Neural Personalization">
-                <i class="fas fa-palette"></i>
-            </div>
             <div class="brand-icon"><i class="fas fa-satellite-dish"></i></div>
 
             <header class="auth-header">
@@ -272,7 +243,7 @@
             <form id="signupForm">
                 <div class="form-group">
                     <label class="form-label">Operative Alias</label>
-                    <div class="input-node id-input-group">
+                    <div class="input-node">
                         <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
                             autocomplete="username">
                         <i class="fas fa-id-badge"></i>
@@ -281,7 +252,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Neural Uplink Email</label>
-                    <div class="input-node id-input-group">
+                    <div class="input-node">
                         <input type="email" id="email" class="rebirth-input" placeholder="operative@arena.net" required
                             autocomplete="email">
                         <i class="fas fa-envelope"></i>
@@ -290,7 +261,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Security Protocol (Key)</label>
-                    <div class="input-node id-input-group">
+                    <div class="input-node">
                         <input type="password" id="password" class="rebirth-input" placeholder="Encryption Key" required
                             autocomplete="new-password">
                         <i class="fas fa-lock"></i>
@@ -310,7 +281,7 @@
                     </label>
                 </div>
 
-                <button type="submit" id="signupBtn" class="btn-rebirth"
+                <button type="submit" id="signupBtn" class="btn-rebirth btn-photon"
                     style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
                     INITIALIZE PROFILE
                 </button>
@@ -328,11 +299,8 @@
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
+    ,ReplacementContent:
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.injectRebirthLayout) injectRebirthLayout();
-        });
-
         document.getElementById('password').addEventListener('input', function () {
             const v = this.value;
             const fill = document.getElementById('strengthFill');
@@ -373,7 +341,6 @@
             errBox.style.display = 'none';
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> INITIALIZING...';
-            document.querySelectorAll('.id-input-group').forEach(el => el.classList.remove('alert-danger'));
 
             const username = document.getElementById('username').value.trim();
             const email = document.getElementById('email').value.trim();

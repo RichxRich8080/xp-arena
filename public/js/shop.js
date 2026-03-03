@@ -147,7 +147,7 @@ const Shop = {
 
             const data = await res.json();
             if (res.ok) {
-                if (window.Toast) Toast.show(`ACQUISITION COMPLETE: ${itemName}`, 'success');
+                if (window.Toast) Toast.show(`ACQUISITION COMPLETE: ${itemName}`, 'success', 0);
                 if (window.Celebration) Celebration.fire();
                 if (window.Sounds) Sounds.play('success');
 

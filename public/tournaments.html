@@ -26,23 +26,27 @@
 
         /* Bracket System */
         .bracket-wrapper {
-            display: flex;
-            gap: 4rem;
+            display: grid;
+            grid-auto-flow: column;
+            grid-auto-columns: minmax(280px, 1fr);
+            gap: 2rem;
             justify-content: center;
             padding: 2rem;
             overflow-x: auto;
+            overflow-y: hidden;
             position: relative;
+            scrollbar-width: thin;
         }
 
         .round {
             display: flex;
             flex-direction: column;
-            justify-content: space-around;
-            gap: 2rem;
+            justify-content: flex-start;
+            gap: 1.5rem;
         }
 
         .matchup {
-            width: 280px;
+            width: 100%;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
             border-radius: 12px;
@@ -141,14 +145,19 @@
         }
 
         @media (max-width: 1000px) {
-            .bracket-wrapper {
-                justify-content: flex-start;
-            }
+            .tourney-container { padding: 7rem 1rem 9rem; }
+            .bracket-wrapper { grid-auto-columns: minmax(220px, 1fr); justify-content: flex-start; }
+            .tourney-header h1 { font-size: clamp(2.4rem, 10vw, 3.6rem); }
+        }
+        @media (max-width: 640px) {
+            .bracket-wrapper { grid-auto-columns: minmax(180px, 1fr); gap: 1rem; }
+            .matchup { padding: 0.8rem; }
+            .team-name { font-size: 0.8rem; }
         }
     </style>
 </head>
 
-<body class="page-rebirth">
+<body class="page-rebirth" data-show-back="true">
     <div class="hud-scanline"></div>
     <div class="hud-noise"></div>
 

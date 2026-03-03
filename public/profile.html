@@ -151,6 +151,17 @@
             color: var(--stardust);
         }
 
+        .transaction-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1rem 1.2rem;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
         /* Settings Forms */
         .settings-card {
             background: var(--nebula);
@@ -203,75 +214,57 @@
     </style>
 </head>
 
-<body class="page-rebirth">
-    <div class="hud-scanline"></div>
-    <div class="hud-noise"></div>
+<body>
     <div class="profile-container">
-        <!-- Gamer Card (Ascension Protocol) -->
-        <div class="gamer-card">
-            <div class="identity-header">
-                <div class="identity-avatar-frame" id="avatar-uplink" onclick="switchTab('settings')">
-                    <span id="avatarImage" style="font-size: 5rem;">👤</span>
-                    <div class="avatar-edit-icon"><i class="fas fa-sync-alt"></i></div>
-                </div>
-                <div class="identity-meta">
-                    <div class="identity-rank-badge" id="identity-rank">
-                        <i class="fas fa-shield-alt"></i> <span>RECRUIT</span>
-                    </div>
-                    <h1 class="clash identity-username" id="profile-username">OPERATIVE</h1>
-                    <p
-                        style="color: var(--stardust-muted); letter-spacing: 2px; font-size: 0.7rem; font-weight: 900; text-transform: uppercase;">
-                        STATUS: <span class="text-photon">ACTIVE_UPLINK</span> • SECTOR: 01
-                    </p>
-                    <div id="profile-socials" style="margin-top: 1.5rem; display:flex; gap:12px;"></div>
-                </div>
+        <!-- Header -->
+        <header class="profile-header">
+            <div class="avatar-glow" onclick="switchTab('settings')">
+                <span id="avatarImage">👤</span>
+                <div class="avatar-edit-icon"><i class="fas fa-pen"></i></div>
             </div>
+            <div class="profile-meta">
+                <div class="profile-badge"><i class="fas fa-shield-alt"></i> <span id="profile-rank">STARTER</span>
+                </div>
+                <h1 class="clash" id="profile-username">ARENI</h1>
+                <p id="profile-bio" style="color: var(--stardust-muted);">Operational Status: Active</p>
+            </div>
+        </header>
 
-            <div class="identity-stats-grid">
-                <div class="id-stat-box">
-                    <div class="id-stat-val text-photon" id="axpDisplay">0</div>
-                    <div class="id-stat-label">Total AXP</div>
-                </div>
-                <div class="id-stat-box">
-                    <div class="id-stat-val" id="diag-level-value">1</div>
-                    <div class="id-stat-label">Combat Level</div>
-                </div>
-                <div class="id-stat-box">
-                    <div class="id-stat-val" id="diag-streak-value">0</div>
-                    <div class="id-stat-label">Bounty Streak</div>
-                </div>
-            </div>
-
-            <div class="progression-track">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 0.75rem;">
-                    <span class="id-stat-label">NEXT_ASCENSION_PROGRESS</span>
-                    <span class="id-stat-label" id="progression-percent">0%</span>
-                </div>
-                <div class="track-bar">
-                    <div class="track-fill" id="identity-track-fill"></div>
-                </div>
-            </div>
+        <!-- Navigation Tabs -->
+        <div class="rebirth-tabs">
+            <button class="tab-trigger active" onclick="switchTab('overview')">Dossier</button>
+            <button class="tab-trigger" onclick="switchTab('vault')">Vault</button>
+            <button class="tab-trigger" onclick="switchTab('transactions')">Transactions</button>
+            <button class="tab-trigger" onclick="switchTab('achievements')">Medals</button>
+            <button class="tab-trigger" onclick="switchTab('history')">Archives</button>
+            <button class="tab-trigger" onclick="switchTab('squad')">Clan</button>
+            <button class="tab-trigger" onclick="switchTab('settings')">Systems</button>
         </div>
 
-        <div class="pulse-card mission-card" style="margin-top: 2rem;">
-            <h3 class="clash" style="margin-bottom: 1.5rem; font-size: 1rem; letter-spacing: 2px;">LOG_ARCHIVE</h3>
-            <div id="recentActivityList">
-                <p style="color: var(--stardust-muted); font-size: 0.8rem; letter-spacing: 1px;" id="noActivity">
-                    INITIAL_SYNC COMPLETE. NO ADDITIONAL LOGS DETECTED.</p>
-            </div>
-        </div>
-
-        <div class="rebirth-tabs" style="margin-top: 2rem; margin-bottom: 2rem;">
-            <button onclick="switchTab('overview')" class="tab-trigger btn-liquid active">OVERVIEW</button>
-            <button onclick="switchTab('history')" class="tab-trigger btn-liquid">PROGRESSION</button>
-            <button onclick="switchTab('vault')" class="tab-trigger btn-liquid">THE_VAULT</button>
-            <button onclick="switchTab('achievements')" class="tab-trigger btn-liquid">MEDALS</button>
-            <button onclick="switchTab('squad')" class="tab-trigger btn-liquid">CLAN_COMMAND</button>
-            <button onclick="switchTab('settings')" class="tab-trigger btn-liquid">SETTINGS</button>
-        </div>
-
+        <!-- Content Area -->
         <div id="tab-overview" class="tab-content active">
-            <!-- Overview content would go here, current elements are direct children of profile-container -->
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-label">Total AXP</div>
+                    <div class="stat-value text-photon" id="axpDisplay">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Combat Level</div>
+                    <div class="stat-value" id="diag-level-value">1</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Bounty Streak</div>
+                    <div class="stat-value" id="diag-streak-value">0</div>
+                </div>
+            </div>
+
+            <div class="pulse-card">
+                <h3 class="clash" style="margin-bottom: 1.5rem;">Recent Logs</h3>
+                <div id="recentActivityList">
+                    <p style="color: var(--stardust-muted); font-size: 0.9rem;" id="noActivity">Initial sync complete.
+                        No further logs detected.</p>
+                </div>
+            </div>
         </div>
 
         <div id="tab-vault" class="tab-content">
@@ -286,6 +279,16 @@
             <div id="achievementsList"
                 style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
                 <!-- Badges injected here -->
+            </div>
+        </div>
+
+        <div id="tab-transactions" class="tab-content">
+            <div class="pulse-card">
+                <h3 class="clash" style="margin-bottom: 1.5rem;">Transaction History</h3>
+                <div id="transactionList" style="display: grid; gap: 1rem;">
+                    <p style="color: var(--stardust-muted); font-size: 0.9rem;" id="noTransactions">No transactions yet.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -359,8 +362,7 @@
                         <input type="text" id="soc-instagram" class="input-rebirth" placeholder="Instagram @handle">
                         <input type="text" id="soc-tiktok" class="input-rebirth" placeholder="TikTok @handle">
                         <input type="text" id="soc-youtube" class="input-rebirth" placeholder="YouTube channel URL">
-                        <button class="btn-rebirth btn-photon" onclick="saveSocials()" style="width: 220px;">Save
-                            Socials</button>
+                        <button class="btn-rebirth btn-photon" onclick="saveSocials()" style="width: 220px;">Save Socials</button>
                     </div>
                 </div>
 
@@ -374,6 +376,9 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             if (!Auth.isLoggedIn()) {
@@ -400,17 +405,6 @@
         });
 
         function switchTab(tabId) {
-            // Trigger Scan Wipe
-            let wipe = document.querySelector('.scan-wipe');
-            if (!wipe) {
-                wipe = document.createElement('div');
-                wipe.className = 'scan-wipe';
-                document.body.appendChild(wipe);
-            }
-            document.body.classList.remove('scanning');
-            void wipe.offsetWidth; // Force reflow
-            document.body.classList.add('scanning');
-
             document.querySelectorAll('.tab-trigger').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
@@ -467,22 +461,12 @@
             User.updateUI(); // Core user.js update
 
             // Sync Rebirth-specific elements
-            document.getElementById('profile-username').textContent = Auth.getCurrentUser()?.username || 'OPERATIVE';
+            document.getElementById('profile-username').textContent = Auth.getCurrentUser().username;
             document.getElementById('avatarImage').textContent = stats.avatar || '👤';
-
-            const rankName = (stats.rank?.name || 'RECRUIT').toUpperCase();
-            const rankEl = document.getElementById('identity-rank');
-            if (rankEl) rankEl.querySelector('span').textContent = rankName;
-
-            document.getElementById('axpDisplay').textContent = stats.axp.toLocaleString();
+            document.getElementById('profile-rank').textContent = (stats.rank || 'STARTER').toUpperCase();
+            document.getElementById('axpDisplay').textContent = stats.axp;
             document.getElementById('diag-level-value').textContent = stats.level;
             document.getElementById('diag-streak-value').textContent = stats.streak || 0;
-
-            const percent = ((stats.axp % 500) / 500) * 100;
-            const fill = document.getElementById('identity-track-fill');
-            const percText = document.getElementById('progression-percent');
-            if (fill) fill.style.width = `${percent}%`;
-            if (percText) percText.textContent = `${Math.floor(percent)}%`;
 
             const si = document.getElementById('soc-instagram');
             const st = document.getElementById('soc-tiktok');
@@ -506,14 +490,24 @@
                 `).join('');
             }
 
-            // Social chips
-            const ps = document.getElementById('profile-socials');
-            if (ps) {
-                const chips = [];
-                if (stats.socials?.instagram) chips.push(`<a href="https://instagram.com/${stats.socials.instagram}" target="_blank" style="text-decoration:none;"><span class="profile-badge" style="color:#fff; border-color:rgba(255,255,255,0.2);"><i class="fab fa-instagram"></i> @${stats.socials.instagram}</span></a>`);
-                if (stats.socials?.tiktok) chips.push(`<a href="https://tiktok.com/@${stats.socials.tiktok}" target="_blank" style="text-decoration:none;"><span class="profile-badge" style="color:#fff; border-color:rgba(255,255,255,0.2);"><i class="fab fa-tiktok"></i> @${stats.socials.tiktok}</span></a>`);
-                if (stats.socials?.youtube) chips.push(`<a href="${stats.socials.youtube}" target="_blank" style="text-decoration:none;"><span class="profile-badge" style="color:#fff; border-color:rgba(255,255,255,0.2);"><i class="fab fa-youtube"></i> YouTube</span></a>`);
-                ps.innerHTML = chips.join('');
+            const transactionList = document.getElementById('transactionList');
+            const noTransactions = document.getElementById('noTransactions');
+            if (transactionList && stats.transactions && stats.transactions.length > 0) {
+                if (noTransactions) noTransactions.style.display = 'none';
+                transactionList.innerHTML = stats.transactions.slice(0, 12).map(t => `
+                    <div class="transaction-row">
+                        <div style="display: grid; gap: 4px;">
+                            <div style="font-weight: 800; color: var(--stardust);">${t.name}</div>
+                            <div style="font-size: 0.7rem; color: var(--stardust-muted); letter-spacing: 1px; text-transform: uppercase;">
+                                ${t.type} • ${t.rarity}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            <div style="font-weight: 900; color: var(--photon);">${Number(t.price_axp || 0).toLocaleString()} AXP</div>
+                            <div style="font-size: 0.7rem; color: var(--stardust-muted);">${new Date(t.purchased_at).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                `).join('');
             }
 
             // Badges
@@ -561,11 +555,6 @@
             if (window.Toast) Toast.show('Socials updated', 'success');
         }
     </script>
-    <script src="js/config.js"></script>
-    <script src="js/dom-utils.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
 </body>
 
 </html>

@@ -14,87 +14,61 @@
                 var(--void);
             color: var(--stardust);
             font-family: 'Urbanist', sans-serif;
-            min-height: 100dvh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             overflow-x: hidden;
         }
 
         .auth-container {
+            flex: 1;
             width: 100%;
-            max-width: 400px;
-            padding: 1rem;
+            max-width: 420px;
+            padding: 2rem;
             display: flex;
             align-items: center;
-            justify-content: center;
             z-index: 10;
         }
 
         .auth-card {
-            padding: 2.5rem 1.75rem;
+            padding: 4rem 3rem;
             text-align: center;
-            background: rgba(255, 255, 255, 0.01);
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
-            width: 100%;
-            position: relative;
-        }
-
-        .auth-palette-trigger {
-            position: absolute;
-            top: 1.5rem;
-            right: 1.5rem;
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--photon);
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .auth-palette-trigger:hover {
-            border-color: var(--photon);
-            background: rgba(0, 245, 255, 0.05);
-            transform: scale(1.1);
         }
 
         .brand-icon {
-            width: 54px;
-            height: 54px;
-            background: rgba(255, 255, 255, 0.02);
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--photon);
-            border-radius: 15px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 2.5rem;
             color: var(--photon);
-            font-size: 1.4rem;
-            box-shadow: 0 0 20px rgba(0, 245, 255, 0.1);
+            font-size: 1.8rem;
+            box-shadow: 0 0 30px rgba(0, 245, 255, 0.1);
         }
 
         .auth-header h2 {
-            font-size: 1.8rem;
-            margin-bottom: 0.25rem;
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            margin-bottom: 0.5rem;
             line-height: 1;
         }
 
         .auth-header p {
             color: var(--stardust-muted);
-            font-size: 0.85rem;
-            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            margin-bottom: 3rem;
             font-weight: 500;
         }
 
         .form-group {
             text-align: left;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.8rem;
         }
 
         .form-label {
@@ -123,13 +97,13 @@
 
         .rebirth-input {
             width: 100%;
-            padding: 1rem 1.2rem 1rem 3.2rem;
-            background: rgba(255, 255, 255, 0.01);
+            padding: 1.2rem 1.5rem 1.2rem 3.5rem;
+            background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
+            border-radius: 16px;
             color: var(--stardust);
             font-family: inherit;
-            font-size: 0.95rem;
+            font-size: 1rem;
             transition: all 0.4s;
         }
 
@@ -233,9 +207,6 @@
 
     <div class="auth-container">
         <div class="pulse-card auth-card">
-            <div class="auth-palette-trigger" onclick="toggleColorOverlay()" title="Neural Personalization">
-                <i class="fas fa-palette"></i>
-            </div>
             <div class="brand-icon"><i class="fas fa-microchip"></i></div>
 
             <header class="auth-header">
@@ -252,7 +223,7 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label class="form-label">Areni Tag</label>
-                    <div class="input-node id-input-group">
+                    <div class="input-node">
                         <input type="text" id="username" class="rebirth-input" placeholder="Designation" required
                             autocomplete="username">
                         <i class="fas fa-user-tag"></i>
@@ -261,7 +232,7 @@
 
                 <div class="form-group">
                     <label class="form-label">Neural Key</label>
-                    <div class="input-node id-input-group">
+                    <div class="input-node">
                         <input type="password" id="password" class="rebirth-input" placeholder="••••••••" required
                             autocomplete="current-password">
                         <i class="fas fa-key"></i>
@@ -278,7 +249,7 @@
                         RECOVERY</button>
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn-rebirth"
+                <button type="submit" id="loginBtn" class="btn-rebirth btn-photon"
                     style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
                     SYNC AND DEPLOY
                 </button>
@@ -293,14 +264,8 @@
     </div>
 
     <!-- Scripts -->
-    <script src="js/auth.js"></script>
-    <script src="js/user.js"></script>
-    <script src="js/layout.js"></script>
+    ,ReplacementContent:
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.injectRebirthLayout) injectRebirthLayout();
-        });
-
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -310,8 +275,6 @@
             const errBox = document.getElementById('errorBox');
 
             errBox.style.display = 'none';
-            document.querySelectorAll('.id-input-group').forEach(el => el.classList.remove('alert-danger'));
-
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SYNCHRONIZING...';
 
@@ -369,7 +332,6 @@
             } else {
                 errBox.textContent = result.message || 'Synchronization failed. Check signal strength.';
                 errBox.style.display = 'block';
-                document.querySelectorAll('.id-input-group').forEach(el => el.classList.add('alert-danger'));
                 btn.disabled = false;
                 btn.innerHTML = 'RETRY SYNC';
             }

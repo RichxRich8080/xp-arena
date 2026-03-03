@@ -178,28 +178,22 @@
 
     <main class="profile-grid">
         <aside>
-            <div class="pulse-card bio-node"
-                style="border-right: 4px solid var(--photon); background: rgba(255, 255, 255, 0.01);">
-                <span class="section-label"
-                    style="font-size: 0.6rem; color: var(--photon); margin-bottom: 2rem; letter-spacing: 2px;">NEURAL_BIOMETRICS</span>
-                <p id="pBio" style="line-height: 2; color: var(--stardust); font-size: 1rem; opacity: 0.9;">
+            <div class="pulse-card bio-node">
+                <span class="section-label" style="font-size: 0.6rem; margin-bottom: 1.5rem;">Biometrics & Intent</span>
+                <p id="pBio" style="line-height: 1.8; color: var(--stardust-muted); font-size: 0.95rem;">
                     Syncing neural profile...
                 </p>
 
-                <div class="social-matrix" style="margin-top: 3rem;">
-                    <a id="sInstagram" href="javascript:void(0)" class="social-link" title="Instagram"
-                        style="border-radius: 12px;"><i class="fab fa-instagram"></i></a>
-                    <a id="sTikTok" href="javascript:void(0)" class="social-link" title="TikTok"
-                        style="border-radius: 12px;"><i class="fab fa-tiktok"></i></a>
-                    <a id="sYouTube" href="javascript:void(0)" class="social-link" title="YouTube"
-                        style="border-radius: 12px;"><i class="fab fa-youtube"></i></a>
+                <div class="social-matrix">
+                    <a id="sInstagram" href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i> <span style="font-size:0.8rem;">Instagram</span></a>
+                    <a id="sTikTok" href="#" class="social-link" title="TikTok"><i class="fab fa-tiktok"></i> <span style="font-size:0.8rem;">TikTok</span></a>
+                    <a id="sYouTube" href="#" class="social-link" title="YouTube"><i class="fab fa-youtube"></i> <span style="font-size:0.8rem;">YouTube</span></a>
                 </div>
 
-                <div class="stats-strip"
-                    style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--glass-border);">
-                    <div class="stat-item" style="margin-bottom: 0;">
-                        <span class="stat-label">OPERATIVE_INFLUENCE</span>
-                        <span class="stat-value clash" id="pFollowers" style="font-size: 1.2rem;">0</span>
+                <div class="stats-strip">
+                    <div class="stat-item">
+                        <span class="stat-label">INFLUENCE</span>
+                        <span class="stat-value" id="pFollowers">0</span>
                     </div>
                 </div>
             </div>
@@ -268,24 +262,9 @@
                 if (c.socials) {
                     try {
                         const s = JSON.parse(c.socials);
-                        if (s.instagram) {
-                            const a = document.getElementById('sInstagram');
-                            a.href = 'https://instagram.com/' + s.instagram;
-                            const t = document.getElementById('sInstagramTxt');
-                            if (t) t.textContent = '@' + s.instagram;
-                        }
-                        if (s.tiktok) {
-                            const a = document.getElementById('sTikTok');
-                            a.href = 'https://tiktok.com/@' + s.tiktok;
-                            const t = document.getElementById('sTikTokTxt');
-                            if (t) t.textContent = '@' + s.tiktok;
-                        }
-                        if (s.youtube) {
-                            const a = document.getElementById('sYouTube');
-                            a.href = s.youtube;
-                            const t = document.getElementById('sYouTubeTxt');
-                            if (t) t.textContent = 'YouTube';
-                        }
+                        if (s.instagram) { document.getElementById('sInstagram').href = 'https://instagram.com/' + s.instagram; }
+                        if (s.tiktok) { document.getElementById('sTikTok').href = 'https://tiktok.com/@' + s.tiktok; }
+                        if (s.youtube) { document.getElementById('sYouTube').href = s.youtube; }
                     } catch (e) { }
                 }
 
