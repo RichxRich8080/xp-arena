@@ -90,6 +90,7 @@ const creatorRoutes = require('./routes/creatorRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const pushRoutes = require('./routes/pushRoutes');
 const shopRoutes = require('./routes/shopRoutes');
+const seasonRoutes = require('./routes/seasonRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
@@ -102,6 +103,7 @@ app.use('/api/creators', creatorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/shop', shopRoutes);
+app.use('/api/season', seasonRoutes);
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok' });

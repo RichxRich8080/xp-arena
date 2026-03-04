@@ -14,6 +14,8 @@ const buyLimiter = rateLimit({
     legacyHeaders: false,
     message: { error: 'Too many purchase attempts. Please wait before retrying.' }
 });
+const { errorResponse } = require('../middleware/apiResponse');
+const { validateRequest, isPositiveIntLike } = require('./validators');
 
 /**
  * Get all active shop items
@@ -62,7 +64,7 @@ router.post('/seed-defaults', async (req, res) => {
         res.json({ success: true, seeded: true });
     } catch (e) {
         console.error('[Shop] Seed defaults error:', e);
-        res.status(500).json({ error: 'Failed to seed defaults' });
+        errorResponse(res, 500, 'SHOP_SEED_FAILED', 'Failed to seed defaults');
     }
 });
 
@@ -70,8 +72,8 @@ router.post('/seed-defaults', async (req, res) => {
  * Purchase an item
  */
 router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
+router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const { itemId } = req.body;
-    if (!itemId) return res.status(400).json({ error: 'Item ID required' });
 
     let idemKey;
     try {
@@ -92,6 +94,7 @@ router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
 
     let conn;
     try {
+        economy.economyLog('log', 'shop.purchase.start', { userId: req.user.id, itemId });
         conn = await pool.getConnection();
         await conn.beginTransaction();
 
@@ -118,6 +121,17 @@ router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
             e.status = 400;
             throw e;
         }
+
+        const [retryRows] = await conn.execute(
+            `SELECT COUNT(*) AS retry_count
+             FROM economy_events
+             WHERE user_id = ?
+               AND event_type = 'purchase'
+               AND status = 'failure'
+               AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)`,
+            [req.user.id]
+        );
+        const recentRetries = Number(retryRows[0]?.retry_count || 0);
 
         // 3. Check if user already owns it (if it's not a consumable/booster)
         if (item.type !== 'booster') {
@@ -199,6 +213,15 @@ router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
             conn,
         });
 
+        await economy.recordEconomyEvent({
+            userId: req.user.id,
+            eventType: 'purchase',
+            source: 'routes.shop.buy',
+            amount: -item.price_axp,
+            status: 'success',
+            metadata: { itemId: item.id, itemName: item.name, itemType: item.type, retryCount: recentRetries },
+        }, conn);
+
         await conn.commit();
         const payload = { success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp };
         await idempotency.completeKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey, statusCode: 200, responseBody: payload });
@@ -209,8 +232,26 @@ router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
         if ((err.status >= 400 && err.status < 500) || String(err.message || '').includes('Insufficient AXP')) {
             await security.recordFailedPurchaseAttempt({ userId: req.user.id, ipAddress: req.ip, reason: err.message || 'purchase_failed' });
         }
+        economy.economyLog('log', 'shop.purchase.success', { userId: req.user.id, itemId: item.id, priceAXP: item.price_axp, updatedAxp });
+        res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp });
+    } catch (err) {
+        if (conn) await conn.rollback();
+        const failureMeta = { itemId, status: err.status || 500, error: err.message || 'purchase_failed' };
+        try {
+            await economy.recordEconomyEvent({
+                userId: req.user.id,
+                eventType: 'purchase',
+                source: 'routes.shop.buy',
+                amount: 0,
+                status: 'failure',
+                metadata: failureMeta,
+            });
+        } catch (eventErr) {
+            economy.economyLog('error', 'shop.purchase.event_failure', { userId: req.user.id, itemId, eventError: eventErr.message });
+        }
+        economy.economyLog('error', 'shop.purchase.failure', { userId: req.user.id, ...failureMeta });
         console.error('[Shop] Purchase error:', err);
-        res.status(err.status || 500).json({ error: err.message || 'Server error during purchase' });
+        errorResponse(res, err.status || 500, 'SHOP_PURCHASE_FAILED', err.message || 'Server error during purchase');
     } finally {
         if (conn) conn.release();
     }
@@ -229,7 +270,7 @@ router.get('/inventory', authenticateToken, async (req, res) => {
         `, [req.user.id]);
         res.json(inventory);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch inventory' });
+        errorResponse(res, 500, 'SHOP_INVENTORY_FAILED', 'Failed to fetch inventory');
     }
 });
 

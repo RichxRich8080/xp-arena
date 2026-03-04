@@ -284,8 +284,28 @@ async function run() {
         user_id INT NOT NULL,
         axp INT NOT NULL,
         date DATE NOT NULL,
+        event_type VARCHAR(50) DEFAULT 'snapshot',
+        source VARCHAR(100) DEFAULT 'system',
+        metadata JSON NULL,
         UNIQUE KEY user_date_uniq (user_id, date),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('economy_events', `
+    CREATE TABLE IF NOT EXISTS economy_events (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NULL,
+      event_type VARCHAR(50) NOT NULL,
+      source VARCHAR(100) NOT NULL,
+      amount INT NOT NULL DEFAULT 0,
+      status VARCHAR(20) NOT NULL DEFAULT 'success',
+      metadata JSON NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_economy_events_time (created_at),
+      INDEX idx_economy_events_user (user_id),
+      INDEX idx_economy_events_type_status (event_type, status),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     )
   `);
 
@@ -313,6 +333,47 @@ async function run() {
         rarity ENUM('common', 'uncommon', 'rare', 'epic', 'legendary') DEFAULT 'common',
         active TINYINT(1) DEFAULT 1,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+
+  await ensureTable('seasons', `
+    CREATE TABLE IF NOT EXISTS seasons (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL UNIQUE,
+      title VARCHAR(120) NOT NULL,
+      starts_at DATETIME NOT NULL,
+      ends_at DATETIME NOT NULL,
+      reset_windows_json TEXT,
+      rewards_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await ensureTable('season_user_scores', `
+    CREATE TABLE IF NOT EXISTS season_user_scores (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL,
+      user_id INT NOT NULL,
+      score INT NOT NULL DEFAULT 0,
+      daily_login_points INT NOT NULL DEFAULT 0,
+      tournament_points INT NOT NULL DEFAULT 0,
+      guild_war_points INT NOT NULL DEFAULT 0,
+      aura_points INT NOT NULL DEFAULT 0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY uniq_season_user (season_id, user_id)
+    )
+  `);
+
+  await ensureTable('season_score_events', `
+    CREATE TABLE IF NOT EXISTS season_score_events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL,
+      user_id INT NOT NULL,
+      source VARCHAR(40) NOT NULL,
+      points INT NOT NULL DEFAULT 0,
+      meta_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
 
@@ -389,6 +450,9 @@ async function run() {
   await ensureColumn('users', 'login_attempts', 'INT DEFAULT 0');
   await ensureColumn('users', 'lockout_until', 'DATETIME');
   await ensureColumn('users', 'last_protocol_date', 'DATE');
+  await ensureColumn('axp_history', 'event_type', "VARCHAR(50) DEFAULT 'snapshot'");
+  await ensureColumn('axp_history', 'source', "VARCHAR(100) DEFAULT 'system'");
+  await ensureColumn('axp_history', 'metadata', 'JSON NULL');
 
   // 3. Optimization checks (Indices)
   await ensureIndex('users', 'idx_users_axp', 'axp');
@@ -402,6 +466,8 @@ async function run() {
   await ensureIndex('creator_followers', 'idx_creator_followers_creator', 'creator_user_id');
   await ensureIndex('security_events', 'idx_security_events_user_time', 'user_id, created_at');
   await ensureIndex('audit_logs', 'idx_audit_logs_user_time', 'user_id, created_at');
+  await ensureIndex('season_user_scores', 'idx_season_score', 'season_id, score');
+  await ensureIndex('season_score_events', 'idx_season_events', 'season_id, user_id, source');
 
   console.log('✅ Migration finished successfully');
 }

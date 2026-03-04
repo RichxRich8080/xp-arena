@@ -5,93 +5,44 @@ const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
-const idempotency = require('../services/idempotencyService');
-const security = require('../services/securityService');
+const economy = require('../services/economyService');
+const { recordSeasonPoints } = require('../services/seasonService');
+const { errorResponse } = require('../middleware/apiResponse');
+const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
 function todayDateStr(d) {
     const x = d || new Date();
     return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
 }
 
-const renameLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000,
-    max: 4,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many rename attempts. Please try again later.' }
-});
-
-const rewardClaimLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 6,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: { error: 'Too many reward claim attempts. Please wait before retrying.' }
-});
-
-async function handleIdempotentAction(req, res, scope, action) {
-    const key = idempotency.readIdempotencyKey(req);
-    try {
-        await idempotency.reserveKey({ userId: req.user.id, endpointScope: scope, key });
-    } catch (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-            const existing = await idempotency.getStoredResponse({ userId: req.user.id, endpointScope: scope, key });
-            if (existing && existing.status === 'completed') {
-                const body = existing.response_body ? JSON.parse(existing.response_body) : { success: true };
-                res.set('Idempotent-Replay', 'true');
-                return res.status(existing.response_status || 200).json(body);
-            }
-            return res.status(409).json({ error: 'Request with this idempotency key is already in progress' });
-        }
-        throw err;
-    }
-
-    try {
-        const result = await action();
-        const statusCode = result && result.statusCode ? result.statusCode : 200;
-        const payload = result && result.payload ? result.payload : result;
-        await idempotency.completeKey({ userId: req.user.id, endpointScope: scope, key, statusCode, responseBody: payload });
-        return res.status(statusCode).json(payload);
-    } catch (err) {
-        await idempotency.releaseKey({ userId: req.user.id, endpointScope: scope, key });
-        throw err;
-    }
-}
-
-router.post('/password', authenticateToken, async (req, res) => {
+router.post('/password', authenticateToken, validateRequest([{ field: 'currentPassword', required: true }, { field: 'newPassword', required: true, validate: isStringMin(6), issue: 'min_length_6' }]), async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     try {
         if (typeof db.get !== 'function') throw new Error('db.get is not a function');
         const user = await db.get('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'User not found');
 
         const match = await bcrypt.compare(currentPassword, user.password_hash);
-        if (!match) return res.status(400).json({ error: 'Incorrect current password' });
+        if (!match) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Incorrect current password');
 
         const hash = await bcrypt.hash(newPassword, 10);
         await db.run('UPDATE users SET password_hash = ? WHERE id = ?', [hash, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
-router.post('/nickname', authenticateToken, renameLimiter, async (req, res) => {
+router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUsername', required: true, validate: isStringMin(3), issue: 'min_length_3' }]), async (req, res) => {
     const { newUsername } = req.body;
-    if (!newUsername || newUsername.length < 3) return res.status(400).json({ error: 'Invalid username' });
 
     try {
-        const conn = await pool.getConnection();
-        let cost = 0;
-        try {
-            await conn.beginTransaction();
-            const [userRows] = await conn.execute('SELECT username, name_changes, axp FROM users WHERE id = ? FOR UPDATE', [req.user.id]);
-            const user = userRows[0];
-            if (!user) {
-                const e = new Error('User not found');
-                e.status = 404;
-                throw e;
-            }
+        economy.economyLog('log', 'user.nickname.start', { userId: req.user.id, newUsername });
+        const user = await db.get('SELECT name_changes, axp FROM users WHERE id = ?', [req.user.id]);
+        if (!user) return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'User not found');
+
+        const cost = user.name_changes > 0 ? 500 : 0;
+        if (user.axp < cost) return errorResponse(res, 400, 'INSUFFICIENT_AXP', `Not enough AXP. Changing name costs ${cost} AXP.`);
 
             cost = user.name_changes > 0 ? 500 : 0;
             if (user.axp < cost) {
@@ -100,39 +51,29 @@ router.post('/nickname', authenticateToken, renameLimiter, async (req, res) => {
                 throw e;
             }
 
-            await conn.execute('UPDATE users SET username = ?, axp = axp - ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, cost, req.user.id]);
-            if (cost > 0) {
-                await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
-            }
-            await security.writeAuditLog({
-                userId: req.user.id,
-                actorUserId: req.user.id,
-                eventType: 'username_changed',
-                metadata: { oldUsername: user.username, newUsername, method: 'direct_rename', costAXP: cost },
-                conn,
-            });
-            await conn.commit();
-        } catch (txErr) {
-            await conn.rollback();
-            throw txErr;
-        } finally {
-            conn.release();
+        if (cost > 0) {
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
+            await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'rename', source: 'routes.user.nickname', amount: -cost, metadata: { newUsername, method: 'direct_change' } });
+            await economy.snapshotAXP(req.user.id, null, { eventType: 'rename', source: 'routes.user.nickname', metadata: { newUsername, cost } });
         }
 
         const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
+        economy.economyLog('log', 'user.nickname.success', { userId: req.user.id, cost });
         res.json({ success: true, token, user: { id: req.user.id, username: newUsername }, cost });
     } catch (err) {
         if ((err && err.code === 'ER_DUP_ENTRY') || (err.message && err.message.includes('UNIQUE'))) {
-            return res.status(400).json({ error: 'Username already taken' });
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Username already taken');
         }
+        economy.economyLog('error', 'user.nickname.failure', { userId: req.user.id, error: err.message });
         res.status(500).json({ error: 'Database error' });
+        errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Database error');
     }
 });
 
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const user = await db.get('SELECT * FROM users WHERE id = ?', [req.user.id]);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'User not found');
 
         const [activities, vault, presets, history, clips, achievements, setups, guild, transactions] = await Promise.all([
             db.all('SELECT * FROM activity WHERE user_id = ? ORDER BY timestamp DESC LIMIT 20', [req.user.id]),
@@ -169,7 +110,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
@@ -178,32 +119,30 @@ router.get('/profile', authenticateToken, async (req, res) => {
 
 router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        return await handleIdempotentAction(req, res, 'reward:daily-login', async () => {
-            const u = await db.get('SELECT streak, last_login, axp FROM users WHERE id = ?', [req.user.id]);
-            const now = new Date();
-            const today = todayDateStr(now);
-            let streak = 1;
-            if (u && u.last_login) {
-                const last = new Date(u.last_login);
-                const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-                if (diff === 0) {
-                    const e = new Error('Already claimed');
-                    e.status = 400;
-                    throw e;
-                }
-                if (diff === 1) streak = (u.streak || 0) + 1;
-            }
-            const base = 20;
-            const bonus = Math.min(streak, 7) * 5;
-            const total = base + bonus;
-            await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
-            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
+        const u = await db.get('SELECT streak, last_login FROM users WHERE id = ?', [req.user.id]);
+        const now = new Date();
+        const today = todayDateStr(now);
+        let streak = 1;
+        if (u && u.last_login) {
+            const last = new Date(u.last_login);
+            const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+            if (diff === 0) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Already claimed');
+            if (diff === 1) streak = (u.streak || 0) + 1;
+        }
+        const base = 20;
+        const bonus = Math.min(streak, 7) * 5;
+        const total = base + bonus;
+        await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
+        await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
+        await recordSeasonPoints(req.user.id, { dailyLogin: total, meta: { streak } });
 
         // Record AXP History snapshot
-            const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-            await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
-            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: (u && u.axp) || 0, afterAXP: updatedUser.axp || 0, reason: 'daily_login_reward' });
+        const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+        await db.run(`INSERT INTO axp_history (user_id, axp, date, event_type, source, metadata)
+                      VALUES (?, ?, ?, ?, ?, ?)
+                      ON DUPLICATE KEY UPDATE axp = VALUES(axp), event_type = VALUES(event_type), source = VALUES(source), metadata = VALUES(metadata)`,
+            [req.user.id, updatedUser.axp, today, 'daily_login', 'routes.user.daily-login', JSON.stringify({ streak, reward: total })]);
 
         // Perfect Week auto-bonus (server-confirmed)
         // Compute week start (Monday)
@@ -244,7 +183,7 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
             return { payload: { success: true, streak, axp: total, date: today } };
         });
     } catch (e) {
-        res.status(e.status || 500).json({ error: e.message || 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
@@ -252,9 +191,9 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
 router.post('/admin/reset-week-bonus', authenticateToken, async (req, res) => {
     try {
         const admin = await db.get('SELECT is_admin FROM users WHERE id = ?', [req.user.id]);
-        if (!admin || !admin.is_admin) return res.status(403).json({ error: 'Admin only' });
+        if (!admin || !admin.is_admin) return errorResponse(res, 403, 'USER_ROUTE_ERROR', 'Admin only');
         const { user_id, week_start } = req.body;
-        if (!user_id) return res.status(400).json({ error: 'user_id required' });
+        if (!user_id) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'user_id required');
         if (week_start) {
             await db.run('DELETE FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [user_id, week_start]);
         } else {
@@ -262,16 +201,16 @@ router.post('/admin/reset-week-bonus', authenticateToken, async (req, res) => {
         }
         res.json({ success: true });
     } catch (e) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
 router.get('/axp-history', authenticateToken, async (req, res) => {
     try {
-        const history = await db.all('SELECT axp, date FROM axp_history WHERE user_id = ? ORDER BY date ASC LIMIT 30', [req.user.id]);
+        const history = await db.all('SELECT axp, date, event_type, source, metadata FROM axp_history WHERE user_id = ? ORDER BY date ASC LIMIT 30', [req.user.id]);
         res.json(history);
     } catch (e) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
@@ -284,7 +223,7 @@ router.post('/xp-doubler/activate', authenticateToken, async (req, res) => {
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `XP doubler active for ${h}h`]);
         res.json({ success: true, until });
     } catch (e) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
@@ -294,7 +233,7 @@ router.post('/avatar', authenticateToken, async (req, res) => {
         await db.run('UPDATE users SET avatar = ? WHERE id = ?', [avatar, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -305,7 +244,7 @@ router.post('/socials', authenticateToken, async (req, res) => {
         await db.run('UPDATE users SET socials = ? WHERE id = ?', [socialsStr, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -315,7 +254,7 @@ router.post('/vault', authenticateToken, async (req, res) => {
         await db.run('INSERT INTO vault (user_id, settings_json) VALUES (?, ?)', [req.user.id, JSON.stringify(settings)]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -326,7 +265,7 @@ router.post('/preset', authenticateToken, async (req, res) => {
         await db.run('INSERT INTO presets (user_id, name, settings_json) VALUES (?, ?, ?)', [req.user.id, name, JSON.stringify(settings)]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -336,7 +275,7 @@ router.post('/history', authenticateToken, async (req, res) => {
         await db.run('INSERT INTO history (user_id, device, general_mid, general_range) VALUES (?, ?, ?, ?)', [req.user.id, device, general_mid, general_range]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -348,7 +287,7 @@ router.post('/clip', authenticateToken, async (req, res) => {
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Submitted a gameplay clip on ${device}`]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -356,19 +295,19 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
     const { url } = req.body;
     try {
         const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
-        if (!u || !u.is_premium) return res.status(403).json({ error: 'Premium required' });
-        if (!url || !/^https?:\/\//i.test(url)) return res.status(400).json({ error: 'Invalid URL' });
+        if (!u || !u.is_premium) return errorResponse(res, 403, 'USER_ROUTE_ERROR', 'Premium required');
+        if (!url || !/^https?:\/\//i.test(url)) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid URL');
 
         // Basic SSRF Protection
         const ssrfBlacklist = ['localhost', '127.0.0.1', '10.', '172.16.', '172.17.', '172.18.', '172.19.', '172.2', '172.3', '192.168.'];
         if (ssrfBlacklist.some(b => url.includes(b))) {
-            return res.status(400).json({ error: 'Restricted URL' });
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Restricted URL');
         }
 
         await db.run('UPDATE users SET avatar = ? WHERE id = ?', [url, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -384,6 +323,12 @@ router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req
                 e.status = 400;
                 throw e;
             }
+        const today = new Date().toISOString().split('T')[0];
+        const lastProtocol = await db.get('SELECT last_protocol_date FROM users WHERE id = ?', [req.user.id]);
+
+        if (lastProtocol && lastProtocol.last_protocol_date === today) {
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Protocol already completed for today');
+        }
 
             const axpReward = 200;
             await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
@@ -396,6 +341,7 @@ router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req
     } catch (err) {
         console.error(err);
         res.status(err.status || 500).json({ error: err.message || 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
@@ -403,44 +349,44 @@ router.post('/premium/style', authenticateToken, async (req, res) => {
     const { name_color, glow } = req.body;
     try {
         const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
-        if (!u || !u.is_premium) return res.status(403).json({ error: 'Premium required' });
+        if (!u || !u.is_premium) return errorResponse(res, 403, 'USER_ROUTE_ERROR', 'Premium required');
         await db.run('UPDATE users SET premium_name_color = ?, premium_glow = ? WHERE id = ?', [name_color || null, glow ? 1 : 0, req.user.id]);
         res.json({ success: true });
     } catch (e) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
 
-router.delete('/vault/:id', authenticateToken, async (req, res) => {
+router.delete('/vault/:id', authenticateToken, validateRequest([{ in: 'params', field: 'id', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const id = parseInt(req.params.id, 10);
-    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    if (!id) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid id');
     try {
         await db.run('DELETE FROM vault WHERE id = ? AND user_id = ?', [id, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
-router.delete('/preset/:id', authenticateToken, async (req, res) => {
+router.delete('/preset/:id', authenticateToken, validateRequest([{ in: 'params', field: 'id', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const id = parseInt(req.params.id, 10);
-    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    if (!id) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid id');
     try {
         await db.run('DELETE FROM presets WHERE id = ? AND user_id = ?', [id, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
-router.delete('/history/:id', authenticateToken, async (req, res) => {
+router.delete('/history/:id', authenticateToken, validateRequest([{ in: 'params', field: 'id', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const id = parseInt(req.params.id, 10);
-    if (!id) return res.status(400).json({ error: 'Invalid id' });
+    if (!id) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid id');
     try {
         await db.run('DELETE FROM history WHERE id = ? AND user_id = ?', [id, req.user.id]);
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
@@ -478,6 +424,8 @@ router.post('/premium/buy', authenticateToken, async (req, res) => {
                 e.status = 403;
                 throw e;
             }
+        const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
+        if (u && u.is_premium) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Already Premium');
 
             await conn.execute('DELETE FROM user_inventory WHERE id = ?', [entitlement.id]);
             await conn.execute('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
@@ -523,12 +471,21 @@ router.post('/easter-egg', authenticateToken, rewardClaimLimiter, async (req, re
         });
     } catch (err) {
         res.status(err.status || 500).json({ error: err.message || 'DB Error' });
+        const achievementId = 'easter_egg_hack';
+        const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
+        if (u) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Reward already claimed');
+
+        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
+        await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
+        res.json({ success: true, axp: 500 });
+    } catch (err) {
+        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
 
-router.post('/use-item', authenticateToken, async (req, res) => {
+router.post('/use-item', authenticateToken, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const { itemId, extra } = req.body;
-    if (!itemId) return res.status(400).json({ error: 'Item ID required' });
 
     try {
         // 1. Check if user owns the item
@@ -539,13 +496,13 @@ router.post('/use-item', authenticateToken, async (req, res) => {
             WHERE ui.user_id = ? AND ui.item_id = ?
         `, [req.user.id, itemId]);
 
-        if (!inventoryItem) return res.status(404).json({ error: 'Item not found in inventory' });
+        if (!inventoryItem) return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'Item not found in inventory');
 
         // 2. Handle specific item logic
         if (inventoryItem.name === 'Rename Card') {
             const { newUsername } = extra || {};
             if (!newUsername || newUsername.length < 3) {
-                return res.status(400).json({ error: 'Invalid new username provided' });
+                return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid new username provided');
             }
 
             // Atomic update: Change name + consume card + log activity
@@ -556,14 +513,14 @@ router.post('/use-item', authenticateToken, async (req, res) => {
                 if (takenRows[0]) {
                     await conn.rollback();
                     conn.release();
-                    return res.status(400).json({ error: 'Username already taken' });
+                    return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Username already taken');
                 }
 
                 const [itemRows] = await conn.execute('SELECT id FROM user_inventory WHERE id = ? AND user_id = ? FOR UPDATE', [inventoryItem.id, req.user.id]);
                 if (!itemRows[0]) {
                     await conn.rollback();
                     conn.release();
-                    return res.status(404).json({ error: 'Rename Card no longer available' });
+                    return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'Rename Card no longer available');
                 }
 
                 await conn.execute('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
@@ -576,6 +533,8 @@ router.post('/use-item', authenticateToken, async (req, res) => {
                     metadata: { newUsername, method: 'rename_card' },
                     conn,
                 });
+                await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'rename', source: 'routes.user.use-item', amount: 0, metadata: { newUsername, method: 'rename_card', itemId } }, conn);
+                await economy.snapshotAXP(req.user.id, conn, { eventType: 'rename', source: 'routes.user.use-item', metadata: { newUsername, method: 'rename_card' } });
                 await conn.commit();
             } catch (txErr) {
                 await conn.rollback();
@@ -588,10 +547,10 @@ router.post('/use-item', authenticateToken, async (req, res) => {
             return res.json({ success: true, message: 'Identity successfully updated', token, user: { id: req.user.id, username: newUsername } });
         }
 
-        res.status(400).json({ error: 'Item not usable or logic not implemented' });
+        errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Item not usable or logic not implemented');
     } catch (err) {
         console.error('[User] Use item error:', err);
-        res.status(500).json({ error: 'Server error using item' });
+        errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Server error using item');
     }
 });
 

@@ -233,4 +233,48 @@ router.delete('/setups/:id', async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+
+router.get('/economy-metrics', async (req, res) => {
+  try {
+    const [failureRow, sinks, sources, abnormalRetries] = await Promise.all([
+      db.get(`SELECT COUNT(*) AS transaction_failures
+              FROM economy_events
+              WHERE status = 'failure'
+                AND event_type IN ('purchase', 'charge', 'transaction_failure')
+                AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)`, []),
+      db.all(`SELECT event_type, source, SUM(ABS(amount)) AS total_axp, COUNT(*) AS events
+              FROM economy_events
+              WHERE status = 'success' AND amount < 0
+              GROUP BY event_type, source
+              ORDER BY total_axp DESC
+              LIMIT 5`, []),
+      db.all(`SELECT event_type, source, SUM(amount) AS total_axp, COUNT(*) AS events
+              FROM economy_events
+              WHERE status = 'success' AND amount > 0
+              GROUP BY event_type, source
+              ORDER BY total_axp DESC
+              LIMIT 5`, []),
+      db.all(`SELECT user_id, COUNT(*) AS retry_failures, MAX(created_at) AS latest_failure
+              FROM economy_events
+              WHERE event_type = 'purchase' AND status = 'failure'
+                AND created_at >= DATE_SUB(NOW(), INTERVAL 1 HOUR)
+              GROUP BY user_id
+              HAVING COUNT(*) >= 3
+              ORDER BY retry_failures DESC
+              LIMIT 20`, [])
+    ]);
+
+    res.json({
+      transactionFailures24h: Number(failureRow?.transaction_failures || 0),
+      topSinks: sinks || [],
+      topSources: sources || [],
+      abnormalPurchaseRetries: abnormalRetries || [],
+      generatedAt: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.error('Economy metrics error:', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;

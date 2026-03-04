@@ -39,8 +39,23 @@ CREATE TABLE IF NOT EXISTS axp_history (
     user_id INT NOT NULL,
     axp INT NOT NULL,
     date DATE NOT NULL,
+    event_type VARCHAR(50) DEFAULT 'snapshot',
+    source VARCHAR(100) DEFAULT 'system',
+    metadata JSON NULL,
     UNIQUE KEY user_date_uniq (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS economy_events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    source VARCHAR(100) NOT NULL,
+    amount INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'success',
+    metadata JSON NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -302,7 +317,44 @@ CREATE INDEX idx_setups_user_time ON setups(user_id, created_at);
 CREATE INDEX idx_setups_priv_time ON setups(is_private, created_at);
 CREATE INDEX idx_setups_pop ON setups(likes, copies);
 CREATE INDEX idx_guild_members_user ON guild_members(user_id);
+CREATE INDEX idx_economy_events_time ON economy_events(created_at);
+CREATE INDEX idx_economy_events_user ON economy_events(user_id);
+CREATE INDEX idx_economy_events_type_status ON economy_events(event_type, status);
 CREATE INDEX idx_tournaments_time ON tournaments(created_at);
 CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
 CREATE INDEX idx_security_events_user_time ON security_events(user_id, created_at);
 CREATE INDEX idx_audit_logs_user_time ON audit_logs(user_id, created_at);
+-- Seasons
+CREATE TABLE IF NOT EXISTS seasons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL UNIQUE,
+    title VARCHAR(120) NOT NULL,
+    starts_at DATETIME NOT NULL,
+    ends_at DATETIME NOT NULL,
+    reset_windows_json TEXT,
+    rewards_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS season_user_scores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    score INT NOT NULL DEFAULT 0,
+    daily_login_points INT NOT NULL DEFAULT 0,
+    tournament_points INT NOT NULL DEFAULT 0,
+    guild_war_points INT NOT NULL DEFAULT 0,
+    aura_points INT NOT NULL DEFAULT 0,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_season_user (season_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS season_score_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    source VARCHAR(40) NOT NULL,
+    points INT NOT NULL DEFAULT 0,
+    meta_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_season_score ON season_user_scores(season_id, score);
+CREATE INDEX idx_season_events ON season_score_events(season_id, user_id, source);
