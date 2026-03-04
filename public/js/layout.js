@@ -6,6 +6,21 @@
 const SAFE_CONFIG = window.CONFIG || {};
 window.API_URL = SAFE_CONFIG.API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
 
+const PERFORMANCE_MODES = ['high', 'balanced', 'low'];
+
+function getCurrentPerformanceMode() {
+    const mode = document.documentElement.dataset.performanceMode || (window.PreferenceEngine && PreferenceEngine.getPerformanceMode ? PreferenceEngine.getPerformanceMode() : localStorage.getItem('xp_performance_mode')) || 'balanced';
+    return PERFORMANCE_MODES.includes(mode) ? mode : 'balanced';
+}
+
+function isHighPerf() {
+    return getCurrentPerformanceMode() === 'high';
+}
+
+function isLowPerf() {
+    return getCurrentPerformanceMode() === 'low';
+}
+
 // Helper to get root-relative paths
 function getRootPath(path) {
     if (window.location.protocol.startsWith('http')) {
@@ -55,6 +70,10 @@ if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
+        PreferenceEngine.setPerformanceMode(PreferenceEngine.getPerformanceMode(), { persist: false });
+    }
+
     // Failsafe: Ensure content is visible within 2s even if JS errors occur
     setTimeout(() => {
         document.body.classList.add('booted');
@@ -85,12 +104,12 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalSFX();
 
     // Singularity: Global Transmissions
-    initGlobalTransmissions();
+    if (!isLowPerf()) initGlobalTransmissions();
 
     // Final Visual Boot
     initNeuralStagger();
     initSectorMap();
-    initAmbientHUD();
+    if (isHighPerf()) initAmbientHUD();
 
     enableGlobalOverlayDismiss();
     applyAXPShine();
@@ -102,6 +121,23 @@ document.addEventListener('DOMContentLoaded', () => {
         leftover.style.opacity = '0';
         setTimeout(() => leftover.remove(), 120);
     }
+
+    window.addEventListener('xp:performance-mode-change', (event) => {
+        const mode = event.detail?.mode || getCurrentPerformanceMode();
+
+        if (mode !== 'high') {
+            document.querySelector('.hud-ambient-grid')?.remove();
+        } else if (!document.querySelector('.hud-ambient-grid')) {
+            initAmbientHUD();
+        }
+
+        if (mode === 'low') {
+            document.querySelector('.global-transmission-ticker')?.remove();
+            document.body.style.marginTop = '';
+        } else if (!document.querySelector('.global-transmission-ticker')) {
+            initGlobalTransmissions();
+        }
+    });
 });
 
 
@@ -213,11 +249,17 @@ function initGlobalSFX() {
 
     // Global Hover (Debounced)
     let hoverTimeout;
+    let lastHoverSfxAt = 0;
     document.addEventListener('mouseover', (e) => {
         const el = e.target.closest('button, a, .clickable, .nav-item');
         if (el) {
             clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => Sounds.play('hover'), 50);
+            hoverTimeout = setTimeout(() => {
+                const now = Date.now();
+                if (now - lastHoverSfxAt < 120 || isLowPerf()) return;
+                lastHoverSfxAt = now;
+                Sounds.play('hover');
+            }, 60);
         }
     });
 }
@@ -256,16 +298,29 @@ function initGlobalTransmissions() {
 /**
  * Genesis: Global Mouse Tracking (Refraction Logic)
  */
-document.addEventListener('mousemove', (e) => {
-    const cards = document.querySelectorAll('.pulse-card');
-    cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        card.style.setProperty('--mouse-x', `${x}%`);
-        card.style.setProperty('--mouse-y', `${y}%`);
-    });
-});
+const updatePulseCardMouseVars = (() => {
+    let rafId = null;
+    let lastEvent = null;
+
+    return (event) => {
+        if (isLowPerf()) return;
+        lastEvent = event;
+        if (rafId) return;
+
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            const targetCard = lastEvent?.target?.closest?.('.pulse-card');
+            if (!targetCard) return;
+            const rect = targetCard.getBoundingClientRect();
+            const x = ((lastEvent.clientX - rect.left) / rect.width) * 100;
+            const y = ((lastEvent.clientY - rect.top) / rect.height) * 100;
+            targetCard.style.setProperty('--mouse-x', `${x}%`);
+            targetCard.style.setProperty('--mouse-y', `${y}%`);
+        });
+    };
+})();
+
+document.addEventListener('mousemove', updatePulseCardMouseVars, { passive: true });
 
 /**
  * Ambient HUD: Drifting Tactical Coordinates
@@ -410,24 +465,42 @@ window.toggleSettings = toggleSectorMap;
  * HUD Depth: Reactive 3D Parallax
  */
 function initHUDDepth() {
-    if (window.innerWidth < 768) return; // Disable on mobile for perf
+    if (window.innerWidth < 768 || !isHighPerf()) return; // Disable on mobile/lower perf
+
+    let rafId = null;
+    let latestEvent = null;
+    let cachedCards = [];
+    let cacheAt = 0;
+
+    const refreshCards = () => {
+        const now = Date.now();
+        if (now - cacheAt < 1200) return;
+        cacheAt = now;
+        cachedCards = Array.from(document.querySelectorAll('.pulse-card, .gamer-card')).slice(0, 20);
+    };
 
     document.addEventListener('mousemove', (e) => {
-        const cards = document.querySelectorAll('.pulse-card, .gamer-card');
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
+        latestEvent = e;
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            refreshCards();
+            if (!latestEvent) return;
+            const mouseX = latestEvent.clientX;
+            const mouseY = latestEvent.clientY;
 
-        cards.forEach(card => {
-            const rect = card.getBoundingClientRect();
-            const cardX = rect.left + rect.width / 2;
-            const cardY = rect.top + rect.height / 2;
+            cachedCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
 
-            const angleX = (mouseY - cardY) / 30;
-            const angleY = (cardX - mouseX) / 30;
+                const angleX = (mouseY - cardY) / 30;
+                const angleY = (cardX - mouseX) / 30;
 
-            card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
+                card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
+            });
         });
-    });
+    }, { passive: true });
 }
 
 /**
@@ -454,6 +527,11 @@ function initNeuralBridge() {
 }
 
 function showNeuralGlitch(callback) {
+    if (isLowPerf()) {
+        callback();
+        return;
+    }
+
     const overlay = document.createElement('div');
     overlay.style.cssText = `
         position: fixed; inset: 0; z-index: 100000;
@@ -958,6 +1036,14 @@ function injectSettingsDrawer() {
                             <span class="slider"></span>
                         </label>
                     </div>
+                    <div class="setting-item" style="display: grid; gap: 0.4rem;">
+                        <label for="drawerPerformanceMode" style="font-size: 0.75rem; color: var(--stardust-muted);">Visual Performance</label>
+                        <select id="drawerPerformanceMode" class="input-rebirth" style="padding: 0.75rem 1rem;">
+                            <option value="high">High Effects</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="low">Low Effects</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="settings-group">
@@ -999,6 +1085,25 @@ function injectSettingsDrawer() {
         syncToggle.addEventListener('change', (e) => {
             localStorage.setItem('xp_cloud_sync', e.target.checked);
             if (window.Toast) Toast.show(`CLOUD SYNC ${e.target.checked ? 'ACTIVE' : 'OFFLINE'} `, 'info');
+        });
+    }
+
+    const drawerPerformanceMode = document.getElementById('drawerPerformanceMode');
+    if (drawerPerformanceMode) {
+        drawerPerformanceMode.value = getCurrentPerformanceMode();
+        drawerPerformanceMode.addEventListener('change', (e) => {
+            const mode = e.target.value;
+            if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
+                PreferenceEngine.setPerformanceMode(mode);
+            } else {
+                localStorage.setItem('xp_performance_mode', mode);
+                document.documentElement.dataset.performanceMode = mode;
+            }
+            if (window.Toast) Toast.show(`VISUAL MODE: ${mode.toUpperCase()}`, 'info');
+        });
+
+        window.addEventListener('xp:performance-mode-change', (event) => {
+            drawerPerformanceMode.value = event.detail?.mode || getCurrentPerformanceMode();
         });
     }
 }

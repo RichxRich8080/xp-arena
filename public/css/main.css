@@ -3034,3 +3034,16 @@ body.theme-royal .text-neon {
     transform: translateY(0);
   }
 }
+@media (prefers-reduced-motion: reduce) {
+    .cinematic-overlay,
+    .coming-soon-overlay,
+    .hero,
+    .hero-bg,
+    .ticker-track,
+    [class*="glow"],
+    [class*="pulse"] {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
