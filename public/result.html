@@ -13,6 +13,9 @@
       margin: 0 auto;
       display: grid;
       gap: 2rem;
+      opacity: 0;
+      transform: translateY(12px);
+      animation: resultRise 0.6s var(--transition-premium) forwards 0.2s;
     }
     .result-hero {
       text-align: center;
@@ -78,6 +81,10 @@
     @media (max-width: 980px) {
       .result-grid { grid-template-columns: 1fr; }
     }
+
+    @keyframes resultRise {
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
 </head>
 <body class="page-rebirth" data-show-back="true">
@@ -126,30 +133,41 @@
             <span class="value-num" id="valVM">1.15</span>
           </div>
           <div class="value-row">
-            <span class="value-label">Social • TT/YT/IG</span>
-            <span class="value-num">XP ARENA</span>
+            <span class="value-label">Calibration ID</span>
+            <span class="value-num" id="calibId">GENESIS-01</span>
           </div>
         </div>
 
         <div class="action-bar" style="margin-top:2rem;">
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <button class="btn-rebirth btn-glass" onclick="cycleTheme()" id="themeBtn" style="justify-content:center;">
+              <i class="fas fa-palette"></i> THEME: <span id="themeLabel">CYAN</span>
+            </button>
+          </div>
           <button class="btn-rebirth btn-photon" style="justify-content:center;" onclick="addToVaultFromResults()">
             <i class="fas fa-vault"></i> ADD TO VAULT
           </button>
           <button class="btn-rebirth btn-glass" style="justify-content:center;" onclick="downloadImage()">
             <i class="fas fa-image"></i> DOWNLOAD IMAGE
           </button>
+          <button class="btn-rebirth btn-glass" style="justify-content:center;" onclick="copySensitivity()">
+            <i class="fas fa-copy"></i> COPY SENSITIVITY
+          </button>
+          <button class="btn-rebirth btn-glass" style="justify-content:center;" onclick="downloadVideo()">
+            <i class="fas fa-film"></i> DOWNLOAD VIDEO
+          </button>
         </div>
       </div>
 
-      <div class="pulse-card result-card">
-        <div class="card-image-preview">
-          <div style="text-align:center;">
-            <div class="clash" style="font-size:1.2rem; letter-spacing:0.2em; margin-bottom:0.5rem;">Preview</div>
-            <div style="font-size:0.8rem; color:var(--stardust-muted);">Generated image uses the new XP ARENA card layout with socials embedded.</div>
+      <div class="pulse-card result-card" id="cinematicPanel">
+        <div id="premiumCinematic" style="position: relative; height: 220px; border-radius: 16px; overflow: hidden; background: radial-gradient(circle at 30% 0, rgba(0,245,255,0.12), transparent 70%); border: 1px solid var(--glass-border);">
+          <canvas id="sparkleCanvas" class="img-fluid" style="position:absolute; inset:0;"></canvas>
+          <div style="position:absolute; inset:0; display:grid; place-items:center;">
+            <div class="clash" style="font-size:1.6rem; letter-spacing:0.3em; color:var(--photon); text-shadow:0 0 25px var(--photon-glow);">PREMIUM CALIBRATION</div>
           </div>
         </div>
         <div style="margin-top:1rem; color:var(--stardust-muted); font-size:0.9rem;">
-          The final export includes your device, sensitivity bands, vertical multiplier, and XP ARENA socials. Gyroscope readout is removed.
+          Enjoy an animated calibration intro with sparkles and glow before your sensitivity dossier loads.
         </div>
       </div>
     </div>
@@ -168,10 +186,31 @@
       document.getElementById('val2x').textContent = res.scope2x || '-';
       document.getElementById('val4x').textContent = res.scope4x || '-';
       document.getElementById('valVM').textContent = (res.vertical_multiplier || '1.15');
+      startPremiumCinematic();
+      const th = (localStorage.getItem('result_theme') || 'cyan').toUpperCase();
+      document.getElementById('themeLabel').textContent = th;
     }
     function downloadImage() {
       const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
       generateShareImage(res);
+    }
+    function copySensitivity() {
+      const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+      const text = [
+        `Device: ${res.device || 'Unknown'}`,
+        `General: ${res.general || '-'}`,
+        `RedDot/Holo: ${res.reddot || '-'}`,
+        `2x Optic: ${res.scope2x || '-'}`,
+        `4x Optic: ${res.scope4x || '-'}`,
+        `Vertical Multiplier: ${res.vertical_multiplier || '1.15'}`
+      ].join('\n');
+      navigator.clipboard.writeText(text).then(() => {
+        if (window.Toast) Toast.show('Sensitivity copied', 'success');
+      });
+    }
+    async function downloadVideo() {
+      const res = JSON.parse(localStorage.getItem('xp_calc_results') || '{}');
+      await generateShareVideo(res);
     }
     async function addToVaultFromResults() {
       try {
@@ -185,6 +224,50 @@
       } catch (e) {
         if (window.Toast) Toast.show('Unable to save to Vault', 'error');
       }
+    }
+    function startPremiumCinematic() {
+      const canvas = document.getElementById('sparkleCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width = canvas.offsetWidth;
+      const H = canvas.height = 220;
+      const particles = Array.from({ length: 80 }, () => ({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.6, vy: (Math.random() - 0.5) * 0.6,
+        r: Math.random() * 2 + 1
+      }));
+      let t = 0, maxT = 1500;
+      const tick = (ts) => {
+        ctx.clearRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'lighter';
+        for (const p of particles) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.x < 0 || p.x > W) p.vx *= -1;
+          if (p.y < 0 || p.y > H) p.vy *= -1;
+          const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 8);
+          grad.addColorStop(0, 'rgba(0,245,255,0.8)');
+          grad.addColorStop(1, 'rgba(0,245,255,0)');
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r * 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        t += 16;
+        if (t < maxT) requestAnimationFrame(tick);
+        else {
+          const panel = document.getElementById('cinematicPanel');
+          if (panel) panel.style.display = 'none';
+        }
+      };
+      requestAnimationFrame(tick);
+    }
+    function cycleTheme() {
+      const order = ['cyan','gold','purple'];
+      const cur = (localStorage.getItem('result_theme') || 'cyan').toLowerCase();
+      const next = order[(order.indexOf(cur) + 1) % order.length];
+      localStorage.setItem('result_theme', next);
+      document.getElementById('themeLabel').textContent = next.toUpperCase();
+      if (window.Toast) Toast.show(`Theme: ${next.toUpperCase()}`, 'info', 1600);
     }
     document.addEventListener('DOMContentLoaded', hydrate);
   </script>

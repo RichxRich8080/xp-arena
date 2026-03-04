@@ -28,6 +28,14 @@ const Shop = {
             const res = await fetch('/api/shop/items');
             if (res.ok) {
                 this.items = await res.json();
+                if (this.items.length === 0) {
+                    // Seed defaults once if empty (first deploy convenience)
+                    const seed = await fetch('/api/shop/seed-defaults', { method: 'POST' });
+                    if (seed.ok) {
+                        const res2 = await fetch('/api/shop/items');
+                        if (res2.ok) this.items = await res2.json();
+                    }
+                }
             } else {
                 // Silent failure handled by UI
             }

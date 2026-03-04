@@ -18,6 +18,43 @@ router.get('/items', async (req, res) => {
 });
 
 /**
+ * Seed default items if shop is empty
+ */
+router.post('/seed-defaults', async (req, res) => {
+    try {
+        const countRow = await db.get('SELECT COUNT(*) AS c FROM shop_items');
+        if (countRow && countRow.c > 0) return res.json({ success: true, seeded: false });
+        const defaults = [
+            ['XP Doubler (1h)', 'Double your AXP gain for 1 hour', 100, 'booster', 'fas fa-hourglass-half', 'common'],
+            ['XP Booster (24h)', 'Double your AXP gain for 24 hours', 500, 'booster', 'fas fa-bolt', 'rare'],
+            ['XP Booster (48h)', 'Double your AXP gain for 48 hours', 800, 'booster', 'fas fa-bolt', 'epic'],
+            ['XP Doubler (6h)', 'Double AXP gain for 6 hours', 300, 'booster', 'fas fa-hourglass', 'rare'],
+            ['XP Doubler (12h)', 'Double AXP gain for 12 hours', 600, 'booster', 'fas fa-hourglass', 'epic'],
+            ['Premium Theme: Gold', 'Unlock the luxurious Gold accent theme', 2500, 'cosmetic', 'fas fa-palette', 'epic'],
+            ['Premium Theme: Neon Cyan', 'Switch to the classic XP ARENA cyan glow theme', 2000, 'cosmetic', 'fas fa-palette', 'rare'],
+            ['Premium Theme: Ghost Purple', 'Dark purple spectral theme for elites', 2000, 'cosmetic', 'fas fa-palette', 'rare'],
+            ['Premium Theme: Elite Black', 'Minimal blacked-out visor theme', 3000, 'cosmetic', 'fas fa-palette', 'epic'],
+            ['VIP Badge', 'Exclusive V verified badge next to your name', 5000, 'badge', 'fas fa-check-circle', 'legendary'],
+            ['Areni Pro Avatar', 'Special pro player silhouette avatar', 1200, 'avatar', 'fas fa-user-astronaut', 'rare'],
+            ['Avatar: Sentinel', 'Guardian silhouette avatar with photon edge', 900, 'avatar', 'fas fa-user-shield', 'rare'],
+            ['Avatar: Phantom', 'Spectral shadow avatar with ghost trail', 900, 'avatar', 'fas fa-user-secret', 'rare'],
+            ['Profile Frame: Photon Edge', 'Neon cyan frame around your profile card', 1000, 'cosmetic', 'fas fa-square', 'rare'],
+            ['Victory Emote: Satellite Pulse', 'Animated victory signal for leaderboard entries', 800, 'cosmetic', 'fas fa-satellite-dish', 'common'],
+            ['Kill Banner: Neon Surge', 'Cosmetic kill banner effect in profile stats', 1500, 'cosmetic', 'fas fa-bolt', 'epic'],
+            ['Global Premium Upgrade', 'One-time AXP purchase for permanent Premium status', 25000, 'cosmetic', 'fas fa-gem', 'legendary'],
+            ['Rename Card', 'Change your operative identity. Single use.', 1000, 'cosmetic', 'fas fa-id-card', 'rare']
+        ];
+        for (const row of defaults) {
+            await db.run('INSERT INTO shop_items (name, description, price_axp, type, icon, rarity, stock, active) VALUES (?,?,?,?,?,?,-1,1)', row);
+        }
+        res.json({ success: true, seeded: true });
+    } catch (e) {
+        console.error('[Shop] Seed defaults error:', e);
+        res.status(500).json({ error: 'Failed to seed defaults' });
+    }
+});
+
+/**
  * Purchase an item
  */
 router.post('/buy', authenticateToken, async (req, res) => {
