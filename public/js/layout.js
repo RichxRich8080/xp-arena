@@ -95,6 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
     enableGlobalOverlayDismiss();
     applyAXPShine();
     applyOverdriveSystem();
+
+    // Remove any leftover transition overlay if present
+    const leftover = document.querySelector('div[style*="NEURAL_LINK_SYNC"]') || document.querySelector('div[style*="radial-gradient"][style*="backdrop-filter"]');
+    if (leftover) {
+        leftover.style.opacity = '0';
+        setTimeout(() => leftover.remove(), 120);
+    }
 });
 
 
@@ -467,7 +474,17 @@ function showNeuralGlitch(callback) {
 
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
-        setTimeout(callback, 220);
+        const before = window.location.href;
+        setTimeout(() => {
+            try { callback(); } catch {}
+            // Fail-safe: if navigation didn't happen within 1500ms, remove overlay
+            setTimeout(() => {
+                if (window.location.href === before && overlay.parentNode) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 180);
+                }
+            }, 1500);
+        }, 220);
     });
 }
 
@@ -479,11 +496,7 @@ function injectRebirthLayout() {
 
     const root = './';
 
-    // Hide legacy elements
-    const legacyNav = document.querySelector('nav.navbar');
-    if (legacyNav) legacyNav.style.display = 'none';
-    const legacyBottomNav = document.querySelector('nav.bottom-nav');
-    if (legacyBottomNav) legacyBottomNav.style.display = 'none';
+    
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
     const topBarHTML = `
@@ -517,7 +530,15 @@ function injectRebirthLayout() {
     `;
 
     if (!document.querySelector('.rebirth-top-bar')) {
-        document.body.insertAdjacentHTML('afterbegin', topBarHTML);
+        try {
+            document.body.insertAdjacentHTML('afterbegin', topBarHTML);
+            document.body.classList.add('has-top-bar');
+            const legacyNav = document.querySelector('nav.navbar');
+            if (legacyNav) legacyNav.style.display = 'none';
+        } catch (e) {
+            const legacyNav = document.querySelector('nav.navbar');
+            if (legacyNav) legacyNav.style.display = '';
+        }
     }
 
     // Inject Floating Back Button
@@ -554,7 +575,15 @@ function injectRebirthLayout() {
     `;
 
     if (!document.querySelector('.command-dock')) {
-        document.body.insertAdjacentHTML('beforeend', dockHTML);
+        try {
+            document.body.insertAdjacentHTML('beforeend', dockHTML);
+            document.body.classList.add('has-command-dock');
+            const legacyBottomNav = document.querySelector('nav.bottom-nav');
+            if (legacyBottomNav) legacyBottomNav.style.display = 'none';
+        } catch (e) {
+            const legacyBottomNav = document.querySelector('nav.bottom-nav');
+            if (legacyBottomNav) legacyBottomNav.style.display = '';
+        }
     }
 
     injectRebirthFooter();
@@ -563,8 +592,17 @@ function injectRebirthLayout() {
     injectTacticalToastContainer();
     startNeuralTicker();
     if (window.Toast) {
-        // Sticky info toast to confirm HUD sync
-        Toast.show('Neural HUD Resynchronized', 'info', 0);
+        try {
+            const seen = sessionStorage.getItem('hud_sync_shown');
+            if (!seen) {
+                Toast.show('Neural HUD Resynchronized', 'info', 2500);
+                sessionStorage.setItem('hud_sync_shown', '1');
+            }
+        } catch {}
+    }
+
+    if (currentPage === 'index.html' || currentPage === '') {
+        injectIndexInfo();
     }
 }
 
@@ -708,6 +746,32 @@ function enableGlobalOverlayDismiss() {
             }
         }
     }, true);
+}
+
+function injectIndexInfo() {
+    if (document.getElementById('index-info-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'index-info-banner';
+    banner.style.cssText = `
+        position: fixed; top: 110px; left: 50%; transform: translateX(-50%);
+        width: min(95vw, 980px); z-index: 100000;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        background: rgba(10, 10, 20, 0.85); border: 1px solid var(--glass-border);
+        border-radius: 16px; padding: 1rem; align-items: center;
+        backdrop-filter: blur(16px);
+    `;
+    banner.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;">
+            <i class="fas fa-bolt" style="color: var(--photon);"></i>
+            <div style="font-weight:800;">Tips</div>
+        </div>
+        <div style="display:flex; gap: 10px; justify-content:flex-end;">
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='daily-login.html'">Daily Rewards</button>
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='shop.html'">Armory</button>
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='leaderboard.html'">Elite Rankings</button>
+        </div>
+    `;
+    document.body.appendChild(banner);
 }
 
 /**

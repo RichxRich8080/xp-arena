@@ -175,6 +175,20 @@ body {
     perspective: none !important;
 }
 
+.has-top-bar {
+    padding-top: 120px;
+}
+
+@media (max-width: 640px) {
+    .has-top-bar {
+        padding-top: 100px;
+    }
+}
+
+.has-command-dock {
+    padding-bottom: 120px;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -184,6 +198,7 @@ img {
     height: auto;
     display: block;
 }
+.img-fluid { max-width: 100%; height: auto; display: block; }
 
 /* Base Typography */
 h1,
@@ -430,6 +445,10 @@ h4,
     filter: grayscale(0.2);
     pointer-events: none;
 }
+
+.timer-val {
+    font-size: clamp(1.1rem, 6vw, 2.4rem);
+}
 /* Page Transitions */
 .page-rebirth {
     animation: fadeUpSoft 0.6s var(--transition-premium);
@@ -462,6 +481,24 @@ h4,
         transition: none !important;
         scroll-behavior: auto !important;
     }
+}
+
+/* Cross-browser glass fallbacks (Safari/Firefox without backdrop-filter) */
+@supports not ((backdrop-filter: blur(2px))) {
+    .pulse-card,
+    .glass-panel,
+    .command-dock,
+    .rebirth-top-bar,
+    .theme-selector-overlay,
+    .verify-overlay {
+        background: rgba(12, 14, 20, 0.96) !important;
+    }
+    .command-dock { border-color: rgba(255, 255, 255, 0.12) !important; }
+}
+
+/* Mobile button responsiveness */
+@media (max-width: 640px) {
+    .btn-rebirth { width: 100%; justify-content: center; }
 }
 
 @keyframes slideUpFade {
