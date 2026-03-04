@@ -377,6 +377,19 @@
                     </div>
                 </div>
 
+
+                <div class="input-group">
+                    <label>Visual Performance Mode</label>
+                    <div style="display: grid; gap: 0.8rem; max-width: 320px;">
+                        <select id="profile-performance-mode" class="input-rebirth">
+                            <option value="high">High Effects</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="low">Low Effects</option>
+                        </select>
+                        <button class="btn-rebirth" onclick="saveVisualMode()" style="background: var(--nebula); border: 1px solid var(--glass-border); color: var(--stardust);">Save Visual Mode</button>
+                    </div>
+                </div>
+
                 <hr style="border: none; border-top: 1px solid var(--glass-border); margin: 2rem 0;">
 
                 <button class="btn-rebirth" onclick="Auth.logout()"
@@ -406,6 +419,7 @@
 
             function initProfile() {
                 renderAvatarSelection();
+                syncVisualModeSelector();
                 updateProfileUI();
                 if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
                 updateSeasonBenefits();
@@ -584,6 +598,37 @@
             const youtube = (document.getElementById('soc-youtube')?.value || '').trim();
             await User.updateSocials({ instagram, tiktok, youtube });
             if (window.Toast) Toast.show('Socials updated', 'success');
+        }
+
+
+        function syncVisualModeSelector() {
+            const select = document.getElementById('profile-performance-mode');
+            if (!select) return;
+            const mode = (window.PreferenceEngine && PreferenceEngine.getPerformanceMode)
+                ? PreferenceEngine.getPerformanceMode()
+                : (localStorage.getItem('xp_performance_mode') || 'balanced');
+            select.value = mode;
+        }
+
+        function saveVisualMode() {
+            const select = document.getElementById('profile-performance-mode');
+            if (!select) return;
+            const mode = select.value;
+
+            if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
+                PreferenceEngine.setPerformanceMode(mode);
+            } else {
+                localStorage.setItem('xp_performance_mode', mode);
+                document.documentElement.dataset.performanceMode = mode;
+            }
+
+            if (typeof User !== 'undefined' && User.updateStatsLocally && Auth.isLoggedIn()) {
+                User.updateStatsLocally(stats => {
+                    stats.visualMode = mode;
+                });
+            }
+
+            if (window.Toast) Toast.show(`Visual mode saved: ${mode.toUpperCase()}`, 'success');
         }
     </script>
 </body>

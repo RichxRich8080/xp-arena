@@ -3,6 +3,8 @@ const router = express.Router();
 const { db, pool } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const { errorResponse } = require('../middleware/apiResponse');
+const { validateRequest, isPositiveIntLike } = require('./validators');
 
 /**
  * Get all active shop items
@@ -51,16 +53,15 @@ router.post('/seed-defaults', async (req, res) => {
         res.json({ success: true, seeded: true });
     } catch (e) {
         console.error('[Shop] Seed defaults error:', e);
-        res.status(500).json({ error: 'Failed to seed defaults' });
+        errorResponse(res, 500, 'SHOP_SEED_FAILED', 'Failed to seed defaults');
     }
 });
 
 /**
  * Purchase an item
  */
-router.post('/buy', authenticateToken, async (req, res) => {
+router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const { itemId } = req.body;
-    if (!itemId) return res.status(400).json({ error: 'Item ID required' });
 
     let conn;
     try {
@@ -158,7 +159,7 @@ router.post('/buy', authenticateToken, async (req, res) => {
     } catch (err) {
         if (conn) await conn.rollback();
         console.error('[Shop] Purchase error:', err);
-        res.status(err.status || 500).json({ error: err.message || 'Server error during purchase' });
+        errorResponse(res, err.status || 500, 'SHOP_PURCHASE_FAILED', err.message || 'Server error during purchase');
     } finally {
         if (conn) conn.release();
     }
@@ -177,7 +178,7 @@ router.get('/inventory', authenticateToken, async (req, res) => {
         `, [req.user.id]);
         res.json(inventory);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch inventory' });
+        errorResponse(res, 500, 'SHOP_INVENTORY_FAILED', 'Failed to fetch inventory');
     }
 });
 
