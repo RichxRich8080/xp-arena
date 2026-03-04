@@ -1,50 +1,52 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
+const { parseAura, syncAuraPoints, ensureSeasonRecord } = require('../services/seasonService');
 
-let leaderboardCache = { data: null, lastFetch: 0 };
-/**
- * Global Live Activity Feed
- */
+async function getSeasonScoreMap(userIds) {
+    if (!userIds.length) return new Map();
+    const seasonWindow = await ensureSeasonRecord();
+    await syncAuraPoints(userIds);
+    const placeholders = userIds.map(() => '?').join(',');
+    const seasonRows = await db.all(
+        `SELECT user_id, score FROM season_user_scores WHERE season_id = ? AND user_id IN (${placeholders})`,
+        [seasonWindow.seasonId, ...userIds]
+    );
+    return new Map((seasonRows || []).map(r => [Number(r.user_id), Number(r.score || 0)]));
+}
+const { errorResponse } = require('../middleware/apiResponse');
+
 router.get('/activity/live', async (req, res) => {
     try {
         const activities = await db.all(`
-            SELECT a.text, a.timestamp, u.username, u.avatar 
-            FROM activity a 
-            JOIN users u ON a.user_id = u.id 
-            ORDER BY a.timestamp DESC 
+            SELECT a.text, a.timestamp, u.username, u.avatar
+            FROM activity a
+            JOIN users u ON a.user_id = u.id
+            ORDER BY a.timestamp DESC
             LIMIT 20
         `);
         res.json(activities);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch live feed' });
+        errorResponse(res, 500, 'FEATURE_ACTIVITY_LIVE_FAILED', 'Failed to fetch live feed');
     }
 });
 
-/**
- * Global Leaderboard (Top Arenis)
- */
 router.get('/leaderboard', async (req, res) => {
     try {
         const users = await db.all(`
             SELECT id, username, axp, level, streak, avatar, is_premium, vip_badge, socials
-            FROM users 
+            FROM users
             WHERE email_verified = 1
-            ORDER BY axp DESC 
+            ORDER BY axp DESC
             LIMIT 100
         `);
-        const parseAura = (socials, streak) => {
-            let parsed = {};
-            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
-            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
-            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
-            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
-            return { likes, wins, aura };
-        };
-        // Format for frontend expectations
+        const userIds = users.map(u => u.id).filter(Boolean);
+        const seasonScoreMap = await getSeasonScoreMap(userIds);
+
         const formatted = users.map(u => ({
             ...u,
-            aura_score: parseAura(u.socials, u.streak).aura,
+            aura_score: parseAura(u.socials, u.streak),
+            seasonal_score: seasonScoreMap.get(Number(u.id)) || 0,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -53,18 +55,14 @@ router.get('/leaderboard', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch leaderboard' });
+        errorResponse(res, 500, 'FEATURE_LEADERBOARD_FAILED', 'Failed to fetch leaderboard');
     }
 });
 
-/**
- * Leaderboard (Weekly delta): Order by AXP gained in last 7 days
- * Uses axp_history snapshots; falls back to 0 when history is missing
- */
 router.get('/leaderboard/weekly', async (req, res) => {
     try {
         const rows = await db.all(`
-            SELECT 
+            SELECT
                 u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp, u.socials,
                 GREATEST(COALESCE(t.axp, 0) - COALESCE(w.axp, 0), 0) AS axp
             FROM users u
@@ -74,17 +72,13 @@ router.get('/leaderboard/weekly', async (req, res) => {
             ORDER BY axp DESC
             LIMIT 100
         `, []);
-        const parseAura = (socials, streak) => {
-            let parsed = {};
-            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
-            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
-            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
-            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
-            return { likes, wins, aura };
-        };
+        const userIds = rows.map(u => u.id).filter(Boolean);
+        const seasonScoreMap = await getSeasonScoreMap(userIds);
+
         const formatted = rows.map(u => ({
             ...u,
-            aura_score: parseAura(u.socials, u.streak).aura,
+            aura_score: parseAura(u.socials, u.streak),
+            seasonal_score: seasonScoreMap.get(Number(u.id)) || 0,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -93,17 +87,14 @@ router.get('/leaderboard/weekly', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard Weekly] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch weekly leaderboard' });
+        errorResponse(res, 500, 'FEATURE_WEEKLY_LEADERBOARD_FAILED', 'Failed to fetch weekly leaderboard');
     }
 });
 
-/**
- * Leaderboard (Today delta): Order by AXP gained today
- */
 router.get('/leaderboard/today', async (req, res) => {
     try {
         const rows = await db.all(`
-            SELECT 
+            SELECT
                 u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp, u.socials,
                 GREATEST(COALESCE(t.axp, 0) - COALESCE(y.axp, 0), 0) AS axp
             FROM users u
@@ -113,17 +104,13 @@ router.get('/leaderboard/today', async (req, res) => {
             ORDER BY axp DESC
             LIMIT 100
         `, []);
-        const parseAura = (socials, streak) => {
-            let parsed = {};
-            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
-            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
-            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
-            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
-            return { likes, wins, aura };
-        };
+        const userIds = rows.map(u => u.id).filter(Boolean);
+        const seasonScoreMap = await getSeasonScoreMap(userIds);
+
         const formatted = rows.map(u => ({
             ...u,
-            aura_score: parseAura(u.socials, u.streak).aura,
+            aura_score: parseAura(u.socials, u.streak),
+            seasonal_score: seasonScoreMap.get(Number(u.id)) || 0,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -132,16 +119,12 @@ router.get('/leaderboard/today', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard Today] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch today leaderboard' });
+        errorResponse(res, 500, 'FEATURE_TODAY_LEADERBOARD_FAILED', 'Failed to fetch today leaderboard');
     }
 });
 
-/**
- * Pro Player Database
- */
 router.get('/pro-players', async (req, res) => {
     try {
-        // For now, these are hardcoded verified pros
         const pros = [
             { id: 1, name: 'NOBRU', team: 'FLUXO', sensitivity: 'General: 95, RedDot: 80', device: 'iPhone 13 Pro', verified: true, avatar: '👑' },
             { id: 2, name: 'THW2N', team: 'LOUD', sensitivity: 'General: 100, RedDot: 92', device: 'iPad Pro', verified: true, avatar: '🎯' },
@@ -149,13 +132,10 @@ router.get('/pro-players', async (req, res) => {
         ];
         res.json(pros);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch pros' });
+        errorResponse(res, 500, 'FEATURE_PRO_PLAYERS_FAILED', 'Failed to fetch pros');
     }
 });
 
-/**
- * Ecosystem Nexus Summary
- */
 router.get('/nexus/summary', async (req, res) => {
     try {
         const [usersRow, guildsRow, topAuraRow, avgApxRow] = await Promise.all([
@@ -177,7 +157,7 @@ router.get('/nexus/summary', async (req, res) => {
         });
     } catch (err) {
         console.error('[Nexus Summary] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch nexus summary' });
+        errorResponse(res, 500, 'FEATURE_NEXUS_SUMMARY_FAILED', 'Failed to fetch nexus summary');
     }
 });
 

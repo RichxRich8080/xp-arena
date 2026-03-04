@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Access • XP ARENA</title>
     <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         body {
@@ -220,13 +222,13 @@
     <div id="cinematic">
         <div class="cin-line" id="cin1">IDENTITY SECURED</div>
         <div class="cin-line" id="cin2">WELCOME BACK, ARENI</div>
-        <div class="cin-line" id="cin3" style="font-size: 1.2rem; margin-top: 1rem; color: var(--stardust-muted);">
+        <div class="cin-line" id="cin3" class="text-muted">
             DEPLOYING TO SECTOR 7</div>
         <div id="cinProgress">
             <div id="cinBar"></div>
         </div>
         <!-- Spark Particles Container -->
-        <div id="sparks-container" style="position: absolute; inset: 0; pointer-events: none;"></div>
+        <div id="sparks-container" class="overlay-fill"></div>
     </div>
 
     <div class="auth-container">
@@ -234,7 +236,7 @@
             <div class="brand-icon"><i class="fas fa-microchip"></i></div>
 
             <header class="auth-header">
-                <span class="section-label" style="letter-spacing: 0.4rem; margin-bottom: 2rem;">Security
+                <span class="section-label hero-eyebrow">Security
                     Interface</span>
                 <h1 class="clash" style="margin-bottom: 0.5rem;">ARENI<br><span class="text-photon">ACCESS</span></h1>
                 <p>Synchronize your neural credentials.</p>
@@ -242,13 +244,13 @@
 
 
             <div class="auth-kpi-row">
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Auth Layer</span><strong>Encrypted</strong></div>
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Session</span><strong>Realtime</strong></div>
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Arena Region</span><strong>Global</strong></div>
+                <div class="node"><span class="section-label label-tight">Auth Layer</span><strong>Encrypted</strong></div>
+                <div class="node"><span class="section-label label-tight">Session</span><strong>Realtime</strong></div>
+                <div class="node"><span class="section-label label-tight">Arena Region</span><strong>Global</strong></div>
             </div>
 
             <div id="errorBox"
-                style="display:none; background:rgba(255, 68, 68, 0.05); border:1px solid #ff4444; padding:1.2rem; border-radius:12px; margin-bottom:2rem; color:#ff4444; font-size:0.85rem; font-weight: 700; letter-spacing: 0.5px;">
+                class="auth-error">
             </div>
 
             <form id="loginForm">
@@ -270,26 +272,24 @@
                     </div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                <div class="inline-stack remember-row">
                     <label
-                        style="display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--stardust-muted); cursor: pointer; font-weight: 700;">
+                        class="inline-stack text-muted">
                         <input type="checkbox" id="remember" style="accent-color: var(--photon);"> Persistent Sync
                     </label>
                     <button type="button" onclick="window.location.href='forgot-password.html'"
-                        style="background: none; border: none; font-size: 0.8rem; font-weight: 800; cursor: pointer; color: var(--photon); letter-spacing: 1px;">KEY
+                        class="link-btn">KEY
                         RECOVERY</button>
                 </div>
 
-                <button type="submit" id="loginBtn" class="btn-rebirth btn-photon"
-                    style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
+                <button type="submit" id="loginBtn" class="btn-rebirth btn-photon btn--full">
                     SYNC AND DEPLOY
                 </button>
             </form>
 
             <div
-                style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--stardust-muted); font-weight: 700; letter-spacing: 1px;">
-                NEW OPERATIVE? <a href="signup.html" class="text-photon"
-                    style="text-decoration: none; font-weight: 900; margin-left: 5px;">INITIALIZE ACCESS</a>
+                class="top-rule text-muted">
+                NEW OPERATIVE? <a href="signup.html" class="text-photon auth-link">INITIALIZE ACCESS</a>
             </div>
         </div>
     </div>

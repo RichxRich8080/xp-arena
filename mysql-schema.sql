@@ -285,3 +285,37 @@ CREATE INDEX idx_economy_events_user ON economy_events(user_id);
 CREATE INDEX idx_economy_events_type_status ON economy_events(event_type, status);
 CREATE INDEX idx_tournaments_time ON tournaments(created_at);
 CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
+-- Seasons
+CREATE TABLE IF NOT EXISTS seasons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL UNIQUE,
+    title VARCHAR(120) NOT NULL,
+    starts_at DATETIME NOT NULL,
+    ends_at DATETIME NOT NULL,
+    reset_windows_json TEXT,
+    rewards_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS season_user_scores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    score INT NOT NULL DEFAULT 0,
+    daily_login_points INT NOT NULL DEFAULT 0,
+    tournament_points INT NOT NULL DEFAULT 0,
+    guild_war_points INT NOT NULL DEFAULT 0,
+    aura_points INT NOT NULL DEFAULT 0,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_season_user (season_id, user_id)
+);
+CREATE TABLE IF NOT EXISTS season_score_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    season_id VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    source VARCHAR(40) NOT NULL,
+    points INT NOT NULL DEFAULT 0,
+    meta_json TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_season_score ON season_user_scores(season_id, score);
+CREATE INDEX idx_season_events ON season_score_events(season_id, user_id, source);

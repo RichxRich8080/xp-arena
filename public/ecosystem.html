@@ -37,6 +37,16 @@
       <article class="nexus-card"><div class="section-label">Average AXP</div><div id="mx-axp" class="nexus-val">--</div><div class="pulse-line"></div></article>
     </section>
 
+
+    <section class="pulse-card" style="margin-top:2rem; padding:1.5rem;">
+      <h3 class="clash" style="margin-bottom:0.8rem;">Season Command Center</h3>
+      <div class="nexus-grid" style="grid-template-columns: repeat(auto-fit,minmax(220px,1fr));">
+        <article class="nexus-card"><div class="section-label">Season ID</div><div id="season-id" class="nexus-val">--</div></article>
+        <article class="nexus-card"><div class="section-label">Participants</div><div id="season-ppl" class="nexus-val">--</div></article>
+        <article class="nexus-card"><div class="section-label">Top Reward Tier</div><div id="season-reward" class="nexus-val" style="font-size:1.2rem;">--</div></article>
+      </div>
+    </section>
+
     <section class="pulse-card" style="margin-top:2rem; padding:1.5rem;">
       <h3 class="clash" style="margin-bottom:0.8rem;">Fast Launch Ops</h3>
       <div class="nexus-actions">
@@ -116,6 +126,15 @@
         document.getElementById('mx-guilds').textContent = Number(data?.guilds || 0).toLocaleString();
         document.getElementById('mx-aura').textContent = Number(data?.topAura || 0).toLocaleString();
         document.getElementById('mx-axp').textContent = Number(data?.avgAXP || 0).toLocaleString();
+
+        const seasonRes = await fetch((window.API_URL || '') + '/api/season/summary');
+        const season = seasonRes.ok ? await seasonRes.json() : null;
+        const rewardsRes = await fetch((window.API_URL || '') + '/api/season/rewards');
+        const rewardsData = rewardsRes.ok ? await rewardsRes.json() : null;
+        document.getElementById('season-id').textContent = season?.seasonId || '--';
+        document.getElementById('season-ppl').textContent = Number(season?.participants || 0).toLocaleString();
+        const topReward = (rewardsData?.rewards || []).slice(-1)[0];
+        document.getElementById('season-reward').textContent = topReward ? `${topReward.name}` : '--';
       } catch (e) {
         if (window.Toast) Toast.show('Nexus feed temporarily unavailable', 'error');
       }

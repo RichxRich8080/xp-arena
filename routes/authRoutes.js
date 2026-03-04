@@ -7,17 +7,19 @@ const crypto = require('crypto');
 const { db } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 const emailService = require('../services/emailService');
+const { errorResponse } = require('../middleware/apiResponse');
+const { validateRequest, isStringMin, isEmail } = require('./validators');
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 20, // limit each IP to 20 requests per windowMs
-    message: { error: 'Too many requests from this IP, please try again later.' }
+    message: { success: false, code: 'RATE_LIMITED', message: 'Too many requests from this IP, please try again later.' }
 });
 
 const strictLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 10,
-    message: { error: 'Too many sensitive requests, please try again later.' }
+    message: { success: false, code: 'RATE_LIMITED', message: 'Too many sensitive requests, please try again later.' }
 });
 
 // Helper for DATETIME
@@ -32,14 +34,14 @@ function generateReferralCode() {
 }
 
 // Register
-router.post('/register', authLimiter, async (req, res) => {
+router.post('/register', authLimiter, validateRequest([
+    { field: 'username', required: true, validate: isStringMin(3), issue: 'min_length_3' },
+    { field: 'email', required: true, validate: isEmail, issue: 'email' },
+    { field: 'password', required: true, validate: isStringMin(6), issue: 'min_length_6' }
+]), async (req, res) => {
     const { username, email, password, ref } = req.body;
     console.log(`[Auth] Attempting to register user: ${username} (${email})`);
 
-    if (!username || !email || !password) return res.status(400).json({ error: 'Username, email, and password required' });
-    if (password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters' });
-    if (username.length < 3) return res.status(400).json({ error: 'Username must be at least 3 characters' });
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Invalid email address' });
 
     try {
         const hash = await bcrypt.hash(password, 10);
@@ -85,25 +87,24 @@ router.post('/register', authLimiter, async (req, res) => {
     } catch (err) {
         console.error('[Auth] Registration Error:', err);
         if (err.code === 'ER_DUP_ENTRY' || err.message.includes('UNIQUE')) {
-            return res.status(400).json({ error: 'Username or email already taken' });
+            return errorResponse(res, 400, 'AUTH_DUPLICATE_USER', 'Username or email already taken');
         }
-        res.status(500).json({ error: 'Server error: ' + (err.message || 'Unknown error') });
+        errorResponse(res, 500, 'AUTH_REGISTER_FAILED', 'Server error: ' + (err.message || 'Unknown error'));
     }
 });
 
 // Verify Email — any code is accepted (verification is effectively disabled)
-router.post('/verify-email', strictLimiter, async (req, res) => {
+router.post('/verify-email', strictLimiter, validateRequest([{ field: 'username', required: true }, { field: 'code', required: true }]), async (req, res) => {
     const { username, code } = req.body;
-    if (!username || !code) return res.status(400).json({ error: 'Username and code required' });
 
     try {
         const user = await db.get('SELECT id, username, verification_token, verification_expires FROM users WHERE username = ? OR email = ?', [username, username]);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return errorResponse(res, 404, 'AUTH_ERROR', 'User not found');
 
-        if (user.verification_token !== code) return res.status(400).json({ error: 'Invalid verification code' });
+        if (user.verification_token !== code) return errorResponse(res, 400, 'AUTH_ERROR', 'Invalid verification code');
 
         const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        if (user.verification_expires < now) return res.status(400).json({ error: 'Verification code has expired' });
+        if (user.verification_expires < now) return errorResponse(res, 400, 'AUTH_ERROR', 'Verification code has expired');
 
         await db.run('UPDATE users SET email_verified = 1, verification_token = NULL, verification_expires = NULL WHERE id = ?', [user.id]);
 
@@ -111,26 +112,25 @@ router.post('/verify-email', strictLimiter, async (req, res) => {
         res.json({ success: true, token, user: { id: user.id, username: user.username } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'AUTH_ERROR', 'Server error');
     }
 });
 
 // Login
-router.post('/login', authLimiter, async (req, res) => {
+router.post('/login', authLimiter, validateRequest([{ field: 'username', required: true }, { field: 'password', required: true }]), async (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
 
     try {
         const user = await db.get('SELECT * FROM users WHERE username = ? OR email = ?', [username, username]);
-        if (!user) return res.status(400).json({ error: 'Invalid username or password' });
-        if (user.banned) return res.status(403).json({ error: 'Account banned: ' + (user.ban_reason || 'No reason provided') });
+        if (!user) return errorResponse(res, 400, 'AUTH_ERROR', 'Invalid username or password');
+        if (user.banned) return errorResponse(res, 403, 'AUTH_ERROR', 'Account banned: ' + (user.ban_reason || 'No reason provided'));
 
         // Account Lockout check
         if (user.lockout_until) {
             const lockoutTime = new Date(user.lockout_until);
             if (lockoutTime > new Date()) {
                 const mins = Math.ceil((lockoutTime - new Date()) / 60000);
-                return res.status(403).json({ error: `Account locked. Try again in ${mins} minutes.` });
+                return errorResponse(res, 403, 'AUTH_LOCKED', `Account locked. Try again in ${mins} minutes.`);
             }
         }
 
@@ -140,10 +140,10 @@ router.post('/login', authLimiter, async (req, res) => {
             if (attempts >= 5) {
                 const lockout = getFutureDateTime(15);
                 await db.run('UPDATE users SET login_attempts = ?, lockout_until = ? WHERE id = ?', [attempts, lockout, user.id]);
-                return res.status(403).json({ error: 'Too many failed attempts. Account locked for 15 minutes.' });
+                return errorResponse(res, 403, 'AUTH_ERROR', 'Too many failed attempts. Account locked for 15 minutes.');
             } else {
                 await db.run('UPDATE users SET login_attempts = ? WHERE id = ?', [attempts, user.id]);
-                return res.status(400).json({ error: 'Invalid username or password' });
+                return errorResponse(res, 400, 'AUTH_ERROR', 'Invalid username or password');
             }
         }
 
@@ -159,7 +159,7 @@ router.post('/login', authLimiter, async (req, res) => {
         res.json({ success: true, token, user: { id: user.id, username: user.username, email: user.email } });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Database error' });
+        errorResponse(res, 500, 'AUTH_DB_ERROR', 'Database error');
     }
 });
 
@@ -167,17 +167,16 @@ router.post('/login', authLimiter, async (req, res) => {
 router.get('/verify', authenticateToken, async (req, res) => {
     try {
         const user = await db.get('SELECT id, username, axp, level, avatar, streak, socials, referral_code, created_at FROM users WHERE id = ?', [req.user.id]);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        if (!user) return errorResponse(res, 404, 'AUTH_ERROR', 'User not found');
         res.json({ success: true, user });
     } catch (err) {
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'AUTH_ERROR', 'Server error');
     }
 });
 
 // Forgot Password
-router.post('/forgot-password', strictLimiter, async (req, res) => {
+router.post('/forgot-password', strictLimiter, validateRequest([{ field: 'email', required: true, validate: isEmail, issue: 'email' }]), async (req, res) => {
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
 
     try {
         const user = await db.get('SELECT id, username, email FROM users WHERE email = ?', [email]);
@@ -202,21 +201,20 @@ router.post('/forgot-password', strictLimiter, async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'AUTH_ERROR', 'Server error');
     }
 });
 
 // Reset Password
-router.post('/reset-password', strictLimiter, async (req, res) => {
+router.post('/reset-password', strictLimiter, validateRequest([{ field: 'token', required: true }, { field: 'newPassword', required: true, validate: isStringMin(6), issue: 'min_length_6' }]), async (req, res) => {
     const { token, newPassword } = req.body;
-    if (!token || !newPassword) return res.status(400).json({ error: 'Token and new password required' });
 
     try {
         const user = await db.get('SELECT id, reset_token_expires FROM users WHERE reset_token = ? AND reset_token IS NOT NULL', [token]);
-        if (!user) return res.status(400).json({ error: 'Invalid or expired recovery code' });
+        if (!user) return errorResponse(res, 400, 'AUTH_ERROR', 'Invalid or expired recovery code');
 
         const now = new Date().toISOString().slice(0, 19).replace('T', ' ');
-        if (user.reset_token_expires < now) return res.status(400).json({ error: 'Token has expired' });
+        if (user.reset_token_expires < now) return errorResponse(res, 400, 'AUTH_ERROR', 'Token has expired');
 
         const hash = await bcrypt.hash(newPassword, 10);
         await db.run('UPDATE users SET password_hash = ?, reset_token = NULL, reset_token_expires = NULL WHERE id = ?', [hash, user.id]);
@@ -224,7 +222,7 @@ router.post('/reset-password', strictLimiter, async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        errorResponse(res, 500, 'AUTH_ERROR', 'Server error');
     }
 });
 

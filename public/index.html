@@ -480,6 +480,18 @@
           <p style="color: var(--stardust-muted); font-size: 0.9rem;">Real-time command view for aura, economy health, and live Arena intelligence.</p>
         </div>
       </div>
+
+      <div class="pulse-card" style="margin-top:2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:1rem;">
+          <h3 class="clash" style="margin:0;">Season Command Center</h3>
+          <a href="ecosystem.html" style="font-size:0.72rem; color:var(--photon); text-decoration:none;">OPEN FULL NEXUS</a>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0.8rem;">
+          <div class="stat-box"><div class="stat-label">Season ID</div><div class="stat-value" id="season-cc-id">--</div></div>
+          <div class="stat-box"><div class="stat-label">Participants</div><div class="stat-value text-photon" id="season-cc-participants">--</div></div>
+          <div class="stat-box"><div class="stat-label">Reset Window</div><div class="stat-value" id="season-cc-reset">--</div></div>
+        </div>
+      </div>
     </section>
 
     <!-- User Hub -->
@@ -716,6 +728,24 @@
       }
     }
   
+
+    async function renderSeasonCommandCenter() {
+      try {
+        const res = await fetch((window.API_URL || '') + '/api/season/summary');
+        if (!res.ok) return;
+        const data = await res.json();
+        const reset = data?.resetWindows?.dailyResetUtc || '--';
+        const idEl = document.getElementById('season-cc-id');
+        const pEl = document.getElementById('season-cc-participants');
+        const rEl = document.getElementById('season-cc-reset');
+        if (idEl) idEl.textContent = data.seasonId || '--';
+        if (pEl) pEl.textContent = Number(data.participants || 0).toLocaleString();
+        if (rEl) rEl.textContent = `${reset} UTC`;
+      } catch (e) {
+        console.error('Season command center unavailable', e);
+      }
+    }
+
     // LIVE SECTOR STANDINGS: fetch real verified users
     async function renderLiveStandings() {
       const wrap = document.getElementById('live-standings-container');
@@ -768,6 +798,7 @@
     }
     document.addEventListener('DOMContentLoaded', () => {
       renderLiveStandings();
+      renderSeasonCommandCenter();
     });
   </script>
 </body>
