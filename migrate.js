@@ -316,6 +316,47 @@ async function run() {
     )
   `);
 
+
+  await ensureTable('seasons', `
+    CREATE TABLE IF NOT EXISTS seasons (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL UNIQUE,
+      title VARCHAR(120) NOT NULL,
+      starts_at DATETIME NOT NULL,
+      ends_at DATETIME NOT NULL,
+      reset_windows_json TEXT,
+      rewards_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  await ensureTable('season_user_scores', `
+    CREATE TABLE IF NOT EXISTS season_user_scores (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL,
+      user_id INT NOT NULL,
+      score INT NOT NULL DEFAULT 0,
+      daily_login_points INT NOT NULL DEFAULT 0,
+      tournament_points INT NOT NULL DEFAULT 0,
+      guild_war_points INT NOT NULL DEFAULT 0,
+      aura_points INT NOT NULL DEFAULT 0,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY uniq_season_user (season_id, user_id)
+    )
+  `);
+
+  await ensureTable('season_score_events', `
+    CREATE TABLE IF NOT EXISTS season_score_events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      season_id VARCHAR(20) NOT NULL,
+      user_id INT NOT NULL,
+      source VARCHAR(40) NOT NULL,
+      points INT NOT NULL DEFAULT 0,
+      meta_json TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   await ensureTable('user_inventory', `
     CREATE TABLE IF NOT EXISTS user_inventory (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -359,6 +400,8 @@ async function run() {
   await ensureIndex('guild_members', 'idx_guild_members_user', 'user_id');
   await ensureIndex('tournaments', 'idx_tournaments_time', 'created_at');
   await ensureIndex('creator_followers', 'idx_creator_followers_creator', 'creator_user_id');
+  await ensureIndex('season_user_scores', 'idx_season_score', 'season_id, score');
+  await ensureIndex('season_score_events', 'idx_season_events', 'season_id, user_id, source');
 
   console.log('✅ Migration finished successfully');
 }

@@ -3,23 +3,7 @@
  * This script injects the new Command Dock and Top Bar UI.
  */
 
-const SAFE_CONFIG = window.CONFIG || {};
-window.API_URL = SAFE_CONFIG.API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
-
-const PERFORMANCE_MODES = ['high', 'balanced', 'low'];
-
-function getCurrentPerformanceMode() {
-    const mode = document.documentElement.dataset.performanceMode || (window.PreferenceEngine && PreferenceEngine.getPerformanceMode ? PreferenceEngine.getPerformanceMode() : localStorage.getItem('xp_performance_mode')) || 'balanced';
-    return PERFORMANCE_MODES.includes(mode) ? mode : 'balanced';
-}
-
-function isHighPerf() {
-    return getCurrentPerformanceMode() === 'high';
-}
-
-function isLowPerf() {
-    return getCurrentPerformanceMode() === 'low';
-}
+import { applyAXPShine, applyOverdriveLayer } from './overdrive-layer.js';
 
 // Helper to get root-relative paths
 function getRootPath(path) {
@@ -29,51 +13,7 @@ function getRootPath(path) {
     return '/' + path;
 }
 
-// Inject Rebirth Foundation
-const cssPath = 'css/rebirth.css';
-if (!document.querySelector(`link[href="${cssPath}"]`)) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = cssPath;
-    document.head.appendChild(link);
-}
-
-const animationCssPath = 'css/animation.css';
-if (!document.querySelector(`link[href="${animationCssPath}"]`)) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = animationCssPath;
-    document.head.appendChild(link);
-}
-
-
-const overdriveCssPath = 'css/overdrive.css';
-if (!document.querySelector(`link[href="${overdriveCssPath}"]`)) {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = overdriveCssPath;
-    document.head.appendChild(link);
-}
-
-const sfxPath = 'js/sounds.js';
-if (!document.querySelector(`script[src="${sfxPath}"]`)) {
-    const script = document.createElement('script');
-    script.src = sfxPath;
-    document.head.appendChild(script);
-}
-
-const themeEnginePath = 'js/theme.js';
-if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
-    const script = document.createElement('script');
-    script.src = themeEnginePath;
-    document.head.appendChild(script);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
-        PreferenceEngine.setPerformanceMode(PreferenceEngine.getPerformanceMode(), { persist: false });
-    }
-
+export function initLayoutShell() {
     // Failsafe: Ensure content is visible within 2s even if JS errors occur
     setTimeout(() => {
         document.body.classList.add('booted');
@@ -104,16 +44,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalSFX();
 
     // Singularity: Global Transmissions
-    if (!isLowPerf()) initGlobalTransmissions();
+    initGlobalTransmissions();
 
     // Final Visual Boot
     initNeuralStagger();
     initSectorMap();
-    if (isHighPerf()) initAmbientHUD();
+    initAmbientHUD();
 
     enableGlobalOverlayDismiss();
     applyAXPShine();
-    applyOverdriveSystem();
+    applyOverdriveLayer();
 
     // Remove any leftover transition overlay if present
     const leftover = document.querySelector('div[style*="NEURAL_LINK_SYNC"]') || document.querySelector('div[style*="radial-gradient"][style*="backdrop-filter"]');
@@ -121,72 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
         leftover.style.opacity = '0';
         setTimeout(() => leftover.remove(), 120);
     }
-
-    window.addEventListener('xp:performance-mode-change', (event) => {
-        const mode = event.detail?.mode || getCurrentPerformanceMode();
-
-        if (mode !== 'high') {
-            document.querySelector('.hud-ambient-grid')?.remove();
-        } else if (!document.querySelector('.hud-ambient-grid')) {
-            initAmbientHUD();
-        }
-
-        if (mode === 'low') {
-            document.querySelector('.global-transmission-ticker')?.remove();
-            document.body.style.marginTop = '';
-        } else if (!document.querySelector('.global-transmission-ticker')) {
-            initGlobalTransmissions();
-        }
-    });
-});
-
-
-function applyOverdriveSystem() {
-    document.body.classList.add('xp-overdrive');
-
-    const topHeading = document.querySelector('h1');
-    if (topHeading) topHeading.classList.add('overdrive-title-glow');
-
-    if (!document.querySelector('.overdrive-status-strip')) {
-        const strip = document.createElement('section');
-        strip.className = 'overdrive-status-strip';
-        strip.innerHTML = `
-            <div class="overdrive-node">Mode<b>Owner Build</b></div>
-            <div class="overdrive-node">Theme<b>${document.documentElement.style.getPropertyValue('--primary') || 'Adaptive'}</b></div>
-            <div class="overdrive-node">Layout<b>Unified</b></div>
-            <div class="overdrive-node">Sync<b>Live</b></div>
-        `;
-
-        const firstBlock = document.body.firstElementChild;
-        if (firstBlock) firstBlock.insertAdjacentElement('afterend', strip);
-    }
-
-    if (!document.querySelector('.overdrive-quick-rail')) {
-        const rail = document.createElement('nav');
-        rail.className = 'overdrive-quick-rail';
-        rail.setAttribute('aria-label', 'Overdrive Quick Navigation');
-        const links = [
-            ['index.html', 'Hub'],
-            ['leaderboard.html', 'Leaderboard'],
-            ['tournaments.html', 'Tournaments'],
-            ['shop.html', 'Shop'],
-            ['guilds.html', 'Guilds'],
-            ['profile.html', 'Profile']
-        ];
-        rail.innerHTML = links.map(([href, label]) => `<a href="${href}"><i class="fas fa-circle-notch"></i> ${label}</a>`).join('');
-        document.body.appendChild(rail);
-    }
-}
-
-function applyAXPShine() {
-    const selectors = [
-        '.fa-coins',
-        '.fa-coin',
-        '#shop-balance',
-        '.price-tag',
-        '[data-axp-balance]'
-    ];
-    document.querySelectorAll(selectors.join(',')).forEach(el => el.classList.add('axp-shine'));
 }
 
 /**
@@ -249,17 +123,11 @@ function initGlobalSFX() {
 
     // Global Hover (Debounced)
     let hoverTimeout;
-    let lastHoverSfxAt = 0;
     document.addEventListener('mouseover', (e) => {
         const el = e.target.closest('button, a, .clickable, .nav-item');
         if (el) {
             clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => {
-                const now = Date.now();
-                if (now - lastHoverSfxAt < 120 || isLowPerf()) return;
-                lastHoverSfxAt = now;
-                Sounds.play('hover');
-            }, 60);
+            hoverTimeout = setTimeout(() => Sounds.play('hover'), 50);
         }
     });
 }
@@ -298,29 +166,16 @@ function initGlobalTransmissions() {
 /**
  * Genesis: Global Mouse Tracking (Refraction Logic)
  */
-const updatePulseCardMouseVars = (() => {
-    let rafId = null;
-    let lastEvent = null;
-
-    return (event) => {
-        if (isLowPerf()) return;
-        lastEvent = event;
-        if (rafId) return;
-
-        rafId = requestAnimationFrame(() => {
-            rafId = null;
-            const targetCard = lastEvent?.target?.closest?.('.pulse-card');
-            if (!targetCard) return;
-            const rect = targetCard.getBoundingClientRect();
-            const x = ((lastEvent.clientX - rect.left) / rect.width) * 100;
-            const y = ((lastEvent.clientY - rect.top) / rect.height) * 100;
-            targetCard.style.setProperty('--mouse-x', `${x}%`);
-            targetCard.style.setProperty('--mouse-y', `${y}%`);
-        });
-    };
-})();
-
-document.addEventListener('mousemove', updatePulseCardMouseVars, { passive: true });
+document.addEventListener('mousemove', (e) => {
+    const cards = document.querySelectorAll('.pulse-card');
+    cards.forEach(card => {
+        const rect = card.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        card.style.setProperty('--mouse-x', `${x}%`);
+        card.style.setProperty('--mouse-y', `${y}%`);
+    });
+});
 
 /**
  * Ambient HUD: Drifting Tactical Coordinates
@@ -465,42 +320,24 @@ window.toggleSettings = toggleSectorMap;
  * HUD Depth: Reactive 3D Parallax
  */
 function initHUDDepth() {
-    if (window.innerWidth < 768 || !isHighPerf()) return; // Disable on mobile/lower perf
-
-    let rafId = null;
-    let latestEvent = null;
-    let cachedCards = [];
-    let cacheAt = 0;
-
-    const refreshCards = () => {
-        const now = Date.now();
-        if (now - cacheAt < 1200) return;
-        cacheAt = now;
-        cachedCards = Array.from(document.querySelectorAll('.pulse-card, .gamer-card')).slice(0, 20);
-    };
+    if (window.innerWidth < 768) return; // Disable on mobile for perf
 
     document.addEventListener('mousemove', (e) => {
-        latestEvent = e;
-        if (rafId) return;
-        rafId = requestAnimationFrame(() => {
-            rafId = null;
-            refreshCards();
-            if (!latestEvent) return;
-            const mouseX = latestEvent.clientX;
-            const mouseY = latestEvent.clientY;
+        const cards = document.querySelectorAll('.pulse-card, .gamer-card');
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
 
-            cachedCards.forEach(card => {
-                const rect = card.getBoundingClientRect();
-                const cardX = rect.left + rect.width / 2;
-                const cardY = rect.top + rect.height / 2;
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const cardX = rect.left + rect.width / 2;
+            const cardY = rect.top + rect.height / 2;
 
-                const angleX = (mouseY - cardY) / 30;
-                const angleY = (cardX - mouseX) / 30;
+            const angleX = (mouseY - cardY) / 30;
+            const angleY = (cardX - mouseX) / 30;
 
-                card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
-            });
+            card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
         });
-    }, { passive: true });
+    });
 }
 
 /**
@@ -527,11 +364,6 @@ function initNeuralBridge() {
 }
 
 function showNeuralGlitch(callback) {
-    if (isLowPerf()) {
-        callback();
-        return;
-    }
-
     const overlay = document.createElement('div');
     overlay.style.cssText = `
         position: fixed; inset: 0; z-index: 100000;
@@ -1036,14 +868,6 @@ function injectSettingsDrawer() {
                             <span class="slider"></span>
                         </label>
                     </div>
-                    <div class="setting-item" style="display: grid; gap: 0.4rem;">
-                        <label for="drawerPerformanceMode" style="font-size: 0.75rem; color: var(--stardust-muted);">Visual Performance</label>
-                        <select id="drawerPerformanceMode" class="input-rebirth" style="padding: 0.75rem 1rem;">
-                            <option value="high">High Effects</option>
-                            <option value="balanced">Balanced</option>
-                            <option value="low">Low Effects</option>
-                        </select>
-                    </div>
                 </div>
 
                 <div class="settings-group">
@@ -1085,25 +909,6 @@ function injectSettingsDrawer() {
         syncToggle.addEventListener('change', (e) => {
             localStorage.setItem('xp_cloud_sync', e.target.checked);
             if (window.Toast) Toast.show(`CLOUD SYNC ${e.target.checked ? 'ACTIVE' : 'OFFLINE'} `, 'info');
-        });
-    }
-
-    const drawerPerformanceMode = document.getElementById('drawerPerformanceMode');
-    if (drawerPerformanceMode) {
-        drawerPerformanceMode.value = getCurrentPerformanceMode();
-        drawerPerformanceMode.addEventListener('change', (e) => {
-            const mode = e.target.value;
-            if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
-                PreferenceEngine.setPerformanceMode(mode);
-            } else {
-                localStorage.setItem('xp_performance_mode', mode);
-                document.documentElement.dataset.performanceMode = mode;
-            }
-            if (window.Toast) Toast.show(`VISUAL MODE: ${mode.toUpperCase()}`, 'info');
-        });
-
-        window.addEventListener('xp:performance-mode-change', (event) => {
-            drawerPerformanceMode.value = event.detail?.mode || getCurrentPerformanceMode();
         });
     }
 }
@@ -1311,28 +1116,53 @@ function applyCustomAccent() {
                 b: parseInt(result[3], 16)
             } : null;
         }
- * Backward-compatible adapter for legacy pages.
- * Delegates layout initialization to module-based bootstrapping.
- */
-
-(function layoutAdapter() {
-    const run = async () => {
-        const [{ bootApp }, layout] = await Promise.all([
-            import('./modules/core/boot.js'),
-            import('./modules/ui/layout-shell.js')
-        ]);
-
-        window.XPArena = window.XPArena || {};
-        window.XPArena.ui = window.XPArena.ui || {};
-        window.XPArena.ui.layout = {
-            ...(window.XPArena.ui.layout || {}),
-            initLayoutShell: layout.initLayoutShell
-        };
-
-        bootApp({ init: layout.initLayoutShell });
     };
 
-    run().catch((error) => {
-        console.error('[layout adapter] Failed to initialize module layout shell', error);
+    ThemeManager.init();
+
+    /**
+     * Navigational Auditor: Neutralize Dead-ends
+     */
+    document.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (link && (link.getAttribute('href') === '#' || link.getAttribute('href') === '')) {
+            e.preventDefault();
+            if (window.Toast) {
+                Toast.show('SECTOR ACCESS RESTRICTED: Dead-end neutralized.', 'info');
+            }
+            console.warn('[NavAudit] Neutralized dead-end link:', link);
+        }
     });
-})();
+
+    /**
+     * Neural Haptics: Tactile HUD Feedback
+     */
+    function initNeuralHaptics() {
+        document.addEventListener('mousedown', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+            position: fixed; width: 40px; height: 40px;
+            border: 2px solid var(--photon); border-radius: 50%;
+            pointer-events: none; z-index: 100001;
+            left: ${e.clientX - 20}px; top: ${e.clientY - 20}px;
+            opacity: 0.5; transform: scale(0.5);
+            transition: all 0.4s var(--transition-premium);
+        `;
+            document.body.appendChild(ripple);
+
+            requestAnimationFrame(() => {
+                ripple.style.opacity = '0';
+                ripple.style.transform = 'scale(2.5)';
+                setTimeout(() => ripple.remove(), 400);
+            });
+        });
+    }
+}
+
+window.XPArena = window.XPArena || {};
+window.XPArena.ui = window.XPArena.ui || {};
+window.XPArena.ui.layout = {
+    ...(window.XPArena.ui.layout || {}),
+    initLayoutShell
+};
+

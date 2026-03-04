@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Enroll • XP ARENA</title>
     <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         body {
@@ -255,20 +257,20 @@
             <div class="brand-icon"><i class="fas fa-satellite-dish"></i></div>
 
             <header class="auth-header">
-                <span class="section-label" style="letter-spacing: 0.4rem; margin-bottom: 2rem;">Neural Registry</span>
+                <span class="section-label hero-eyebrow">Neural Registry</span>
                 <h1 class="clash">INITIALIZE<br><span class="text-photon">UPLINK</span></h1>
                 <p>Establish your presence in the global sector.</p>
             </header>
 
 
             <div class="auth-kpi-row">
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Identity</span><strong>Areni Core</strong></div>
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Verification</span><strong>6-Digit</strong></div>
-                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Starter Drop</span><strong>+500 AXP</strong></div>
+                <div class="node"><span class="section-label label-tight">Identity</span><strong>Areni Core</strong></div>
+                <div class="node"><span class="section-label label-tight">Verification</span><strong>6-Digit</strong></div>
+                <div class="node"><span class="section-label label-tight">Starter Drop</span><strong>+500 AXP</strong></div>
             </div>
 
             <div id="errorBox"
-                style="display:none; background:rgba(255, 68, 68, 0.05); border:1px solid #ff4444; padding:1.2rem; border-radius:12px; margin-bottom:2rem; color:#ff4444; font-size:0.85rem; font-weight: 700; letter-spacing: 0.5px;">
+                class="auth-error">
             </div>
 
             <form id="signupForm">
@@ -304,24 +306,22 @@
                 </div>
 
                 <div style="margin: 2.5rem 0; display: flex; align-items: flex-start; gap: 12px; text-align: left;">
-                    <input type="checkbox" id="terms" required style="accent-color: var(--photon); margin-top: 5px;">
+                    <input type="checkbox" id="terms" required class="auth-check">
                     <label for="terms"
-                        style="font-size: 0.8rem; color: var(--stardust-muted); line-height: 1.5; font-weight: 500;">
-                        I acknowledge the <span class="text-photon" style="font-weight: 800;">Rules of Engagement</span>
+                        class="text-muted consent-copy">
+                        I acknowledge the <span class="text-photon text-photon consent-strong">Rules of Engagement</span>
                         and data privacy protocols.
                     </label>
                 </div>
 
-                <button type="submit" id="signupBtn" class="btn-rebirth btn-photon"
-                    style="width: 100%; justify-content: center; padding: 1.5rem; font-size: 1rem;">
+                <button type="submit" id="signupBtn" class="btn-rebirth btn-photon btn--full">
                     INITIALIZE PROFILE
                 </button>
             </form>
 
             <div
-                style="margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--glass-border); font-size: 0.85rem; color: var(--stardust-muted); font-weight: 700; letter-spacing: 1px;">
-                ALREADY REGISTERED? <a href="login.html" class="text-photon"
-                    style="text-decoration: none; font-weight: 900; margin-left: 5px;">ACCESS PORTAL</a>
+                class="top-rule text-muted">
+                ALREADY REGISTERED? <a href="login.html" class="text-photon auth-link">ACCESS PORTAL</a>
             </div>
         </div>
     </div>

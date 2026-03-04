@@ -7,10 +7,22 @@ const API_BASE_LB = (typeof window !== 'undefined' && typeof window.API_URL !== 
     ? window.API_URL
     : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
 
-document.addEventListener('DOMContentLoaded', () => {
+function initLeaderboardPage() {
     startCountdown();
     renderLeaderboard();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initLeaderboardPage);
+} else {
+    initLeaderboardPage();
+}
+
+window.XPArena = window.XPArena || {};
+window.XPArena.features = window.XPArena.features || {};
+window.XPArena.features.leaderboard = {
+    init: initLeaderboardPage
+};
 
 let LB_SCOPE = 'global';
 window.setLeaderboardScope = function(scope) {

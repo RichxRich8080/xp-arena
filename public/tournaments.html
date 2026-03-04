@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tournaments • XP ARENA</title>
     <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         .tour-shell { max-width: 1400px; margin: 0 auto; padding: 8rem 2rem 10rem; }
@@ -75,8 +77,8 @@
     <div class="tour-shell">
         <section class="tour-hero">
             <span class="stage-chip"><i class="fas fa-satellite-dish"></i> LIVE TOURNAMENT FEED</span>
-            <h1 class="clash" style="margin-top:1rem;">ARENA<br><span class="text-photon">TOURNAMENTS</span></h1>
-            <p style="color:var(--stardust-muted);max-width:700px;margin:1rem auto 0;">A redesigned command view for qualifiers, bracket pressure points, and sector-level prize intelligence.</p>
+            <h1 class="clash mt-4">ARENA<br><span class="text-photon">TOURNAMENTS</span></h1>
+            <p class="text-muted hero-copy">A redesigned command view for qualifiers, bracket pressure points, and sector-level prize intelligence.</p>
         </section>
 
         <section class="tour-kpi-grid">
@@ -88,15 +90,15 @@
 
         <section class="tour-main-grid">
             <aside class="tour-panel">
-                <h3 class="clash" style="margin-bottom: .8rem;">Sector Ops</h3>
+                <h3 class="clash mb-3">Sector Ops</h3>
                 <div class="ops-list">
                     <div class="ops-item"><span>North Grid</span><b class="text-photon">Stable</b></div>
                     <div class="ops-item"><span>West Grid</span><b class="text-corona">Hot Match</b></div>
-                    <div class="ops-item"><span>Core Finals</span><b style="color:#ffd166;">Queued</b></div>
+                    <div class="ops-item"><span>Core Finals</span><b class="text-gold">Queued</b></div>
                     <div class="ops-item"><span>Broadcast</span><b>1080p / 60</b></div>
                 </div>
-                <div class="tour-cta" style="margin-top:1rem;">
-                    <button class="btn-rebirth btn-photon" style="width:100%;justify-content:center;" onclick="location.href='leaderboard.html'">VIEW ELITE RANKING</button>
+                <div class="tour-cta mt-4">
+                    <button class="btn-rebirth btn-photon btn--full" onclick="location.href='leaderboard.html'">VIEW ELITE RANKING</button>
                 </div>
             </aside>
 
@@ -132,14 +134,14 @@
 
                     <div class="round-col">
                         <div class="round-title">Grand Final</div>
-                        <div class="match-card" style="border-color:#ffd166; box-shadow:0 0 18px rgba(255,209,102,.25);">
-                            <div class="team-line winner" style="background: rgba(255,209,102,.12); color:#ffd166;"><span>ULTREYA_ELITE</span><span><i class="fas fa-crown"></i></span></div>
+                        <div class="match-card match-card--gold">
+                            <div class="team-line winner team-line--gold"><span>ULTREYA_ELITE</span><span><i class="fas fa-crown"></i></span></div>
                             <div class="team-line"><span>RUNNER-UP</span><span>--</span></div>
                             <div class="match-meta"><span>Apex Zone</span><span>Prime Time</span></div>
                         </div>
                         <div class="tour-cta">
-                            <h4 class="clash" style="margin-bottom:.5rem;">Compete for Legacy</h4>
-                            <p style="color:var(--stardust-muted);margin-bottom:1rem;">Register and climb from qualifiers to Apex crown contention.</p>
+                            <h4 class="clash mb-2">Compete for Legacy</h4>
+                            <p class="text-muted mb-4">Register and climb from qualifiers to Apex crown contention.</p>
                             <button class="btn-rebirth btn-photon" onclick="location.href='submit.html'">SUBMIT PERFORMANCE</button>
                         </div>
                     </div>

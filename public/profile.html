@@ -258,6 +258,17 @@
                 </div>
             </div>
 
+
+            <div class="pulse-card" style="margin-top: 1.5rem;">
+                <h3 class="clash" style="margin-bottom: 1rem;">Season Progression Benefits</h3>
+                <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(180px,1fr)); gap: 0.8rem;">
+                    <div class="stat-box"><div class="stat-label">Season Score</div><div class="stat-value text-photon" id="profile-season-score">--</div></div>
+                    <div class="stat-box"><div class="stat-label">Rank</div><div class="stat-value" id="profile-season-rank">--</div></div>
+                    <div class="stat-box"><div class="stat-label">Next Benefit</div><div class="stat-value" style="font-size:0.95rem;" id="profile-season-next">--</div></div>
+                </div>
+                <p style="margin-top:0.8rem; color:var(--stardust-muted); font-size:0.82rem;" id="profile-season-unlocked">Unlocked: --</p>
+            </div>
+
             <div class="pulse-card">
                 <h3 class="clash" style="margin-bottom: 1.5rem;">Recent Logs</h3>
                 <div id="recentActivityList">
@@ -411,13 +422,32 @@
                 syncVisualModeSelector();
                 updateProfileUI();
                 if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                updateSeasonBenefits();
             }
 
             window.addEventListener('statsChange', () => {
                 updateProfileUI();
                 if (typeof SquadSystem !== 'undefined') SquadSystem.updateUI();
+                updateSeasonBenefits();
             });
         });
+
+
+        async function updateSeasonBenefits() {
+            try {
+                const res = await fetch('/api/season/progress', {
+                    headers: { 'Authorization': `Bearer ${Auth.getToken()}` }
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                const unlocked = (data.rewards?.unlocked || []).map(r => r.name);
+                const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+                set('profile-season-score', Number(data.score || 0).toLocaleString());
+                set('profile-season-rank', `#${data.rank || '--'} / ${data.participants || '--'}`);
+                set('profile-season-next', data.rewards?.next ? `${data.rewards.next.name} @ ${data.rewards.next.score}` : 'All tiers unlocked');
+                set('profile-season-unlocked', `Unlocked: ${unlocked.length ? unlocked.join(', ') : 'No season benefits unlocked yet'}`);
+            } catch (_) {}
+        }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab-trigger').forEach(btn => btn.classList.remove('active'));

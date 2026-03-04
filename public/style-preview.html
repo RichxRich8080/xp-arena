@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Style Preview • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css" />
+  <link rel="stylesheet" href="css/overdrive.css" />
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .preview-shell { max-width: 1100px; margin: 0 auto; padding: 7rem 1.2rem 4rem; display: grid; gap: 1.2rem; }
+    .preview-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 1rem; }
+    .preview-modal { max-width: 520px; margin: 0 auto; }
+  </style>
+</head>
+<body class="page-rebirth">
+  <main class="preview-shell">
+    <section class="section-header ui-card">
+      <span class="section-label hero-eyebrow">Component System</span>
+      <h1 class="clash section-header__title">STYLE <span class="text-photon">PREVIEW</span></h1>
+      <p class="section-header__subtitle">Semantic tokens + canonical components + theme skin layers.</p>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi-tile"><div class="section-label">KPI Tile</div><div class="kpi-tile__value">99.2%</div></article>
+      <article class="kpi-tile"><div class="section-label">Latency</div><div class="kpi-tile__value">2.8 ms</div></article>
+      <article class="kpi-tile"><div class="section-label">Sync</div><div class="kpi-tile__value">Live</div></article>
+    </section>
+
+    <section class="ui-card">
+      <div class="tab-strip">
+        <button class="btn btn--primary">Overview</button>
+        <button class="btn">Intel</button>
+        <button class="btn">Settings</button>
+      </div>
+      <div class="preview-grid">
+        <input class="form-input" placeholder="Form input" />
+        <button class="btn btn--primary">Primary Button</button>
+        <button class="btn">Secondary Button</button>
+        <button class="btn btn--primary btn--full">Full Width Action</button>
+      </div>
+    </section>
+
+    <section class="ui-modal preview-modal center">
+      <h3 class="clash">Modal Surface</h3>
+      <p class="text-muted">Use this as the canonical modal container across pages.</p>
+    </section>
+  </main>
+</body>
+</html>
