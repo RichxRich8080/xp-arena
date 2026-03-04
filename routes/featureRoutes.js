@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
+const { errorResponse } = require('../middleware/apiResponse');
 
 let leaderboardCache = { data: null, lastFetch: 0 };
 /**
@@ -17,7 +18,7 @@ router.get('/activity/live', async (req, res) => {
         `);
         res.json(activities);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch live feed' });
+        errorResponse(res, 500, 'FEATURE_ACTIVITY_LIVE_FAILED', 'Failed to fetch live feed');
     }
 });
 
@@ -53,7 +54,7 @@ router.get('/leaderboard', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch leaderboard' });
+        errorResponse(res, 500, 'FEATURE_LEADERBOARD_FAILED', 'Failed to fetch leaderboard');
     }
 });
 
@@ -93,7 +94,7 @@ router.get('/leaderboard/weekly', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard Weekly] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch weekly leaderboard' });
+        errorResponse(res, 500, 'FEATURE_WEEKLY_LEADERBOARD_FAILED', 'Failed to fetch weekly leaderboard');
     }
 });
 
@@ -132,7 +133,7 @@ router.get('/leaderboard/today', async (req, res) => {
         res.json(formatted);
     } catch (err) {
         console.error('[Leaderboard Today] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch today leaderboard' });
+        errorResponse(res, 500, 'FEATURE_TODAY_LEADERBOARD_FAILED', 'Failed to fetch today leaderboard');
     }
 });
 
@@ -149,7 +150,7 @@ router.get('/pro-players', async (req, res) => {
         ];
         res.json(pros);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch pros' });
+        errorResponse(res, 500, 'FEATURE_PRO_PLAYERS_FAILED', 'Failed to fetch pros');
     }
 });
 
@@ -177,7 +178,7 @@ router.get('/nexus/summary', async (req, res) => {
         });
     } catch (err) {
         console.error('[Nexus Summary] Error:', err);
-        res.status(500).json({ error: 'Failed to fetch nexus summary' });
+        errorResponse(res, 500, 'FEATURE_NEXUS_SUMMARY_FAILED', 'Failed to fetch nexus summary');
     }
 });
 
