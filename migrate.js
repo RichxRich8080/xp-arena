@@ -284,8 +284,28 @@ async function run() {
         user_id INT NOT NULL,
         axp INT NOT NULL,
         date DATE NOT NULL,
+        event_type VARCHAR(50) DEFAULT 'snapshot',
+        source VARCHAR(100) DEFAULT 'system',
+        metadata JSON NULL,
         UNIQUE KEY user_date_uniq (user_id, date),
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('economy_events', `
+    CREATE TABLE IF NOT EXISTS economy_events (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NULL,
+      event_type VARCHAR(50) NOT NULL,
+      source VARCHAR(100) NOT NULL,
+      amount INT NOT NULL DEFAULT 0,
+      status VARCHAR(20) NOT NULL DEFAULT 'success',
+      metadata JSON NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      INDEX idx_economy_events_time (created_at),
+      INDEX idx_economy_events_user (user_id),
+      INDEX idx_economy_events_type_status (event_type, status),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     )
   `);
 
@@ -389,6 +409,9 @@ async function run() {
   await ensureColumn('users', 'login_attempts', 'INT DEFAULT 0');
   await ensureColumn('users', 'lockout_until', 'DATETIME');
   await ensureColumn('users', 'last_protocol_date', 'DATE');
+  await ensureColumn('axp_history', 'event_type', "VARCHAR(50) DEFAULT 'snapshot'");
+  await ensureColumn('axp_history', 'source', "VARCHAR(100) DEFAULT 'system'");
+  await ensureColumn('axp_history', 'metadata', 'JSON NULL');
 
   // 3. Optimization checks (Indices)
   await ensureIndex('users', 'idx_users_axp', 'axp');

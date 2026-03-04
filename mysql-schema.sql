@@ -39,8 +39,23 @@ CREATE TABLE IF NOT EXISTS axp_history (
     user_id INT NOT NULL,
     axp INT NOT NULL,
     date DATE NOT NULL,
+    event_type VARCHAR(50) DEFAULT 'snapshot',
+    source VARCHAR(100) DEFAULT 'system',
+    metadata JSON NULL,
     UNIQUE KEY user_date_uniq (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS economy_events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    source VARCHAR(100) NOT NULL,
+    amount INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'success',
+    metadata JSON NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -265,6 +280,9 @@ CREATE INDEX idx_setups_user_time ON setups(user_id, created_at);
 CREATE INDEX idx_setups_priv_time ON setups(is_private, created_at);
 CREATE INDEX idx_setups_pop ON setups(likes, copies);
 CREATE INDEX idx_guild_members_user ON guild_members(user_id);
+CREATE INDEX idx_economy_events_time ON economy_events(created_at);
+CREATE INDEX idx_economy_events_user ON economy_events(user_id);
+CREATE INDEX idx_economy_events_type_status ON economy_events(event_type, status);
 CREATE INDEX idx_tournaments_time ON tournaments(created_at);
 CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
 -- Seasons

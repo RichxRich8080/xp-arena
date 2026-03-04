@@ -65,6 +65,7 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
 
     let conn;
     try {
+        economy.economyLog('log', 'shop.purchase.start', { userId: req.user.id, itemId });
         conn = await pool.getConnection();
         await conn.beginTransaction();
 
@@ -91,6 +92,17 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
             e.status = 400;
             throw e;
         }
+
+        const [retryRows] = await conn.execute(
+            `SELECT COUNT(*) AS retry_count
+             FROM economy_events
+             WHERE user_id = ?
+               AND event_type = 'purchase'
+               AND status = 'failure'
+               AND created_at >= DATE_SUB(NOW(), INTERVAL 10 MINUTE)`,
+            [req.user.id]
+        );
+        const recentRetries = Number(retryRows[0]?.retry_count || 0);
 
         // 3. Check if user already owns it (if it's not a consumable/booster)
         if (item.type !== 'booster') {
@@ -154,10 +166,34 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
 
         const updatedAxp = await economy.snapshotAXP(req.user.id, conn);
 
+        await economy.recordEconomyEvent({
+            userId: req.user.id,
+            eventType: 'purchase',
+            source: 'routes.shop.buy',
+            amount: -item.price_axp,
+            status: 'success',
+            metadata: { itemId: item.id, itemName: item.name, itemType: item.type, retryCount: recentRetries },
+        }, conn);
+
         await conn.commit();
+        economy.economyLog('log', 'shop.purchase.success', { userId: req.user.id, itemId: item.id, priceAXP: item.price_axp, updatedAxp });
         res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp });
     } catch (err) {
         if (conn) await conn.rollback();
+        const failureMeta = { itemId, status: err.status || 500, error: err.message || 'purchase_failed' };
+        try {
+            await economy.recordEconomyEvent({
+                userId: req.user.id,
+                eventType: 'purchase',
+                source: 'routes.shop.buy',
+                amount: 0,
+                status: 'failure',
+                metadata: failureMeta,
+            });
+        } catch (eventErr) {
+            economy.economyLog('error', 'shop.purchase.event_failure', { userId: req.user.id, itemId, eventError: eventErr.message });
+        }
+        economy.economyLog('error', 'shop.purchase.failure', { userId: req.user.id, ...failureMeta });
         console.error('[Shop] Purchase error:', err);
         errorResponse(res, err.status || 500, 'SHOP_PURCHASE_FAILED', err.message || 'Server error during purchase');
     } finally {
