@@ -1,0 +1,116 @@
+/* XP ARENA OVERDRIVE SYSTEM - Global visual rebuild layer */
+:root {
+  --od-bg-1: radial-gradient(1200px 500px at 10% -10%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 65%);
+  --od-bg-2: radial-gradient(900px 400px at 100% 0%, color-mix(in srgb, var(--secondary) 12%, transparent), transparent 70%);
+  --od-grid: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+}
+
+body.page-rebirth {
+  background-image: var(--od-bg-1), var(--od-bg-2), var(--od-grid);
+  background-size: auto, auto, 40px 40px;
+  background-attachment: fixed;
+}
+
+body.page-rebirth::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.03), transparent 15%, transparent 85%, rgba(255,255,255,0.02));
+  z-index: -1;
+}
+
+.overdrive-status-strip {
+  margin: 5.5rem auto 0;
+  width: min(1200px, calc(100% - 2rem));
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.overdrive-node {
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--nebula-solid) 85%, transparent);
+  border-radius: 12px;
+  padding: 0.55rem 0.8rem;
+  backdrop-filter: blur(12px);
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--stardust-muted);
+}
+
+.overdrive-node b {
+  display: block;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  color: var(--stardust);
+  margin-top: 0.2rem;
+}
+
+.pulse-card {
+  box-shadow: 0 16px 40px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.03);
+}
+
+.pulse-card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, transparent);
+  opacity: 0;
+  transition: opacity .35s ease;
+}
+
+.pulse-card:hover::after { opacity: .6; }
+
+.btn-rebirth,
+button,
+[role="button"] {
+  will-change: transform;
+}
+
+.overdrive-quick-rail {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.2rem;
+  z-index: 2100;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: min(560px, 92vw);
+}
+
+.overdrive-quick-rail a {
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--nebula-solid) 84%, transparent);
+  color: var(--stardust);
+  border-radius: 999px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.overdrive-quick-rail a:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--primary) 50%, transparent);
+}
+
+.overdrive-title-glow {
+  text-shadow: 0 0 20px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+@media (max-width: 900px) {
+  .overdrive-status-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 5rem; }
+}
+@media (max-width: 700px) {
+  .overdrive-quick-rail { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; }
+  .overdrive-quick-rail a { flex: 1 1 auto; justify-content: center; }
+}

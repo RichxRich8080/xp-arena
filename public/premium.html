@@ -1205,7 +1205,8 @@
 
   </div>
 
-  <script src="js/auth.js"></script>
+  <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
   <script>
@@ -1225,6 +1226,21 @@
     }
 
     // ── Upgrade Handler ──
+    function triggerPremiumSuccessFX(plan) {
+      const targetCard = plan === 'yearly'
+        ? document.querySelector('.plan-card .btn-legend')?.closest('.plan-card')
+        : document.querySelector('.plan-card.featured');
+      const balanceEl = document.querySelector('#shop-balance, #global-xp, [data-axp-balance]');
+
+      [targetCard, balanceEl].forEach((el) => {
+        if (!el) return;
+        el.classList.remove('glitch-active');
+        void el.offsetWidth;
+        el.classList.add('glitch-active');
+        setTimeout(() => el.classList.remove('glitch-active'), 500);
+      });
+    }
+
     async function handleUpgrade(plan) {
       if (typeof Auth === 'undefined' || !Auth.isLoggedIn()) {
         window.location.href = 'login.html?redirect=premium.html';
@@ -1245,6 +1261,7 @@
         });
 
         if (res.ok) {
+          triggerPremiumSuccessFX(plan);
           if (window.Toast) Toast.show('🎉 Welcome to ELITE! Enjoy your new powers.', 'success');
           if (window.User) User.addAXP(500, 'Upgraded to Elite');
           setTimeout(() => { window.location.href = 'profile.html'; }, 1800);

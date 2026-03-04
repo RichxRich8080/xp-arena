@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
+const economy = require('../services/economyService');
 
 function cap(n) {
   const x = parseInt(n, 10);
@@ -23,8 +24,7 @@ async function awardAXP(userId, amount, reason) {
     const until = new Date(user.xp_doubler_until).getTime();
     if (Date.now() < until) delta = amount * 2;
   }
-  await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [delta, userId]);
-  if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [userId, reason]);
+  await economy.awardAXP(userId, delta, reason);
 }
 
 router.post('/submit', authenticateToken, async (req, res) => {

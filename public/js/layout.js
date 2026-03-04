@@ -23,10 +23,34 @@ if (!document.querySelector(`link[href="${cssPath}"]`)) {
     document.head.appendChild(link);
 }
 
+const animationCssPath = 'css/animation.css';
+if (!document.querySelector(`link[href="${animationCssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = animationCssPath;
+    document.head.appendChild(link);
+}
+
+
+const overdriveCssPath = 'css/overdrive.css';
+if (!document.querySelector(`link[href="${overdriveCssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = overdriveCssPath;
+    document.head.appendChild(link);
+}
+
 const sfxPath = 'js/sounds.js';
 if (!document.querySelector(`script[src="${sfxPath}"]`)) {
     const script = document.createElement('script');
     script.src = sfxPath;
+    document.head.appendChild(script);
+}
+
+const themeEnginePath = 'js/theme.js';
+if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
+    const script = document.createElement('script');
+    script.src = themeEnginePath;
     document.head.appendChild(script);
 }
 
@@ -69,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initAmbientHUD();
 
     enableGlobalOverlayDismiss();
+    applyAXPShine();
+    applyOverdriveSystem();
 
     // Remove any leftover transition overlay if present
     const leftover = document.querySelector('div[style*="NEURAL_LINK_SYNC"]') || document.querySelector('div[style*="radial-gradient"][style*="backdrop-filter"]');
@@ -77,6 +103,55 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => leftover.remove(), 120);
     }
 });
+
+
+function applyOverdriveSystem() {
+    document.body.classList.add('xp-overdrive');
+
+    const topHeading = document.querySelector('h1');
+    if (topHeading) topHeading.classList.add('overdrive-title-glow');
+
+    if (!document.querySelector('.overdrive-status-strip')) {
+        const strip = document.createElement('section');
+        strip.className = 'overdrive-status-strip';
+        strip.innerHTML = `
+            <div class="overdrive-node">Mode<b>Owner Build</b></div>
+            <div class="overdrive-node">Theme<b>${document.documentElement.style.getPropertyValue('--primary') || 'Adaptive'}</b></div>
+            <div class="overdrive-node">Layout<b>Unified</b></div>
+            <div class="overdrive-node">Sync<b>Live</b></div>
+        `;
+
+        const firstBlock = document.body.firstElementChild;
+        if (firstBlock) firstBlock.insertAdjacentElement('afterend', strip);
+    }
+
+    if (!document.querySelector('.overdrive-quick-rail')) {
+        const rail = document.createElement('nav');
+        rail.className = 'overdrive-quick-rail';
+        rail.setAttribute('aria-label', 'Overdrive Quick Navigation');
+        const links = [
+            ['index.html', 'Hub'],
+            ['leaderboard.html', 'Leaderboard'],
+            ['tournaments.html', 'Tournaments'],
+            ['shop.html', 'Shop'],
+            ['guilds.html', 'Guilds'],
+            ['profile.html', 'Profile']
+        ];
+        rail.innerHTML = links.map(([href, label]) => `<a href="${href}"><i class="fas fa-circle-notch"></i> ${label}</a>`).join('');
+        document.body.appendChild(rail);
+    }
+}
+
+function applyAXPShine() {
+    const selectors = [
+        '.fa-coins',
+        '.fa-coin',
+        '#shop-balance',
+        '.price-tag',
+        '[data-axp-balance]'
+    ];
+    document.querySelectorAll(selectors.join(',')).forEach(el => el.classList.add('axp-shine'));
+}
 
 /**
  * Genesis: Atmospheric Sector Shifting
@@ -477,9 +552,10 @@ function injectRebirthLayout() {
         document.body.insertAdjacentHTML('beforeend', backBtnHTML);
     }
 
-    // Inject Command Dock (v2: 6-item expansion)
+    // Inject Command Dock
     const navItems = [
         { icon: 'fa-th-large', label: 'Hub', link: root + 'index.html', id: 'nav-hub' },
+        { icon: 'fa-network-wired', label: 'Nexus', link: root + 'ecosystem.html', id: 'nav-ecosystem' },
         { icon: 'fa-microchip', label: 'Engine', link: root + 'tool.html', id: 'nav-tool' },
         { icon: 'fa-shopping-cart', label: 'Shop', link: root + 'shop.html', id: 'nav-shop' },
         { icon: 'fa-trophy', label: 'Elite', link: root + 'leaderboard.html', id: 'nav-leaderboard' },
@@ -488,7 +564,7 @@ function injectRebirthLayout() {
     ];
 
     const dockHTML = `
-        <div class="command-dock" style="grid-template-columns: repeat(6, 1fr);">
+        <div class="command-dock" style="grid-template-columns: repeat(7, 1fr);">
             ${navItems.map(item => `
                 <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
                     <i class="fas ${item.icon}"></i>
@@ -806,6 +882,10 @@ function injectSettingsDrawer() {
                         <a href="${root}index.html" class="drawer-nav-item">
                             <i class="fas fa-th-large"></i>
                             <span>Hub</span>
+                        </a>
+                        <a href="${root}ecosystem.html" class="drawer-nav-item">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Nexus</span>
                         </a>
                         <a href="${root}tool.html" class="drawer-nav-item">
                             <i class="fas fa-microchip"></i>
