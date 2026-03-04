@@ -114,3 +114,18 @@ button,
   .overdrive-quick-rail { left: 0.75rem; right: 0.75rem; bottom: 0.75rem; }
   .overdrive-quick-rail a { flex: 1 1 auto; justify-content: center; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .overdrive-quick-rail a,
+  .overdrive-title-glow,
+  .pulse-card,
+  .pulse-card::after,
+  .hud-ambient-grid,
+  .hud-coord,
+  .hud-fragment {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    text-shadow: none !important;
+  }
+}
