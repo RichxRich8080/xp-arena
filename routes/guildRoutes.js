@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const { recordSeasonPoints } = require('../services/seasonService');
 
 async function chargeAXP(userId, amount, reason) {
   const charged = await economy.chargeAXP(userId, amount, reason);
@@ -183,6 +184,7 @@ router.post('/war/apply', authenticateToken, async (req, res) => {
     if (!g) return res.status(404).json({ error: 'Not found' });
     if (g.owner_user_id !== req.user.id) return res.status(403).json({ error: 'Not allowed' });
     await db.run('INSERT INTO guild_war_applications (guild_id, note) VALUES (?, ?)', [gid, String(note||'').slice(0,255)]);
+    await recordSeasonPoints(req.user.id, { guildWar: 40, meta: { guildId: gid } });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });

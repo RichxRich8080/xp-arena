@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const { recordSeasonPoints } = require('../services/seasonService');
 
 async function chargeAXP(userId, amount, reason) {
   const charged = await economy.chargeAXP(userId, amount, reason);
@@ -44,6 +45,7 @@ router.post('/join', authenticateToken, async (req, res) => {
       if (!ok) return res.status(400).json({ error: 'Not enough AXP' });
     }
     await db.run('INSERT INTO tournament_participants (tournament_id, user_id) VALUES (?,?)', [tId, req.user.id]);
+    await recordSeasonPoints(req.user.id, { tournament: 25, meta: { event: 'join', tournamentId: tId } });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
@@ -61,6 +63,8 @@ router.post('/end', authenticateToken, async (req, res) => {
     if (t.creator_user_id !== req.user.id) return res.status(403).json({ error: 'Not allowed' });
     await db.run('UPDATE tournaments SET winner_user_id = ? WHERE id = ?', [wId, tId]);
     if (winner_axp && parseInt(winner_axp, 10) > 0) await awardAXP(wId, parseInt(winner_axp, 10), 'Tournament winner');
+    await recordSeasonPoints(wId, { tournament: Math.max(50, parseInt(winner_axp || 0, 10) || 0), meta: { event: 'winner', tournamentId: tId } });
+    await recordSeasonPoints(req.user.id, { tournament: 15, meta: { event: 'host_end', tournamentId: tId } });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
