@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { db } = require('../db');
+const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 
 function todayDateStr(d) {
@@ -407,14 +407,34 @@ router.post('/use-item', authenticateToken, async (req, res) => {
                 return res.status(400).json({ error: 'Invalid new username provided' });
             }
 
-            // Check if username taken
-            const taken = await db.get('SELECT id FROM users WHERE username = ?', [newUsername]);
-            if (taken) return res.status(400).json({ error: 'Username already taken' });
+            // Atomic update: Change name + consume card + log activity
+            const conn = await pool.getConnection();
+            try {
+                await conn.beginTransaction();
+                const [takenRows] = await conn.execute('SELECT id FROM users WHERE username = ? FOR UPDATE', [newUsername]);
+                if (takenRows[0]) {
+                    await conn.rollback();
+                    conn.release();
+                    return res.status(400).json({ error: 'Username already taken' });
+                }
 
-            // Atomic update: Change name, remove card, log activity
-            await db.run('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
-            await db.run('DELETE FROM user_inventory WHERE id = ?', [inventoryItem.id]);
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Used Rename Card to change identity to ${newUsername}`]);
+                const [itemRows] = await conn.execute('SELECT id FROM user_inventory WHERE id = ? AND user_id = ? FOR UPDATE', [inventoryItem.id, req.user.id]);
+                if (!itemRows[0]) {
+                    await conn.rollback();
+                    conn.release();
+                    return res.status(404).json({ error: 'Rename Card no longer available' });
+                }
+
+                await conn.execute('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
+                await conn.execute('DELETE FROM user_inventory WHERE id = ?', [inventoryItem.id]);
+                await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Used Rename Card to change identity to ${newUsername}`]);
+                await conn.commit();
+            } catch (txErr) {
+                await conn.rollback();
+                conn.release();
+                throw txErr;
+            }
+            conn.release();
 
             const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
             return res.json({ success: true, message: 'Identity successfully updated', token, user: { id: req.user.id, username: newUsername } });

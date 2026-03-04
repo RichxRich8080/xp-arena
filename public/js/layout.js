@@ -23,10 +23,25 @@ if (!document.querySelector(`link[href="${cssPath}"]`)) {
     document.head.appendChild(link);
 }
 
+const animationCssPath = 'css/animation.css';
+if (!document.querySelector(`link[href="${animationCssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = animationCssPath;
+    document.head.appendChild(link);
+}
+
 const sfxPath = 'js/sounds.js';
 if (!document.querySelector(`script[src="${sfxPath}"]`)) {
     const script = document.createElement('script');
     script.src = sfxPath;
+    document.head.appendChild(script);
+}
+
+const themeEnginePath = 'js/theme.js';
+if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
+    const script = document.createElement('script');
+    script.src = themeEnginePath;
     document.head.appendChild(script);
 }
 
@@ -69,7 +84,19 @@ document.addEventListener('DOMContentLoaded', () => {
     initAmbientHUD();
 
     enableGlobalOverlayDismiss();
+    applyAXPShine();
 });
+
+function applyAXPShine() {
+    const selectors = [
+        '.fa-coins',
+        '.fa-coin',
+        '#shop-balance',
+        '.price-tag',
+        '[data-axp-balance]'
+    ];
+    document.querySelectorAll(selectors.join(',')).forEach(el => el.classList.add('axp-shine'));
+}
 
 /**
  * Genesis: Atmospheric Sector Shifting
@@ -456,9 +483,10 @@ function injectRebirthLayout() {
         document.body.insertAdjacentHTML('beforeend', backBtnHTML);
     }
 
-    // Inject Command Dock (v2: 6-item expansion)
+    // Inject Command Dock
     const navItems = [
         { icon: 'fa-th-large', label: 'Hub', link: root + 'index.html', id: 'nav-hub' },
+        { icon: 'fa-network-wired', label: 'Nexus', link: root + 'ecosystem.html', id: 'nav-ecosystem' },
         { icon: 'fa-microchip', label: 'Engine', link: root + 'tool.html', id: 'nav-tool' },
         { icon: 'fa-shopping-cart', label: 'Shop', link: root + 'shop.html', id: 'nav-shop' },
         { icon: 'fa-trophy', label: 'Elite', link: root + 'leaderboard.html', id: 'nav-leaderboard' },
@@ -467,7 +495,7 @@ function injectRebirthLayout() {
     ];
 
     const dockHTML = `
-        <div class="command-dock" style="grid-template-columns: repeat(6, 1fr);">
+        <div class="command-dock" style="grid-template-columns: repeat(7, 1fr);">
             ${navItems.map(item => `
                 <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
                     <i class="fas ${item.icon}"></i>
@@ -742,6 +770,10 @@ function injectSettingsDrawer() {
                         <a href="${root}index.html" class="drawer-nav-item">
                             <i class="fas fa-th-large"></i>
                             <span>Hub</span>
+                        </a>
+                        <a href="${root}ecosystem.html" class="drawer-nav-item">
+                            <i class="fas fa-network-wired"></i>
+                            <span>Nexus</span>
                         </a>
                         <a href="${root}tool.html" class="drawer-nav-item">
                             <i class="fas fa-microchip"></i>

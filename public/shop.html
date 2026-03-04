@@ -131,6 +131,19 @@
             position: relative;
         }
 
+        .shop-item-card.purchase-glitch {
+            animation: purchase-glitch 600ms steps(2, end);
+        }
+
+        @keyframes purchase-glitch {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            20% { transform: translate(-3px, 1px); filter: hue-rotate(25deg); }
+            40% { transform: translate(3px, -1px); filter: hue-rotate(-20deg); }
+            60% { transform: translate(-2px, -1px); filter: hue-rotate(35deg); }
+            80% { transform: translate(2px, 1px); filter: hue-rotate(-15deg); }
+            100% { transform: translate(0); filter: hue-rotate(0deg); }
+        }
+
         .rarity-badge {
             position: absolute;
             top: 20px;
