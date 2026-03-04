@@ -13,6 +13,37 @@ const Shop = {
         // Listen for stats changes to refres balancing
         window.addEventListener('statsChange', () => this.updateBalanceDisplay());
         this.updateBalanceDisplay();
+        await this.loadSeasonBenefits();
+    },
+
+
+    async loadSeasonBenefits() {
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+        try {
+            const headers = Auth.isLoggedIn() ? { 'Authorization': `Bearer ${Auth.getToken()}` } : {};
+            const progressRes = await fetch('/api/season/progress', { headers });
+            const rewardsRes = await fetch('/api/season/rewards');
+            const rewardsData = rewardsRes.ok ? await rewardsRes.json() : { rewards: [] };
+            const rewards = rewardsData.rewards || [];
+            const unlocked = progressRes.ok ? (await progressRes.json()).rewards?.unlocked || [] : [];
+            setText('shop-season-id', `Season ${rewardsData.seasonId || '--'}`);
+            const cosmetics = unlocked.filter(r => r.type === 'cosmetic').map(r => r.name);
+            const titles = unlocked.filter(r => r.type === 'title').map(r => r.name);
+            const boosts = unlocked.filter(r => r.type === 'boost_card').map(r => r.name);
+            setText('shop-season-cosmetics', cosmetics[0] || 'Unlock at seasonal tiers');
+            setText('shop-season-titles', titles[0] || 'Unlock at seasonal tiers');
+            setText('shop-season-boosts', boosts[0] || 'Unlock at seasonal tiers');
+            if (!unlocked.length && rewards.length) {
+                setText('shop-season-cosmetics', `Next: ${rewards.find(r => r.type === 'cosmetic')?.name || 'TBD'}`);
+                setText('shop-season-titles', `Next: ${rewards.find(r => r.type === 'title')?.name || 'TBD'}`);
+                setText('shop-season-boosts', `Next: ${rewards.find(r => r.type === 'boost_card')?.name || 'TBD'}`);
+            }
+        } catch (e) {
+            setText('shop-season-id', 'Season data unavailable');
+        }
     },
 
     renderSkeletons() {
