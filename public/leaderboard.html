@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Global Ranking • XP ARENA</title>
     <link rel="stylesheet" href="css/rebirth.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <style>
         .leaderboard-hero {
@@ -286,31 +288,31 @@
 
 <body class="page-rebirth">
     <div class="leaderboard-hero">
-        <span class="section-label" style="letter-spacing: 0.6rem; margin-bottom: 2rem; opacity: 0.5;">Global
+        <span class="section-label hero-eyebrow">Global
             Intelligence
             Matrix</span>
-        <h1 class="clash" style="font-size: clamp(4rem, 12vw, 7rem); letter-spacing: -0.2rem; margin-bottom: 3rem;">
-            THE<br><span class="text-photon" style="text-shadow: 0 0 50px var(--photon-glow);">ELITE</span></h1>
+        <h1 class="clash hero-title-xl">
+            THE<br><span class="text-photon overdrive-title-glow">ELITE</span></h1>
 
-        <div class="cycle-timer" style="background: rgba(0, 245, 255, 0.03); border-color: rgba(0, 245, 255, 0.2);">
-            <div style="text-align: center;">
+        <div class="cycle-timer">
+            <div class="timer-unit">
                 <div id="days" class="timer-val">00</div>
-                <div class="timer-label" style="color: var(--photon); opacity: 0.7;">Days</div>
+                <div class="timer-label timer-label-accent">Days</div>
             </div>
-            <div style="border-right: 1px solid var(--glass-border); height: 30px; margin: auto;"></div>
-            <div style="text-align: center;">
+            <div class="timer-sep"></div>
+            <div class="timer-unit">
                 <div id="hours" class="timer-val">00</div>
-                <div class="timer-label" style="color: var(--photon); opacity: 0.7;">Hrs</div>
+                <div class="timer-label timer-label-accent">Hrs</div>
             </div>
-            <div style="border-right: 1px solid var(--glass-border); height: 30px; margin: auto;"></div>
-            <div style="text-align: center;">
+            <div class="timer-sep"></div>
+            <div class="timer-unit">
                 <div id="mins" class="timer-val">00</div>
-                <div class="timer-label" style="color: var(--photon); opacity: 0.7;">Min</div>
+                <div class="timer-label timer-label-accent">Min</div>
             </div>
-            <div style="border-right: 1px solid var(--glass-border); height: 30px; margin: auto;"></div>
-            <div style="text-align: center;">
+            <div class="timer-sep"></div>
+            <div class="timer-unit">
                 <div id="secs" class="timer-val">00</div>
-                <div class="timer-label" style="color: var(--photon); opacity: 0.7;">Sec</div>
+                <div class="timer-label timer-label-accent">Sec</div>
             </div>
         </div>
     </div>
@@ -324,7 +326,7 @@
 
     <div class="leaderboard-section">
         <div
-            style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 4rem; border-bottom: 1px solid var(--glass-border);">
+            class="tab-strip">
             <button class="tab-btn active" onclick="switchLeaderboard('users')">ARENI CORPS</button>
             <button class="tab-btn" onclick="switchLeaderboard('guilds')">CLAN MATRIX</button>
         </div>
@@ -340,7 +342,7 @@
         </div>
 
         <div
-            style="margin-top: 8rem; text-align: center; border: 1px solid var(--glass-border); padding: 4rem; border-radius: 32px; background: var(--nebula);">
+            class="cta-panel ui-card center">
             <h3 class="clash" style="font-size: 2rem; margin-bottom: 1rem;">CHALLENGE THE MATRIX</h3>
             <p
                 style="color: var(--stardust-muted); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto;">
