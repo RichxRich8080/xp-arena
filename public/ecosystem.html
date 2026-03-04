@@ -15,6 +15,11 @@
     .nexus-actions { display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:2rem; }
     .pulse-line { height:3px; margin-top:0.8rem; background: linear-gradient(90deg, transparent, var(--photon), transparent); animation: sweep 2.4s linear infinite; }
     @keyframes sweep { from { transform: translateX(-30%);} to { transform: translateX(30%);} }
+    .ops-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:1rem; margin-top:1rem; }
+    .ops-list { list-style:none; padding:0; margin:0; }
+    .ops-list li { padding:0.35rem 0; border-bottom:1px dashed rgba(255,255,255,0.08); color:var(--stardust-muted); }
+    .ops-table { width:100%; border-collapse: collapse; margin-top:0.6rem; }
+    .ops-table th, .ops-table td { padding:0.55rem; border-bottom:1px solid rgba(255,255,255,0.08); font-size:0.9rem; text-align:left; }
   </style>
 </head>
 <body class="page-rebirth">
@@ -41,6 +46,26 @@
         <a href="tool.html" class="btn-rebirth">Sensitivity Lab</a>
       </div>
     </section>
+
+    <section class="pulse-card" style="margin-top:2rem; padding:1.5rem;">
+      <h3 class="clash" style="margin-bottom:0.5rem;">Economy Ops Monitor (Admin)</h3>
+      <p style="color:var(--stardust-muted);margin-bottom:1rem;">Live operational metrics for transaction reliability and AXP movement.</p>
+      <div class="ops-grid">
+        <article class="nexus-card"><div class="section-label">24h Transaction Failures</div><div id="ops-failures" class="nexus-val">--</div></article>
+        <article class="nexus-card"><div class="section-label">Abnormal Purchase Retries</div><div id="ops-retries" class="nexus-val">--</div></article>
+      </div>
+      <div class="ops-grid" style="margin-top:1rem;">
+        <article class="nexus-card">
+          <div class="section-label">Top AXP Sinks</div>
+          <table class="ops-table"><thead><tr><th>Event</th><th>Source</th><th>AXP</th></tr></thead><tbody id="ops-sinks"></tbody></table>
+        </article>
+        <article class="nexus-card">
+          <div class="section-label">Top AXP Sources</div>
+          <table class="ops-table"><thead><tr><th>Event</th><th>Source</th><th>AXP</th></tr></thead><tbody id="ops-sources"></tbody></table>
+        </article>
+      </div>
+    </section>
+
   </div>
 
   <script src="js/config.js"></script>
@@ -48,6 +73,40 @@
   <script src="js/user.js"></script>
   <script src="js/layout.js"></script>
   <script>
+
+    async function loadEconomyOpsMetrics() {
+      try {
+        const token = window.Auth && window.Auth.getToken ? window.Auth.getToken() : localStorage.getItem('xp_token');
+        if (!token) return;
+        const res = await fetch((window.API_URL || '') + '/api/admin/economy-metrics', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+
+        document.getElementById('ops-failures').textContent = Number(data.transactionFailures24h || 0).toLocaleString();
+        document.getElementById('ops-retries').textContent = Number((data.abnormalPurchaseRetries || []).length || 0).toLocaleString();
+
+        const renderRows = (id, rows, formatter) => {
+          const host = document.getElementById(id);
+          host.innerHTML = '';
+          (rows || []).slice(0, 5).forEach((row) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = formatter(row);
+            host.appendChild(tr);
+          });
+          if (!host.innerHTML) {
+            host.innerHTML = '<tr><td colspan="3" style="opacity:.65">No data</td></tr>';
+          }
+        };
+
+        renderRows('ops-sinks', data.topSinks, (row) => `<td>${row.event_type}</td><td>${row.source}</td><td>${Number(row.total_axp || 0).toLocaleString()}</td>`);
+        renderRows('ops-sources', data.topSources, (row) => `<td>${row.event_type}</td><td>${row.source}</td><td>${Number(row.total_axp || 0).toLocaleString()}</td>`);
+      } catch (e) {
+        if (window.Toast) Toast.show('Ops metrics unavailable for this session', 'warning');
+      }
+    }
+
     async function bootNexus() {
       try {
         const res = await fetch((window.API_URL || '') + '/api/nexus/summary');
@@ -61,7 +120,10 @@
         if (window.Toast) Toast.show('Nexus feed temporarily unavailable', 'error');
       }
     }
-    document.addEventListener('DOMContentLoaded', bootNexus);
+    document.addEventListener('DOMContentLoaded', async () => {
+      await bootNexus();
+      await loadEconomyOpsMetrics();
+    });
   </script>
 </body>
 </html>

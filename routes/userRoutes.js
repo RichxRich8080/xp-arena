@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
+const economy = require('../services/economyService');
 
 function todayDateStr(d) {
     const x = d || new Date();
@@ -33,6 +34,7 @@ router.post('/nickname', authenticateToken, async (req, res) => {
     if (!newUsername || newUsername.length < 3) return res.status(400).json({ error: 'Invalid username' });
 
     try {
+        economy.economyLog('log', 'user.nickname.start', { userId: req.user.id, newUsername });
         const user = await db.get('SELECT name_changes, axp FROM users WHERE id = ?', [req.user.id]);
         if (!user) return res.status(404).json({ error: 'User not found' });
 
@@ -43,14 +45,18 @@ router.post('/nickname', authenticateToken, async (req, res) => {
 
         if (cost > 0) {
             await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
+            await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'rename', source: 'routes.user.nickname', amount: -cost, metadata: { newUsername, method: 'direct_change' } });
+            await economy.snapshotAXP(req.user.id, null, { eventType: 'rename', source: 'routes.user.nickname', metadata: { newUsername, cost } });
         }
 
         const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
+        economy.economyLog('log', 'user.nickname.success', { userId: req.user.id, cost });
         res.json({ success: true, token, user: { id: req.user.id, username: newUsername }, cost });
     } catch (err) {
         if ((err && err.code === 'ER_DUP_ENTRY') || (err.message && err.message.includes('UNIQUE'))) {
             return res.status(400).json({ error: 'Username already taken' });
         }
+        economy.economyLog('error', 'user.nickname.failure', { userId: req.user.id, error: err.message });
         res.status(500).json({ error: 'Database error' });
     }
 });
@@ -123,7 +129,10 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
 
         // Record AXP History snapshot
         const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
+        await db.run(`INSERT INTO axp_history (user_id, axp, date, event_type, source, metadata)
+                      VALUES (?, ?, ?, ?, ?, ?)
+                      ON DUPLICATE KEY UPDATE axp = VALUES(axp), event_type = VALUES(event_type), source = VALUES(source), metadata = VALUES(metadata)`,
+            [req.user.id, updatedUser.axp, today, 'daily_login', 'routes.user.daily-login', JSON.stringify({ streak, reward: total })]);
 
         // Perfect Week auto-bonus (server-confirmed)
         // Compute week start (Monday)
@@ -187,7 +196,7 @@ router.post('/admin/reset-week-bonus', authenticateToken, async (req, res) => {
 
 router.get('/axp-history', authenticateToken, async (req, res) => {
     try {
-        const history = await db.all('SELECT axp, date FROM axp_history WHERE user_id = ? ORDER BY date ASC LIMIT 30', [req.user.id]);
+        const history = await db.all('SELECT axp, date, event_type, source, metadata FROM axp_history WHERE user_id = ? ORDER BY date ASC LIMIT 30', [req.user.id]);
         res.json(history);
     } catch (e) {
         res.status(500).json({ error: 'Server error' });
@@ -428,6 +437,8 @@ router.post('/use-item', authenticateToken, async (req, res) => {
                 await conn.execute('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
                 await conn.execute('DELETE FROM user_inventory WHERE id = ?', [inventoryItem.id]);
                 await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Used Rename Card to change identity to ${newUsername}`]);
+                await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'rename', source: 'routes.user.use-item', amount: 0, metadata: { newUsername, method: 'rename_card', itemId } }, conn);
+                await economy.snapshotAXP(req.user.id, conn, { eventType: 'rename', source: 'routes.user.use-item', metadata: { newUsername, method: 'rename_card' } });
                 await conn.commit();
             } catch (txErr) {
                 await conn.rollback();
