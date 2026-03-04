@@ -66,6 +66,30 @@
             font-weight: 500;
         }
 
+
+        .auth-kpi-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.7rem;
+            margin: 0 0 2rem;
+        }
+
+        .auth-kpi-row .node {
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.65rem 0.75rem;
+            background: rgba(255,255,255,0.02);
+            text-align: left;
+        }
+
+        .auth-kpi-row .node strong {
+            display: block;
+            margin-top: 0.3rem;
+            font-size: 0.8rem;
+            color: var(--photon);
+            font-family: 'Clash Display', sans-serif;
+        }
+
         .form-group {
             text-align: left;
             margin-bottom: 1.8rem;
@@ -216,6 +240,13 @@
                 <p>Synchronize your neural credentials.</p>
             </header>
 
+
+            <div class="auth-kpi-row">
+                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Auth Layer</span><strong>Encrypted</strong></div>
+                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Session</span><strong>Realtime</strong></div>
+                <div class="node"><span class="section-label" style="margin:0; font-size:0.55rem;">Arena Region</span><strong>Global</strong></div>
+            </div>
+
             <div id="errorBox"
                 style="display:none; background:rgba(255, 68, 68, 0.05); border:1px solid #ff4444; padding:1.2rem; border-radius:12px; margin-bottom:2rem; color:#ff4444; font-size:0.85rem; font-weight: 700; letter-spacing: 0.5px;">
             </div>
@@ -264,7 +295,10 @@
     </div>
 
     <!-- Scripts -->
-    ,ReplacementContent:
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/user.js"></script>
+    <script src="js/layout.js"></script>
     <script>
         const loginForm = document.getElementById('loginForm');
         loginForm.addEventListener('submit', async (e) => {

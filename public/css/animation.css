@@ -1,0 +1,57 @@
+/* XP ARENA: Tactical Animation Suite
+   Theme: Agni Orange (#FF5500) | Brand: Arenis
+*/
+
+/* 1. MAGMA GLOW: For Top 3 Arenis */
+@keyframes magmaPulse {
+    0% { box-shadow: 0 0 12px rgba(255, 68, 0, 0.4), inset 0 0 5px rgba(255, 85, 0, 0.2); border-color: #ff5500; }
+    50% { box-shadow: 0 0 25px rgba(255, 85, 0, 0.7), inset 0 0 15px rgba(255, 170, 0, 0.4); border-color: #ffaa00; }
+    100% { box-shadow: 0 0 12px rgba(255, 68, 0, 0.4), inset 0 0 5px rgba(255, 85, 0, 0.2); border-color: #ff5500; }
+}
+
+.magma-glow {
+    animation: magmaPulse 2.5s infinite ease-in-out;
+    background: linear-gradient(90deg, rgba(255, 85, 0, 0.15) 0%, rgba(10, 12, 18, 0) 100%) !important;
+    position: relative;
+    z-index: 1;
+    will-change: transform, box-shadow, border-color;
+}
+
+/* 2. TACTICAL GLITCH: For Success States (Purchases/Level Up) */
+@keyframes glitch-skew {
+    0% { transform: skew(0deg); }
+    20% { transform: skew(-5deg); filter: hue-rotate(90deg); }
+    24% { transform: skew(5deg); }
+    28% { transform: skew(0deg); }
+    100% { transform: skew(0deg); }
+}
+
+.glitch-active {
+    animation: glitch-skew 0.4s cubic-bezier(.25, .46, .45, .94) both;
+    text-shadow: 2px 0 #ff5500, -2px 0 #00fff2;
+    will-change: transform, filter;
+}
+
+/* 3. AXP COIN SHINE: For Shop Icons */
+@keyframes coinShine {
+    0% { filter: brightness(1) drop-shadow(0 0 0px var(--accent, #FF5500)); }
+    50% { filter: brightness(1.5) drop-shadow(0 0 15px var(--accent, #FF5500)); }
+    100% { filter: brightness(1) drop-shadow(0 0 0px var(--accent, #FF5500)); }
+}
+
+.axp-shine {
+    animation: coinShine 3s infinite ease-in-out;
+    will-change: filter;
+}
+
+/* Mobile anti-jank */
+@media (max-width: 768px) {
+    .magma-glow { animation-duration: 3.2s; }
+    .axp-shine { animation-duration: 3.8s; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .magma-glow, .glitch-active, .axp-shine {
+        animation: none !important;
+    }
+}

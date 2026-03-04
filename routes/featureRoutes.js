@@ -27,15 +27,24 @@ router.get('/activity/live', async (req, res) => {
 router.get('/leaderboard', async (req, res) => {
     try {
         const users = await db.all(`
-            SELECT id, username, axp, level, streak, avatar, is_premium, vip_badge
+            SELECT id, username, axp, level, streak, avatar, is_premium, vip_badge, socials
             FROM users 
             WHERE email_verified = 1
             ORDER BY axp DESC 
             LIMIT 100
         `);
+        const parseAura = (socials, streak) => {
+            let parsed = {};
+            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
+            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
+            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
+            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
+            return { likes, wins, aura };
+        };
         // Format for frontend expectations
         const formatted = users.map(u => ({
             ...u,
+            aura_score: parseAura(u.socials, u.streak).aura,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -56,7 +65,7 @@ router.get('/leaderboard/weekly', async (req, res) => {
     try {
         const rows = await db.all(`
             SELECT 
-                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp,
+                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp, u.socials,
                 GREATEST(COALESCE(t.axp, 0) - COALESCE(w.axp, 0), 0) AS axp
             FROM users u
             LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = CURDATE()) t ON t.user_id = u.id
@@ -65,8 +74,17 @@ router.get('/leaderboard/weekly', async (req, res) => {
             ORDER BY axp DESC
             LIMIT 100
         `, []);
+        const parseAura = (socials, streak) => {
+            let parsed = {};
+            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
+            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
+            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
+            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
+            return { likes, wins, aura };
+        };
         const formatted = rows.map(u => ({
             ...u,
+            aura_score: parseAura(u.socials, u.streak).aura,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -86,7 +104,7 @@ router.get('/leaderboard/today', async (req, res) => {
     try {
         const rows = await db.all(`
             SELECT 
-                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp,
+                u.id, u.username, u.level, u.streak, u.avatar, u.is_premium, u.vip_badge, u.axp as total_axp, u.socials,
                 GREATEST(COALESCE(t.axp, 0) - COALESCE(y.axp, 0), 0) AS axp
             FROM users u
             LEFT JOIN (SELECT user_id, axp FROM axp_history WHERE date = CURDATE()) t ON t.user_id = u.id
@@ -95,8 +113,17 @@ router.get('/leaderboard/today', async (req, res) => {
             ORDER BY axp DESC
             LIMIT 100
         `, []);
+        const parseAura = (socials, streak) => {
+            let parsed = {};
+            try { parsed = socials ? JSON.parse(socials) : {}; } catch { parsed = {}; }
+            const likes = Number(parsed.likes || parsed.total_likes || parsed.totalLikes || 0) || 0;
+            const wins = Number(parsed.wins || parsed.total_wins || parsed.totalWins || 0) || 0;
+            const aura = Math.max(0, Math.round((likes * 0.7) + (wins * 12) + ((Number(streak) || 0) * 3)));
+            return { likes, wins, aura };
+        };
         const formatted = rows.map(u => ({
             ...u,
+            aura_score: parseAura(u.socials, u.streak).aura,
             badges: {
                 premium: !!u.is_premium,
                 v_badge: !!u.vip_badge
@@ -123,6 +150,34 @@ router.get('/pro-players', async (req, res) => {
         res.json(pros);
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch pros' });
+    }
+});
+
+/**
+ * Ecosystem Nexus Summary
+ */
+router.get('/nexus/summary', async (req, res) => {
+    try {
+        const [usersRow, guildsRow, topAuraRow, avgApxRow] = await Promise.all([
+            db.get('SELECT COUNT(*) as total FROM users WHERE email_verified = 1', []),
+            db.get('SELECT COUNT(*) as total FROM guilds', []),
+            db.get(`SELECT MAX((
+                    COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(socials, '$.likes')) AS UNSIGNED), 0) * 0.7 +
+                    COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(socials, '$.wins')) AS UNSIGNED), 0) * 12 +
+                    COALESCE(streak, 0) * 3
+                )) as top_aura FROM users WHERE email_verified = 1`, []),
+            db.get('SELECT ROUND(AVG(axp), 0) as avg_axp FROM users WHERE email_verified = 1', []),
+        ]);
+
+        res.json({
+            users: Number(usersRow?.total || 0),
+            guilds: Number(guildsRow?.total || 0),
+            topAura: Number(topAuraRow?.top_aura || 0),
+            avgAXP: Number(avgApxRow?.avg_axp || 0),
+        });
+    } catch (err) {
+        console.error('[Nexus Summary] Error:', err);
+        res.status(500).json({ error: 'Failed to fetch nexus summary' });
     }
 });
 

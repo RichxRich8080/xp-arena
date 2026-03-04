@@ -133,7 +133,13 @@ const Shop = {
             return;
         }
 
-        if (!confirm(`Confirm purchase of "${itemName}" for ${price} AXP?`)) return;
+        let confirmed = false;
+        if (window.DOM && typeof DOM.confirm === 'function') {
+            confirmed = await DOM.confirm('Confirm Armory Acquisition', `Acquire "${itemName}" for ${price} AXP?`);
+        } else {
+            confirmed = confirm(`Confirm purchase of "${itemName}" for ${price} AXP?`);
+        }
+        if (!confirmed) return;
 
         try {
             const res = await fetch('/api/shop/buy', {
@@ -152,6 +158,10 @@ const Shop = {
                 if (window.Sounds) Sounds.play('success');
 
                 this.triggerGlow();
+                if (/rename card|elite status|premium/i.test(itemName || '')) {
+                    this.triggerPurchaseGlitch(itemId);
+                    this.triggerBalanceGlitch();
+                }
                 this.updateMaximDialogue('success');
 
                 // Refresh stats and UI
@@ -175,6 +185,25 @@ const Shop = {
             void glow.offsetWidth; // Force reflow
             glow.classList.add('active');
         }
+    },
+
+    triggerPurchaseGlitch(itemId) {
+        const card = document.querySelector(`.shop-item-card[data-id="${itemId}"]`);
+        if (!card) return;
+        card.classList.remove('purchase-glitch', 'glitch-active');
+        void card.offsetWidth;
+        card.classList.add('purchase-glitch');
+        card.classList.add('glitch-active');
+        setTimeout(() => card.classList.remove('glitch-active'), 500);
+    },
+
+    triggerBalanceGlitch() {
+        const el = document.getElementById('shop-balance');
+        if (!el) return;
+        el.classList.remove('glitch-active');
+        void el.offsetWidth;
+        el.classList.add('glitch-active');
+        setTimeout(() => el.classList.remove('glitch-active'), 500);
     },
 
     updateMaximDialogue(status) {
