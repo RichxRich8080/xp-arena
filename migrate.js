@@ -388,6 +388,47 @@ async function run() {
     )
   `);
 
+  await ensureTable('idempotency_keys', `
+    CREATE TABLE IF NOT EXISTS idempotency_keys (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      endpoint_scope VARCHAR(100) NOT NULL,
+      idempotency_key VARCHAR(128) NOT NULL,
+      status ENUM('pending', 'completed') NOT NULL DEFAULT 'pending',
+      response_status INT,
+      response_body JSON,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      UNIQUE KEY uniq_idempotency (user_id, endpoint_scope, idempotency_key),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await ensureTable('audit_logs', `
+    CREATE TABLE IF NOT EXISTS audit_logs (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT,
+      actor_user_id INT,
+      event_type VARCHAR(64) NOT NULL,
+      metadata_json JSON,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+      FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL
+    )
+  `);
+
+  await ensureTable('security_events', `
+    CREATE TABLE IF NOT EXISTS security_events (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT,
+      event_type VARCHAR(64) NOT NULL,
+      severity ENUM('info', 'warning', 'critical') NOT NULL DEFAULT 'warning',
+      metadata_json JSON,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    )
+  `);
+
   // 2. Structural checks (columns that might be missing in older versions)
   await ensureColumn('users', 'is_premium', 'TINYINT(1) DEFAULT 0');
   await ensureColumn('users', 'premium_name_color', 'VARCHAR(20)');
@@ -423,6 +464,8 @@ async function run() {
   await ensureIndex('guild_members', 'idx_guild_members_user', 'user_id');
   await ensureIndex('tournaments', 'idx_tournaments_time', 'created_at');
   await ensureIndex('creator_followers', 'idx_creator_followers_creator', 'creator_user_id');
+  await ensureIndex('security_events', 'idx_security_events_user_time', 'user_id, created_at');
+  await ensureIndex('audit_logs', 'idx_audit_logs_user_time', 'user_id, created_at');
   await ensureIndex('season_user_scores', 'idx_season_score', 'season_id, score');
   await ensureIndex('season_score_events', 'idx_season_events', 'season_id, user_id, source');
 

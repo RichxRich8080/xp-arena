@@ -1,8 +1,19 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const { db, pool } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const idempotency = require('../services/idempotencyService');
+const security = require('../services/securityService');
+
+const buyLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000,
+    max: 8,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many purchase attempts. Please wait before retrying.' }
+});
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike } = require('./validators');
 
@@ -60,8 +71,26 @@ router.post('/seed-defaults', async (req, res) => {
 /**
  * Purchase an item
  */
+router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
 router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const { itemId } = req.body;
+
+    let idemKey;
+    try {
+        idemKey = idempotency.readIdempotencyKey(req);
+        await idempotency.reserveKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            const existing = await idempotency.getStoredResponse({ userId: req.user.id, endpointScope: 'shop:buy', key: req.get('Idempotency-Key') });
+            if (existing && existing.status === 'completed') {
+                const body = existing.response_body ? JSON.parse(existing.response_body) : { success: true };
+                res.set('Idempotent-Replay', 'true');
+                return res.status(existing.response_status || 200).json(body);
+            }
+            return res.status(409).json({ error: 'Purchase with this idempotency key is already in progress' });
+        }
+        return res.status(err.status || 500).json({ error: err.message || 'Failed to reserve idempotency key' });
+    }
 
     let conn;
     try {
@@ -161,10 +190,28 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
 
         // Special logic for Premium upgrade
         if (item.name.toLowerCase().includes('premium')) {
+            const [premiumRows] = await conn.execute('SELECT is_premium FROM users WHERE id = ? FOR UPDATE', [req.user.id]);
+            const wasPremium = !!(premiumRows[0] && premiumRows[0].is_premium);
             await conn.execute('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
+            if (!wasPremium) {
+                await security.writeAuditLog({
+                    userId: req.user.id,
+                    actorUserId: req.user.id,
+                    eventType: 'premium_status_changed',
+                    metadata: { source: 'shop_buy', from: false, to: true, itemId, itemName: item.name },
+                    conn,
+                });
+            }
         }
 
         const updatedAxp = await economy.snapshotAXP(req.user.id, conn);
+        await security.writeAuditLog({
+            userId: req.user.id,
+            actorUserId: req.user.id,
+            eventType: 'shop_purchase',
+            metadata: { itemId, itemName: item.name, priceAXP: item.price_axp, newAXP: updatedAxp },
+            conn,
+        });
 
         await economy.recordEconomyEvent({
             userId: req.user.id,
@@ -176,6 +223,15 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
         }, conn);
 
         await conn.commit();
+        const payload = { success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp };
+        await idempotency.completeKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey, statusCode: 200, responseBody: payload });
+        res.json(payload);
+    } catch (err) {
+        if (conn) await conn.rollback();
+        await idempotency.releaseKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey });
+        if ((err.status >= 400 && err.status < 500) || String(err.message || '').includes('Insufficient AXP')) {
+            await security.recordFailedPurchaseAttempt({ userId: req.user.id, ipAddress: req.ip, reason: err.message || 'purchase_failed' });
+        }
         economy.economyLog('log', 'shop.purchase.success', { userId: req.user.id, itemId: item.id, priceAXP: item.price_axp, updatedAxp });
         res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp });
     } catch (err) {
