@@ -2,12 +2,60 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const rateLimit = require('express-rate-limit');
 const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
+const idempotency = require('../services/idempotencyService');
+const security = require('../services/securityService');
 
 function todayDateStr(d) {
     const x = d || new Date();
     return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
+}
+
+const renameLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000,
+    max: 4,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many rename attempts. Please try again later.' }
+});
+
+const rewardClaimLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 6,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many reward claim attempts. Please wait before retrying.' }
+});
+
+async function handleIdempotentAction(req, res, scope, action) {
+    const key = idempotency.readIdempotencyKey(req);
+    try {
+        await idempotency.reserveKey({ userId: req.user.id, endpointScope: scope, key });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            const existing = await idempotency.getStoredResponse({ userId: req.user.id, endpointScope: scope, key });
+            if (existing && existing.status === 'completed') {
+                const body = existing.response_body ? JSON.parse(existing.response_body) : { success: true };
+                res.set('Idempotent-Replay', 'true');
+                return res.status(existing.response_status || 200).json(body);
+            }
+            return res.status(409).json({ error: 'Request with this idempotency key is already in progress' });
+        }
+        throw err;
+    }
+
+    try {
+        const result = await action();
+        const statusCode = result && result.statusCode ? result.statusCode : 200;
+        const payload = result && result.payload ? result.payload : result;
+        await idempotency.completeKey({ userId: req.user.id, endpointScope: scope, key, statusCode, responseBody: payload });
+        return res.status(statusCode).json(payload);
+    } catch (err) {
+        await idempotency.releaseKey({ userId: req.user.id, endpointScope: scope, key });
+        throw err;
+    }
 }
 
 router.post('/password', authenticateToken, async (req, res) => {
@@ -28,21 +76,47 @@ router.post('/password', authenticateToken, async (req, res) => {
     }
 });
 
-router.post('/nickname', authenticateToken, async (req, res) => {
+router.post('/nickname', authenticateToken, renameLimiter, async (req, res) => {
     const { newUsername } = req.body;
     if (!newUsername || newUsername.length < 3) return res.status(400).json({ error: 'Invalid username' });
 
     try {
-        const user = await db.get('SELECT name_changes, axp FROM users WHERE id = ?', [req.user.id]);
-        if (!user) return res.status(404).json({ error: 'User not found' });
+        const conn = await pool.getConnection();
+        let cost = 0;
+        try {
+            await conn.beginTransaction();
+            const [userRows] = await conn.execute('SELECT username, name_changes, axp FROM users WHERE id = ? FOR UPDATE', [req.user.id]);
+            const user = userRows[0];
+            if (!user) {
+                const e = new Error('User not found');
+                e.status = 404;
+                throw e;
+            }
 
-        const cost = user.name_changes > 0 ? 500 : 0;
-        if (user.axp < cost) return res.status(400).json({ error: `Not enough AXP. Changing name costs ${cost} AXP.` });
+            cost = user.name_changes > 0 ? 500 : 0;
+            if (user.axp < cost) {
+                const e = new Error(`Not enough AXP. Changing name costs ${cost} AXP.`);
+                e.status = 400;
+                throw e;
+            }
 
-        await db.run('UPDATE users SET username = ?, axp = axp - ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, cost, req.user.id]);
-
-        if (cost > 0) {
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
+            await conn.execute('UPDATE users SET username = ?, axp = axp - ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, cost, req.user.id]);
+            if (cost > 0) {
+                await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
+            }
+            await security.writeAuditLog({
+                userId: req.user.id,
+                actorUserId: req.user.id,
+                eventType: 'username_changed',
+                metadata: { oldUsername: user.username, newUsername, method: 'direct_rename', costAXP: cost },
+                conn,
+            });
+            await conn.commit();
+        } catch (txErr) {
+            await conn.rollback();
+            throw txErr;
+        } finally {
+            conn.release();
         }
 
         const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
@@ -102,68 +176,75 @@ router.get('/profile', authenticateToken, async (req, res) => {
 // [REMOVED] Insecure arbitrary AXP endpoint.
 // AXP is now only awarded server-side during specific actions (clips, setups, daily login).
 
-router.post('/daily-login', authenticateToken, async (req, res) => {
+router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        const u = await db.get('SELECT streak, last_login FROM users WHERE id = ?', [req.user.id]);
-        const now = new Date();
-        const today = todayDateStr(now);
-        let streak = 1;
-        if (u && u.last_login) {
-            const last = new Date(u.last_login);
-            const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
-            if (diff === 0) return res.status(400).json({ error: 'Already claimed' });
-            if (diff === 1) streak = (u.streak || 0) + 1;
-        }
-        const base = 20;
-        const bonus = Math.min(streak, 7) * 5;
-        const total = base + bonus;
-        await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
-        await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
+        return await handleIdempotentAction(req, res, 'reward:daily-login', async () => {
+            const u = await db.get('SELECT streak, last_login, axp FROM users WHERE id = ?', [req.user.id]);
+            const now = new Date();
+            const today = todayDateStr(now);
+            let streak = 1;
+            if (u && u.last_login) {
+                const last = new Date(u.last_login);
+                const diff = Math.floor((now - last) / (1000 * 60 * 60 * 24));
+                if (diff === 0) {
+                    const e = new Error('Already claimed');
+                    e.status = 400;
+                    throw e;
+                }
+                if (diff === 1) streak = (u.streak || 0) + 1;
+            }
+            const base = 20;
+            const bonus = Math.min(streak, 7) * 5;
+            const total = base + bonus;
+            await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
+            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
 
         // Record AXP History snapshot
-        const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
+            const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+            await db.run('INSERT INTO axp_history (user_id, axp, date) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE axp = ?', [req.user.id, updatedUser.axp, today, updatedUser.axp]);
+            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: (u && u.axp) || 0, afterAXP: updatedUser.axp || 0, reason: 'daily_login_reward' });
 
         // Perfect Week auto-bonus (server-confirmed)
         // Compute week start (Monday)
-        const d = new Date(now);
-        const day = d.getDay(); // 0=Sun..6=Sat
-        const diffToMonday = (day === 0 ? -6 : 1) - day;
-        const monday = new Date(d);
-        monday.setDate(d.getDate() + diffToMonday);
-        const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+            const d = new Date(now);
+            const day = d.getDay(); // 0=Sun..6=Sat
+            const diffToMonday = (day === 0 ? -6 : 1) - day;
+            const monday = new Date(d);
+            monday.setDate(d.getDate() + diffToMonday);
+            const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
         // Ensure weekly_bonus table exists
-        await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
+            await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
             user_id INT NOT NULL,
             week_start DATE NOT NULL,
             awarded TINYINT DEFAULT 1,
             PRIMARY KEY (user_id, week_start)
         )`);
-        const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
-        if (!wb && streak >= 7) {
-            const weekBonus = total; // 2× today by adding +total again
-            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
-            await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
+            const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
+            if (!wb && streak >= 7) {
+                const weekBonus = total; // 2× today by adding +total again
+                await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
+                await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
+                await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
             // Achievement unlock (id: perfect_week)
-            try {
-                await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
+                try {
+                    await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
                     user_id INT NOT NULL,
                     achievement_id VARCHAR(64) NOT NULL,
                     PRIMARY KEY (user_id, achievement_id)
                 )`);
-                const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
-                if (!ach) {
-                    await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
-                }
-            } catch { }
-            return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
-        }
+                    const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
+                    if (!ach) {
+                        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
+                    }
+                } catch { }
+                return { payload: { success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart } };
+            }
 
-        res.json({ success: true, streak, axp: total, date: today });
+            return { payload: { success: true, streak, axp: total, date: today } };
+        });
     } catch (e) {
-        res.status(500).json({ error: 'Server error' });
+        res.status(e.status || 500).json({ error: e.message || 'Server error' });
     }
 });
 
@@ -292,23 +373,29 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
 });
 
 // Daily Mystery Protocol Reward
-router.post('/daily-protocol', authenticateToken, async (req, res) => {
+router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        const today = new Date().toISOString().split('T')[0];
-        const lastProtocol = await db.get('SELECT last_protocol_date FROM users WHERE id = ?', [req.user.id]);
+        return await handleIdempotentAction(req, res, 'reward:daily-protocol', async () => {
+            const today = new Date().toISOString().split('T')[0];
+            const before = await db.get('SELECT last_protocol_date, axp FROM users WHERE id = ?', [req.user.id]);
 
-        if (lastProtocol && lastProtocol.last_protocol_date === today) {
-            return res.status(400).json({ error: 'Protocol already completed for today' });
-        }
+            if (before && before.last_protocol_date === today) {
+                const e = new Error('Protocol already completed for today');
+                e.status = 400;
+                throw e;
+            }
 
-        const axpReward = 200;
-        await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Completed the Secret Protocol today (+${axpReward} AXP)`]);
+            const axpReward = 200;
+            await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Completed the Secret Protocol today (+${axpReward} AXP)`]);
+            const after = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: before?.axp || 0, afterAXP: after?.axp || 0, reason: 'daily_protocol_reward' });
 
-        res.json({ success: true, axp: axpReward });
+            return { payload: { success: true, axp: axpReward } };
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server error' });
+        res.status(err.status || 500).json({ error: err.message || 'Server error' });
     }
 });
 
@@ -359,29 +446,83 @@ router.delete('/history/:id', authenticateToken, async (req, res) => {
 
 router.post('/premium/buy', authenticateToken, async (req, res) => {
     try {
-        const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
-        if (u && u.is_premium) return res.status(400).json({ error: 'Already Premium' });
+        const conn = await pool.getConnection();
+        try {
+            await conn.beginTransaction();
+            const [userRows] = await conn.execute('SELECT is_premium FROM users WHERE id = ? FOR UPDATE', [req.user.id]);
+            const user = userRows[0];
+            if (!user) {
+                const e = new Error('User not found');
+                e.status = 404;
+                throw e;
+            }
+            if (user.is_premium) {
+                const e = new Error('Already Premium');
+                e.status = 400;
+                throw e;
+            }
 
-        await db.run('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Upgraded to Premium Areni Status']);
+            const [inventoryRows] = await conn.execute(
+                `SELECT ui.id
+                 FROM user_inventory ui
+                 JOIN shop_items si ON si.id = ui.item_id
+                 WHERE ui.user_id = ? AND LOWER(si.name) LIKE '%premium%'
+                 ORDER BY ui.id ASC
+                 LIMIT 1
+                 FOR UPDATE`,
+                [req.user.id]
+            );
+            const entitlement = inventoryRows[0];
+            if (!entitlement) {
+                const e = new Error('Premium entitlement not found in inventory');
+                e.status = 403;
+                throw e;
+            }
+
+            await conn.execute('DELETE FROM user_inventory WHERE id = ?', [entitlement.id]);
+            await conn.execute('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
+            await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Upgraded to Premium Areni Status']);
+            await security.writeAuditLog({
+                userId: req.user.id,
+                actorUserId: req.user.id,
+                eventType: 'premium_status_changed',
+                metadata: { source: 'premium_buy_endpoint', from: false, to: true },
+                conn,
+            });
+            await conn.commit();
+        } catch (txErr) {
+            await conn.rollback();
+            throw txErr;
+        } finally {
+            conn.release();
+        }
         res.json({ success: true });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        res.status(err.status || 500).json({ error: err.message || 'DB Error' });
     }
 });
 
-router.post('/easter-egg', authenticateToken, async (req, res) => {
+router.post('/easter-egg', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        const achievementId = 'easter_egg_hack';
-        const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
-        if (u) return res.status(400).json({ error: 'Reward already claimed' });
+        return await handleIdempotentAction(req, res, 'reward:easter-egg', async () => {
+            const achievementId = 'easter_egg_hack';
+            const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
+            if (u) {
+                const e = new Error('Reward already claimed');
+                e.status = 400;
+                throw e;
+            }
 
-        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
-        await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
-        res.json({ success: true, axp: 500 });
+            const before = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+            await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
+            await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
+            const after = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
+            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: before.axp || 0, afterAXP: after.axp || 0, reason: 'easter_egg_reward' });
+            return { payload: { success: true, axp: 500 } };
+        });
     } catch (err) {
-        res.status(500).json({ error: 'DB Error' });
+        res.status(err.status || 500).json({ error: err.message || 'DB Error' });
     }
 });
 
@@ -428,6 +569,13 @@ router.post('/use-item', authenticateToken, async (req, res) => {
                 await conn.execute('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
                 await conn.execute('DELETE FROM user_inventory WHERE id = ?', [inventoryItem.id]);
                 await conn.execute('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Used Rename Card to change identity to ${newUsername}`]);
+                await security.writeAuditLog({
+                    userId: req.user.id,
+                    actorUserId: req.user.id,
+                    eventType: 'username_changed',
+                    metadata: { newUsername, method: 'rename_card' },
+                    conn,
+                });
                 await conn.commit();
             } catch (txErr) {
                 await conn.rollback();

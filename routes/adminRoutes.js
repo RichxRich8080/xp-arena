@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
+const security = require('../services/securityService');
 
 async function isAdmin(userId) {
   const u = await db.get('SELECT is_admin FROM users WHERE id = ?', [userId]);
@@ -156,7 +157,14 @@ router.post('/users/premium', async (req, res) => {
     const uid = parseInt(user_id, 10);
     const v = !!value ? 1 : 0;
     if (!uid) return res.status(400).json({ error: 'Invalid input' });
+    const before = await db.get('SELECT is_premium FROM users WHERE id = ?', [uid]);
     await db.run('UPDATE users SET is_premium = ? WHERE id = ?', [v, uid]);
+    await security.writeAuditLog({
+      userId: uid,
+      actorUserId: req.user.id,
+      eventType: 'premium_status_changed',
+      metadata: { source: 'admin', from: !!(before && before.is_premium), to: !!v }
+    });
     res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
