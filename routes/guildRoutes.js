@@ -3,6 +3,7 @@ const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const { recordSeasonPoints } = require('../services/seasonService');
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
@@ -188,6 +189,7 @@ router.post('/war/apply', authenticateToken, validateRequest([
     if (!g) return errorResponse(res, 404, 'GUILD_NOT_FOUND', 'Not found');
     if (g.owner_user_id !== req.user.id) return errorResponse(res, 403, 'FORBIDDEN', 'Not allowed');
     await db.run('INSERT INTO guild_war_applications (guild_id, note) VALUES (?, ?)', [gid, String(note||'').slice(0,255)]);
+    await recordSeasonPoints(req.user.id, { guildWar: 40, meta: { guildId: gid } });
     res.json({ success: true });
   } catch (e) {
     errorResponse(res, 500, 'GUILD_WAR_APPLY_FAILED', 'Server error');

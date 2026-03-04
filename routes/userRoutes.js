@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
+const { recordSeasonPoints } = require('../services/seasonService');
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
@@ -121,6 +122,7 @@ router.post('/daily-login', authenticateToken, async (req, res) => {
         await db.run('UPDATE users SET streak = ?, last_login = CURRENT_TIMESTAMP WHERE id = ?', [streak, req.user.id]);
         await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [total, req.user.id]);
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Daily login +${total} AXP`]);
+        await recordSeasonPoints(req.user.id, { dailyLogin: total, meta: { streak } });
 
         // Record AXP History snapshot
         const updatedUser = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
