@@ -358,7 +358,8 @@
     <script src="js/layout.js"></script>
     <script src="js/leaderboard.js"></script>
     <script>
-        // Override for Rebirth Card Logic
+        // Override for Rebirth Card Logic (guarded for compatibility)
+        if (window.Leaderboard && typeof Leaderboard.renderList === 'function') {
         const originalRender = Leaderboard.renderList;
         Leaderboard.renderList = function (data) {
             const list = document.getElementById('leaderboardList');
@@ -443,6 +444,7 @@
                 `;
             }
         };
+        }
     </script>
 </body>
 

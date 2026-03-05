@@ -4,7 +4,7 @@
  */
 
 const SAFE_CONFIG = window.CONFIG || {};
-window.API_URL = SAFE_CONFIG.API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+window.API_URL = SAFE_CONFIG.API_BASE || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:3000');
 
 const PERFORMANCE_MODES = ['high', 'balanced', 'low'];
 
@@ -176,6 +176,29 @@ function applyOverdriveSystem() {
         rail.innerHTML = links.map(([href, label]) => `<a href="${href}"><i class="fas fa-circle-notch"></i> ${label}</a>`).join('');
         document.body.appendChild(rail);
     }
+}
+
+
+
+function initNeuralHaptics() {
+    document.addEventListener('mousedown', (e) => {
+        const ripple = document.createElement('div');
+        ripple.style.cssText = `
+            position: fixed; width: 40px; height: 40px;
+            border: 2px solid var(--photon); border-radius: 50%;
+            pointer-events: none; z-index: 100001;
+            left: ${e.clientX - 20}px; top: ${e.clientY - 20}px;
+            opacity: 0.5; transform: scale(0.5);
+            transition: all 0.4s var(--transition-premium);
+        `;
+        document.body.appendChild(ripple);
+
+        requestAnimationFrame(() => {
+            ripple.style.opacity = '0';
+            ripple.style.transform = 'scale(2.5)';
+            setTimeout(() => ripple.remove(), 400);
+        });
+    }, { passive: true });
 }
 
 function applyAXPShine() {

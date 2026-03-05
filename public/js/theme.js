@@ -156,6 +156,7 @@ const ThemeEngine = {
         `;
 
         document.documentElement.setAttribute('data-theme-name', theme.name.toLowerCase().replace(/\s+/g, '-'));
+        localStorage.setItem('xp_rebirth_theme', JSON.stringify(theme));
         localStorage.setItem(this.getScopedKey('xp_rebirth_theme'), JSON.stringify(theme));
 
         // Update UI state

@@ -161,4 +161,32 @@ router.get('/nexus/summary', async (req, res) => {
     }
 });
 
+/**
+ * Ecosystem Nexus Summary
+ */
+router.get('/nexus/summary', async (req, res) => {
+    try {
+        const [usersRow, guildsRow, topAuraRow, avgApxRow] = await Promise.all([
+            db.get('SELECT COUNT(*) as total FROM users WHERE email_verified = 1', []),
+            db.get('SELECT COUNT(*) as total FROM guilds', []),
+            db.get(`SELECT MAX((
+                    COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(socials, '$.likes')) AS UNSIGNED), 0) * 0.7 +
+                    COALESCE(CAST(JSON_UNQUOTE(JSON_EXTRACT(socials, '$.wins')) AS UNSIGNED), 0) * 12 +
+                    COALESCE(streak, 0) * 3
+                )) as top_aura FROM users WHERE email_verified = 1`, []),
+            db.get('SELECT ROUND(AVG(axp), 0) as avg_axp FROM users WHERE email_verified = 1', []),
+        ]);
+
+        res.json({
+            users: Number(usersRow?.total || 0),
+            guilds: Number(guildsRow?.total || 0),
+            topAura: Number(topAuraRow?.top_aura || 0),
+            avgAXP: Number(avgApxRow?.avg_axp || 0),
+        });
+    } catch (err) {
+        console.error('[Nexus Summary] Error:', err);
+        res.status(500).json({ error: 'Failed to fetch nexus summary' });
+    }
+});
+
 module.exports = router;
