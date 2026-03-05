@@ -4,6 +4,45 @@
  */
 
 const ThemeEngine = {
+    performanceModes: ['high', 'balanced', 'low'],
+
+    getCurrentUserId() {
+        try {
+            const raw = localStorage.getItem('xp_current_user');
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            return parsed?.id || null;
+        } catch (e) {
+            return null;
+        }
+    },
+
+    getScopedKey(baseKey) {
+        const userId = this.getCurrentUserId();
+        return userId ? `${baseKey}_${userId}` : baseKey;
+    },
+
+    getPerformanceMode() {
+        const scoped = localStorage.getItem(this.getScopedKey('xp_performance_mode'));
+        const fallback = localStorage.getItem('xp_performance_mode');
+        const mode = scoped || fallback || 'balanced';
+        return this.performanceModes.includes(mode) ? mode : 'balanced';
+    },
+
+    setPerformanceMode(mode, options = {}) {
+        const safeMode = this.performanceModes.includes(mode) ? mode : 'balanced';
+        const shouldPersist = options.persist !== false;
+        const scopedKey = this.getScopedKey('xp_performance_mode');
+
+        if (shouldPersist) {
+            localStorage.setItem(scopedKey, safeMode);
+            localStorage.setItem(this.getScopedKey('xp_visual_mode'), safeMode);
+        }
+
+        document.documentElement.dataset.performanceMode = safeMode;
+        window.dispatchEvent(new CustomEvent('xp:performance-mode-change', { detail: { mode: safeMode } }));
+        return safeMode;
+    },
     themes: [
         {
             name: 'Agni Assault',
@@ -73,7 +112,7 @@ const ThemeEngine = {
     ],
 
     init() {
-        const saved = localStorage.getItem('xp_rebirth_theme');
+        const saved = localStorage.getItem(this.getScopedKey('xp_rebirth_theme')) || localStorage.getItem('xp_rebirth_theme');
         let current = this.themes[0];
 
         if (saved) {
@@ -85,6 +124,7 @@ const ThemeEngine = {
             }
         }
 
+        this.setPerformanceMode(this.getPerformanceMode(), { persist: false });
         this.apply(current);
         this.injectCustomizer(current);
     },
@@ -117,6 +157,7 @@ const ThemeEngine = {
 
         document.documentElement.setAttribute('data-theme-name', theme.name.toLowerCase().replace(/\s+/g, '-'));
         localStorage.setItem('xp_rebirth_theme', JSON.stringify(theme));
+        localStorage.setItem(this.getScopedKey('xp_rebirth_theme'), JSON.stringify(theme));
 
         // Update UI state
         document.querySelectorAll('.theme-option').forEach(opt => {
@@ -141,6 +182,14 @@ const ThemeEngine = {
                                  style="--color: ${t.primary}" 
                                  title="${t.name} (${t.category})"></div>
                         `).join('')}
+                    </div>
+                    <div style="margin-top: 1rem; display: grid; gap: 0.5rem;">
+                        <label for="performanceModeSelect" style="font-size: 0.68rem; letter-spacing: 0.08em; color: var(--stardust-muted); text-transform: uppercase;">Performance Mode</label>
+                        <select id="performanceModeSelect" class="input-rebirth" style="padding: 0.65rem 0.8rem; font-size: 0.8rem;">
+                            <option value="high">High Effects</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="low">Low Effects</option>
+                        </select>
                     </div>
                 </div>
                 <div class="customizer-toggle" id="themeToggle">
@@ -172,8 +221,23 @@ const ThemeEngine = {
                 if (theme) this.apply(theme);
             };
         });
+
+        const perfSelect = document.getElementById('performanceModeSelect');
+        if (perfSelect) {
+            perfSelect.value = this.getPerformanceMode();
+            perfSelect.addEventListener('change', (e) => {
+                this.setPerformanceMode(e.target.value);
+                if (window.Toast) Toast.show(`Performance mode: ${e.target.value.toUpperCase()}`, 'info');
+            });
+        }
+
+        window.addEventListener('xp:performance-mode-change', (event) => {
+            if (perfSelect) perfSelect.value = event.detail?.mode || this.getPerformanceMode();
+        });
     }
 };
+
+window.PreferenceEngine = ThemeEngine;
 
 // Auto-init
 if (document.readyState === 'loading') {

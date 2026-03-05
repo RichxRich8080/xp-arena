@@ -39,8 +39,23 @@ CREATE TABLE IF NOT EXISTS axp_history (
     user_id INT NOT NULL,
     axp INT NOT NULL,
     date DATE NOT NULL,
+    event_type VARCHAR(50) DEFAULT 'snapshot',
+    source VARCHAR(100) DEFAULT 'system',
+    metadata JSON NULL,
     UNIQUE KEY user_date_uniq (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS economy_events (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    source VARCHAR(100) NOT NULL,
+    amount INT NOT NULL DEFAULT 0,
+    status VARCHAR(20) NOT NULL DEFAULT 'success',
+    metadata JSON NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -257,6 +272,43 @@ CREATE TABLE IF NOT EXISTS user_inventory (
     FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_item (user_id, item_id)
 );
+
+-- Idempotency Keys
+CREATE TABLE IF NOT EXISTS idempotency_keys (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    endpoint_scope VARCHAR(100) NOT NULL,
+    idempotency_key VARCHAR(128) NOT NULL,
+    status ENUM('pending', 'completed') NOT NULL DEFAULT 'pending',
+    response_status INT,
+    response_body JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_idempotency (user_id, endpoint_scope, idempotency_key),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+-- Audit Log Trail
+CREATE TABLE IF NOT EXISTS audit_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    actor_user_id INT,
+    event_type VARCHAR(64) NOT NULL,
+    metadata_json JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+-- Security / Anomaly Events
+CREATE TABLE IF NOT EXISTS security_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    event_type VARCHAR(64) NOT NULL,
+    severity ENUM('info', 'warning', 'critical') NOT NULL DEFAULT 'warning',
+    metadata_json JSON,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
 -- Indices for Optimization
 CREATE INDEX idx_users_axp ON users(axp);
 CREATE INDEX idx_users_guild ON users(guild_id);
@@ -265,5 +317,10 @@ CREATE INDEX idx_setups_user_time ON setups(user_id, created_at);
 CREATE INDEX idx_setups_priv_time ON setups(is_private, created_at);
 CREATE INDEX idx_setups_pop ON setups(likes, copies);
 CREATE INDEX idx_guild_members_user ON guild_members(user_id);
+CREATE INDEX idx_economy_events_time ON economy_events(created_at);
+CREATE INDEX idx_economy_events_user ON economy_events(user_id);
+CREATE INDEX idx_economy_events_type_status ON economy_events(event_type, status);
 CREATE INDEX idx_tournaments_time ON tournaments(created_at);
 CREATE INDEX idx_creator_followers_creator ON creator_followers(creator_user_id);
+CREATE INDEX idx_security_events_user_time ON security_events(user_id, created_at);
+CREATE INDEX idx_audit_logs_user_time ON audit_logs(user_id, created_at);

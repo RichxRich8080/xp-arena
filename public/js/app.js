@@ -866,11 +866,13 @@ function generateShareImage(result) {
     canvas.width = 1200;
     canvas.height = 1200;
     const ctx = canvas.getContext('2d');
-    const cyan = '#00f5ff';
-    const bg = '#0a0e16';
-    const grid = 'rgba(0, 245, 255, 0.06)';
+    const theme = getResultTheme();
+    const palette = getPalette(theme);
+    const cyan = palette.accent;
+    const bg = palette.bg;
+    const grid = palette.grid;
     const white = '#ffffff';
-    const muted = 'rgba(255,255,255,0.55)';
+    const muted = palette.muted;
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, 1200, 1200);
     ctx.strokeStyle = grid;
@@ -930,7 +932,7 @@ function generateShareImage(result) {
         const valNum = parseInt(String(s.value).split('-').pop());
         const width = Math.max(0, Math.min(500, (valNum / 200) * 500));
         const grad = ctx.createLinearGradient(100, 0, 600, 0);
-        grad.addColorStop(0, '#bf5af2');
+        grad.addColorStop(0, palette.barStart);
         grad.addColorStop(1, cyan);
         ctx.fillStyle = grad;
         ctx.fillRect(100, y + 30, width, 12);
@@ -996,6 +998,146 @@ function generateShareImage(result) {
     link.href = dataUrl;
     link.click();
     if (window.Toast) Toast.show('Card exported', 'success');
+}
+
+// --- Generate short animated video (WebM) with sparkles and glow ---
+async function generateShareVideo(result) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 1200;
+    canvas.height = 1200;
+    const ctx = canvas.getContext('2d');
+    const stream = canvas.captureStream(30);
+    const recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+    const chunks = [];
+    recorder.ondataavailable = e => { if (e.data.size) chunks.push(e.data); };
+    const done = new Promise(resolve => recorder.onstop = resolve);
+    recorder.start();
+
+    const theme = getResultTheme();
+    const palette = getPalette(theme);
+    const cyan = palette.accent;
+    const bg = palette.bg;
+    const grid = palette.grid;
+    const white = '#ffffff';
+    let t = 0;
+
+    function drawFrame() {
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, 1200, 1200);
+        ctx.strokeStyle = grid;
+        ctx.lineWidth = 1;
+        for (let i = 0; i < 1200; i += 50) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 1200); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(1200, i); ctx.stroke();
+        }
+        // Sparkles
+        for (let i = 0; i < 80; i++) {
+            const x = Math.random() * 1200;
+            const y = Math.random() * 1200;
+            const r = Math.random() * 2 + 1;
+            const grad = ctx.createRadialGradient(x, y, 0, x, y, r * 10);
+            grad.addColorStop(0, 'rgba(0,245,255,0.9)');
+            grad.addColorStop(1, 'rgba(0,245,255,0)');
+            ctx.fillStyle = grad;
+            ctx.beginPath();
+            ctx.arc(x, y, r * 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        // Lightning streaks
+        for (let i = 0; i < 6; i++) {
+            const x1 = Math.random() * 1200, y1 = Math.random() * 600;
+            const x2 = x1 + (Math.random() * 200 - 100), y2 = y1 + (Math.random() * 200);
+            ctx.shadowColor = palette.accentGlow;
+            ctx.shadowBlur = 25;
+            ctx.strokeStyle = cyan;
+            ctx.lineWidth = 2 + Math.random() * 2;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+        // Title
+        ctx.textAlign = 'left';
+        ctx.fillStyle = white;
+        ctx.font = '900 92px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('SIGNATURE', 100, 220);
+        ctx.fillText('SENSITIVITY CARD', 100, 310);
+        ctx.font = '900 64px "Clash Display", sans-serif';
+        ctx.fillStyle = cyan;
+        ctx.fillText('XP ARENA', 100, 400);
+        // Sensitivity values fade-in
+        const alpha = Math.min(1, t / 90);
+        ctx.globalAlpha = alpha;
+        const settings = [
+            { label: 'GENERAL', value: result.general },
+            { label: 'RED DOT', value: result.reddot },
+            { label: '2X OPTIC', value: result.scope2x },
+            { label: '4X OPTIC', value: result.scope4x }
+        ];
+        settings.forEach((s, i) => {
+            const y = 640 + (i * 120);
+            ctx.font = '800 20px "Plus Jakarta Sans", sans-serif';
+            ctx.fillStyle = 'rgba(255,255,255,0.6)';
+            ctx.fillText(s.label, 100, y);
+            ctx.textAlign = 'right';
+            ctx.font = '900 46px "Clash Display", sans-serif';
+            ctx.fillStyle = cyan;
+            ctx.fillText(s.value, 600, y + 10);
+            ctx.textAlign = 'left';
+        });
+        ctx.globalAlpha = 1;
+        t++;
+        if (t < 180) requestAnimationFrame(drawFrame);
+        else {
+            recorder.stop();
+        }
+    }
+    drawFrame();
+    await done;
+    const blob = new Blob(chunks, { type: 'video/webm' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `XP-ARENA-CARD-${(result.device || 'UNKNOWN').replace(/\s+/g, '-')}.webm`;
+    a.click();
+    URL.revokeObjectURL(url);
+    if (window.Toast) Toast.show('Video exported', 'success');
+}
+
+function getResultTheme() {
+    try { return localStorage.getItem('result_theme') || 'cyan'; } catch { return 'cyan'; }
+}
+function getPalette(theme) {
+    switch ((theme || 'cyan').toLowerCase()) {
+        case 'gold':
+            return {
+                accent: '#ffd700',
+                accentGlow: 'rgba(255,215,0,0.6)',
+                bg: '#0b0b10',
+                grid: 'rgba(255,215,0,0.06)',
+                muted: 'rgba(255,255,255,0.6)',
+                barStart: '#ffbb33'
+            };
+        case 'purple':
+            return {
+                accent: '#bf5af2',
+                accentGlow: 'rgba(191,90,242,0.6)',
+                bg: '#0a0812',
+                grid: 'rgba(191,90,242,0.06)',
+                muted: 'rgba(255,255,255,0.6)',
+                barStart: '#7c3aed'
+            };
+        default:
+            return {
+                accent: '#00f5ff',
+                accentGlow: 'rgba(0,245,255,0.6)',
+                bg: '#0a0e16',
+                grid: 'rgba(0, 245, 255, 0.06)',
+                muted: 'rgba(255,255,255,0.55)',
+                barStart: '#bf5af2'
+            };
+    }
 }
 
 async function SubmitManualSetup(payload) {

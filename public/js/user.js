@@ -55,6 +55,7 @@ const User = {
                     premium_name_color: data.user.premium_name_color || null,
                     premium_glow: !!data.user.premium_glow,
                     socials: typeof data.user.socials === 'string' ? JSON.parse(data.user.socials) : (data.user.socials || { tiktok: '', instagram: '', youtube: '' }),
+                    visualMode: localStorage.getItem(`xp_performance_mode_${user.id}`) || localStorage.getItem('xp_performance_mode') || 'balanced',
                     activities: data.activities || [],
                     vault: data.vault || [],
                     presets: data.presets || [],
@@ -108,6 +109,7 @@ const User = {
             if (!stats.quests) stats.quests = { completed: [], progress: {} };
             if (!stats.visitedPages) stats.visitedPages = [];
             if (!stats.socials) stats.socials = { tiktok: '', instagram: '', youtube: '' };
+            if (!stats.visualMode) stats.visualMode = localStorage.getItem(`xp_performance_mode_${user.id}`) || localStorage.getItem('xp_performance_mode') || 'balanced';
         }
         return stats;
     },

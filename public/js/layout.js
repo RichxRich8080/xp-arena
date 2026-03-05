@@ -6,6 +6,21 @@
 const SAFE_CONFIG = window.CONFIG || {};
 window.API_URL = SAFE_CONFIG.API_BASE || (window.location.protocol.startsWith('http') ? '' : 'http://localhost:3000');
 
+const PERFORMANCE_MODES = ['high', 'balanced', 'low'];
+
+function getCurrentPerformanceMode() {
+    const mode = document.documentElement.dataset.performanceMode || (window.PreferenceEngine && PreferenceEngine.getPerformanceMode ? PreferenceEngine.getPerformanceMode() : localStorage.getItem('xp_performance_mode')) || 'balanced';
+    return PERFORMANCE_MODES.includes(mode) ? mode : 'balanced';
+}
+
+function isHighPerf() {
+    return getCurrentPerformanceMode() === 'high';
+}
+
+function isLowPerf() {
+    return getCurrentPerformanceMode() === 'low';
+}
+
 // Helper to get root-relative paths
 function getRootPath(path) {
     if (window.location.protocol.startsWith('http')) {
@@ -55,6 +70,10 @@ if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
+        PreferenceEngine.setPerformanceMode(PreferenceEngine.getPerformanceMode(), { persist: false });
+    }
+
     // Failsafe: Ensure content is visible within 2s even if JS errors occur
     setTimeout(() => {
         document.body.classList.add('booted');
@@ -85,16 +104,40 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlobalSFX();
 
     // Singularity: Global Transmissions
-    initGlobalTransmissions();
+    if (!isLowPerf()) initGlobalTransmissions();
 
     // Final Visual Boot
     initNeuralStagger();
     initSectorMap();
-    initAmbientHUD();
+    if (isHighPerf()) initAmbientHUD();
 
     enableGlobalOverlayDismiss();
     applyAXPShine();
     applyOverdriveSystem();
+
+    // Remove any leftover transition overlay if present
+    const leftover = document.querySelector('div[style*="NEURAL_LINK_SYNC"]') || document.querySelector('div[style*="radial-gradient"][style*="backdrop-filter"]');
+    if (leftover) {
+        leftover.style.opacity = '0';
+        setTimeout(() => leftover.remove(), 120);
+    }
+
+    window.addEventListener('xp:performance-mode-change', (event) => {
+        const mode = event.detail?.mode || getCurrentPerformanceMode();
+
+        if (mode !== 'high') {
+            document.querySelector('.hud-ambient-grid')?.remove();
+        } else if (!document.querySelector('.hud-ambient-grid')) {
+            initAmbientHUD();
+        }
+
+        if (mode === 'low') {
+            document.querySelector('.global-transmission-ticker')?.remove();
+            document.body.style.marginTop = '';
+        } else if (!document.querySelector('.global-transmission-ticker')) {
+            initGlobalTransmissions();
+        }
+    });
 });
 
 
@@ -229,11 +272,17 @@ function initGlobalSFX() {
 
     // Global Hover (Debounced)
     let hoverTimeout;
+    let lastHoverSfxAt = 0;
     document.addEventListener('mouseover', (e) => {
         const el = e.target.closest('button, a, .clickable, .nav-item');
         if (el) {
             clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => Sounds.play('hover'), 50);
+            hoverTimeout = setTimeout(() => {
+                const now = Date.now();
+                if (now - lastHoverSfxAt < 120 || isLowPerf()) return;
+                lastHoverSfxAt = now;
+                Sounds.play('hover');
+            }, 60);
         }
     });
 }
@@ -272,16 +321,29 @@ function initGlobalTransmissions() {
 /**
  * Genesis: Global Mouse Tracking (Refraction Logic)
  */
-document.addEventListener('mousemove', (e) => {
-    const cards = document.querySelectorAll('.pulse-card');
-    cards.forEach(card => {
-        const rect = card.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        card.style.setProperty('--mouse-x', `${x}%`);
-        card.style.setProperty('--mouse-y', `${y}%`);
-    });
-});
+const updatePulseCardMouseVars = (() => {
+    let rafId = null;
+    let lastEvent = null;
+
+    return (event) => {
+        if (isLowPerf()) return;
+        lastEvent = event;
+        if (rafId) return;
+
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            const targetCard = lastEvent?.target?.closest?.('.pulse-card');
+            if (!targetCard) return;
+            const rect = targetCard.getBoundingClientRect();
+            const x = ((lastEvent.clientX - rect.left) / rect.width) * 100;
+            const y = ((lastEvent.clientY - rect.top) / rect.height) * 100;
+            targetCard.style.setProperty('--mouse-x', `${x}%`);
+            targetCard.style.setProperty('--mouse-y', `${y}%`);
+        });
+    };
+})();
+
+document.addEventListener('mousemove', updatePulseCardMouseVars, { passive: true });
 
 /**
  * Ambient HUD: Drifting Tactical Coordinates
@@ -426,24 +488,42 @@ window.toggleSettings = toggleSectorMap;
  * HUD Depth: Reactive 3D Parallax
  */
 function initHUDDepth() {
-    if (window.innerWidth < 768) return; // Disable on mobile for perf
+    if (window.innerWidth < 768 || !isHighPerf()) return; // Disable on mobile/lower perf
+
+    let rafId = null;
+    let latestEvent = null;
+    let cachedCards = [];
+    let cacheAt = 0;
+
+    const refreshCards = () => {
+        const now = Date.now();
+        if (now - cacheAt < 1200) return;
+        cacheAt = now;
+        cachedCards = Array.from(document.querySelectorAll('.pulse-card, .gamer-card')).slice(0, 20);
+    };
 
     document.addEventListener('mousemove', (e) => {
-        const cards = document.querySelectorAll('.pulse-card, .gamer-card');
-        const mouseX = e.clientX;
-        const mouseY = e.clientY;
+        latestEvent = e;
+        if (rafId) return;
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            refreshCards();
+            if (!latestEvent) return;
+            const mouseX = latestEvent.clientX;
+            const mouseY = latestEvent.clientY;
 
-        cards.forEach(card => {
-            const rect = card.getBoundingClientRect();
-            const cardX = rect.left + rect.width / 2;
-            const cardY = rect.top + rect.height / 2;
+            cachedCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
 
-            const angleX = (mouseY - cardY) / 30;
-            const angleY = (cardX - mouseX) / 30;
+                const angleX = (mouseY - cardY) / 30;
+                const angleY = (cardX - mouseX) / 30;
 
-            card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
+                card.style.transform = `rotateX(${angleX}deg) rotateY(${angleY}deg) translateY(-8px)`;
+            });
         });
-    });
+    }, { passive: true });
 }
 
 /**
@@ -470,6 +550,11 @@ function initNeuralBridge() {
 }
 
 function showNeuralGlitch(callback) {
+    if (isLowPerf()) {
+        callback();
+        return;
+    }
+
     const overlay = document.createElement('div');
     overlay.style.cssText = `
         position: fixed; inset: 0; z-index: 100000;
@@ -490,7 +575,17 @@ function showNeuralGlitch(callback) {
 
     requestAnimationFrame(() => {
         overlay.style.opacity = '1';
-        setTimeout(callback, 220);
+        const before = window.location.href;
+        setTimeout(() => {
+            try { callback(); } catch {}
+            // Fail-safe: if navigation didn't happen within 1500ms, remove overlay
+            setTimeout(() => {
+                if (window.location.href === before && overlay.parentNode) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => overlay.remove(), 180);
+                }
+            }, 1500);
+        }, 220);
     });
 }
 
@@ -502,11 +597,7 @@ function injectRebirthLayout() {
 
     const root = './';
 
-    // Hide legacy elements
-    const legacyNav = document.querySelector('nav.navbar');
-    if (legacyNav) legacyNav.style.display = 'none';
-    const legacyBottomNav = document.querySelector('nav.bottom-nav');
-    if (legacyBottomNav) legacyBottomNav.style.display = 'none';
+    
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
     const topBarHTML = `
@@ -540,7 +631,15 @@ function injectRebirthLayout() {
     `;
 
     if (!document.querySelector('.rebirth-top-bar')) {
-        document.body.insertAdjacentHTML('afterbegin', topBarHTML);
+        try {
+            document.body.insertAdjacentHTML('afterbegin', topBarHTML);
+            document.body.classList.add('has-top-bar');
+            const legacyNav = document.querySelector('nav.navbar');
+            if (legacyNav) legacyNav.style.display = 'none';
+        } catch (e) {
+            const legacyNav = document.querySelector('nav.navbar');
+            if (legacyNav) legacyNav.style.display = '';
+        }
     }
 
     // Inject Floating Back Button
@@ -577,7 +676,15 @@ function injectRebirthLayout() {
     `;
 
     if (!document.querySelector('.command-dock')) {
-        document.body.insertAdjacentHTML('beforeend', dockHTML);
+        try {
+            document.body.insertAdjacentHTML('beforeend', dockHTML);
+            document.body.classList.add('has-command-dock');
+            const legacyBottomNav = document.querySelector('nav.bottom-nav');
+            if (legacyBottomNav) legacyBottomNav.style.display = 'none';
+        } catch (e) {
+            const legacyBottomNav = document.querySelector('nav.bottom-nav');
+            if (legacyBottomNav) legacyBottomNav.style.display = '';
+        }
     }
 
     injectRebirthFooter();
@@ -586,8 +693,17 @@ function injectRebirthLayout() {
     injectTacticalToastContainer();
     startNeuralTicker();
     if (window.Toast) {
-        // Sticky info toast to confirm HUD sync
-        Toast.show('Neural HUD Resynchronized', 'info', 0);
+        try {
+            const seen = sessionStorage.getItem('hud_sync_shown');
+            if (!seen) {
+                Toast.show('Neural HUD Resynchronized', 'info', 2500);
+                sessionStorage.setItem('hud_sync_shown', '1');
+            }
+        } catch {}
+    }
+
+    if (currentPage === 'index.html' || currentPage === '') {
+        injectIndexInfo();
     }
 }
 
@@ -731,6 +847,32 @@ function enableGlobalOverlayDismiss() {
             }
         }
     }, true);
+}
+
+function injectIndexInfo() {
+    if (document.getElementById('index-info-banner')) return;
+    const banner = document.createElement('div');
+    banner.id = 'index-info-banner';
+    banner.style.cssText = `
+        position: fixed; top: 110px; left: 50%; transform: translateX(-50%);
+        width: min(95vw, 980px); z-index: 100000;
+        display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+        background: rgba(10, 10, 20, 0.85); border: 1px solid var(--glass-border);
+        border-radius: 16px; padding: 1rem; align-items: center;
+        backdrop-filter: blur(16px);
+    `;
+    banner.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;">
+            <i class="fas fa-bolt" style="color: var(--photon);"></i>
+            <div style="font-weight:800;">Tips</div>
+        </div>
+        <div style="display:flex; gap: 10px; justify-content:flex-end;">
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='daily-login.html'">Daily Rewards</button>
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='shop.html'">Armory</button>
+            <button class="btn-rebirth btn-glass" onclick="window.location.href='leaderboard.html'">Elite Rankings</button>
+        </div>
+    `;
+    document.body.appendChild(banner);
 }
 
 /**
@@ -917,6 +1059,14 @@ function injectSettingsDrawer() {
                             <span class="slider"></span>
                         </label>
                     </div>
+                    <div class="setting-item" style="display: grid; gap: 0.4rem;">
+                        <label for="drawerPerformanceMode" style="font-size: 0.75rem; color: var(--stardust-muted);">Visual Performance</label>
+                        <select id="drawerPerformanceMode" class="input-rebirth" style="padding: 0.75rem 1rem;">
+                            <option value="high">High Effects</option>
+                            <option value="balanced">Balanced</option>
+                            <option value="low">Low Effects</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="settings-group">
@@ -958,6 +1108,25 @@ function injectSettingsDrawer() {
         syncToggle.addEventListener('change', (e) => {
             localStorage.setItem('xp_cloud_sync', e.target.checked);
             if (window.Toast) Toast.show(`CLOUD SYNC ${e.target.checked ? 'ACTIVE' : 'OFFLINE'} `, 'info');
+        });
+    }
+
+    const drawerPerformanceMode = document.getElementById('drawerPerformanceMode');
+    if (drawerPerformanceMode) {
+        drawerPerformanceMode.value = getCurrentPerformanceMode();
+        drawerPerformanceMode.addEventListener('change', (e) => {
+            const mode = e.target.value;
+            if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
+                PreferenceEngine.setPerformanceMode(mode);
+            } else {
+                localStorage.setItem('xp_performance_mode', mode);
+                document.documentElement.dataset.performanceMode = mode;
+            }
+            if (window.Toast) Toast.show(`VISUAL MODE: ${mode.toUpperCase()}`, 'info');
+        });
+
+        window.addEventListener('xp:performance-mode-change', (event) => {
+            drawerPerformanceMode.value = event.detail?.mode || getCurrentPerformanceMode();
         });
     }
 }
@@ -1165,45 +1334,28 @@ function applyCustomAccent() {
                 b: parseInt(result[3], 16)
             } : null;
         }
+ * Backward-compatible adapter for legacy pages.
+ * Delegates layout initialization to module-based bootstrapping.
+ */
+
+(function layoutAdapter() {
+    const run = async () => {
+        const [{ bootApp }, layout] = await Promise.all([
+            import('./modules/core/boot.js'),
+            import('./modules/ui/layout-shell.js')
+        ]);
+
+        window.XPArena = window.XPArena || {};
+        window.XPArena.ui = window.XPArena.ui || {};
+        window.XPArena.ui.layout = {
+            ...(window.XPArena.ui.layout || {}),
+            initLayoutShell: layout.initLayoutShell
+        };
+
+        bootApp({ init: layout.initLayoutShell });
     };
 
-    ThemeManager.init();
-
-    /**
-     * Navigational Auditor: Neutralize Dead-ends
-     */
-    document.addEventListener('click', (e) => {
-        const link = e.target.closest('a');
-        if (link && (link.getAttribute('href') === '#' || link.getAttribute('href') === '')) {
-            e.preventDefault();
-            if (window.Toast) {
-                Toast.show('SECTOR ACCESS RESTRICTED: Dead-end neutralized.', 'info');
-            }
-            console.warn('[NavAudit] Neutralized dead-end link:', link);
-        }
+    run().catch((error) => {
+        console.error('[layout adapter] Failed to initialize module layout shell', error);
     });
-
-    /**
-     * Neural Haptics: Tactile HUD Feedback
-     */
-    function initNeuralHaptics() {
-        document.addEventListener('mousedown', (e) => {
-            const ripple = document.createElement('div');
-            ripple.style.cssText = `
-            position: fixed; width: 40px; height: 40px;
-            border: 2px solid var(--photon); border-radius: 50%;
-            pointer-events: none; z-index: 100001;
-            left: ${e.clientX - 20}px; top: ${e.clientY - 20}px;
-            opacity: 0.5; transform: scale(0.5);
-            transition: all 0.4s var(--transition-premium);
-        `;
-            document.body.appendChild(ripple);
-
-            requestAnimationFrame(() => {
-                ripple.style.opacity = '0';
-                ripple.style.transform = 'scale(2.5)';
-                setTimeout(() => ripple.remove(), 400);
-            });
-        });
-    }
-}
+})();
