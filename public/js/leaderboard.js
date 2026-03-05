@@ -116,6 +116,7 @@ async function renderLeaderboard() {
     list.innerHTML = top10.map((p, idx) => {
         const pos = idx + 1;
         const isTop3 = pos <= 3;
+        const top3Class = isTop3 ? ' magma-glow' : '';
         const medalColors = ['#FFD700', '#C0C0C0', '#CD7F32'];
         const posColor = isTop3 ? medalColors[idx] : 'var(--text-muted)';
         const posLabel = isTop3 ? ['🥇', '🥈', '🥉'][idx] : `#${pos}`;
@@ -150,7 +151,7 @@ async function renderLeaderboard() {
                 border: 1px solid ${border};
                 transition: all 0.2s;
                 cursor: pointer;
-            " class="lb-row hud-table-row glass-card rank-${pos}" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
+            " class="lb-row hud-table-row glass-card rank-${pos}${top3Class}" onclick="showPlayerCard('${p.username}', ${p.axp}, '${p.avatar}', '${p.rank.name}', ${p.level}, ${p.streak}, ${p.submissions})">
                 <div class="hud-corner hud-tl"></div>
                 <div class="hud-corner hud-tr"></div>
                 <div class="hud-corner hud-bl"></div>

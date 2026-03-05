@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ecosystem Nexus • XP ARENA</title>
+  <link rel="stylesheet" href="css/rebirth.css">
+  <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+  <style>
+    .nexus-shell { max-width: 1300px; margin: 0 auto; padding: 8rem 2rem 10rem; }
+    .nexus-hero { text-align: center; margin-bottom: 3rem; }
+    .nexus-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap:1.2rem; }
+    .nexus-card { background: rgba(255,255,255,0.02); border:1px solid var(--glass-border); border-radius: 18px; padding:1.2rem; backdrop-filter: blur(15px); }
+    .nexus-val { font-family:'Clash Display',sans-serif; font-size:2rem; color: var(--photon); }
+    .nexus-actions { display:flex; flex-wrap:wrap; gap:0.8rem; margin-top:2rem; }
+    .pulse-line { height:3px; margin-top:0.8rem; background: linear-gradient(90deg, transparent, var(--photon), transparent); animation: sweep 2.4s linear infinite; }
+    @keyframes sweep { from { transform: translateX(-30%);} to { transform: translateX(30%);} }
+  </style>
+</head>
+<body class="page-rebirth">
+  <div class="nexus-shell">
+    <section class="nexus-hero">
+      <span class="section-label">Unified Command Intelligence</span>
+      <h1 class="clash">ECOSYSTEM<br><span class="text-photon">NEXUS</span></h1>
+      <p style="color:var(--stardust-muted);max-width:760px;margin:1rem auto 0;">A real-time control surface for the Arena economy, social momentum, and tactical progression loops.</p>
+    </section>
+
+    <section class="nexus-grid" id="nexusMetrics">
+      <article class="nexus-card"><div class="section-label">Arenis</div><div id="mx-users" class="nexus-val">--</div><div class="pulse-line"></div></article>
+      <article class="nexus-card"><div class="section-label">Guilds</div><div id="mx-guilds" class="nexus-val">--</div><div class="pulse-line"></div></article>
+      <article class="nexus-card"><div class="section-label">Top Aura</div><div id="mx-aura" class="nexus-val">--</div><div class="pulse-line"></div></article>
+      <article class="nexus-card"><div class="section-label">Average AXP</div><div id="mx-axp" class="nexus-val">--</div><div class="pulse-line"></div></article>
+    </section>
+
+    <section class="pulse-card" style="margin-top:2rem; padding:1.5rem;">
+      <h3 class="clash" style="margin-bottom:0.8rem;">Fast Launch Ops</h3>
+      <div class="nexus-actions">
+        <a href="leaderboard.html" class="btn-rebirth btn-photon">Elite Matrix</a>
+        <a href="shop.html" class="btn-rebirth">Armory</a>
+        <a href="guilds.html" class="btn-rebirth">Clan Network</a>
+        <a href="tool.html" class="btn-rebirth">Sensitivity Lab</a>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/user.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    async function bootNexus() {
+      try {
+        const res = await fetch((window.API_URL || '') + '/api/nexus/summary');
+        const data = res.ok ? await res.json() : null;
+
+        document.getElementById('mx-users').textContent = Number(data?.users || 0).toLocaleString();
+        document.getElementById('mx-guilds').textContent = Number(data?.guilds || 0).toLocaleString();
+        document.getElementById('mx-aura').textContent = Number(data?.topAura || 0).toLocaleString();
+        document.getElementById('mx-axp').textContent = Number(data?.avgAXP || 0).toLocaleString();
+      } catch (e) {
+        if (window.Toast) Toast.show('Nexus feed temporarily unavailable', 'error');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', bootNexus);
+  </script>
+</body>
+</html>

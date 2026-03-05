@@ -2,18 +2,15 @@ const express = require('express');
 const router = express.Router();
 const { db } = require('../db');
 const { authenticateToken } = require('../middleware/auth');
+const economy = require('../services/economyService');
 
 async function chargeAXP(userId, amount, reason) {
-  const u = await db.get('SELECT axp FROM users WHERE id = ?', [userId]);
-  if (!u || u.axp < amount) return false;
-  await db.run('UPDATE users SET axp = axp - ? WHERE id = ?', [amount, userId]);
-  if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [userId, reason]);
-  return true;
+  const charged = await economy.chargeAXP(userId, amount, reason);
+  return charged.success;
 }
 
 async function awardAXP(userId, amount, reason) {
-  await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [amount, userId]);
-  if (reason) await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [userId, reason]);
+  await economy.awardAXP(userId, amount, reason);
 }
 
 router.post('/create', authenticateToken, async (req, res) => {

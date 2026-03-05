@@ -5,12 +5,71 @@
 
 const ThemeEngine = {
     themes: [
-        { name: 'Cyan', color: '#00f5ff', glow: 'rgba(0, 245, 255, 0.3)' },
-        { name: 'Emerald', color: '#00ff88', glow: 'rgba(0, 255, 136, 0.3)' },
-        { name: 'Ruby', color: '#ff4444', glow: 'rgba(255, 68, 68, 0.3)' },
-        { name: 'Amethyst', color: '#bd00ff', glow: 'rgba(189, 0, 255, 0.3)' },
-        { name: 'Amber', color: '#ff9d00', glow: 'rgba(255, 157, 0, 0.3)' },
-        { name: 'Gold', color: '#ffcc00', glow: 'rgba(255, 204, 0, 0.3)' }
+        {
+            name: 'Agni Assault',
+            category: 'Inferno Ranked',
+            primary: '#FF5500',
+            primaryGlow: 'rgba(255, 85, 0, 0.34)',
+            secondary: '#FFB703',
+            secondaryGlow: 'rgba(255, 183, 3, 0.3)',
+            void: '#090608',
+            nebula: 'rgba(24, 12, 8, 0.72)',
+            border: 'rgba(255, 122, 64, 0.26)',
+            radius: '18px',
+            contrast: '#EAFBFF'
+        },
+        {
+            name: 'Neon Circuit',
+            category: 'Cyber Arena',
+            primary: '#00F5FF',
+            primaryGlow: 'rgba(0, 245, 255, 0.32)',
+            secondary: '#9B5DE5',
+            secondaryGlow: 'rgba(155, 93, 229, 0.3)',
+            void: '#05050C',
+            nebula: 'rgba(11, 16, 28, 0.72)',
+            border: 'rgba(55, 226, 255, 0.22)',
+            radius: '20px',
+            contrast: '#EAFBFF'
+        },
+        {
+            name: 'Toxic Grid',
+            category: 'Stealth Ops',
+            primary: '#39FF14',
+            primaryGlow: 'rgba(57, 255, 20, 0.3)',
+            secondary: '#00FFCC',
+            secondaryGlow: 'rgba(0, 255, 204, 0.28)',
+            void: '#040907',
+            nebula: 'rgba(9, 22, 16, 0.76)',
+            border: 'rgba(120, 255, 120, 0.22)',
+            radius: '16px',
+            contrast: '#F3FFF3'
+        },
+        {
+            name: 'Royal Pulse',
+            category: 'Elite Legacy',
+            primary: '#8A5CFF',
+            primaryGlow: 'rgba(138, 92, 255, 0.34)',
+            secondary: '#FFD166',
+            secondaryGlow: 'rgba(255, 209, 102, 0.3)',
+            void: '#090714',
+            nebula: 'rgba(20, 15, 34, 0.74)',
+            border: 'rgba(176, 152, 255, 0.24)',
+            radius: '22px',
+            contrast: '#F5F0FF'
+        },
+        {
+            name: 'Shadow Ember',
+            category: 'Dark Tournament',
+            primary: '#FF6B6B',
+            primaryGlow: 'rgba(255, 107, 107, 0.32)',
+            secondary: '#F77F00',
+            secondaryGlow: 'rgba(247, 127, 0, 0.3)',
+            void: '#08080A',
+            nebula: 'rgba(23, 14, 14, 0.74)',
+            border: 'rgba(255, 120, 120, 0.22)',
+            radius: '18px',
+            contrast: '#FFF4F4'
+        }
     ],
 
     init() {
@@ -40,11 +99,23 @@ const ThemeEngine = {
 
         style.textContent = `
             :root {
-                --primary: ${theme.color} !important;
-                --primary-glow: ${theme.glow} !important;
+                --primary: ${theme.primary} !important;
+                --primary-glow: ${theme.primaryGlow} !important;
+                --photon: ${theme.primary} !important;
+                --photon-glow: ${theme.primaryGlow} !important;
+                --secondary: ${theme.secondary} !important;
+                --secondary-glow: ${theme.secondaryGlow} !important;
+                --corona: ${theme.secondary} !important;
+                --corona-glow: ${theme.secondaryGlow} !important;
+                --void: ${theme.void} !important;
+                --nebula: ${theme.nebula} !important;
+                --glass-border: ${theme.border} !important;
+                --radius-lg: ${theme.radius || '20px'} !important;
+                --theme-text: ${theme.contrast || '#f8fafc'} !important;
             }
         `;
 
+        document.documentElement.setAttribute('data-theme-name', theme.name.toLowerCase().replace(/\s+/g, '-'));
         localStorage.setItem('xp_rebirth_theme', JSON.stringify(theme));
 
         // Update UI state
@@ -60,15 +131,15 @@ const ThemeEngine = {
             <div class="theme-customizer">
                 <div class="customizer-panel" id="customizerPanel">
                     <div class="customizer-header">
-                        <h3 class="clash">PERSONALIZATION</h3>
-                        <p>Adjust your neural overlay.</p>
+                        <h3 class="clash">THEME COMMAND</h3>
+                        <p>Switch full-site gamer skins instantly.</p>
                     </div>
                     <div class="theme-grid">
                         ${this.themes.map(t => `
                             <div class="theme-option ${t.name === current.name ? 'active' : ''}" 
                                  data-theme="${t.name}"
-                                 style="--color: ${t.color}" 
-                                 title="${t.name}"></div>
+                                 style="--color: ${t.primary}" 
+                                 title="${t.name} (${t.category})"></div>
                         `).join('')}
                     </div>
                 </div>

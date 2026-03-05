@@ -25,6 +25,29 @@
             margin-bottom: 1rem;
         }
 
+
+        .ranks-kpi {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.9rem;
+            margin: -1rem 0 2.4rem;
+        }
+
+        .ranks-kpi .node {
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px);
+        }
+
+        .ranks-kpi .node strong {
+            display: block;
+            margin-top: 0.3rem;
+            color: var(--photon);
+            font-family: 'Clash Display', sans-serif;
+        }
+
         .status-module {
             background: var(--glass-highlight);
             padding: 2.5rem;
@@ -143,13 +166,22 @@
     </style>
 </head>
 
-<body>
+<body class="page-rebirth">
     <div class="ranks-container">
         <header class="ranks-header">
             <span class="section-label" style="letter-spacing: 0.4rem;">Hierarchical Progression</span>
             <h1 class="clash">ARENI<br><span class="text-photon">TIERS</span></h1>
             <p style="color: var(--stardust-muted);">Climb the ranks by securing AXP through global operations.</p>
         </header>
+
+
+
+        <section class="ranks-kpi">
+            <div class="node"><span class="section-label" style="margin:0;">Current Season</span><strong>SEASON 09</strong></div>
+            <div class="node"><span class="section-label" style="margin:0;">Promotion Rule</span><strong>AXP Threshold</strong></div>
+            <div class="node"><span class="section-label" style="margin:0;">Tier Delta</span><strong>Realtime</strong></div>
+            <div class="node"><span class="section-label" style="margin:0;">Legend Gate</span><strong>100,000 AXP</strong></div>
+        </section>
 
         <div class="status-module">
             <span class="current-rank-label">Active Designation</span>
@@ -180,6 +212,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/config.js"></script>
     <script src="js/auth.js"></script>
     <script src="js/user.js"></script>
     <script src="js/layout.js"></script>
