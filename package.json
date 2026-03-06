@@ -10,7 +10,7 @@
     "dev": "node server.js",
     "migrate": "node migrate.js",
     "test": "node --test",
-    "test:integration": "node --test tests/integration"
+    "test:integration": "node --test \"tests/integration/**/*.test.js\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
