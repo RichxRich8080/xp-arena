@@ -370,3 +370,133 @@ hr,
     padding: 0.35rem;
   }
 }
+
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Game UI System ===== */
+:root {
+  --game-neon: #43f5ff;
+  --game-neon-alt: #7a5cff;
+  --game-gold: #ffd166;
+}
+
+.rebirth-top-bar::before,
+.command-dock::before,
+.pulse-card::before,
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  border: 1px solid rgba(67, 245, 255, 0.14);
+  box-shadow: inset 0 0 20px rgba(67, 245, 255, 0.06);
+}
+
+.rebirth-top-bar,
+.command-dock,
+.pulse-card,
+.card,
+.feature-card,
+.guild-card,
+.rank-card,
+.quest-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.level-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #03131a;
+  background: linear-gradient(135deg, var(--game-neon), #aaf9ff);
+  border-radius: 999px;
+  padding: 0.34rem 0.62rem;
+  box-shadow: 0 8px 24px rgba(67, 245, 255, 0.35);
+}
+
+.xp-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-right: 0.45rem;
+}
+
+.xp-bar-label {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(220, 236, 255, 0.85);
+}
+
+.xp-bar-track {
+  width: clamp(72px, 10vw, 130px);
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.xp-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--game-neon), var(--game-neon-alt));
+  box-shadow: 0 0 18px rgba(67, 245, 255, 0.45);
+  transition: width .45s ease;
+}
+
+.game-nav-item {
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+
+.game-nav-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(67, 245, 255, 0.22);
+}
+
+.game-nav-item.active {
+  background: linear-gradient(180deg, rgba(67,245,255,.18), rgba(122,92,255,.18));
+  border-radius: 12px;
+}
+
+.btn,
+.button,
+.btn-rebirth {
+  transition: transform .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+
+.btn:hover,
+.button:hover,
+.btn-rebirth:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+@media (max-width: 900px) {
+  .xp-bar {
+    display: none;
+  }
+
+  .level-badge {
+    font-size: 0.64rem;
+    padding: 0.28rem 0.52rem;
+  }
+}

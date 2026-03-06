@@ -67,5 +67,8 @@ jobs:
       - name: Run migrations
         run: npm run migrate
 
+      - name: Build / syntax validation
+        run: npm run build
+
       - name: Run integration tests
         run: npm run test:integration

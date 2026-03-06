@@ -631,12 +631,17 @@ function injectRebirthLayout() {
     
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
+    const userLevel = Number.isFinite(Number(user?.level)) ? Number(user.level) : 1;
+    const userXp = Number.isFinite(Number(user?.xp)) ? Number(user.xp) : 0;
+    const xpProgress = Math.max(6, Math.min(100, Math.round((userXp % 1000) / 10)));
+
     const topBarHTML = `
         <div class="rebirth-top-bar">
             <div class="top-bar-left">
                 <button onclick="toggleSettings()" class="xpa-icon-btn" aria-label="Open settings">
                     <i class="fas fa-bars"></i>
                 </button>
+                <div class="level-badge" aria-label="Player level">LV ${isLoggedIn ? userLevel : 1}</div>
             </div>
 
             <div class="center-brand">
@@ -647,6 +652,12 @@ function injectRebirthLayout() {
             </div>
 
             <div class="top-bar-right">
+                <div class="xp-bar" aria-label="XP Progress">
+                    <span class="xp-bar-label">XP</span>
+                    <div class="xp-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${xpProgress}">
+                        <span class="xp-bar-fill" style="width:${xpProgress}%"></span>
+                    </div>
+                </div>
                 <a href="${isLoggedIn ? root + 'profile.html' : root + 'login.html'}" id="nav-profile-link" class="xpa-icon-link ${isLoggedIn ? 'logged' : ''}" aria-label="Profile">
                     <i class="fas ${isLoggedIn ? 'fa-user' : 'fa-user-circle'}"></i>
                     ${isLoggedIn ? '<span class="xpa-active-dot"></span>' : ''}
@@ -695,7 +706,7 @@ function injectRebirthLayout() {
     const dockHTML = `
         <div class="command-dock">
             ${navItems.map(item => `
-                <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
+                <a href="${item.link}" class="dock-item game-nav-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
                     <i class="fas ${item.icon}"></i>
                     <span class="dock-label">${item.label}</span>
                 </a>

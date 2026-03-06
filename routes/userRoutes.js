@@ -6,6 +6,8 @@ const rateLimit = require('express-rate-limit');
 const { db, pool } = require('../db');
 const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
 const economy = require('../services/economyService');
+const security = require('../services/securityService');
+const idempotency = require('../services/idempotencyService');
 const { recordSeasonPoints } = require('../services/seasonService');
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
@@ -21,6 +23,37 @@ const rewardClaimLimiter = rateLimit({
 function todayDateStr(d) {
     const x = d || new Date();
     return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
+}
+
+
+async function handleIdempotentAction(req, res, endpointScope, actionFn) {
+    const key = idempotency.readIdempotencyKey(req);
+    try {
+        await idempotency.reserveKey({ userId: req.user.id, endpointScope, key });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            const existing = await idempotency.getStoredResponse({ userId: req.user.id, endpointScope, key });
+            if (existing && existing.status === 'completed') {
+                const body = existing.response_body ? JSON.parse(existing.response_body) : { success: true };
+                res.set('Idempotent-Replay', 'true');
+                return res.status(existing.response_status || 200).json(body);
+            }
+            const conflict = new Error('Request with this idempotency key is already in progress');
+            conflict.status = 409;
+            throw conflict;
+        }
+        throw err;
+    }
+
+    try {
+        const result = await actionFn();
+        const payload = (result && result.payload) ? result.payload : { success: true };
+        await idempotency.completeKey({ userId: req.user.id, endpointScope, key, statusCode: 200, responseBody: payload });
+        return res.json(payload);
+    } catch (err) {
+        await idempotency.releaseKey({ userId: req.user.id, endpointScope, key });
+        throw err;
+    }
 }
 
 router.post('/password', authenticateToken, validateRequest([{ field: 'currentPassword', required: true }, { field: 'newPassword', required: true, validate: isStringMin(6), issue: 'min_length_6' }]), async (req, res) => {
@@ -66,8 +99,7 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
             return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Username already taken');
         }
         economy.economyLog('error', 'user.nickname.failure', { userId: req.user.id, error: err.message });
-        res.status(500).json({ error: 'Database error' });
-        errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Database error');
+        return errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Database error');
     }
 });
 

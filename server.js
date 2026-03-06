@@ -1,4 +1,3 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,23 +6,26 @@ const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
 const { db } = require('./db');
+const { env, assertProductionReadiness } = require('./config/env');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = env.port;
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('⚠️ [CRITICAL] JWT_SECRET is missing in production environment. Shutting down for safety.');
+try {
+    assertProductionReadiness();
+} catch (error) {
+    console.error(`⚠️ [CRITICAL] ${error.message} Shutting down for safety.`);
     process.exit(1);
 }
+
 app.set('trust proxy', 1);
 
-// HTTPS Enforcement in production
 app.use((req, res, next) => {
-    if (process.env.NODE_ENV === 'production' && req.headers['x-forwarded-proto'] === 'http') {
-        const httpsUrl = 'https://' + req.hostname + req.url;
+    if (env.isProduction && req.headers['x-forwarded-proto'] === 'http') {
+        const httpsUrl = `https://${req.hostname}${req.url}`;
         return res.redirect(301, httpsUrl);
     }
-    next();
+    return next();
 });
 
 app.disable('x-powered-by');
@@ -31,44 +33,48 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:*"],
-            connectSrc: ["'self'", "https:*"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'data:', 'https:*'],
+            connectSrc: ["'self'", 'https:*'],
         },
     },
 }));
 app.use(compression());
-const allowedOrigins = process.env.ALLOWED_ORIGINS
-    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : (process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://127.0.0.1:3000']);
-const corsIsOpen = allowedOrigins.length === 0;
+
+const corsIsOpen = env.allowedOrigins.length === 0;
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || corsIsOpen) return callback(null, true);
-        if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') return callback(null, true);
-        if (allowedOrigins.includes(origin)) return callback(null, true);
+        if (env.allowedOrigins.includes('*') && !env.isProduction) return callback(null, true);
+        if (env.allowedOrigins.includes(origin)) return callback(null, true);
         return callback(new Error('Not allowed by CORS'));
     },
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
 };
-app.use(cors(corsOptions));
-app.use(express.json());
 
+app.use(cors(corsOptions));
+app.use(express.json({ limit: '1mb' }));
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 20,
-    message: { error: 'Too many requests from this IP, please try again later.' }
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests from this IP, please try again later.' },
 });
+
 const apiLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 120,
     standardHeaders: true,
     legacyHeaders: false,
 });
+
+app.use('/api/auth', authLimiter);
+app.use('/api', apiLimiter);
 
 app.use(express.static(path.join(__dirname, 'public'), {
     extensions: ['html', 'htm'],
@@ -78,10 +84,8 @@ app.use(express.static(path.join(__dirname, 'public'), {
         if (path.extname(filePath) === '.html') {
             res.setHeader('Cache-Control', 'no-cache');
         }
-    }
+    },
 }));
-
-app.use('/api', apiLimiter);
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -100,7 +104,7 @@ app.use('/api/user', userRoutes);
 app.use('/api', featureRoutes);
 app.use('/api/setups', setupRoutes);
 app.use('/api/guilds', guildRoutes);
-app.use('/api/guild', guildRoutes); // Alias for singular support
+app.use('/api/guild', guildRoutes);
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/creators', creatorRoutes);
 app.use('/api/admin', adminRoutes);
@@ -120,7 +124,7 @@ app.get('/api/health/details', async (req, res) => {
     const startedAt = process.uptime();
     const checks = {
         api: { ok: true },
-        database: { ok: false }
+        database: { ok: false },
     };
 
     try {
@@ -135,12 +139,26 @@ app.get('/api/health/details', async (req, res) => {
         status: ok ? 'ok' : 'degraded',
         timestamp: new Date().toISOString(),
         uptimeSeconds: Math.floor(startedAt),
-        checks
+        checks,
     });
 });
 
+app.use('/api', (req, res) => {
+    res.status(404).json({ error: 'API route not found' });
+});
+
 app.use((err, req, res, next) => {
-    res.status(500).json({ error: 'Server error' });
+    const status = err.status || err.statusCode || 500;
+    const payload = {
+        error: status >= 500 ? 'Server error' : (err.message || 'Request failed'),
+    };
+    if (!env.isProduction && err.stack) {
+        payload.debug = err.stack;
+    }
+    if (status >= 500) {
+        console.error('[UnhandledError]', err);
+    }
+    res.status(status).json(payload);
 });
 
 if (require.main === module) {
@@ -148,4 +166,5 @@ if (require.main === module) {
         console.log(`Server is running on http://localhost:${PORT}`);
     });
 }
+
 module.exports = app;

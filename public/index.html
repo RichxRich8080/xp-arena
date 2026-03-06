@@ -10,11 +10,13 @@
   <link rel="stylesheet" href="/css/unified-ui.css">
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
   <header class="site-header">
     <div class="container nav">
-      <a href="/" class="brand">XP ARENA</a>
-      <button class="btn mobile-toggle" id="menuToggle" aria-label="Toggle menu">Menu</button>
-      <nav class="menu" id="menu">
+      <a href="/" class="brand" aria-label="XP Arena home">XP ARENA</a>
+      <button class="btn mobile-toggle" id="menuToggle" data-menu-toggle aria-label="Toggle navigation menu">Menu</button>
+      <nav class="menu" id="menu" data-menu aria-label="Primary">
         <a href="/leaderboard.html">Leaderboard</a>
         <a href="/tournaments.html">Tournaments</a>
         <a href="/guilds.html">Guilds</a>
@@ -25,7 +27,7 @@
     </div>
   </header>
 
-  <main class="container">
+  <main id="main-content" class="container" tabindex="-1">
     <section class="hero">
       <div class="hero-grid">
         <div>
@@ -34,13 +36,13 @@
             XP Arena unifies ranked competition, creator profiles, team management, and seasonal progression into one
             platform. This rebuild focuses on stability, performance, and mobile-first navigation.
           </p>
-          <div style="display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem;">
+          <div class="hero-actions">
             <a class="btn primary" href="/signup.html">Start your run</a>
             <a class="btn" href="/about.html">See platform vision</a>
           </div>
         </div>
-        <aside class="card">
-          <h3 style="margin-top:0;">Live platform status</h3>
+        <aside class="card" aria-live="polite">
+          <h2 class="card-title">Live platform status</h2>
           <div class="status-list">
             <div class="status-item"><span>API + Database</span><span id="apiHealth" class="pill warn">Checking…</span></div>
             <div class="status-item"><span>Authentication</span><span class="pill ok">Secured</span></div>
@@ -71,9 +73,10 @@
   </main>
 
   <footer class="footer">
-    <div class="container">© <span id="year"></span> XP Arena • Built for competitive ecosystems.</div>
+    <div class="container">© <span id="year" data-year></span> XP Arena • Built for competitive ecosystems.</div>
   </footer>
 
+  <script src="/js/site-shell.js" defer></script>
   <script src="/js/home.js" defer></script>
 </body>
 </html>

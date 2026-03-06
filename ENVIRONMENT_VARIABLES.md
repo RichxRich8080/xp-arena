@@ -1,38 +1,42 @@
-# Vercel Environment Variables Guide
+# Environment Variables
 
-To run the XP Arena backend on Vercel with MySQL, you must add the following variables in your **Vercel Project Settings**.
+Use `.env.example` as the source of truth for local + production configuration.
 
-### Option A: The "Quick" Way (Recommended)
-You can copy the content of the `.env` file I created in your project folder and paste it directly into Vercel:
-1. Open the `.env` file in VS Code.
-2. Copy all the text.
-3. In the Vercel screenshot you sent, look at the bottom and click **"Import .env"** (or just paste the text into the first box). It will automatically fill in all the keys for you!
+## Core variables
 
-### Option B: Hand-type one by one
-If you prefer to type them, here are the **Keys** you need:
+| Variable | Required | Description |
+|---|---|---|
+| `NODE_ENV` | Yes | `development`, `test`, or `production`. |
+| `PORT` | No | HTTP port (`3000` default). |
+| `JWT_SECRET` | Yes in production | JWT signing secret. App exits in production when missing. |
+| `ALLOWED_ORIGINS` | Yes in production | Comma-separated CORS allowlist. |
+| `ADMIN_USERNAME` | No | Optional owner/admin username override. |
 
-| Key | Description |
-| :--- | :--- |
-| `DB_HOST` | Your MySQL database host |
-| `DB_USER` | Your database username |
-| `DB_PASSWORD` | Your database password |
-| `DB_NAME` | Your database name |
-| `DB_PORT` | Usually `3306` |
-| `JWT_SECRET` | A random string (e.g., `xparena123!`) |
-| `NODE_ENV` | `production` |
+## Database variables
 
-### Database Providers
-Since Vercel is serverless, you need a cloud MySQL provider. Recommended options:
-- **TiDB Cloud** (Recommended for performance and scale)
-- **Aiven**
-- **PlanetScale**
+| Variable | Required | Description |
+|---|---|---|
+| `DB_HOST` | Yes | Database host. |
+| `DB_PORT` | No | Database port (`3306` default). |
+| `DB_USER` | Yes | Database username. |
+| `DB_PASSWORD` | Yes | Database password. |
+| `DB_NAME` | Yes | Database/schema name. |
+| `DB_CONNECTION_LIMIT` | No | Pool size (`10` default). |
+| `DB_SSL_REJECT_UNAUTHORIZED` | No | `true`/`false` for TLS certificate verification. |
 
-### Finalizing Database Setup
-I have created a final, unified schema and migration system for XP Arena:
+## Local setup
 
-1. **Clean Setup**: Use `tidb-schema.sql` to initialize your database from scratch.
-2. **Auto-Migration**: Run `npm run migrate` to automatically update your existing database with any missing tables or columns.
-3. **Optimized Connection**: The `db.js` file is now pre-configured for TiDB Cloud SSL and connection pooling.
+```bash
+cp .env.example .env
+npm ci
+npm run migrate
+npm run dev
+```
 
-Once these are set, go to the **Deployments** tab in Vercel and redeploy!
+## Production setup
 
+1. Add all variables from `.env.example` in your platform.
+2. Set `NODE_ENV=production`.
+3. Set a strong `JWT_SECRET`.
+4. Restrict `ALLOWED_ORIGINS` to trusted domains.
+5. Run `npm run migrate` during deployment.
