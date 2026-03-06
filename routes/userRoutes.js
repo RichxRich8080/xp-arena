@@ -10,6 +10,14 @@ const { recordSeasonPoints } = require('../services/seasonService');
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
+const rewardClaimLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many reward actions, slow down.' }
+});
+
 function todayDateStr(d) {
     const x = d || new Date();
     return `${x.getFullYear()}-${x.getMonth() + 1}-${x.getDate()}`;
@@ -43,13 +51,6 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
 
         const cost = user.name_changes > 0 ? 500 : 0;
         if (user.axp < cost) return errorResponse(res, 400, 'INSUFFICIENT_AXP', `Not enough AXP. Changing name costs ${cost} AXP.`);
-
-            cost = user.name_changes > 0 ? 500 : 0;
-            if (user.axp < cost) {
-                const e = new Error(`Not enough AXP. Changing name costs ${cost} AXP.`);
-                e.status = 400;
-                throw e;
-            }
 
         if (cost > 0) {
             await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
@@ -160,28 +161,28 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
             PRIMARY KEY (user_id, week_start)
         )`);
             const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
-            if (!wb && streak >= 7) {
-                const weekBonus = total; // 2× today by adding +total again
-                await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
-                await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
-                await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
+        if (!wb && streak >= 7) {
+            const weekBonus = total; // 2× today by adding +total again
+            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
+            await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
             // Achievement unlock (id: perfect_week)
-                try {
-                    await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
+            try {
+                await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
                     user_id INT NOT NULL,
                     achievement_id VARCHAR(64) NOT NULL,
                     PRIMARY KEY (user_id, achievement_id)
                 )`);
-                    const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
-                    if (!ach) {
-                        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
-                    }
-                } catch { }
-                return { payload: { success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart } };
-            }
+                const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
+                if (!ach) {
+                    await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
+                }
+            } catch {}
 
-            return { payload: { success: true, streak, axp: total, date: today } };
-        });
+            return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
+        }
+
+        return res.json({ success: true, streak, axp: total, date: today });
     } catch (e) {
         errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
@@ -323,12 +324,6 @@ router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req
                 e.status = 400;
                 throw e;
             }
-        const today = new Date().toISOString().split('T')[0];
-        const lastProtocol = await db.get('SELECT last_protocol_date FROM users WHERE id = ?', [req.user.id]);
-
-        if (lastProtocol && lastProtocol.last_protocol_date === today) {
-            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Protocol already completed for today');
-        }
 
             const axpReward = 200;
             await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
@@ -340,8 +335,7 @@ router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req
         });
     } catch (err) {
         console.error(err);
-        res.status(err.status || 500).json({ error: err.message || 'Server error' });
-        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
+        return res.status(err.status || 500).json({ error: err.message || 'Server error' });
     }
 });
 
@@ -470,17 +464,7 @@ router.post('/easter-egg', authenticateToken, rewardClaimLimiter, async (req, re
             return { payload: { success: true, axp: 500 } };
         });
     } catch (err) {
-        res.status(err.status || 500).json({ error: err.message || 'DB Error' });
-        const achievementId = 'easter_egg_hack';
-        const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
-        if (u) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Reward already claimed');
-
-        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
-        await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
-        res.json({ success: true, axp: 500 });
-    } catch (err) {
-        errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
+        return res.status(err.status || 500).json({ error: err.message || 'DB Error' });
     }
 });
 
