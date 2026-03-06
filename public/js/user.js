@@ -25,7 +25,7 @@ const ACHIEVEMENTS = [
 
 const API_BASE_USER = (typeof window !== 'undefined' && typeof window.API_URL !== 'undefined')
     ? window.API_URL
-    : ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+    : '';
 
 const User = {
     async loadStats() {
