@@ -1,6 +1,6 @@
 export function getConfig() {
     const safeConfig = window.CONFIG || {};
-    const apiBase = safeConfig.API_BASE || ((location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? 'http://localhost:3000' : '');
+    const apiBase = safeConfig.API_BASE || '';
     return { ...safeConfig, API_BASE: apiBase };
 }
 

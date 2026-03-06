@@ -40,10 +40,13 @@ app.use(helmet({
     },
 }));
 app.use(compression());
-const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) : [];
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : (process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000', 'http://127.0.0.1:3000']);
+const corsIsOpen = allowedOrigins.length === 0;
 const corsOptions = {
     origin: (origin, callback) => {
-        if (!origin) return callback(null, true);
+        if (!origin || corsIsOpen) return callback(null, true);
         if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         return callback(new Error('Not allowed by CORS'));
@@ -111,6 +114,29 @@ app.get('/health', (req, res) => {
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+app.get('/api/health/details', async (req, res) => {
+    const startedAt = process.uptime();
+    const checks = {
+        api: { ok: true },
+        database: { ok: false }
+    };
+
+    try {
+        await db.get('SELECT 1 AS ok');
+        checks.database.ok = true;
+    } catch (error) {
+        checks.database.error = error.code || 'DB_UNAVAILABLE';
+    }
+
+    const ok = checks.api.ok && checks.database.ok;
+    res.status(ok ? 200 : 503).json({
+        status: ok ? 'ok' : 'degraded',
+        timestamp: new Date().toISOString(),
+        uptimeSeconds: Math.floor(startedAt),
+        checks
+    });
 });
 
 app.use((err, req, res, next) => {

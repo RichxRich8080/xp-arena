@@ -47,6 +47,15 @@ if (!document.querySelector(`link[href="${animationCssPath}"]`)) {
 }
 
 
+
+const unifiedUiCssPath = 'css/unified-ui.css';
+if (!document.querySelector(`link[href="${unifiedUiCssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = unifiedUiCssPath;
+    document.head.appendChild(link);
+}
+
 const overdriveCssPath = 'css/overdrive.css';
 if (!document.querySelector(`link[href="${overdriveCssPath}"]`)) {
     const link = document.createElement('link');
@@ -142,6 +151,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function applyOverdriveSystem() {
+    const overdriveEnabled = document.body.dataset.overdrive === 'true' || localStorage.getItem('xp_overdrive_ui') === '1';
+    if (!overdriveEnabled) {
+        document.body.classList.remove('xp-overdrive');
+        return;
+    }
+
     document.body.classList.add('xp-overdrive');
 
     const topHeading = document.querySelector('h1');
@@ -1334,6 +1349,10 @@ function applyCustomAccent() {
                 b: parseInt(result[3], 16)
             } : null;
         }
+    };
+}
+
+/**
  * Backward-compatible adapter for legacy pages.
  * Delegates layout initialization to module-based bootstrapping.
  */
