@@ -10,7 +10,10 @@
     "dev": "node server.js",
     "migrate": "node migrate.js",
     "test": "node --test",
-    "test:integration": "node --test tests/integration"
+    "test:integration": "node --test \"tests/integration/**/*.test.js\"",
+    "check:syntax": "node scripts/check-syntax.js",
+    "build": "npm run check:syntax",
+    "test:ci": "npm run check:syntax && npm run test:integration"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

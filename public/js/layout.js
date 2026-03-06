@@ -21,6 +21,15 @@ function isLowPerf() {
     return getCurrentPerformanceMode() === 'low';
 }
 
+
+function shouldUseLiteMode() {
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+    const lowCpu = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+    const smallScreen = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+    return prefersReduced || lowMemory || lowCpu || smallScreen;
+}
+
 // Helper to get root-relative paths
 function getRootPath(path) {
     if (window.location.protocol.startsWith('http')) {
@@ -47,6 +56,15 @@ if (!document.querySelector(`link[href="${animationCssPath}"]`)) {
 }
 
 
+
+const unifiedUiCssPath = 'css/unified-ui.css';
+if (!document.querySelector(`link[href="${unifiedUiCssPath}"]`)) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = unifiedUiCssPath;
+    document.head.appendChild(link);
+}
+
 const overdriveCssPath = 'css/overdrive.css';
 if (!document.querySelector(`link[href="${overdriveCssPath}"]`)) {
     const link = document.createElement('link');
@@ -70,15 +88,22 @@ if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const liteMode = shouldUseLiteMode();
+
     if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
-        PreferenceEngine.setPerformanceMode(PreferenceEngine.getPerformanceMode(), { persist: false });
+        const storedMode = PreferenceEngine.getPerformanceMode();
+        if (liteMode && !localStorage.getItem('xp_performance_mode')) {
+            PreferenceEngine.setPerformanceMode('low', { persist: false });
+        } else {
+            PreferenceEngine.setPerformanceMode(storedMode, { persist: false });
+        }
     }
 
     // Failsafe: Ensure content is visible within 2s even if JS errors occur
     setTimeout(() => {
         document.body.classList.add('booted');
         document.querySelectorAll('[data-neural-stagger]').forEach(el => el.classList.add('booted'));
-    }, 2000);
+    }, liteMode ? 650 : 2000);
 
     applyCustomAccent();
     initNeuralBridge();
@@ -97,19 +122,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize HUD Depth & Haptics
     initHUDDepth();
-    initNeuralHaptics();
+    if (!liteMode) initNeuralHaptics();
 
     // Genesis: Sector Atmosphere & SFX
     initSectorAtmosphere();
-    initGlobalSFX();
+    if (!liteMode) initGlobalSFX();
 
     // Singularity: Global Transmissions
-    if (!isLowPerf()) initGlobalTransmissions();
+    if (!isLowPerf() && !liteMode) initGlobalTransmissions();
 
     // Final Visual Boot
     initNeuralStagger();
     initSectorMap();
-    if (isHighPerf()) initAmbientHUD();
+    if (isHighPerf() && !liteMode) initAmbientHUD();
 
     enableGlobalOverlayDismiss();
     applyAXPShine();
@@ -142,6 +167,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function applyOverdriveSystem() {
+    const overdriveEnabled = document.body.dataset.overdrive === 'true' || localStorage.getItem('xp_overdrive_ui') === '1';
+    if (!overdriveEnabled) {
+        document.body.classList.remove('xp-overdrive');
+        return;
+    }
+
     document.body.classList.add('xp-overdrive');
 
     const topHeading = document.querySelector('h1');
@@ -601,29 +632,26 @@ function injectRebirthLayout() {
 
     // Inject Top Bar (v2: Profile Left | Logo Center | Settings Right)
     const topBarHTML = `
-        <div class="rebirth-top-bar" style="position: fixed; top: 32px; left: 0; right: 0; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; z-index: 100001; backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border);">
-            
+        <div class="rebirth-top-bar">
             <div class="top-bar-left">
-                 <button onclick="toggleSettings()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s; z-index: 10;">
-                    <i class="fas fa-bars" style="font-size: 1.2rem;"></i>
+                <button onclick="toggleSettings()" class="xpa-icon-btn" aria-label="Open settings">
+                    <i class="fas fa-bars"></i>
                 </button>
             </div>
 
             <div class="center-brand">
-                 <a href="${root}index.html" class="rebirth-logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
-                    <div style="width: 32px; height: 32px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; transform: rotate(45deg); transition: background 0.4s var(--transition);">
-                        <div style="color: var(--void); transform: rotate(-45deg); font-weight: 900; font-size: 1.2rem;">X</div>
-                    </div>
-                    <span style="font-family: 'Clash Display', sans-serif; font-weight: 700; font-size: 1.1rem; letter-spacing: 0.1em; color: var(--stardust);">XP ARENA</span>
+                <a href="${root}index.html" class="rebirth-logo">
+                    <span class="logo-glyph">X</span>
+                    <span class="logo-text">XP ARENA</span>
                 </a>
             </div>
-            
-            <div class="top-bar-right" style="display: flex; align-items: center; gap: 0.8rem;">
-                <a href="${isLoggedIn ? root + 'profile.html' : root + 'login.html'}" id="nav-profile-link" style="width: 44px; height: 44px; border-radius: 12px; background: ${isLoggedIn ? 'var(--glass-highlight)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${isLoggedIn ? 'var(--photon)' : 'var(--glass-border)'}; display: flex; align-items: center; justify-content: center; text-decoration: none; color: ${isLoggedIn ? 'var(--photon)' : 'var(--stardust)'}; transition: all 0.3s; position: relative; overflow: hidden; z-index: 10;">
-                    <i class="fas ${isLoggedIn ? 'fa-user' : 'fa-user-circle'}" style="font-size: 1.4rem; ${isLoggedIn ? 'text-shadow: 0 0 10px var(--photon-glow);' : ''}"></i>
-                    ${isLoggedIn ? '<div style="position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: var(--photon); box-shadow: 0 -2px 10px var(--photon-glow);"></div>' : ''}
+
+            <div class="top-bar-right">
+                <a href="${isLoggedIn ? root + 'profile.html' : root + 'login.html'}" id="nav-profile-link" class="xpa-icon-link ${isLoggedIn ? 'logged' : ''}" aria-label="Profile">
+                    <i class="fas ${isLoggedIn ? 'fa-user' : 'fa-user-circle'}"></i>
+                    ${isLoggedIn ? '<span class="xpa-active-dot"></span>' : ''}
                 </a>
-                <button onclick="toggleQuickActions()" style="width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: flex; align-items: center; justify-content: center; color: var(--stardust); cursor: pointer; transition: all 0.3s;">
+                <button onclick="toggleQuickActions()" class="xpa-icon-btn" aria-label="Quick actions">
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
             </div>
@@ -665,7 +693,7 @@ function injectRebirthLayout() {
     ];
 
     const dockHTML = `
-        <div class="command-dock" style="grid-template-columns: repeat(7, 1fr);">
+        <div class="command-dock">
             ${navItems.map(item => `
                 <a href="${item.link}" class="dock-item ${currentPage === item.link.split('/').pop() ? 'active' : ''} ${(!isLoggedIn && item.requiresAuth) ? 'locked' : ''}" id="${item.id}">
                     <i class="fas ${item.icon}"></i>
@@ -1334,6 +1362,10 @@ function applyCustomAccent() {
                 b: parseInt(result[3], 16)
             } : null;
         }
+    };
+}
+
+/**
  * Backward-compatible adapter for legacy pages.
  * Delegates layout initialization to module-based bootstrapping.
  */
