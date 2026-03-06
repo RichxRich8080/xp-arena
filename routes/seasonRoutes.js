@@ -3,12 +3,21 @@ const router = express.Router();
 const { authenticateToken } = require('../middleware/auth');
 const { SEASON_REWARDS, getSeasonSummary, getSeasonProgress } = require('../services/seasonService');
 
+function isDbUnavailable(err) {
+  return !!(err && ['ENETUNREACH', 'ECONNREFUSED', 'ETIMEDOUT'].includes(err.code));
+}
+
+function degradedSummary() {
+  return { seasonId: 'offline', active: false, leaderboard: [], resetWindows: { nextDailyReset: null, nextWeeklyReset: null }, degraded: true };
+}
+
 router.get('/summary', async (req, res) => {
   try {
     const summary = await getSeasonSummary();
     res.json(summary);
   } catch (e) {
     console.error('[Season] summary error', e);
+    if (isDbUnavailable(e)) return res.json(degradedSummary());
     res.status(500).json({ error: 'Failed to fetch season summary' });
   }
 });
@@ -23,6 +32,7 @@ router.get('/rewards', async (req, res) => {
     });
   } catch (e) {
     console.error('[Season] rewards error', e);
+    if (isDbUnavailable(e)) return res.json({ seasonId: 'offline', rewards: SEASON_REWARDS, resetWindows: { nextDailyReset: null, nextWeeklyReset: null }, degraded: true });
     res.status(500).json({ error: 'Failed to fetch season rewards' });
   }
 });
