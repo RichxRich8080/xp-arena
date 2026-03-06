@@ -7,6 +7,10 @@ const { recordSeasonPoints } = require('../services/seasonService');
 const { errorResponse } = require('../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
+function isDbUnavailable(err) {
+  return !!(err && ['ENETUNREACH', 'ECONNREFUSED', 'ETIMEDOUT'].includes(err.code));
+}
+
 async function chargeAXP(userId, amount, reason) {
   const charged = await economy.chargeAXP(userId, amount, reason);
   return charged.success;
@@ -127,6 +131,7 @@ router.get('/leaderboard', async (req, res) => {
     const rows = await db.all('SELECT g.id, g.name, g.badge, COUNT(m.user_id) as members, COALESCE(SUM(u.axp),0) as axp FROM guilds g LEFT JOIN guild_members m ON g.id = m.guild_id LEFT JOIN users u ON m.user_id = u.id GROUP BY g.id ORDER BY axp DESC LIMIT 100', []);
     res.json(rows);
   } catch (e) {
+    if (isDbUnavailable(e)) return res.json([]);
     errorResponse(res, 500, 'GUILD_LEADERBOARD_FAILED', 'Server error');
   }
 });
@@ -208,9 +213,6 @@ router.post('/war/apply', authenticateToken, validateRequest([
     if (g.owner_user_id !== req.user.id) return res.status(403).json({ error: 'Not allowed' });
     await db.run('INSERT INTO guild_war_applications (guild_id, note) VALUES (?, ?)', [gid, String(note || '').slice(0, 255)]);
     await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'guild_war_apply', source: 'routes.guild.war.apply', metadata: { guildId: gid } });
-    if (!g) return errorResponse(res, 404, 'GUILD_NOT_FOUND', 'Not found');
-    if (g.owner_user_id !== req.user.id) return errorResponse(res, 403, 'FORBIDDEN', 'Not allowed');
-    await db.run('INSERT INTO guild_war_applications (guild_id, note) VALUES (?, ?)', [gid, String(note||'').slice(0,255)]);
     await recordSeasonPoints(req.user.id, { guildWar: 40, meta: { guildId: gid } });
     res.json({ success: true });
   } catch (e) {
@@ -223,6 +225,7 @@ router.get('/war/list', async (req, res) => {
     const rows = await db.all('SELECT gwa.id, gwa.guild_id, g.name, g.badge, gwa.note, gwa.created_at FROM guild_war_applications gwa JOIN guilds g ON g.id = gwa.guild_id ORDER BY gwa.created_at DESC LIMIT 100', []);
     res.json(rows);
   } catch (e) {
+    if (isDbUnavailable(e)) return res.json([]);
     errorResponse(res, 500, 'GUILD_WAR_LIST_FAILED', 'Server error');
   }
 });

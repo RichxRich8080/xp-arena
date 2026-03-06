@@ -1,26 +1,22 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const { env } = require('./config/env');
 
-// Create a connection pool optimized for TiDB
 const pool = mysql.createPool({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'xp_arena',
-    port: process.env.DB_PORT || 3306,
+    host: env.db.host,
+    user: env.db.user,
+    password: env.db.password,
+    database: env.db.database,
+    port: env.db.port,
     waitForConnections: true,
-    connectionLimit: process.env.DB_CONNECTION_LIMIT ? parseInt(process.env.DB_CONNECTION_LIMIT, 10) : 10,
+    connectionLimit: env.db.connectionLimit,
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
     ssl: {
-        rejectUnauthorized: process.env.NODE_ENV === 'production' ? true : false // Enforce certificate validation in production
-    }
+        rejectUnauthorized: env.db.rejectUnauthorized,
+    },
 });
 
-// Connection will be established on first query
-
-// Helper for single queries (compatible with sqlite3-like interface where possible)
 const databaseHelper = {
     async query(sql, params) {
         const [results] = await pool.execute(sql, params);
@@ -41,13 +37,16 @@ const databaseHelper = {
         const [results] = await pool.execute(sql, params);
         return {
             lastID: results.insertId,
-            changes: results.affectedRows
+            changes: results.affectedRows,
         };
-    }
+    },
+
+    async close() {
+        await pool.end();
+    },
 };
 
-// Export both the pool and the helper
 module.exports = {
     pool,
-    db: databaseHelper
+    db: databaseHelper,
 };
