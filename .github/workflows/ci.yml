@@ -64,6 +64,19 @@ jobs:
           echo "MySQL did not become healthy in time"
           exit 1
 
+      - name: Wait for MySQL health
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+          echo "MySQL did not become healthy in time"
+          exit 1
+
       - name: Run migrations
         run: npm run migrate
 
