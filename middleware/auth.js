@@ -1,5 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { db } = require('../db');
+const { env } = require('../config/env');
+
+const JWT_SECRET = env.jwtSecret;
+if (!JWT_SECRET && env.isProduction) {
 const JWT_SECRET = process.env.JWT_SECRET || (process.env.NODE_ENV !== 'production' ? 'dev-only-insecure-secret' : undefined);
 if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
     console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication disabled for safety.');
