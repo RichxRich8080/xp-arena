@@ -21,6 +21,15 @@ function isLowPerf() {
     return getCurrentPerformanceMode() === 'low';
 }
 
+
+function shouldUseLiteMode() {
+    const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const lowMemory = typeof navigator.deviceMemory === 'number' && navigator.deviceMemory <= 4;
+    const lowCpu = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+    const smallScreen = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+    return prefersReduced || lowMemory || lowCpu || smallScreen;
+}
+
 // Helper to get root-relative paths
 function getRootPath(path) {
     if (window.location.protocol.startsWith('http')) {
@@ -79,15 +88,22 @@ if (!document.querySelector(`script[src="${themeEnginePath}"]`)) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const liteMode = shouldUseLiteMode();
+
     if (window.PreferenceEngine && PreferenceEngine.setPerformanceMode) {
-        PreferenceEngine.setPerformanceMode(PreferenceEngine.getPerformanceMode(), { persist: false });
+        const storedMode = PreferenceEngine.getPerformanceMode();
+        if (liteMode && !localStorage.getItem('xp_performance_mode')) {
+            PreferenceEngine.setPerformanceMode('low', { persist: false });
+        } else {
+            PreferenceEngine.setPerformanceMode(storedMode, { persist: false });
+        }
     }
 
     // Failsafe: Ensure content is visible within 2s even if JS errors occur
     setTimeout(() => {
         document.body.classList.add('booted');
         document.querySelectorAll('[data-neural-stagger]').forEach(el => el.classList.add('booted'));
-    }, 2000);
+    }, liteMode ? 650 : 2000);
 
     applyCustomAccent();
     initNeuralBridge();
@@ -106,19 +122,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Initialize HUD Depth & Haptics
     initHUDDepth();
-    initNeuralHaptics();
+    if (!liteMode) initNeuralHaptics();
 
     // Genesis: Sector Atmosphere & SFX
     initSectorAtmosphere();
-    initGlobalSFX();
+    if (!liteMode) initGlobalSFX();
 
     // Singularity: Global Transmissions
-    if (!isLowPerf()) initGlobalTransmissions();
+    if (!isLowPerf() && !liteMode) initGlobalTransmissions();
 
     // Final Visual Boot
     initNeuralStagger();
     initSectorMap();
-    if (isHighPerf()) initAmbientHUD();
+    if (isHighPerf() && !liteMode) initAmbientHUD();
 
     enableGlobalOverlayDismiss();
     applyAXPShine();
