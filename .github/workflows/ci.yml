@@ -4,9 +4,14 @@ on:
   push:
   pull_request:
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   integration-tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     services:
       mysql:
         image: mysql:8.0
@@ -40,11 +45,30 @@ jobs:
           node-version: 24
           cache: npm
 
+      - name: Install mysql client
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
+
       - name: Install dependencies
         run: npm ci
 
+      - name: Wait for MySQL health
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+          echo "MySQL did not become healthy in time"
+          exit 1
+
       - name: Run migrations
         run: npm run migrate
+
+      - name: Build / syntax validation
+        run: npm run build
 
       - name: Run integration tests
         run: npm run test:integration

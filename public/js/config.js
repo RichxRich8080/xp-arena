@@ -8,7 +8,7 @@ const ENV = {
 };
 
 const CONFIG = {
-    API_BASE: ENV.IS_DEV ? 'http://localhost:3000' : '',
+    API_BASE: '',
     ENDPOINTS: {
         USER_PROFILE: '/api/user/profile',
         SHOP_ITEMS: '/api/shop/items',
