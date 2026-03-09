@@ -11,26 +11,8 @@ export const useAreni = () => {
     return context || {};
 };
 
-// Custom hook to sync state with localStorage
-function useStickyState(defaultValue, key) {
-    const [value, setValue] = useState(() => {
-        try {
-            const stickyValue = window.localStorage.getItem(key);
-            return stickyValue !== null ? JSON.parse(stickyValue) : defaultValue;
-        } catch (e) {
-            console.error(`[ARENI] Failed to parse ${key}:`, e);
-            return defaultValue;
-        }
-    });
-    useEffect(() => {
-        window.localStorage.setItem(key, JSON.stringify(value));
-    }, [key, value]);
-    return [value, setValue];
-}
-
 export const AreniProvider = ({ children }) => {
     const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
-    const { playSuccess, playError } = useAudioUI();
 
     // Global Player State (Backed by Backend)
     const [axp, setAxp] = useState(0);
