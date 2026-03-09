@@ -114,7 +114,20 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    res.status(500).json({ error: 'Server error' });
+    console.error(`[ERROR] ${new Date().toISOString()}`);
+    console.error(`Method: ${req.method} | Path: ${req.url}`);
+    console.error(err.stack);
+
+    // In production, do not leak stack traces to the client
+    res.status(500).json({
+        error: 'System Failure: Internal Server Error',
+        message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : err.message
+    });
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('⚠️ [CRITICAL] Unhandled Promise Rejection:', reason);
+    // Ideally ping an APM (Datadog, Sentry, etc) here
 });
 
 if (require.main === module) {
