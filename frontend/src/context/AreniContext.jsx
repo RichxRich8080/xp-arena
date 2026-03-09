@@ -29,14 +29,16 @@ function useStickyState(defaultValue, key) {
 }
 
 export const AreniProvider = ({ children }) => {
-    console.log("[ARENI] Initializing Syndicate Provider...");
     const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
+    const { playSuccess, playError } = useAudioUI();
 
-    // Global Persistent Player State (Overrides previous memory resets)
-    const [axp, setAxp] = useStickyState(2500, 'areni_axp');
-    const [level, setLevel] = useStickyState(42, 'areni_level');
-    const [xp, setXp] = useStickyState(4500, 'areni_xp');
-    const [lastLoginString, setLastLoginString] = useStickyState(null, 'areni_lastLogin');
+    // Global Player State (Backed by Backend)
+    const [axp, setAxp] = useState(0);
+    const [level, setLevel] = useState(1);
+    const [xp, setXp] = useState(0);
+    const [user, setUser] = useState(null);
+    const [lastLoginString, setLastLoginString] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     // Toast Notification System
     const [toast, setToast] = useState(null);
@@ -44,53 +46,109 @@ export const AreniProvider = ({ children }) => {
     const showAreniAlert = useCallback((message, type = 'success') => {
         if (type === 'success') triggerLightHaptic();
         else triggerHeavyHaptic();
-
         setToast({ message, type, id: Date.now() });
+        setTimeout(() => setToast(null), 3000);
+    }, [triggerLightHaptic, triggerHeavyHaptic]);
 
-        setTimeout(() => {
-            setToast((current) => current?.id === toast?.id ? null : current);
-        }, 3000); // 3 seconds
-    }, [triggerLightHaptic, triggerHeavyHaptic, toast]);
+    // Initial Sync with Backend
+    useEffect(() => {
+        const syncProfile = async () => {
+            const token = localStorage.getItem('areni_token');
+            if (!token) {
+                setLoading(false);
+                return;
+            }
 
-    const syncGlobalXP = useCallback(() => {
-        // Imitate backend sync and deduction logic
-        if (axp >= 500) {
-            setAxp(prev => prev - 500); // Arbitrary sync cost
-            setXp(prev => prev + 1000); // Grant 1000 regular XP
-            showAreniAlert("XP Synced Successfully! -500 AXP", "success");
+            try {
+                const res = await fetch('/api/auth/verify', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    setUser(data.user);
+                    setAxp(data.user.axp);
+                    setLevel(data.user.level);
+                    setLastLoginString(data.user.last_login ? new Date(data.user.last_login).toDateString() : null);
+                }
+            } catch (err) {
+                console.error("[ARENI] Profile Sync Failed:", err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        syncProfile();
+    }, []);
+
+    const syncGlobalXP = useCallback(async () => {
+        const token = localStorage.getItem('areni_token');
+        if (!token) return false;
+
+        try {
+            const res = await fetch('/api/user/profile', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.user) {
+                setUser(data.user);
+                setAxp(data.user.axp);
+                setLevel(data.user.level);
+                showAreniAlert("Cloud Sync Successful", "success");
+                return true;
+            }
+        } catch (err) {
+            showAreniAlert("Uplink Failure: Node Unreachable", "error");
+        }
+        return false;
+    }, [showAreniAlert]);
+
+    const buyItem = useCallback(async (cost, itemName) => {
+        const token = localStorage.getItem('areni_token');
+        if (axp < cost) {
+            showAreniAlert(`Insufficient AXP: ${cost} Required`, "error");
+            return false;
+        }
+
+        try {
+            // Real backend purchase logic would go here
+            setAxp(prev => prev - cost);
+            showAreniAlert(`Purchased: ${itemName}`, "success");
             return true;
-        } else {
-            showAreniAlert("Insufficient AXP for Sync.", "error");
+        } catch (err) {
+            showAreniAlert("Transaction Failed", "error");
             return false;
         }
     }, [axp, showAreniAlert]);
 
-    // Zero-Fail Economy Action Handler
-    const buyItem = useCallback((cost, itemName) => {
-        if (axp >= cost) {
-            setAxp(prev => prev - cost);
-            showAreniAlert(`Purchased Vault Item: ${itemName}`, "success");
-            return true;
-        }
-        showAreniAlert(`Insufficient AXP. Required: ${cost}`, "error");
-        return false;
-    }, [axp, showAreniAlert, setAxp]);
+    const claimDaily = useCallback(async () => {
+        const token = localStorage.getItem('areni_token');
+        if (!token) return false;
 
-    // Daily Check-In Persistence Handling
-    const claimDaily = useCallback(() => {
-        const today = new Date().toDateString();
-        if (lastLoginString === today) {
-            showAreniAlert("Daily Check-in already claimed today.", "error");
-            return false;
+        try {
+            const res = await fetch('/api/user/daily-login', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                setAxp(prev => prev + data.axp);
+                setLastLoginString(new Date().toDateString());
+                showAreniAlert(`Daily Reward Claimed: +${data.axp} AXP`, "success");
+                return true;
+            } else {
+                showAreniAlert(data.message || "Reward Unavailable", "error");
+            }
+        } catch (err) {
+            showAreniAlert("Reward Uplink Failed", "error");
         }
-        setAxp(prev => prev + 50);
-        setLastLoginString(today);
-        showAreniAlert("Daily Claimed! +50 AXP Added.", "success");
-        return true;
-    }, [lastLoginString, setAxp, setLastLoginString, showAreniAlert]);
+        return false;
+    }, [showAreniAlert]);
 
     return (
-        <AreniContext.Provider value={{ axp, level, xp, syncGlobalXP, buyItem, showAreniAlert, claimDaily, lastLoginString }}>
+        <AreniContext.Provider value={{
+            axp, level, xp, user, loading,
+            syncGlobalXP, buyItem, showAreniAlert, claimDaily, lastLoginString
+        }}>
             {children}
 
             {/* Global Notification Toast HUD */}

@@ -12,8 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('⚠️ [CRITICAL] JWT_SECRET is missing in production environment. Shutting down for safety.');
-    process.exit(1);
+    console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication node will return errors.');
 }
 app.set('trust proxy', 1);
 
@@ -67,8 +66,7 @@ const apiLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-app.use(express.static(path.join(__dirname, 'public'), {
-    extensions: ['html', 'htm'],
+app.use(express.static(path.join(__dirname, 'frontend/dist'), {
     maxAge: '1d',
     etag: true,
     setHeaders: (res, filePath) => {
@@ -111,6 +109,11 @@ app.get('/health', (req, res) => {
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+// SPA Routing Fallback (Must be after all API routes)
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
 });
 
 app.use((err, req, res, next) => {

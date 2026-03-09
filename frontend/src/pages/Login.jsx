@@ -2,24 +2,46 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
 import { useAudioUI } from '../hooks/useAudioUI';
+import { useAreni } from '../context/AreniContext';
 
 const Login = () => {
     const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
     const { playClick, playSuccess, playError } = useAudioUI();
+    const { showAreniAlert } = useAreni();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
+        const formData = new FormData(e.target);
+        const username = e.target.elements[0].value;
+        const password = e.target.elements[1].value;
+
         setLoading(true);
         triggerHeavyHaptic();
         playClick();
 
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                localStorage.setItem('areni_token', data.token);
+                playSuccess();
+                navigate('/');
+            } else {
+                throw new Error(data.message || 'Authentication Failed');
+            }
+        } catch (err) {
+            playError();
+            showAreniAlert(err.message, 'error');
+        } finally {
             setLoading(false);
-            playSuccess();
-            navigate('/');
-        }, 1500);
+        }
     };
 
     return (

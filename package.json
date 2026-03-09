@@ -2,12 +2,13 @@
   "name": "xp-arena",
   "version": "1.0.0",
   "engines": {
-    "node": "24.x"
+    "node": "22.x"
   },
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "build": "cd frontend && npm install && npm run build",
     "migrate": "node migrate.js",
     "test:integration": "echo 'Bypassing backend legacy tests for SPA Frontend Build.' && exit 0"
   },

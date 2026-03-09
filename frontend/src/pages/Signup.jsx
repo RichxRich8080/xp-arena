@@ -2,24 +2,45 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
 import { useAudioUI } from '../hooks/useAudioUI';
+import { useAreni } from '../context/AreniContext';
 
 const Signup = () => {
     const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
-    const { playClick, playSuccess } = useAudioUI();
+    const { playClick, playSuccess, playError } = useAudioUI();
+    const { showAreniAlert } = useAreni();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault();
+        const username = e.target.elements[0].value;
+        const email = e.target.elements[1].value;
+        const password = e.target.elements[2].value;
+
         setLoading(true);
         triggerHeavyHaptic();
         playClick();
 
-        setTimeout(() => {
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+            const data = await res.json();
+
+            if (data.success) {
+                playSuccess();
+                navigate('/login');
+            } else {
+                throw new Error(data.message || 'Registration Failed');
+            }
+        } catch (err) {
+            playError();
+            showAreniAlert(err.message, 'error');
+        } finally {
             setLoading(false);
-            playSuccess();
-            navigate('/login');
-        }, 1800);
+        }
     };
 
     return (
