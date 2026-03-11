@@ -8,8 +8,12 @@
             "destination": "/api/server.js"
         },
         {
+            "source": "/((?!api|assets|.*\\..*).*)",
+            "destination": "/frontend/dist/index.html"
+        },
+        {
             "source": "/(.*)",
-            "destination": "/api/server.js"
+            "destination": "/frontend/dist/$1"
         }
     ],
     "headers": [
