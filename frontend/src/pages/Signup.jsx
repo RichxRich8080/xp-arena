@@ -36,10 +36,10 @@ export default function Signup() {
             await signup(formData.username, formData.email, formData.password);
             addNotification(
                 'Areni Registered',
-                'Welcome to the XP Arena! Account created successfully.',
+                'Account created successfully. Please log in to continue.',
                 'success'
             );
-            navigate('/dashboard');
+            navigate('/login');
         } catch {
             setError('Registration failed. Please try again.');
         } finally {

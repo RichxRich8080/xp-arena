@@ -1,10 +1,22 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
+import { AuthProvider } from './context/AuthContext'
+import { NotificationProvider } from './context/NotificationContext'
+import ErrorBoundary from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <BrowserRouter>
+      <ErrorBoundary>
+        <AuthProvider>
+          <NotificationProvider>
+            <App />
+          </NotificationProvider>
+        </AuthProvider>
+      </ErrorBoundary>
+    </BrowserRouter>
   </StrictMode>,
 )
