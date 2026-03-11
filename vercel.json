@@ -10,10 +10,6 @@
         {
             "source": "/((?!api|assets|.*\\..*).*)",
             "destination": "/frontend/dist/index.html"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/frontend/dist/$1"
         }
     ],
     "headers": [
