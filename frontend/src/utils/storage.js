@@ -61,7 +61,7 @@ export const getLocalSetups = () => {
     try {
         const data = localStorage.getItem(STORAGE_KEY);
         return data ? JSON.parse(data) : [];
-    } catch (error) {
+    } catch {
         return [];
     }
 };
@@ -87,7 +87,7 @@ export const getSetups = async () => {
                     }
                 }));
             }
-        } catch (e) {
+        } catch {
             console.error('Backend sync failed, falling back to local storage');
         }
     }

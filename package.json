@@ -2,15 +2,15 @@
   "name": "xp-arena",
   "version": "1.0.0",
   "engines": {
-    "node": "20.x"
+    "node": ">=20.19.0 <21 || >=22.12.0"
   },
   "main": "server.js",
   "scripts": {
     "start": "node server/app.js",
     "dev": "node server/app.js",
-    "build": "cd frontend && npm install && npm run build",
+    "build": "cd frontend && npm run build",
     "migrate": "node migrate.js",
-    "test:integration": "echo 'Bypassing backend legacy tests for SPA Frontend Build.' && exit 0"
+    "test:integration": "jest tests/integration/health.test.js --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

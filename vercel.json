@@ -1,38 +1,41 @@
 {
-    "version": 2,
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "rewrites": [
+  "version": 2,
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "buildCommand": "cd frontend && npm install --omit=dev && npm run build",
+  "outputDirectory": "frontend/dist",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api/server.js"
+    },
+    {
+      "source": "/((?!api|.*\\..*).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
         {
-            "source": "/api/(.*)",
-            "destination": "/api/server.js"
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
         },
         {
-            "source": "/((?!api|assets|.*\\..*).*)",
-            "destination": "/frontend/dist/index.html"
+          "key": "X-Frame-Options",
+          "value": "DENY"
         },
         {
-            "source": "/(.*)",
-            "destination": "/frontend/dist/$1"
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000; includeSubDomains"
         }
-    ],
-    "headers": [
-        {
-            "source": "/(.*)",
-            "headers": [
-                {
-                    "key": "X-Content-Type-Options",
-                    "value": "nosniff"
-                },
-                {
-                    "key": "X-Frame-Options",
-                    "value": "DENY"
-                },
-                {
-                    "key": "Strict-Transport-Security",
-                    "value": "max-age=31536000; includeSubDomains"
-                }
-            ]
-        }
-    ]
+      ]
+    }
+  ],
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs22.x"
+    }
+  }
 }
