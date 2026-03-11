@@ -4,10 +4,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 const crypto = require('crypto');
-const { db } = require('../db');
-const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
-const emailService = require('../services/emailService');
-const { errorResponse } = require('../middleware/apiResponse');
+const { db } = require('../config/db');
+const { authenticateToken, JWT_SECRET } = require('./../middleware/auth');
+const emailService = require('./../services/emailService');
+const { errorResponse } = require('./../middleware/apiResponse');
 const { validateRequest, isStringMin, isEmail } = require('./validators');
 
 const authLimiter = rateLimit({

@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const rateLimit = require('express-rate-limit');
-const { db, pool } = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const economy = require('../services/economyService');
-const idempotency = require('../services/idempotencyService');
-const security = require('../services/securityService');
+const { db, pool } = require('../config/db');
+const { authenticateToken } = require('./../middleware/auth');
+const economy = require('./../services/economyService');
+const idempotency = require('./../services/idempotencyService');
+const security = require('./../services/securityService');
 
 const buyLimiter = rateLimit({
     windowMs: 10 * 60 * 1000,
@@ -14,7 +14,7 @@ const buyLimiter = rateLimit({
     legacyHeaders: false,
     message: { error: 'Too many purchase attempts. Please wait before retrying.' }
 });
-const { errorResponse } = require('../middleware/apiResponse');
+const { errorResponse } = require('./../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike } = require('./validators');
 
 /**
@@ -71,8 +71,7 @@ router.post('/seed-defaults', async (req, res) => {
 /**
  * Purchase an item
  */
-router.post('/buy', authenticateToken, buyLimiter, async (req, res) => {
-router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
+router.post('/buy', authenticateToken, buyLimiter, validateRequest([{ field: 'itemId', required: true, validate: isPositiveIntLike, issue: 'positive_integer' }]), async (req, res) => {
     const { itemId } = req.body;
 
     let idemKey;
@@ -228,16 +227,14 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
         res.json(payload);
     } catch (err) {
         if (conn) await conn.rollback();
-        await idempotency.releaseKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey });
-        if ((err.status >= 400 && err.status < 500) || String(err.message || '').includes('Insufficient AXP')) {
-            await security.recordFailedPurchaseAttempt({ userId: req.user.id, ipAddress: req.ip, reason: err.message || 'purchase_failed' });
-        }
-        economy.economyLog('log', 'shop.purchase.success', { userId: req.user.id, itemId: item.id, priceAXP: item.price_axp, updatedAxp });
-        res.json({ success: true, message: `Successfully purchased ${item.name}!`, new_axp: updatedAxp });
-    } catch (err) {
-        if (conn) await conn.rollback();
         const failureMeta = { itemId, status: err.status || 500, error: err.message || 'purchase_failed' };
+
         try {
+            await idempotency.releaseKey({ userId: req.user.id, endpointScope: 'shop:buy', key: idemKey });
+            if ((err.status >= 400 && err.status < 500) || String(err.message || '').includes('Insufficient AXP')) {
+                await security.recordFailedPurchaseAttempt({ userId: req.user.id, ipAddress: req.ip, reason: err.message || 'purchase_failed' });
+            }
+
             await economy.recordEconomyEvent({
                 userId: req.user.id,
                 eventType: 'purchase',
@@ -249,6 +246,7 @@ router.post('/buy', authenticateToken, validateRequest([{ field: 'itemId', requi
         } catch (eventErr) {
             economy.economyLog('error', 'shop.purchase.event_failure', { userId: req.user.id, itemId, eventError: eventErr.message });
         }
+
         economy.economyLog('error', 'shop.purchase.failure', { userId: req.user.id, ...failureMeta });
         console.error('[Shop] Purchase error:', err);
         errorResponse(res, err.status || 500, 'SHOP_PURCHASE_FAILED', err.message || 'Server error during purchase');

@@ -3,12 +3,19 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const { db, pool } = require('../db');
-const { authenticateToken, JWT_SECRET } = require('../middleware/auth');
-const economy = require('../services/economyService');
-const { recordSeasonPoints } = require('../services/seasonService');
-const { errorResponse } = require('../middleware/apiResponse');
+const { db, pool } = require('../config/db');
+const { authenticateToken, JWT_SECRET } = require('./../middleware/auth');
+const economy = require('./../services/economyService');
+const { recordSeasonPoints } = require('./../services/seasonService');
+const { errorResponse } = require('./../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
+const security = require('./../services/securityService');
+
+const rewardClaimLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10,
+    message: { error: 'Frequent reward claims detected. Please wait 15 minutes.' }
+});
 
 function todayDateStr(d) {
     const x = d || new Date();

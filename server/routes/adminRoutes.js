@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const security = require('../services/securityService');
+const { db } = require('../config/db');
+const { authenticateToken } = require('./../middleware/auth');
+const security = require('./../services/securityService');
 
 async function isAdmin(userId) {
   const u = await db.get('SELECT is_admin FROM users WHERE id = ?', [userId]);

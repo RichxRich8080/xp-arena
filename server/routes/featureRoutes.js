@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../db');
-const { parseAura, syncAuraPoints, ensureSeasonRecord } = require('../services/seasonService');
+const { db } = require('../config/db');
+const { parseAura, syncAuraPoints, ensureSeasonRecord } = require('./../services/seasonService');
 
 async function getSeasonScoreMap(userIds) {
     if (!userIds.length) return new Map();
@@ -14,7 +14,7 @@ async function getSeasonScoreMap(userIds) {
     );
     return new Map((seasonRows || []).map(r => [Number(r.user_id), Number(r.score || 0)]));
 }
-const { errorResponse } = require('../middleware/apiResponse');
+const { errorResponse } = require('./../middleware/apiResponse');
 
 router.get('/activity/live', async (req, res) => {
     try {

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
-const { SEASON_REWARDS, getSeasonSummary, getSeasonProgress } = require('../services/seasonService');
+const { authenticateToken } = require('./../middleware/auth');
+const { SEASON_REWARDS, getSeasonSummary, getSeasonProgress } = require('./../services/seasonService');
 
 router.get('/summary', async (req, res) => {
   try {

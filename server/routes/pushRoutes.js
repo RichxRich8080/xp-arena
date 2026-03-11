@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const pushService = require('../services/pushService');
+const { db } = require('../config/db');
+const { authenticateToken } = require('./../middleware/auth');
+const pushService = require('./../services/pushService');
 
 // GET /api/push/public-key
 // Returns the VAPID public key for the frontend to use

@@ -1,9 +1,9 @@
 const express = require('express');
 const crypto = require('crypto');
 const router = express.Router();
-const { db } = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const economy = require('../services/economyService');
+const { db } = require('../config/db');
+const { authenticateToken } = require('./../middleware/auth');
+const economy = require('./../services/economyService');
 
 function cap(n) {
   const x = parseInt(n, 10);

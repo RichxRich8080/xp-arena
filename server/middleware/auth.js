@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const { db } = require('../db');
+const { db } = require('../config/db');
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
     console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication cannot proceed.');

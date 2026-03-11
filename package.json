@@ -6,9 +6,9 @@
   },
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "build": "cd frontend && npm install && npm run build",
+    "start": "node server/app.js",
+    "dev": "node server/app.js",
+    "build": "npm --prefix frontend install && npm --prefix frontend run build",
     "migrate": "node migrate.js",
     "test:integration": "echo 'Bypassing backend legacy tests for SPA Frontend Build.' && exit 0"
   },

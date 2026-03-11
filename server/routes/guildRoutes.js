@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { db } = require('../db');
-const { authenticateToken } = require('../middleware/auth');
-const economy = require('../services/economyService');
-const { recordSeasonPoints } = require('../services/seasonService');
-const { errorResponse } = require('../middleware/apiResponse');
+const { db } = require('../config/db');
+const { authenticateToken } = require('./../middleware/auth');
+const economy = require('./../services/economyService');
+const { recordSeasonPoints } = require('./../services/seasonService');
+const { errorResponse } = require('./../middleware/apiResponse');
 const { validateRequest, isPositiveIntLike, isStringMin } = require('./validators');
 
 async function chargeAXP(userId, amount, reason) {

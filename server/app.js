@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
-const { db } = require('./db');
+const { db } = require('./config/db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -66,7 +66,7 @@ const apiLimiter = rateLimit({
     legacyHeaders: false,
 });
 
-app.use(express.static(path.join(__dirname, 'frontend/dist'), {
+app.use(express.static(path.join(__dirname, '../frontend/dist'), {
     maxAge: '1d',
     etag: true,
     setHeaders: (res, filePath) => {
@@ -113,7 +113,7 @@ app.get('/api/health', (req, res) => {
 
 // SPA Routing Fallback (Must be after all API routes)
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/dist', 'index.html'));
+    res.sendFile(path.join(__dirname, '../frontend/dist', 'index.html'));
 });
 
 app.use((err, req, res, next) => {
@@ -135,7 +135,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 if (require.main === module) {
     app.listen(PORT, () => {
-        console.log(`Server is running on http://localhost:${PORT}`);
+        console.log(`Server is running on port ${PORT}`);
     });
 }
 module.exports = app;

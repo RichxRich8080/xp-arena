@@ -1,4 +1,4 @@
-const { db } = require('../db');
+const { db } = require('../config/db');
 
 const AXP_SPIKE_THRESHOLD = 1000;
 const PURCHASE_FAILURE_BURST_THRESHOLD = 5;

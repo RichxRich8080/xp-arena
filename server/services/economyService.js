@@ -1,4 +1,4 @@
-const { db, pool } = require('../db');
+const { db, pool } = require('../config/db');
 
 function economyLog(level, operation, payload = {}) {
     const entry = {

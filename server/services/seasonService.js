@@ -1,4 +1,4 @@
-const { db } = require('../db');
+const { db } = require('../config/db');
 
 const SEASON_REWARDS = [
   { tier: 1, score: 250, type: 'title', name: 'Neon Vanguard' },
