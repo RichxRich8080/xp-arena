@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Zap, Target, Users, TrendingUp } from 'lucide-react';
 
+// Helper aliases used in ticker events
+const Active = TrendingUp;
+const Star = Zap;
+
 const EVENTS = [
     { text: "User 'FireSlayer' just generated a High-End setup!", icon: Zap, color: "text-axp-gold" },
     { text: "New Clan 'Vanguard Pro' is looking for rushers.", icon: Users, color: "text-neon-cyan" },
@@ -11,10 +15,6 @@ const EVENTS = [
     { text: "Elite Audit completed for 'OneTap_God' • 99.8% Precision", icon: Star, color: "text-axp-gold" },
     { text: "Global Forge Streak: 12 setups generated in last 60s!", icon: Zap, color: "text-neon-cyan font-black" },
 ];
-
-// Helper to use the icon while it's in the component
-const Active = TrendingUp;
-const Star = Zap; // Mock for a star icon if not imported
 
 export default function ActivityTicker() {
     const [index, setIndex] = useState(0);

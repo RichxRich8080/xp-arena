@@ -1,68 +1,114 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './contexts';
 
+import API_BASE from '../config/apiBase';
+
+const rankFromAXP = (axp = 0) => {
+    if (axp >= 2000) return 'Champion';
+    if (axp >= 1000) return 'Elite';
+    return 'Rookie';
+};
+
+const normalizeUser = (user) => {
+    const axp = Number(user?.axp || 0);
+    return {
+        ...user,
+        axp,
+        rank: user?.rank || rankFromAXP(axp)
+    };
+};
+
+const getStoredUser = () => {
+    const storedUser = localStorage.getItem('xp_arena_user');
+    if (!storedUser) return null;
+    try {
+        return normalizeUser(JSON.parse(storedUser));
+    } catch {
+        return null;
+    }
+};
+
 export function AuthProvider({ children }) {
-    const [user, setUser] = useState(() => {
-        const storedUser = localStorage.getItem('xp_arena_user');
-        return storedUser ? JSON.parse(storedUser) : null;
-    });
+    const [user, setUser] = useState(getStoredUser);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const timer = setTimeout(() => setLoading(false), 0);
-        return () => clearTimeout(timer);
+        const verifySession = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/verify`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await response.json();
+
+                if (!response.ok || !data?.success || !data?.user) {
+                    throw new Error(data?.message || 'Session expired');
+                }
+
+                const normalized = normalizeUser(data.user);
+                setUser(normalized);
+                localStorage.setItem('xp_arena_user', JSON.stringify(normalized));
+            } catch {
+                localStorage.removeItem('token');
+                localStorage.removeItem('xp_arena_user');
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        verifySession();
     }, []);
 
     const login = async (username, password) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                if (password === 'password') {
-                    const mockUser = {
-                        id: 1,
-                        username,
-                        axp: 1250,
-                        rank: 'Elite',
-                        joinDate: '2026-01-15',
-                        setups: 5
-                    };
-                    setUser(mockUser);
-                    localStorage.setItem('xp_arena_user', JSON.stringify(mockUser));
-                    resolve(mockUser);
-                } else {
-                    reject('Invalid credentials (use any username + "password")');
-                }
-            }, 800);
+        const response = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
         });
+
+        const data = await response.json();
+        if (!response.ok || !data?.success || !data?.token) {
+            throw (data?.message || 'Invalid username or password');
+        }
+
+        const normalized = normalizeUser(data.user || { username });
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('xp_arena_user', JSON.stringify(normalized));
+        setUser(normalized);
+        return normalized;
     };
 
-    const signup = async (username, email) => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const mockUser = {
-                    id: Date.now(),
-                    username,
-                    email,
-                    axp: 0,
-                    rank: 'Rookie',
-                    joinDate: new Date().toISOString().split('T')[0],
-                    setups: 0
-                };
-                setUser(mockUser);
-                localStorage.setItem('xp_arena_user', JSON.stringify(mockUser));
-                resolve(mockUser);
-            }, 800);
+    const signup = async (username, email, password) => {
+        const response = await fetch(`${API_BASE}/auth/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, email, password })
         });
+
+        const data = await response.json();
+        if (!response.ok || !data?.success) {
+            throw (data?.message || 'Registration failed');
+        }
+
+        // Backend may require verification before issuing JWT, so user can log in next.
+        return data;
     };
 
     const logout = () => {
         setUser(null);
+        localStorage.removeItem('token');
         localStorage.removeItem('xp_arena_user');
     };
 
     const addAXP = (amount) => {
         if (user) {
-            const updatedUser = { ...user, axp: user.axp + amount };
-            if (updatedUser.axp >= 2000) updatedUser.rank = 'Champion';
+            const updatedUser = normalizeUser({ ...user, axp: (user.axp || 0) + amount });
             setUser(updatedUser);
             localStorage.setItem('xp_arena_user', JSON.stringify(updatedUser));
         }

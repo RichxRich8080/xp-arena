@@ -20,6 +20,7 @@ If you prefer to type them, here are the **Keys** you need:
 | `DB_PORT` | Usually `3306` |
 | `JWT_SECRET` | A random string (e.g., `xparena123!`) |
 | `NODE_ENV` | `production` |
+| `ALLOWED_ORIGINS` | Comma-separated allowed origins (e.g., `https://your-app.vercel.app`) |
 
 ### Database Providers
 Since Vercel is serverless, you need a cloud MySQL provider. Recommended options:
@@ -36,3 +37,9 @@ I have created a final, unified schema and migration system for XP Arena:
 
 Once these are set, go to the **Deployments** tab in Vercel and redeploy!
 
+
+### Frontend Variable (Optional)
+- `VITE_API_URL` is optional. If omitted, frontend defaults to same-origin `/api` in production.
+
+### Build Runtime Requirement
+- Vercel Node.js runtime should be **20.19+** (or **22.12+**) because the frontend uses Vite 7.
