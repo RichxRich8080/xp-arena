@@ -4,7 +4,11 @@
   "engines": {
     "node": ">=20.19.0 <21 || >=22.12.0"
   },
-  "main": "server.js",
+  "main": "server/app.js",
+  "workspaces": [
+    "frontend",
+    "server"
+  ],
   "scripts": {
     "start": "node server/app.js",
     "dev": "node server/app.js",
