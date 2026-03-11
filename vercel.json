@@ -21,10 +21,6 @@
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
-        },
-        {
-            "source": "/((?!api|assets|.*\\..*).*)",
-            "destination": "/frontend/dist/index.html"
         }
       ]
     }
