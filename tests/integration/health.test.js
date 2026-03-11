@@ -1,6 +1,6 @@
 const request = require('supertest');
-const app = require('../../server');
-const { pool } = require('../../db');
+const app = require('../../server/app');
+const { pool } = require('../../server/config/db');
 
 describe('Health Endpoints Integration Test', () => {
     // Teardown logic to ensure CI doesn't hang
