@@ -156,7 +156,7 @@ router.post('/login', authLimiter, validateRequest([{ field: 'username', require
         }
 
         const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '7d' });
-        res.json({ success: true, token, user: { id: user.id, username: user.username, email: user.email } });
+        res.json({ success: true, token, user: { id: user.id, username: user.username, email: user.email, axp: user.axp, level: user.level, avatar: user.avatar, streak: user.streak } });
     } catch (err) {
         console.error(err);
         errorResponse(res, 500, 'AUTH_DB_ERROR', 'Database error');

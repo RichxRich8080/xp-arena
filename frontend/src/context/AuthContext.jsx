@@ -44,9 +44,19 @@ export function AuthProvider({ children }) {
                 const response = await fetch(`${API_BASE}/auth/verify`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                const data = await response.json();
 
-                if (!response.ok || !data?.success || !data?.user) {
+                if (!response.ok) {
+                    throw new Error('Session expired');
+                }
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch {
+                    throw new Error('Invalid server response');
+                }
+
+                if (!data?.success || !data?.user) {
                     throw new Error(data?.message || 'Session expired');
                 }
 
@@ -66,13 +76,24 @@ export function AuthProvider({ children }) {
     }, []);
 
     const login = async (username, password) => {
-        const response = await fetch(`${API_BASE}/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
+        let response;
+        try {
+            response = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+        } catch {
+            throw 'Network error. Please check your connection.';
+        }
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw 'Server returned an invalid response.';
+        }
+
         if (!response.ok || !data?.success || !data?.token) {
             throw (data?.message || 'Invalid username or password');
         }
@@ -85,18 +106,28 @@ export function AuthProvider({ children }) {
     };
 
     const signup = async (username, email, password) => {
-        const response = await fetch(`${API_BASE}/auth/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, email, password })
-        });
+        let response;
+        try {
+            response = await fetch(`${API_BASE}/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password })
+            });
+        } catch {
+            throw 'Network error. Please check your connection.';
+        }
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw 'Server returned an invalid response.';
+        }
+
         if (!response.ok || !data?.success) {
             throw (data?.message || 'Registration failed');
         }
 
-        // Backend may require verification before issuing JWT, so user can log in next.
         return data;
     };
 

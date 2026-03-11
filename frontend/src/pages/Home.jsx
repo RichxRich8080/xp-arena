@@ -91,7 +91,7 @@ export default function Home() {
                         <Trophy className="w-8 h-8 text-axp-gold/50" />
                     </div>
                     <div className="mt-4 pt-4 border-t border-gray-800/50 flex justify-between items-center text-xs text-gray-400 font-medium">
-                        <span>{user.setups} Setups Shared</span>
+                        <span>{user.setups || 0} Setups Shared</span>
                         <span className="text-neon-green">+20 AXP Daily Reward Available!</span>
                     </div>
                 </Card>

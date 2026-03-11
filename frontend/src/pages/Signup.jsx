@@ -30,6 +30,11 @@ export default function Signup() {
             return;
         }
 
+        if (formData.password.length < 6) {
+            setError("Password must be at least 6 characters");
+            return;
+        }
+
         setIsLoading(true);
 
         try {
@@ -40,8 +45,10 @@ export default function Signup() {
                 'success'
             );
             navigate('/login');
-        } catch {
-            setError('Registration failed. Please try again.');
+        } catch (err) {
+            const msg = typeof err === 'string' ? err : (err?.message || 'Registration failed. Please try again.');
+            setError(msg);
+            addNotification('Registration Failed', msg, 'error');
         } finally {
             setIsLoading(false);
         }

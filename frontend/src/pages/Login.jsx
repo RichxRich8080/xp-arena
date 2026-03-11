@@ -31,8 +31,9 @@ export default function Login() {
             );
             navigate('/dashboard');
         } catch (err) {
-            setError(err);
-            addNotification('Login Failed', err, 'error');
+            const msg = typeof err === 'string' ? err : (err?.message || 'Login failed. Please try again.');
+            setError(msg);
+            addNotification('Login Failed', msg, 'error');
         } finally {
             setIsLoading(false);
         }
