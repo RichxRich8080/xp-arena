@@ -21,6 +21,15 @@
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
+        }
+      ]
+    }
+  ],
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs20.x"
+    }
+  }
         },
         {
             "source": "/((?!api|assets|.*\\..*).*)",

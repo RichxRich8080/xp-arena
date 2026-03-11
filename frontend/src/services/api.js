@@ -1,8 +1,9 @@
 import axios from 'axios';
+import API_BASE from '../config/apiBase';
 
 // Mock instance setup for MVP Phase 1
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
+    baseURL: API_BASE,
     timeout: 10000,
 });
 
