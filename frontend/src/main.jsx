@@ -5,6 +5,9 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { NotificationProvider } from './context/NotificationContext.jsx'
 import './index.css'
 import App from './App.jsx'
+import { AuthProvider } from './context/AuthContext'
+import { NotificationProvider } from './context/NotificationContext'
+import ErrorBoundary from './components/ErrorBoundary'
 
 console.log('Main.jsx: Beginning execution');
 createRoot(document.getElementById('root')).render(

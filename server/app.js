@@ -43,6 +43,10 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin) return callback(null, true);
+
+        // If no explicit ALLOWED_ORIGINS is configured, allow same-origin traffic.
+        if (allowedOrigins.length === 0) return callback(null, true);
+
         if (allowedOrigins.includes('*') && process.env.NODE_ENV !== 'production') return callback(null, true);
         if (allowedOrigins.includes(origin)) return callback(null, true);
         return callback(new Error('Not allowed by CORS'));
