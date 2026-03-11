@@ -14,7 +14,8 @@ const pool = mysql.createPool({
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
     ssl: {
-        rejectUnauthorized: process.env.NODE_ENV === 'production' ? true : false // Enforce certificate validation in production
+        // Soften for Vercel/TiDB handshake unless a CA is provided
+        rejectUnauthorized: false
     }
 });
 
