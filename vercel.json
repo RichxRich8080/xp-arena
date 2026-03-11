@@ -30,4 +30,12 @@
       "runtime": "nodejs20.x"
     }
   }
+        },
+        {
+            "source": "/((?!api|assets|.*\\..*).*)",
+            "destination": "/frontend/dist/index.html"
+        }
+      ]
+    }
+  ]
 }

@@ -6,17 +6,21 @@ import { NotificationProvider } from './context/NotificationContext.jsx'
 import ErrorBoundary from './components/ErrorBoundary'
 import './index.css'
 import App from './App.jsx'
+import { AuthProvider } from './context/AuthContext'
+import { NotificationProvider } from './context/NotificationContext'
+import ErrorBoundary from './components/ErrorBoundary'
 
+console.log('Main.jsx: Beginning execution');
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ErrorBoundary>
-      <BrowserRouter>
-        <AuthProvider>
-          <NotificationProvider>
-            <App />
-          </NotificationProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
+    <BrowserRouter>
+      <AuthProvider>
+        <NotificationProvider>
+          {console.log('Rendering App component')}
+          <App />
+        </NotificationProvider>
+      </AuthProvider>
+    </BrowserRouter>
   </StrictMode>,
 )
+console.log('Main.jsx: Render call completed');

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './contexts';
 
-import API_BASE from '../config/apiBase';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 const rankFromAXP = (axp = 0) => {
     if (axp >= 2000) return 'Champion';
