@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 import { useAudioUI } from '../hooks/useAudioUI';
 
 const Quests = () => {
     const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
-    const { showAreniAlert } = useAreni();
+    const { showAreniAlert } = useAuth();
     const { playSuccess, playError } = useAudioUI();
 
     const [quests] = useState([

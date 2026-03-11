@@ -51,17 +51,14 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
         const cost = user.name_changes > 0 ? 500 : 0;
         if (user.axp < cost) return errorResponse(res, 400, 'INSUFFICIENT_AXP', `Not enough AXP. Changing name costs ${cost} AXP.`);
 
-        cost = user.name_changes > 0 ? 500 : 0;
-        if (user.axp < cost) {
-            const e = new Error(`Not enough AXP. Changing name costs ${cost} AXP.`);
-            e.status = 400;
-            throw e;
-        }
-
+        // Deduct AXP, update username, and increment name_changes atomically
         if (cost > 0) {
+            await db.run('UPDATE users SET username = ?, axp = axp - ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, cost, req.user.id]);
             await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
             await economy.recordEconomyEvent({ userId: req.user.id, eventType: 'rename', source: 'routes.user.nickname', amount: -cost, metadata: { newUsername, method: 'direct_change' } });
             await economy.snapshotAXP(req.user.id, null, { eventType: 'rename', source: 'routes.user.nickname', metadata: { newUsername, cost } });
+        } else {
+            await db.run('UPDATE users SET username = ?, name_changes = name_changes + 1 WHERE id = ?', [newUsername, req.user.id]);
         }
 
         const token = jwt.sign({ id: req.user.id, username: newUsername }, JWT_SECRET, { expiresIn: '7d' });
@@ -72,8 +69,7 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
             return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Username already taken');
         }
         economy.economyLog('error', 'user.nickname.failure', { userId: req.user.id, error: err.message });
-        res.status(500).json({ error: 'Database error' });
-        errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Database error');
+        return errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Database error');
     }
 });
 

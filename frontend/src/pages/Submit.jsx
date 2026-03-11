@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useHUDDepth } from '../hooks/useHUDDepth';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
 
 const Submit = () => {
     const depthRef = useHUDDepth(10);
     const { triggerHeavyHaptic } = useNeuralHaptics();
-    const { showAreniAlert } = useAreni();
+    const { showAreniAlert } = useAuth();
     const navigate = useNavigate();
     const [isUploading, setIsUploading] = useState(false);
 

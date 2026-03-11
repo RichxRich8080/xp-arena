@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useHUDDepth } from '../hooks/useHUDDepth';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 
 const Contact = () => {
     const depthRef = useHUDDepth(10);
     const { triggerHeavyHaptic } = useNeuralHaptics();
-    const { showAreniAlert } = useAreni();
+    const { showAreniAlert } = useAuth();
     const [sending, setSending] = useState(false);
 
     const handleSubmit = (e) => {

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useHUDDepth } from '../hooks/useHUDDepth';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 import { useAudioUI } from '../hooks/useAudioUI';
 
 const DailyLogin = () => {
     const depthRef = useHUDDepth(10);
     const { triggerHeavyHaptic } = useNeuralHaptics();
-    const { showAreniAlert, triggerAreniPulse } = useAreni();
+    const { showAreniAlert, triggerAreniPulse } = useAuth();
     const { playSuccess } = useAudioUI();
     const [claimed, setClaimed] = useState(false);
 

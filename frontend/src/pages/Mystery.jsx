@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { useHUDDepth } from '../hooks/useHUDDepth';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 import { useAudioUI } from '../hooks/useAudioUI';
 
 const Mystery = () => {
     const depthRef = useHUDDepth(15);
     const { triggerHeavyHaptic } = useNeuralHaptics();
-    const { axp, triggerAreniPulse } = useAreni();
+    const { axp, triggerAreniPulse } = useAuth();
     const { playSuccess } = useAudioUI();
     const [isOpening, setIsOpening] = useState(false);
     const [reward, setReward] = useState(null);

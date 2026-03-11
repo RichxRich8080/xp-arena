@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAreni } from '../context/AreniContext';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
 
 const MultiSliderResult = ({ label, value, color }) => (
     <div className="bg-gray-900/40 border border-white/5 p-4 rounded-2xl flex justify-between items-center mb-3">
@@ -22,7 +23,7 @@ const Result = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { triggerHeavyHaptic, triggerLightHaptic } = useNeuralHaptics();
-    const { showAreniAlert } = useAreni();
+    const { showAreniAlert } = useAuth();
     const [loading, setLoading] = useState(true);
     const [results, setResults] = useState(null);
 
