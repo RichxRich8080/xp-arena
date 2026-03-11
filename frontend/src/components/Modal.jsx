@@ -5,7 +5,8 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 
     useEffect(() => {
         if (isOpen) {
-            setShow(true);
+            const timer = setTimeout(() => setShow(true), 0);
+            return () => clearTimeout(timer);
         } else {
             const timer = setTimeout(() => setShow(false), 300);
             return () => clearTimeout(timer);

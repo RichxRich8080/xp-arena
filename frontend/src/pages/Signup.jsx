@@ -1,133 +1,126 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useAudioUI } from '../hooks/useAudioUI';
-import { useAreni } from '../context/AreniContext';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { useNotifications } from '../hooks/useNotifications';
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Card } from '../components/ui/Card';
+import { UserPlus } from 'lucide-react';
 
-const Signup = () => {
-    const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
-    const { playClick, playSuccess, playError } = useAudioUI();
-    const { showAreniAlert } = useAreni();
+export default function Signup() {
+    const [formData, setFormData] = useState({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
+    const { signup } = useAuth();
+    const { addNotification } = useNotifications();
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
 
-    const handleSignup = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const username = e.target.elements[0].value;
-        const email = e.target.elements[1].value;
-        const password = e.target.elements[2].value;
+        setError('');
 
-        setLoading(true);
-        triggerHeavyHaptic();
-        playClick();
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords don't match");
+            return;
+        }
+
+        setIsLoading(true);
 
         try {
-            const res = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-            const data = await res.json();
-
-            if (data.success) {
-                playSuccess();
-                navigate('/login');
-            } else {
-                throw new Error(data.message || 'Registration Failed');
-            }
-        } catch (err) {
-            playError();
-            showAreniAlert(err.message, 'error');
+            await signup(formData.username, formData.email, formData.password);
+            addNotification(
+                'Areni Registered',
+                'Welcome to the XP Arena! Account created successfully.',
+                'success'
+            );
+            navigate('/dashboard');
+        } catch {
+            setError('Registration failed. Please try again.');
         } finally {
-            setLoading(false);
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="fixed inset-0 z-[200] bg-gray-950 flex flex-col items-center justify-center p-6 overflow-hidden font-sans">
-            {/* Background Neural Matrix */}
-            <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/10 blur-[150px] rounded-full animate-pulse"></div>
-            <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-cyan-500/10 blur-[150px] rounded-full animate-pulse delay-1000"></div>
-
-            {/* Header HUD */}
-            <div className="w-full max-w-lg relative z-10 animate-in fade-in zoom-in duration-700">
-                <div className="text-center mb-10">
-                    <div className="inline-flex items-center gap-2 mb-4">
-                        <div className="w-4 h-[1px] bg-indigo-500"></div>
-                        <span className="text-[10px] font-black italic text-indigo-400 uppercase tracking-[0.4em]">Syndicate_Enlistment_Node</span>
-                        <div className="w-4 h-[1px] bg-indigo-500"></div>
+        <div className="min-h-[70vh] flex flex-col items-center justify-center p-4 animate-slide-in">
+            <div className="w-full max-w-sm">
+                <div className="text-center mb-6">
+                    <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br from-neon-green to-neon-cyan flex items-center justify-center shadow-[0_0_15px_rgba(34,197,94,0.4)]">
+                        <UserPlus className="w-6 h-6 text-gray-900" />
                     </div>
-                    <h1 className="text-4xl font-black tracking-tighter text-white italic uppercase leading-none">Commission_ID</h1>
-                    <p className="text-gray-500 text-[9px] font-black tracking-[0.4em] uppercase mt-2">Initialize your tactical bio-signature</p>
+                    <h2 className="text-2xl font-black text-white tracking-widest uppercase">Join Arena</h2>
+                    <p className="text-sm text-gray-400 mt-1">Create your Areni profile</p>
                 </div>
 
-                {/* Signup HUB */}
-                <div className="bg-gray-950/60 backdrop-blur-3xl border border-white/5 p-10 rounded-[3.5rem] shadow-2xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-full h-[1px] bg-gradient-to-r from-transparent via-indigo-500/20 to-transparent"></div>
+                <Card hoverEffect={false} className="border-gray-800 bg-gray-900/80 shadow-2xl backdrop-blur-sm">
+                    <form onSubmit={handleSubmit} className="space-y-3">
+                        {error && <p className="text-red-500 text-xs text-center font-bold mb-2">{error}</p>}
 
-                    <form onSubmit={handleSignup} className="flex flex-col gap-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex flex-col gap-3">
-                                <label className="text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Identity_Handle</label>
-                                <input
-                                    type="text"
-                                    placeholder="SNIPER_KING"
-                                    className="bg-white/5 border border-white/5 rounded-2xl px-6 py-5 text-xs text-white uppercase font-black italic tracking-widest focus:outline-none focus:border-indigo-500/30 transition-all placeholder:text-gray-800"
-                                    required
-                                />
-                            </div>
-                            <div className="flex flex-col gap-3">
-                                <label className="text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Comms_Dispatch</label>
-                                <input
-                                    type="email"
-                                    placeholder="OPERATOR@ARENA.GG"
-                                    className="bg-white/5 border border-white/5 rounded-2xl px-6 py-5 text-xs text-white uppercase font-black italic tracking-widest focus:outline-none focus:border-indigo-500/30 transition-all placeholder:text-gray-800"
-                                    required
-                                />
-                            </div>
-                        </div>
+                        <Input
+                            label="USERNAME"
+                            type="text"
+                            placeholder="Your gaming tag"
+                            value={formData.username}
+                            onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                            required
+                        />
 
-                        <div className="flex flex-col gap-3">
-                            <label className="text-[8px] font-black text-gray-500 uppercase tracking-[0.4em] ml-1">Access_Cipher</label>
-                            <input
-                                type="password"
-                                placeholder="••••••••••••"
-                                className="bg-white/5 border border-white/5 rounded-2xl px-6 py-5 text-xs text-white uppercase font-black italic tracking-widest focus:outline-none focus:border-indigo-500/30 transition-all placeholder:text-gray-800"
-                                required
-                            />
-                        </div>
+                        <Input
+                            label="EMAIL"
+                            type="email"
+                            placeholder="you@email.com"
+                            value={formData.email}
+                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                            required
+                        />
 
-                        <div className="bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-2xl">
-                            <p className="text-[7px] text-gray-600 font-bold uppercase tracking-[0.2em] text-center leading-relaxed">
-                                By commissioning your ID, you adhere to the <span className="text-white">Neural_Protocol</span> and <span className="text-white">Terms_of_Engagement</span>.
-                            </p>
-                        </div>
+                        <Input
+                            label="PASSWORD"
+                            type="password"
+                            placeholder="••••••••"
+                            value={formData.password}
+                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                            required
+                        />
 
-                        <button
-                            disabled={loading}
+                        <Input
+                            label="CONFIRM PASSWORD"
+                            type="password"
+                            placeholder="••••••••"
+                            value={formData.confirmPassword}
+                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                            required
+                        />
+
+                        <Button
                             type="submit"
-                            className={`w-full py-6 rounded-[2rem] text-[11px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${loading
-                                ? 'bg-gray-800 text-gray-500'
-                                : 'bg-white text-gray-950 hover:scale-[1.02] active:scale-95 shadow-xl'
-                                }`}
+                            variant="neonGreen"
+                            className="w-full mt-4 py-3 tracking-wider font-extrabold"
+                            disabled={isLoading}
                         >
-                            <span className="relative z-10">{loading ? 'Committing_Data...' : 'Confirm_Enlistment'}</span>
-                            <div className={`absolute inset-0 bg-indigo-500/10 transition-transform duration-[2000ms] ${loading ? 'translate-x-0' : 'translate-x-[-101%]'}`}></div>
-                        </button>
+                            {isLoading ? 'CREATING...' : 'BECOME AN ARENI'}
+                        </Button>
                     </form>
-                </div>
 
-                <div className="mt-10 text-center text-[9px] font-black text-gray-600 uppercase tracking-widest">
-                    Already_Commissioned? <NavLink to="/login" className="text-white hover:text-indigo-400 transition-colors ml-2 italic">AUTHENTICATE_SESSION</NavLink>
-                </div>
-            </div>
-
-            {/* Termination Notice */}
-            <div className="absolute bottom-8 text-[8px] font-black text-gray-800 uppercase tracking-[0.6em] opacity-20 pointer-events-none">
-                ENLISTMENT_PORTAL_v8.4.2
+                    <div className="mt-5 text-center">
+                        <p className="text-xs text-gray-400">
+                            Already an Areni?{' '}
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="text-primary-blue font-bold hover:text-white transition-colors"
+                            >
+                                Log in
+                            </button>
+                        </p>
+                    </div>
+                </Card>
             </div>
         </div>
     );
-};
-
-export default Signup;
+}

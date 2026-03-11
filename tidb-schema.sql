@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS users (
     login_attempts INT DEFAULT 0,
     lockout_until DATETIME,
     last_protocol_date DATE,
+    last_generation_date DATE,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 -- AXP History (Analytics)
@@ -45,7 +46,6 @@ CREATE TABLE IF NOT EXISTS axp_history (
     UNIQUE KEY user_date_uniq (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
-
 CREATE TABLE IF NOT EXISTS economy_events (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,
@@ -55,7 +55,8 @@ CREATE TABLE IF NOT EXISTS economy_events (
     status VARCHAR(20) NOT NULL DEFAULT 'success',
     metadata JSON NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE
+    SET NULL
 );
 -- User Activity Logs
 CREATE TABLE IF NOT EXISTS activity (
@@ -126,6 +127,9 @@ CREATE TABLE IF NOT EXISTS setups (
     likes INT DEFAULT 0,
     copies INT DEFAULT 0,
     checksum VARCHAR(64) NOT NULL,
+    screen_size DOUBLE,
+    current_sens DOUBLE,
+    optimization_analysis TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_checksum (user_id, checksum)
@@ -272,7 +276,6 @@ CREATE TABLE IF NOT EXISTS user_inventory (
     FOREIGN KEY (item_id) REFERENCES shop_items(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_item (user_id, item_id)
 );
-
 -- Idempotency Keys
 CREATE TABLE IF NOT EXISTS idempotency_keys (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -295,8 +298,10 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     event_type VARCHAR(64) NOT NULL,
     metadata_json JSON,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE
+    SET NULL,
+        FOREIGN KEY (actor_user_id) REFERENCES users(id) ON DELETE
+    SET NULL
 );
 -- Security / Anomaly Events
 CREATE TABLE IF NOT EXISTS security_events (
@@ -306,9 +311,9 @@ CREATE TABLE IF NOT EXISTS security_events (
     severity ENUM('info', 'warning', 'critical') NOT NULL DEFAULT 'warning',
     metadata_json JSON,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE
+    SET NULL
 );
-
 -- Indices for Optimization
 CREATE INDEX idx_users_axp ON users(axp);
 CREATE INDEX idx_users_guild ON users(guild_id);

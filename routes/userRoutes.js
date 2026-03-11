@@ -44,12 +44,12 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
         const cost = user.name_changes > 0 ? 500 : 0;
         if (user.axp < cost) return errorResponse(res, 400, 'INSUFFICIENT_AXP', `Not enough AXP. Changing name costs ${cost} AXP.`);
 
-            cost = user.name_changes > 0 ? 500 : 0;
-            if (user.axp < cost) {
-                const e = new Error(`Not enough AXP. Changing name costs ${cost} AXP.`);
-                e.status = 400;
-                throw e;
-            }
+        cost = user.name_changes > 0 ? 500 : 0;
+        if (user.axp < cost) {
+            const e = new Error(`Not enough AXP. Changing name costs ${cost} AXP.`);
+            e.status = 400;
+            throw e;
+        }
 
         if (cost > 0) {
             await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Spent ${cost} AXP to change username.`]);
@@ -146,42 +146,36 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
 
         // Perfect Week auto-bonus (server-confirmed)
         // Compute week start (Monday)
-            const d = new Date(now);
-            const day = d.getDay(); // 0=Sun..6=Sat
-            const diffToMonday = (day === 0 ? -6 : 1) - day;
-            const monday = new Date(d);
-            monday.setDate(d.getDate() + diffToMonday);
-            const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+        const d = new Date(now);
+        const day = d.getDay(); // 0=Sun..6=Sat
+        const diffToMonday = (day === 0 ? -6 : 1) - day;
+        const monday = new Date(d);
+        monday.setDate(d.getDate() + diffToMonday);
+        const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
         // Ensure weekly_bonus table exists
-            await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
+        await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
             user_id INT NOT NULL,
             week_start DATE NOT NULL,
             awarded TINYINT DEFAULT 1,
             PRIMARY KEY (user_id, week_start)
         )`);
-            const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
-            if (!wb && streak >= 7) {
-                const weekBonus = total; // 2× today by adding +total again
-                await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
-                await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
-                await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
+        const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
+        if (!wb && streak >= 7) {
+            const weekBonus = total; // 2× today by adding +total again
+            await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
+            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Perfect Week bonus +${weekBonus} AXP`]);
+            await db.run('INSERT INTO weekly_bonus (user_id, week_start, awarded) VALUES (?,?,1)', [req.user.id, weekStart]);
             // Achievement unlock (id: perfect_week)
-                try {
-                    await db.run(`CREATE TABLE IF NOT EXISTS user_achievements (
-                    user_id INT NOT NULL,
-                    achievement_id VARCHAR(64) NOT NULL,
-                    PRIMARY KEY (user_id, achievement_id)
-                )`);
-                    const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
-                    if (!ach) {
-                        await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
-                    }
-                } catch { }
-                return { payload: { success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart } };
-            }
+            try {
+                const ach = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, 'perfect_week']);
+                if (!ach) {
+                    await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, 'perfect_week']);
+                }
+            } catch (achErr) { }
+            return res.json({ success: true, streak, axp: total, week_bonus: weekBonus, date: today, week_start: weekStart });
+        }
 
-            return { payload: { success: true, streak, axp: total, date: today } };
-        });
+        res.json({ success: true, streak, axp: total, date: today });
     } catch (e) {
         errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
@@ -314,33 +308,20 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
 // Daily Mystery Protocol Reward
 router.post('/daily-protocol', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        return await handleIdempotentAction(req, res, 'reward:daily-protocol', async () => {
-            const today = new Date().toISOString().split('T')[0];
-            const before = await db.get('SELECT last_protocol_date, axp FROM users WHERE id = ?', [req.user.id]);
-
-            if (before && before.last_protocol_date === today) {
-                const e = new Error('Protocol already completed for today');
-                e.status = 400;
-                throw e;
-            }
-        const today = new Date().toISOString().split('T')[0];
+        const todayAt = new Date().toISOString().split('T')[0];
         const lastProtocol = await db.get('SELECT last_protocol_date FROM users WHERE id = ?', [req.user.id]);
 
-        if (lastProtocol && lastProtocol.last_protocol_date === today) {
+        if (lastProtocol && lastProtocol.last_protocol_date === todayAt) {
             return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Protocol already completed for today');
         }
 
-            const axpReward = 200;
-            await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, today, req.user.id]);
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Completed the Secret Protocol today (+${axpReward} AXP)`]);
-            const after = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: before?.axp || 0, afterAXP: after?.axp || 0, reason: 'daily_protocol_reward' });
+        const axpReward = 200;
+        await db.run('UPDATE users SET axp = axp + ?, last_protocol_date = ? WHERE id = ?', [axpReward, todayAt, req.user.id]);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, `Completed the Secret Protocol today (+${axpReward} AXP)`]);
 
-            return { payload: { success: true, axp: axpReward } };
-        });
+        res.json({ success: true, axp: axpReward });
     } catch (err) {
         console.error(err);
-        res.status(err.status || 500).json({ error: err.message || 'Server error' });
         errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
     }
 });
@@ -424,8 +405,8 @@ router.post('/premium/buy', authenticateToken, async (req, res) => {
                 e.status = 403;
                 throw e;
             }
-        const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
-        if (u && u.is_premium) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Already Premium');
+            const u = await db.get('SELECT is_premium FROM users WHERE id = ?', [req.user.id]);
+            if (u && u.is_premium) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Already Premium');
 
             await conn.execute('DELETE FROM user_inventory WHERE id = ?', [entitlement.id]);
             await conn.execute('UPDATE users SET is_premium = 1 WHERE id = ?', [req.user.id]);
@@ -452,34 +433,19 @@ router.post('/premium/buy', authenticateToken, async (req, res) => {
 
 router.post('/easter-egg', authenticateToken, rewardClaimLimiter, async (req, res) => {
     try {
-        return await handleIdempotentAction(req, res, 'reward:easter-egg', async () => {
-            const achievementId = 'easter_egg_hack';
-            const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
-            if (u) {
-                const e = new Error('Reward already claimed');
-                e.status = 400;
-                throw e;
-            }
-
-            const before = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-            await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
-            await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
-            await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
-            const after = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
-            await security.detectAXPSpike({ userId: req.user.id, beforeAXP: before.axp || 0, afterAXP: after.axp || 0, reason: 'easter_egg_reward' });
-            return { payload: { success: true, axp: 500 } };
-        });
-    } catch (err) {
-        res.status(err.status || 500).json({ error: err.message || 'DB Error' });
         const achievementId = 'easter_egg_hack';
         const u = await db.get('SELECT achievement_id FROM user_achievements WHERE user_id = ? AND achievement_id = ?', [req.user.id, achievementId]);
-        if (u) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Reward already claimed');
+        if (u) {
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Reward already claimed');
+        }
 
         await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
         await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
         await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
+
         res.json({ success: true, axp: 500 });
     } catch (err) {
+        console.error(err);
         errorResponse(res, 500, 'USER_DB_ERROR', 'DB Error');
     }
 });
@@ -551,6 +517,15 @@ router.post('/use-item', authenticateToken, validateRequest([{ field: 'itemId', 
     } catch (err) {
         console.error('[User] Use item error:', err);
         errorResponse(res, 500, 'USER_ROUTE_ERROR', 'Server error using item');
+    }
+});
+
+router.get('/status', authenticateToken, async (req, res) => {
+    try {
+        const user = await db.get('SELECT axp, level, last_generation_date FROM users WHERE id = ?', [req.user.id]);
+        res.json(user);
+    } catch (e) {
+        res.status(500).json({ error: 'Server error' });
     }
 });
 

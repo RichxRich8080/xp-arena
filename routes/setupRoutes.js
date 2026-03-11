@@ -29,7 +29,7 @@ async function awardAXP(userId, amount, reason) {
 
 router.post('/submit', authenticateToken, async (req, res) => {
   try {
-    const { mode, general, reddot, scope2x, scope4x, scope8x, comment, is_private } = req.body;
+    const { mode, general, reddot, scope2x, scope4x, scope8x, comment, is_private, screen_size, current_sens, optimization_analysis } = req.body;
     if (!mode || (mode !== 'manual' && mode !== 'auto')) return res.status(400).json({ error: 'Invalid mode' });
     if (!comment || String(comment).trim().length < 10) return res.status(400).json({ error: 'Comment required' });
     const g = cap(general), r = cap(reddot), s2 = cap(scope2x), s4 = cap(scope4x), s8 = cap(scope8x);
@@ -38,8 +38,15 @@ router.post('/submit', authenticateToken, async (req, res) => {
     if (priv && (!user || !user.is_premium)) return res.status(403).json({ error: 'Premium required for private setups' });
     const sum = checksum(mode, g, r, s2, s4, s8);
     const exists = await db.get('SELECT id FROM setups WHERE user_id = ? AND checksum = ?', [req.user.id, sum]);
-    if (exists) return res.status(400).json({ error: 'Duplicate setup' });
-    const insert = await db.run('INSERT INTO setups (user_id, mode, general, reddot, scope2x, scope4x, scope8x, comment, is_private, checksum) VALUES (?,?,?,?,?,?,?,?,?,?)', [req.user.id, mode, g, r, s2, s4, s8, String(comment).trim(), priv ? 1 : 0, sum]);
+    if (exists) return res.json({ success: true, id: exists.id, status: 'already_exists' });
+
+    const insert = await db.run(
+      'INSERT INTO setups (user_id, mode, general, reddot, scope2x, scope4x, scope8x, comment, is_private, checksum, screen_size, current_sens, optimization_analysis) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
+      [req.user.id, mode, g, r, s2, s4, s8, String(comment).trim(), priv ? 1 : 0, sum, screen_size || null, current_sens || null, optimization_analysis || null]
+    );
+
+    await db.run('UPDATE users SET last_generation_date = ? WHERE id = ?', [new Date().toISOString().split('T')[0], req.user.id]);
+
     await awardAXP(req.user.id, 50, 'Setup submitted');
     const cnt = await db.get('SELECT COUNT(*) as c FROM setups WHERE user_id = ?', [req.user.id]);
     if (cnt && cnt.c >= 10) await db.run('INSERT IGNORE INTO user_achievements (user_id, achievement_id) VALUES (?,?)', [req.user.id, 'verified_setup']);

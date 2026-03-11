@@ -7,7 +7,7 @@ export const useNeuralHaptics = () => {
         if (typeof window !== 'undefined' && window.navigator && window.navigator.vibrate) {
             try {
                 window.navigator.vibrate(pattern);
-            } catch (e) {
+            } catch {
                 console.warn("Haptic engine disabled by user/browser.");
             }
         }
