@@ -1,4 +1,5 @@
 import React from 'react';
+import { Outlet } from 'react-router-dom';
 import { TopNav } from './TopNav';
 import { BottomNav } from './BottomNav';
 import { SideNav } from './SideNav';
@@ -7,7 +8,7 @@ import ActivityTicker from './ActivityTicker';
 import GlobalFAB from '../ui/GlobalFAB';
 import GlitchTransition from '../ui/GlitchTransition';
 
-export default function Layout({ children }) {
+export default function Layout() {
     return (
         <div className="min-h-screen bg-background text-text-default flex flex-col relative overflow-hidden">
             {/* Background ambient lighting */}
@@ -22,7 +23,7 @@ export default function Layout({ children }) {
             {/* Main Content Area */}
             <main className="flex-1 w-full max-w-7xl mx-auto pt-16 pb-24 px-4 overflow-y-auto relative z-10 scroll-smooth">
                 <GlitchTransition>
-                    {children}
+                    <Outlet />
                 </GlitchTransition>
             </main>
 
