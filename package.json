@@ -10,7 +10,7 @@
     "dev": "node server/app.js",
     "build": "cd frontend && npm install && npm run build",
     "migrate": "node migrate.js",
-    "test:integration": "echo 'Bypassing backend legacy tests for SPA Frontend Build.' && exit 0"
+    "test:integration": "jest tests/integration/health.test.js --runInBand"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

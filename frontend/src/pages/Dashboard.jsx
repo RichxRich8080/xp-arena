@@ -26,7 +26,7 @@ const Dashboard = () => {
                 if (data && !data.error) {
                     setRemoteStatus(data);
                 }
-            } catch (e) {
+            } catch {
                 console.error('Failed to sync dashboard status');
             }
         };
@@ -55,7 +55,7 @@ const Dashboard = () => {
             } else {
                 addNotification('Daily Reward', data.error || 'Already claimed today', 'error');
             }
-        } catch (e) {
+        } catch {
             addNotification('Connection Error', 'Failed to reach the Arena servers.', 'error');
         }
     };
