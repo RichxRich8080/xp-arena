@@ -2,8 +2,11 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
-  "buildCommand": "cd frontend && npm install --omit=dev && npm run build",
-  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/server.js": {
+      "includeFiles": "server/**"
+    }
+  },
   "rewrites": [
     {
       "source": "/api/(.*)",
