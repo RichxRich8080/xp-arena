@@ -1,5 +1,17 @@
+const fs = require('fs');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
+
+const shouldUseSsl = process.env.DB_SSL !== 'false';
+const allowInsecureTls = process.env.DB_SSL_INSECURE === 'true';
+const sslCaPath = process.env.DB_SSL_CA_PATH;
+
+const sslConfig = shouldUseSsl
+    ? {
+        rejectUnauthorized: !allowInsecureTls,
+        ...(sslCaPath ? { ca: fs.readFileSync(sslCaPath, 'utf8') } : {})
+    }
+    : undefined;
 
 // Create a connection pool optimized for TiDB
 const pool = mysql.createPool({
@@ -13,13 +25,13 @@ const pool = mysql.createPool({
     queueLimit: 0,
     enableKeepAlive: true,
     keepAliveInitialDelay: 10000,
-    ssl: {
-        // Soften for Vercel/TiDB handshake unless a CA is provided
-        rejectUnauthorized: false
-    }
+    ...(sslConfig ? { ssl: sslConfig } : {})
 });
 
-// Connection will be established on first query
+async function checkDatabaseConnection() {
+    await pool.query('SELECT 1');
+    return true;
+}
 
 // Helper for single queries (compatible with sqlite3-like interface where possible)
 const databaseHelper = {
@@ -47,8 +59,8 @@ const databaseHelper = {
     }
 };
 
-// Export both the pool and the helper
 module.exports = {
     pool,
-    db: databaseHelper
+    db: databaseHelper,
+    checkDatabaseConnection
 };

@@ -10,24 +10,31 @@ import GlitchTransition from '../ui/GlitchTransition';
 
 export default function Layout() {
     return (
-        <div className="min-h-screen bg-background text-text-default flex flex-col relative overflow-hidden">
-            {/* Background ambient lighting */}
+        <div className="min-h-screen text-text-default relative overflow-x-hidden">
             <div className="fixed inset-0 pointer-events-none z-0">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary-blue/10 blur-[100px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-neon-cyan/5 blur-[100px]" />
+                <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 20% 0%, color-mix(in srgb, var(--app-accent) 14%, transparent), transparent 40%)' }} />
+                <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--app-primary) 18%, transparent), transparent 45%)' }} />
             </div>
 
             <TopNav />
             <ActivityTicker />
 
-            {/* Main Content Area */}
-            <main className="flex-1 w-full max-w-7xl mx-auto pt-16 pb-24 px-4 overflow-y-auto relative z-10 scroll-smooth">
-                <GlitchTransition>
-                    <Outlet />
-                </GlitchTransition>
-            </main>
+            <div className="relative z-10 max-w-[1400px] mx-auto pt-20 pb-32 md:pb-28 px-2 md:px-4">
+                <div className="grid grid-cols-1 md:grid-cols-[260px_minmax(0,1fr)] gap-4">
+                    <div className="hidden md:block">
+                        <SideNav />
+                    </div>
+                    <main className="min-h-[70vh] rounded-3xl border border-white/10 bg-black/35 backdrop-blur-xl p-3 sm:p-5 md:p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)]">
+                        <GlitchTransition>
+                            <Outlet />
+                        </GlitchTransition>
+                    </main>
+                </div>
+            </div>
 
-            <SideNav />
+            <div className="md:hidden">
+                <SideNav />
+            </div>
             <GlobalFAB />
             <PaletteButton />
             <BottomNav />

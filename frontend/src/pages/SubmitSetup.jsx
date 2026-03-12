@@ -4,8 +4,9 @@ import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
-import { Button } from '../components/ui/Button'; // Added missing import for Button
+import { Button } from '../components/ui/Button';
 import { Target, Zap, ChevronRight, Share2, Copy } from 'lucide-react';
+import { setupService } from '../services/api';
 
 // Reusable Slider Component
 const SensSlider = ({ label, field, formData, handleSensitivityChange, handleSliderChange }) => (
@@ -57,6 +58,7 @@ export default function SubmitSetup() {
         redDot: 100,
         scope2x: 100,
         scope4x: 100,
+        scope8x: 100,
         comment: ''
     });
 
@@ -76,33 +78,43 @@ export default function SubmitSetup() {
         setFormData({ ...formData, [field]: parseInt(e.target.value, 10) });
     };
 
-    const generateCode = () => {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let result = 'AXP-';
-        for (let i = 0; i < 5; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return result;
-    };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        // Mock API Submit Delay
-        setTimeout(() => {
-            const code = generateCode();
+        try {
+            const payload = {
+                mode: 'manual',
+                general: Number(formData.general),
+                reddot: Number(formData.redDot),
+                scope2x: Number(formData.scope2x),
+                scope4x: Number(formData.scope4x),
+                scope8x: Number(formData.scope8x),
+                comment: formData.comment && formData.comment.trim().length >= 10
+                    ? formData.comment.trim()
+                    : `Setup from ${formData.device} with ${formData.ram}GB RAM`,
+                current_sens: JSON.stringify({
+                    handType: formData.handType,
+                    device: formData.device,
+                    ram: formData.ram
+                })
+            };
+
+            const { data } = await setupService.submitSetup(payload);
+            const code = data?.code || `AXP-${String(data?.id || Math.floor(Math.random() * 100000)).padStart(5, '0')}`;
             setShareCode(code);
-            setIsSubmitting(false);
             setStep(3);
 
-            // Reward user context
             addAXP(50);
-
-            // Global Notifications
             addNotification('Setup Created!', `Unique share code: ${code}`, 'success');
             addNotification('Earned AXP', 'You earned +50 AXP for submitting a setup.', 'axp');
-        }, 1500);
+        } catch (error) {
+            const message = error?.message || 'Failed to submit setup. Please try again.';
+            addNotification('Submission Failed', message, 'error');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const copyCode = () => {
@@ -187,6 +199,7 @@ export default function SubmitSetup() {
                         <SensSlider label="Red Dot" field="redDot" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
                         <SensSlider label="2x Scope" field="scope2x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
                         <SensSlider label="4x Scope" field="scope4x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
+                        <SensSlider label="8x Scope" field="scope8x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
 
                         <div className="mt-6 mb-8">
                             <label className="text-sm font-medium text-gray-400 mb-1 block">CREATOR COMMENT</label>

@@ -6,10 +6,12 @@ const helmet = require('helmet');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
 
-const { db } = require('./config/db');
+const { checkDatabaseConnection } = require('./config/db');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+let dbReady = false;
 
 if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
     console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication node will return errors.');
@@ -30,11 +32,11 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdn.jsdelivr.net"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            imgSrc: ["'self'", "data:", "https:*"],
-            connectSrc: ["'self'", "https:*"],
+            scriptSrc: ["'self'", "'unsafe-inline'", 'https://cdn.jsdelivr.net'],
+            styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdn.jsdelivr.net'],
+            fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+            imgSrc: ["'self'", 'data:', 'https:*'],
+            connectSrc: ["'self'", 'https:*'],
         },
     },
 }));
@@ -57,12 +59,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
-
-const authLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 20,
-    message: { error: 'Too many requests from this IP, please try again later.' }
-});
 const apiLimiter = rateLimit({
     windowMs: 60 * 1000,
     max: 120,
@@ -108,11 +104,24 @@ app.use('/api/shop', shopRoutes);
 app.use('/api/season', seasonRoutes);
 
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
+    const status = dbReady ? 'ok' : 'degraded';
+    res.status(dbReady ? 200 : 503).json({ status, checks: { database: dbReady ? 'ok' : 'down' } });
 });
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok' });
+});
+
+app.get('/api/ready', (req, res) => {
+    if (!dbReady) {
+        return res.status(503).json({
+            success: false,
+            code: 'SERVICE_NOT_READY',
+            message: 'Service is not ready yet. Database connectivity is unavailable.'
+        });
+    }
+
+    return res.json({ success: true, status: 'ready' });
 });
 
 // SPA Routing Fallback (Must be after all API routes)
@@ -125,21 +134,42 @@ app.use((err, req, res, next) => {
     console.error(`Method: ${req.method} | Path: ${req.url}`);
     console.error(err.stack);
 
-    // In production, do not leak stack traces to the client
     res.status(500).json({
-        error: 'System Failure: Internal Server Error',
+        success: false,
+        code: 'INTERNAL_SERVER_ERROR',
         message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : err.message
     });
 });
 
-process.on('unhandledRejection', (reason, promise) => {
+process.on('unhandledRejection', (reason) => {
     console.error('⚠️ [CRITICAL] Unhandled Promise Rejection:', reason);
-    // Ideally ping an APM (Datadog, Sentry, etc) here
 });
 
-if (require.main === module) {
-    app.listen(PORT, () => {
-        console.log(`Server is running on port ${PORT}`);
-    });
+async function refreshDatabaseReadiness() {
+    try {
+        await checkDatabaseConnection();
+        dbReady = true;
+    } catch (error) {
+        dbReady = false;
+        console.error('[Readiness] Database connectivity check failed:', error.code || error.message);
+    }
 }
+
+if (require.main === module) {
+    (async () => {
+        await refreshDatabaseReadiness();
+        if (process.env.REQUIRE_DB_ON_BOOT === 'true' && !dbReady) {
+            console.error('[Startup] REQUIRE_DB_ON_BOOT=true and database is unreachable. Exiting.');
+            process.exit(1);
+        }
+
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+
+        const readinessTimer = setInterval(refreshDatabaseReadiness, 30000);
+        readinessTimer.unref();
+    })();
+}
+
 module.exports = app;
