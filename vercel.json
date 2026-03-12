@@ -1,20 +1,29 @@
 {
   "version": 2,
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "functions": {
-    "api/server.js": {
-      "includeFiles": "server/**"
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/server.js"
+      "src": "api/server.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/((?!api|.*\\..*).*)",
-      "destination": "/index.html"
+      "src": "frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/server.js"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
     }
   ],
   "headers": [
