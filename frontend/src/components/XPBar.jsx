@@ -5,20 +5,28 @@ const XPBar = ({ currentXP, maxXP, level }) => {
 
     return (
         <div className="w-full">
-            <div className="flex justify-between items-end mb-1">
-                <span className="text-sm font-bold text-gray-300 uppercase tracking-widest">Level {level}</span>
-                <span className="text-xs font-semibold text-indigo-400">{currentXP} / {maxXP} XP</span>
+            <div className="flex justify-between items-end mb-2 px-1">
+                <div className="flex items-center gap-2">
+                    <span className="font-display font-black text-sm text-white tracking-widest">LVL</span>
+                    <span className="font-display font-black text-2xl text-accent-cyan leading-none">{level}</span>
+                </div>
+                <div className="text-right">
+                    <span className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest block mb-0.5">Progress to Next Tier</span>
+                    <span className="font-display font-black text-xs text-white/70 tracking-widest">{currentXP} / {maxXP} <span className="text-[10px] text-gray-500">AXP</span></span>
+                </div>
             </div>
-            <div className="relative w-full h-4 bg-gray-800 rounded-full overflow-hidden border border-gray-700 shadow-inner">
-                {/* Animated Glow Wrapper */}
-                <div
-                    className="absolute top-0 left-0 h-full bg-gradient-to-r from-indigo-500 via-cyan-400 to-indigo-500 rounded-full transition-all duration-1000 ease-in-out relative"
+            
+            <div className="relative w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/5 p-0.5 box-content">
+                <div 
+                    className="h-full rounded-full bg-gradient-to-r from-primary via-accent-cyan to-accent-violet transition-all duration-1000 ease-out relative shadow-[0_0_15px_rgba(6,182,212,0.5)]"
                     style={{ width: `${percentage}%` }}
                 >
-                    {/* Inner pulse effect */}
-                    <div className="absolute inset-0 bg-white/20 animate-pulse rounded-full"></div>
-                    {/* Neon Glow Drop Shadow */}
-                    <div className="absolute inset-0 shadow-[0_0_10px_rgba(34,211,238,0.8)] mix-blend-screen"></div>
+                    {/* Glossy Highlight */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/20 to-transparent opacity-50" />
+                    
+                    {/* Segmented Pattern */}
+                    <div className="absolute inset-0 opacity-20" 
+                         style={{ backgroundImage: 'linear-gradient(90deg, transparent 96%, black 96%)', backgroundSize: '20px 100%' }} />
                 </div>
             </div>
         </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Cpu, ShieldCheck, Zap, Activity } from 'lucide-react';
+import { Cpu, ShieldCheck, Zap, Activity, Fingerprint, Database, Network } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export default function Generating() {
     const navigate = useNavigate();
@@ -8,19 +9,19 @@ export default function Generating() {
     const [progress, setProgress] = useState(0);
 
     const steps = [
-        "Analyzing device hardware signature...",
-        "Measuring optimal touch response...",
-        "Optimizing for " + (location.state?.formData?.playStyle || "balanced") + " style...",
-        "Finalizing precision coefficients...",
-        "READY"
+        "FETCHING_HARDWARE_SIGNATURE...",
+        "ANALYZING_TOUCH_LATENCY_PROTOCOLS...",
+        "SYNCHRONIZING_COMBAT_AXIS...",
+        "CALIBRATING_NEURAL_COEFFICIENTS...",
+        "UPLINK_STABLE_READY"
     ];
 
     const stepIndex = Math.min(Math.floor((progress / 100) * steps.length), steps.length - 1);
     const status = steps[stepIndex];
 
     useEffect(() => {
-        const duration = 3000;
-        const interval = 30;
+        const duration = 2500;
+        const interval = 20;
         const increment = (interval / duration) * 100;
 
         const timer = setInterval(() => {
@@ -41,65 +42,95 @@ export default function Generating() {
         if (progress >= 100) {
             const redirect = setTimeout(() => {
                 navigate('/sensitivity-result', { state: location.state });
-            }, 500);
+            }, 800);
             return () => clearTimeout(redirect);
         }
     }, [progress, navigate, location.state]);
 
     return (
-        <div className="fixed inset-0 bg-[#06080f] z-50 flex flex-col items-center justify-center p-6 space-y-12">
-            {/* Background Decorative Radar Effect */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-neon-cyan/30 rounded-full animate-ping duration-[3000ms]"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-primary-blue/20 rounded-full animate-ping duration-[4000ms]"></div>
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] border border-neon-green/10 rounded-full"></div>
-                {/* Horizontal Scan Line */}
-                <div className="absolute top-0 w-full h-1 bg-gradient-to-r from-transparent via-neon-cyan to-transparent animate-scan-y opacity-40"></div>
+        <div className="fixed inset-0 bg-background z-[100] flex flex-col items-center justify-center p-8 overflow-hidden font-display">
+            {/* Background Narrative Layers */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-accent-cyan/[0.03] rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.05]" />
+                
+                {/* Random Tech Bits */}
+                <div className="absolute top-10 left-10 opacity-[0.2] font-black text-[8px] tracking-[0.5em] text-gray-500 uppercase vertical-text">
+                    PROTOCOL_V.2.0.4_ACTIVE_NODE_SYMMETRY
+                </div>
             </div>
 
-            {/* Central Animated Logo/Icon */}
-            <div className="relative group">
-                <div className="absolute -inset-4 bg-neon-cyan/20 rounded-full blur-2xl group-hover:bg-neon-cyan/30 transition-all animate-pulse"></div>
-                <div className="relative w-24 h-24 bg-gray-900 border-2 border-neon-cyan/50 rounded-2xl flex items-center justify-center rotate-45 shadow-[0_0_30px_rgba(6,182,212,0.3)]">
-                    <div className="-rotate-45 relative">
-                        <Activity className="w-10 h-10 text-neon-cyan animate-pulse" />
-                        <Zap className="absolute -top-2 -right-2 w-5 h-5 text-axp-gold animate-bounce" />
+            {/* Central Diagnostic Sphere */}
+            <div className="relative mb-20">
+                <div className="absolute -inset-20 bg-accent-cyan/10 rounded-full blur-3xl opacity-20 animate-pulse" />
+                
+                <div className="relative w-48 h-48 flex items-center justify-center">
+                    {/* Ring 1 */}
+                    <div className="absolute inset-0 border-2 border-accent-cyan/10 rounded-full animate-[spin_10s_linear_infinite]" />
+                    <div className="absolute inset-4 border border-accent-cyan/20 rounded-full border-dashed animate-[spin_15s_linear_infinite_reverse]" />
+                    <div className="absolute inset-8 border-4 border-white/[0.02] rounded-full border-t-accent-cyan/40 animate-[spin_3s_ease-in-out_infinite]" />
+                    
+                    <div className="relative z-10 flex flex-col items-center">
+                        <Activity className="w-12 h-12 text-accent-cyan animate-pulse mb-2" />
+                        <span className="text-[10px] font-black text-white italic tracking-widest">{Math.round(progress)}%</span>
                     </div>
                 </div>
             </div>
 
-            {/* Content Section */}
-            <div className="text-center space-y-8 relative z-10 w-full max-w-sm">
-                <div className="space-y-2">
-                    <h2 className="text-xl font-black text-white uppercase tracking-[8px] glow-cyan">OPTIMIZING</h2>
-                    <p className="text-neon-cyan text-[10px] font-black uppercase tracking-widest h-4 animate-pulse">
-                        {status}
-                    </p>
-                </div>
-
-                {/* Progress Bar Container */}
-                <div className="space-y-4">
-                    <div className="h-2 w-full bg-gray-900/50 rounded-full border border-gray-800 p-0.5 overflow-hidden">
-                        <div
-                            className="h-full bg-gradient-to-r from-primary-blue via-neon-cyan to-neon-green rounded-full shadow-[0_0_15px_rgba(6,182,212,0.6)] transition-all duration-300"
-                            style={{ width: `${progress}%` }}
-                        ></div>
-                    </div>
-
-                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest">
-                        <div className="flex items-center gap-1.5 text-neon-green">
-                            <ShieldCheck className="w-3 h-3" />
-                            SECURE PROCESSING
+            {/* Readout Terminal */}
+            <div className="w-full max-w-lg space-y-8 relative z-10">
+                <div className="text-center space-y-4">
+                    <h2 className="text-2xl font-black text-white italic tracking-[0.3em] uppercase opacity-80">FORGING_COEFFICIENTS</h2>
+                    <div className="flex items-center justify-center gap-4">
+                        <div className="h-1px flex-1 bg-white/5" />
+                        <div className="flex items-center gap-3">
+                            <span className="w-2 h-2 rounded-full bg-accent-cyan animate-ping" />
+                            <p className="text-accent-cyan text-[10px] font-black uppercase tracking-[0.25em] italic">
+                                {status}
+                            </p>
                         </div>
-                        <span className="text-gray-400">{Math.round(progress)}%</span>
+                        <div className="h-1px flex-1 bg-white/5" />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    {/* Progress Track */}
+                    <div className="h-2 w-full bg-white/[0.02] border border-white/5 rounded-full overflow-hidden p-0.5">
+                        <div
+                            className="h-full bg-gradient-to-r from-accent-cyan via-accent-green to-accent-cyan rounded-full transition-all duration-300 relative group"
+                            style={{ width: `${progress}%` }}
+                        >
+                            <div className="absolute inset-0 bg-white/20 animate-pulse" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        <div className="flex items-center gap-3 glass-panel border-white/5 py-3 px-4">
+                            <Cpu className="w-3.5 h-3.5 text-accent-cyan" />
+                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">CPU_OPT</span>
+                        </div>
+                        <div className="flex items-center gap-3 glass-panel border-white/5 py-3 px-4 justify-center">
+                            <Network className="w-3.5 h-3.5 text-accent-green" />
+                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">BUS_SYNC</span>
+                        </div>
+                        <div className="flex items-center gap-3 glass-panel border-white/5 py-3 px-4 justify-end">
+                            <Database className="w-3.5 h-3.5 text-accent-rose" />
+                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">MEM_ALGN</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* Bottom Status Icons */}
-            <div className="flex gap-8 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
-                <Cpu className="w-6 h-6 text-neon-cyan animate-pulse" />
-                <Zap className="w-6 h-6 text-axp-gold animate-bounce" />
+            {/* Cinematic Overlay Text */}
+            <div className="absolute bottom-12 flex items-center justify-between w-full px-12 border-t border-white/5 pt-8 opacity-20">
+                <div className="flex items-center gap-4">
+                    <Fingerprint className="w-4 h-4 text-white" />
+                    <span className="text-[8px] font-black text-white tracking-[0.5em] uppercase italic">ENCRYPTED_UPLINK</span>
+                </div>
+                <div className="flex items-center gap-4">
+                    <span className="text-[8px] font-black text-white tracking-[0.5em] uppercase italic">XP_ARENA_REALT_ENGINE_V2_GENESIS</span>
+                    <ShieldCheck className="w-4 h-4 text-white" />
+                </div>
             </div>
         </div>
     );

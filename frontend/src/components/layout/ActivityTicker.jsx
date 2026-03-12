@@ -29,23 +29,29 @@ export default function ActivityTicker() {
     const event = EVENTS[index];
 
     return (
-        <div className="w-full bg-gray-950 border-y border-gray-800/50 py-1.5 overflow-hidden relative">
-            <div className="max-w-7xl mx-auto px-4 flex items-center gap-3 animate-slide-in-fast" key={index}>
-                <div className={`p-1 rounded-md bg-gray-900 ${event.color}`}>
-                    <event.icon className="w-3.5 h-3.5" />
+        <div className="w-full bg-background/50 border-y border-white/5 py-2 overflow-hidden relative backdrop-blur-sm">
+            <div className="max-w-[1500px] mx-auto px-4 flex items-center gap-4 animate-slide-in-fast" key={index}>
+                <div className="flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse shadow-[0_0_8px_rgba(6,182,212,0.8)]" />
+                    <span className="text-[9px] font-display font-black text-accent-cyan/80 uppercase tracking-[0.2em] whitespace-nowrap">Live Intel</span>
                 </div>
-                <p className="text-[10px] sm:text-xs font-black uppercase tracking-[1px] text-gray-400">
+                
+                <div className="w-px h-3 bg-white/10 hidden sm:block" />
+                
+                <p className="text-[10px] font-display font-medium uppercase tracking-[0.1em] text-gray-400 truncate">
                     {event.text}
                 </p>
 
-                <div className="ml-auto flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse"></div>
-                    <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Demo Feed</span>
+                <div className="ml-auto hidden sm:flex items-center gap-3">
+                    <div className="flex items-center gap-1.5">
+                        <div className="w-1 h-1 rounded-full bg-accent-rose animate-pulse" />
+                        <span className="text-[8px] font-display font-bold text-gray-600 uppercase tracking-widest">Global Feed</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Speed scanning line */}
-            <div className="absolute top-0 bottom-0 left-0 w-32 bg-gradient-to-r from-neon-green/5 to-transparent -translate-x-full animate-progress-scan pointer-events-none"></div>
+            {/* Scrolling scan effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-accent-cyan/[0.03] to-transparent -translate-x-full animate-progress-scan pointer-events-none" />
         </div>
     );
 }

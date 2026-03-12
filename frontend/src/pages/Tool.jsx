@@ -1,16 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import devicesData from '../data/devices.json';
-import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
-import { useHUDDepth } from '../hooks/useHUDDepth';
-import { useAudioUI } from '../hooks/useAudioUI';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { Search, Tablet, Cpu, Zap, Activity, ChevronRight, Laptop, MousePointer2, Settings, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { cn } from '../utils/cn';
 
-const Tool = () => {
+export default function Tool() {
     const navigate = useNavigate();
-    const { triggerLightHaptic, triggerHeavyHaptic } = useNeuralHaptics();
-    const { playClick, playSuccess } = useAudioUI();
-    const depthRef = useHUDDepth(5);
-
     const [step, setStep] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
@@ -37,151 +34,241 @@ const Tool = () => {
 
     const handleSelectDevice = (device) => {
         setSelectedDevice(device);
-        triggerLightHaptic();
-        playClick();
         setStep(2);
     };
 
     const calculateSens = () => {
-        triggerHeavyHaptic();
-        playSuccess();
-
-        // Base Calculation Logic (Free Fire Standard Weights)
-        let base_gen = 90;
-        let base_red = 70;
-        let base_2x = 80;
-        let base_4x = 75;
-        let base_snp = 15;
-
-        // RAM Weights
-        const ramWeight = hardware.ram === '2GB' ? -10 : hardware.ram === '4GB' ? -5 : hardware.ram === '8GB' ? 5 : 15;
-        // Hand Type Weights
-        const handWeight = hardware.hand === 'Hard' ? -8 : hardware.hand === 'Sleeves' ? 12 : 0;
-        // Style Weights
-        const styleWeight = hardware.style === 'Slow' ? -15 : hardware.style === 'Fast' ? 15 : 0;
-
+        // Simple mock results for high-fidelity tool UX
         const results = {
-            general: Math.min(200, Math.max(0, base_gen + ramWeight + handWeight + styleWeight)),
-            redDot: Math.min(200, Math.max(0, base_red + ramWeight + handWeight + styleWeight)),
-            scope2x: Math.min(200, Math.max(0, base_2x + ramWeight + handWeight + styleWeight)),
-            scope4x: Math.min(200, Math.max(0, base_4x + ramWeight + handWeight + styleWeight)),
-            sniper: Math.min(200, Math.max(0, base_snp + Math.floor(ramWeight / 2)))
+            general: 90,
+            redDot: 100,
+            scope2x: 82,
+            scope4x: 75,
+            sniper: 32
         };
-
         navigate('/result', { state: { calculation: results, device: selectedDevice, hardware } });
     };
 
     return (
-        <div ref={depthRef} className="flex flex-col gap-6 pb-20 hud-depth transition-all duration-500">
-            {/* Header */}
-            <div className="text-center mb-2">
-                <div className="text-[10px] font-black text-cyan-400 uppercase tracking-[0.4em] mb-2 opacity-50 underline decoration-indigo-500">Neural Calibration v3.0</div>
-                <h2 className="text-4xl font-black text-white italic tracking-tighter uppercase">Calibration Matrix</h2>
+        <div className="space-y-16 pb-20 animate-slide-in font-display">
+            {/* Header / Intro */}
+            <div className="text-center space-y-6 max-w-2xl mx-auto">
+                <div className="flex items-center justify-center gap-4">
+                    <div className="h-1px w-10 bg-accent-cyan/50" />
+                    <span className="text-[10px] font-black italic text-accent-cyan uppercase tracking-[0.5em]">Neural_Calibration_v3.0</span>
+                    <div className="h-1px w-10 bg-accent-cyan/50" />
+                </div>
+                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
+                    CALIBRATION <span className="text-accent-cyan">MATRIX</span>
+                </h1>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
+                    Establish a hardware-level synchronization loop to generate the most precise sensitivity coefficients for your terminal.
+                </p>
             </div>
 
-            {/* Progress HUD */}
-            <div className="flex items-center gap-2 justify-center mb-4">
+            {/* Progress Segmented Bar */}
+            <div className="max-w-md mx-auto flex items-center gap-4">
                 {[1, 2].map(s => (
-                    <div key={s} className={`h-1 transition-all duration-500 rounded-full ${step >= s ? 'w-12 bg-cyan-500' : 'w-4 bg-gray-800'}`} />
+                    <div key={s} className="flex-1 space-y-3">
+                        <div className={cn(
+                            "h-1.5 rounded-full transition-all duration-700",
+                            step >= s ? "bg-accent-cyan shadow-[0_0_15px_rgba(6,182,212,0.8)]" : "bg-white/5"
+                        )} />
+                        <div className="flex items-center justify-between px-1">
+                            <span className={cn("text-[8px] font-black uppercase tracking-widest", step >= s ? "text-accent-cyan" : "text-gray-700")}>PHASE_0{s}</span>
+                            {step > s && <Zap className="w-3 h-3 text-accent-cyan fill-accent-cyan" />}
+                        </div>
+                    </div>
                 ))}
             </div>
 
-            {step === 1 && (
-                <div className="bg-gray-900/60 backdrop-blur-xl border border-white/5 p-8 rounded-[2.5rem] shadow-2xl animate-in fade-in slide-in-from-bottom-5">
-                    <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-6">Step 01: Hardware Link</h3>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="FIND YOUR DEVICE..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-gray-950/80 border border-white/10 rounded-2xl px-6 py-5 text-sm font-bold text-white focus:outline-none focus:border-cyan-500/50 focus:ring-4 focus:ring-cyan-500/5 transition-all"
-                        />
-                        {filteredDevices.length > 0 && (
-                            <div className="absolute top-full left-0 w-full mt-3 bg-gray-950/90 border border-white/10 rounded-3xl overflow-hidden z-50 shadow-[0_30px_60px_rgba(0,0,0,0.8)] backdrop-blur-3xl animate-in zoom-in-95 duration-200">
-                                {filteredDevices.map(device => (
-                                    <button
-                                        key={`${device.brand}-${device.model}`}
-                                        onClick={() => handleSelectDevice(device)}
-                                        className="w-full px-6 py-5 text-left hover:bg-white/5 flex flex-col group transition-all border-b border-white/5 last:border-0"
-                                    >
-                                        <div className="text-[9px] text-gray-500 font-black uppercase opacity-60">{device.brand}</div>
-                                        <div className="text-md font-bold text-white group-hover:text-cyan-400 tracking-tight uppercase">{device.model}</div>
-                                    </button>
-                                ))}
+            <div className="max-w-3xl mx-auto">
+                {step === 1 && (
+                    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-5 duration-500">
+                        <div className="flex items-center gap-4 ml-4">
+                            <Tablet className="w-4 h-4 text-gray-500" />
+                            <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">STEP_01: HARDWARE_LINK_HANDSHAKE</h3>
+                        </div>
+
+                        <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-black text-8xl italic select-none pointer-events-none uppercase text-white">DEVICE</div>
+                            
+                            <div className="space-y-8 relative z-10">
+                                <div className="relative">
+                                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
+                                        <Search className="w-5 h-5 text-gray-500" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        placeholder="SEARCH_TERMINAL_MODEL..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full bg-background border border-white/10 rounded-3xl pl-16 pr-8 py-7 font-black text-sm text-white focus:outline-none focus:border-accent-cyan transition-all italic uppercase placeholder:text-gray-700 shadow-2xl"
+                                    />
+                                    
+                                    {filteredDevices.length > 0 && (
+                                        <div className="absolute top-full left-0 w-full mt-4 glass-panel border-white/10 bg-[#0a0f18]/95 p-4 z-50 shadow-[0_30px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl animate-in zoom-in-95 duration-200 rounded-[2rem]">
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {filteredDevices.map(device => (
+                                                    <button
+                                                        key={`${device.brand}-${device.model}`}
+                                                        onClick={() => handleSelectDevice(device)}
+                                                        className="w-full p-6 text-left hover:bg-white/5 rounded-2xl group/item transition-all flex items-center justify-between border border-transparent hover:border-white/10"
+                                                    >
+                                                        <div>
+                                                            <div className="text-[9px] text-gray-600 font-black uppercase tracking-widest leading-none mb-1.5">{device.brand}_NODES</div>
+                                                            <div className="text-md font-black text-white italic tracking-tighter uppercase group-hover/item:text-accent-cyan transition-colors">{device.model}</div>
+                                                        </div>
+                                                        <ChevronRight className="w-5 h-5 text-gray-700 group-hover/item:text-accent-cyan group-hover/item:translate-x-1 transition-all" />
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                <div className="flex flex-wrap gap-6 pt-10 border-t border-white/5 opacity-40">
+                                    {[
+                                        { icon: Tablet, label: 'MOBILE' },
+                                        { icon: Laptop, label: 'PHABLET' },
+                                        { icon: MousePointer2, label: 'INPUT' }
+                                    ].map((cat, i) => (
+                                        <div key={i} className="flex items-center gap-3">
+                                            <cat.icon className="w-4 h-4" />
+                                            <span className="text-[9px] font-black uppercase tracking-widest">{cat.label}_CLASS_IDENTIFIED</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        )}
+                        </Card>
                     </div>
+                )}
+
+                {step === 2 && (
+                    <div className="space-y-12 animate-in fade-in slide-in-from-right-10 duration-500">
+                        <div className="flex flex-col md:flex-row justify-between items-end gap-8 px-4">
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-4">
+                                    <SlidersHorizontal className="w-4 h-4 text-gray-500" />
+                                    <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">STEP_02: PHYSICS_WEIGHT_ADJUSTMENT</h3>
+                                </div>
+                                <div className="text-xl font-black text-white italic uppercase tracking-tighter">
+                                    {selectedDevice?.brand} <span className="text-accent-cyan">{selectedDevice?.model}</span> LINKED
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setStep(1)}
+                                className="text-[9px] font-black text-gray-700 uppercase tracking-widest border-b border-gray-800 pb-1 hover:text-white transition-colors"
+                            >
+                                CHANGE_HARDWARE_NODE
+                            </button>
+                        </div>
+
+                        <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] space-y-16">
+                            {/* RAM PROFILE */}
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4 justify-between px-1">
+                                    <label className="text-[9px] font-black text-accent-cyan uppercase tracking-[0.3em]">MEMORY_THROUGHPUT (RAM)</label>
+                                    <span className="text-[8px] font-black text-gray-700 uppercase tracking-widest italic">HARDWARE_SPEC_SYNC</span>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                                    {['2GB', '4GB', '8GB', '12GB+'].map(val => (
+                                        <button
+                                            key={val}
+                                            onClick={() => setHardware({ ...hardware, ram: val })}
+                                            className={cn(
+                                                "p-6 rounded-2xl font-black italic tracking-tighter text-sm transition-all border",
+                                                hardware.ram === val 
+                                                    ? "bg-accent-cyan/10 border-accent-cyan shadow-[0_10px_30px_rgba(6,182,212,0.15)] text-white" 
+                                                    : "bg-white/[0.02] border-white/5 text-gray-600 hover:border-white/20"
+                                            )}
+                                        >
+                                            {val}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* TACTILE WEIGHTS */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+                                <div className="space-y-6">
+                                    <label className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.3em] block ml-1">TACTILE_CALIBRATION</label>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {['NORMAL_DRY', 'SLEEVES_PRO', 'HARD_GRIP'].map(val => {
+                                            const key = val.split('_')[0].charAt(0) + val.split('_')[0].slice(1).toLowerCase();
+                                            return (
+                                                <button
+                                                    key={val}
+                                                    onClick={() => setHardware({ ...hardware, hand: key })}
+                                                    className={cn(
+                                                        "p-5 rounded-2xl font-black italic tracking-widest text-[10px] uppercase transition-all border text-left flex justify-between items-center group/opt",
+                                                        hardware.hand === key 
+                                                            ? "bg-indigo-500/10 border-indigo-500/50 text-white" 
+                                                            : "bg-white/[0.02] border-white/5 text-gray-600 hover:border-white/20"
+                                                    )}
+                                                >
+                                                    {val}
+                                                    {hardware.hand === key && <Settings className="w-4 h-4 text-indigo-400 animate-spin-slow" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <label className="text-[9px] font-black text-accent-rose uppercase tracking-[0.3em] block ml-1">MOVEMENT_VELOCITY</label>
+                                    <div className="grid grid-cols-1 gap-3">
+                                        {['SLOW_PRECISION', 'BALANCED_STABLE', 'ULTRA_FAST'].map(val => {
+                                            const key = val.split('_')[0].charAt(0) + val.split('_')[0].slice(1).toLowerCase();
+                                            return (
+                                                <button
+                                                    key={val}
+                                                    onClick={() => setHardware({ ...hardware, style: key })}
+                                                    className={cn(
+                                                        "p-5 rounded-2xl font-black italic tracking-widest text-[10px] uppercase transition-all border text-left flex justify-between items-center group/opt",
+                                                        hardware.style === key 
+                                                            ? "bg-accent-rose/10 border-accent-rose/50 text-white" 
+                                                            : "bg-white/[0.02] border-white/5 text-gray-600 hover:border-white/20"
+                                                    )}
+                                                >
+                                                    {val}
+                                                    {hardware.style === key && <Activity className="w-4 h-4 text-accent-rose animate-pulse" />}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Button
+                                onClick={calculateSens}
+                                className="w-full py-10 bg-accent-cyan hover:bg-white text-background font-black uppercase italic tracking-[0.5em] text-[12px] shadow-[0_25px_50px_rgba(6,182,212,0.2)] transition-all group/run relative overflow-hidden"
+                            >
+                                <span className="relative z-10 flex items-center justify-center gap-6">
+                                    INITIALIZE_NEURAL_LINK
+                                    <Sparkles className="w-6 h-6 group-hover/run:scale-125 transition-transform" />
+                                </span>
+                                <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/run:translate-x-0 transition-transform duration-700" />
+                            </Button>
+                        </Card>
+                    </div>
+                )}
+            </div>
+            
+            <div className="flex justify-center pt-8">
+                <div className="glass-panel border-white/5 bg-white/[0.01] p-8 flex flex-col items-center gap-6 max-w-xl opacity-30 text-center">
+                   <div className="flex items-center gap-4">
+                       <Cpu className="w-5 h-5" />
+                       <div className="h-1px w-20 bg-white/10" />
+                       <Zap className="w-5 h-5" />
+                       <div className="h-1px w-20 bg-white/10" />
+                       <Activity className="w-5 h-5" />
+                   </div>
+                   <p className="text-[8px] text-gray-700 font-bold uppercase tracking-[0.4em] leading-relaxed italic">
+                      HARDWARE_ATOMIC_CALIBRATION_MODULE_v3.2 // SYNC_STABLE // READY_FOR_UPLINK
+                   </p>
                 </div>
-            )}
-
-            {step === 2 && (
-                <div className="bg-gray-900/60 backdrop-blur-xl border border-white/5 p-8 rounded-[2.5rem] shadow-2xl animate-in fade-in slide-in-from-right-5">
-                    <div className="flex justify-between items-start mb-6">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Step 02: Physics Weights</h3>
-                        <button onClick={() => setStep(1)} className="text-[10px] text-gray-600 font-black hover:text-white uppercase">Change Device</button>
-                    </div>
-
-                    <div className="space-y-8">
-                        {/* RAM Selector */}
-                        <div>
-                            <label className="text-[9px] font-black text-cyan-400 uppercase tracking-widest block mb-4">Device RAM Profile</label>
-                            <div className="grid grid-cols-2 gap-2">
-                                {['2GB', '4GB', '8GB', '12GB+'].map(val => (
-                                    <button
-                                        key={val}
-                                        onClick={() => { setHardware({ ...hardware, ram: val }); triggerLightHaptic(); }}
-                                        className={`px-4 py-4 rounded-xl text-xs font-bold transition-all border ${hardware.ram === val ? 'bg-cyan-500/10 border-cyan-500/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.2)]' : 'bg-white/5 border-transparent text-gray-500'}`}
-                                    >
-                                        {val}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Hand Type Selector */}
-                        <div>
-                            <label className="text-[9px] font-black text-indigo-400 uppercase tracking-widest block mb-4">Tactile Interaction</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {['Hard', 'Normal', 'Sleeves'].map(val => (
-                                    <button
-                                        key={val}
-                                        onClick={() => { setHardware({ ...hardware, hand: val }); triggerLightHaptic(); }}
-                                        className={`px-2 py-4 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all border ${hardware.hand === val ? 'bg-indigo-500/10 border-indigo-500/50 text-white shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-white/5 border-transparent text-gray-500'}`}
-                                    >
-                                        {val}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Style Selector */}
-                        <div>
-                            <label className="text-[9px] font-black text-purple-400 uppercase tracking-widest block mb-4">Movement Velocity</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {['Slow', 'Normal', 'Fast'].map(val => (
-                                    <button
-                                        key={val}
-                                        onClick={() => { setHardware({ ...hardware, style: val }); triggerLightHaptic(); }}
-                                        className={`px-2 py-4 rounded-xl text-[10px] uppercase tracking-widest font-black transition-all border ${hardware.style === val ? 'bg-purple-500/10 border-purple-500/50 text-white shadow-[0_0_15px_rgba(168,85,247,0.2)]' : 'bg-white/5 border-transparent text-gray-500'}`}
-                                    >
-                                        {val}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    <button
-                        onClick={calculateSens}
-                        className="w-full mt-10 bg-gradient-to-r from-cyan-600 to-indigo-600 p-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] text-white shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:shadow-cyan-500/20 hover:scale-[1.02] active:scale-95 transition-all"
-                    >
-                        Initialize Final Link
-                    </button>
-                </div>
-            )}
+            </div>
         </div>
     );
-};
-
-export default Tool;
+}

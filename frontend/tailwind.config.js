@@ -7,20 +7,30 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#0b0f1a',
+        background: '#04070d',
+        surface: {
+          low: '#0a0f18',
+          default: '#111827',
+          high: '#1f2937',
+        },
         primary: {
-          blue: '#1e3a8a',
+          light: '#60a5fa',
+          DEFAULT: '#3b82f6',
+          dark: '#1d4ed8',
+        },
+        accent: {
+          cyan: '#06b6d4',
+          violet: '#8b5cf6',
+          rose: '#f43f5e',
         },
         neon: {
           green: '#22c55e',
           cyan: '#06b6d4',
-        },
-        text: {
-          default: '#e5e7eb',
         }
       },
       fontFamily: {
-        sans: ['Inter', 'Roboto', 'Outfit', 'sans-serif'], // Added custom gaming fonts
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['Orbitron', 'sans-serif'],
       },
       animation: {
         'slide-in': 'slideIn 0.3s ease-out',

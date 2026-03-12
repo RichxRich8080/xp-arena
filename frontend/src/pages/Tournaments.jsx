@@ -1,39 +1,58 @@
 import React, { useState, useEffect } from 'react';
+import { Trophy, Swords, Tv, Users, Activity, Crown, Zap, ChevronRight, Play, Radio } from 'lucide-react';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { cn } from '../utils/cn';
 
-const MatchCard = ({ p1, p2, time, status = "UPCOMING" }) => (
-    <div className={`relative overflow-hidden bg-gray-950/40 border border-white/5 p-6 rounded-[2rem] transition-all duration-500 group hover:border-white/20 ${status === "LIVE" ? 'border-red-500/30' : ''}`}>
-        <div className={`absolute top-0 right-0 px-4 py-1 text-[8px] font-black uppercase tracking-widest ${status === "LIVE" ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-800 text-gray-400'}`}>
+const MatchCard = ({ p1, p2, time, status = "UPCOMING", score1 = "0.0", score2 = "0.0" }) => (
+    <div className={cn(
+        "relative overflow-hidden glass-panel p-8 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] transition-all duration-500 group",
+        status === "LIVE" ? "border-accent-rose/30 shadow-[0_0_30px_rgba(244,63,94,0.1)]" : "hover:border-white/20"
+    )}>
+        <div className={cn(
+            "absolute top-0 right-0 px-6 py-1.5 text-[8px] font-black italic uppercase tracking-[0.3em]",
+            status === "LIVE" ? "bg-accent-rose text-white animate-pulse" : "bg-white/10 text-gray-500"
+        )}>
             {status}
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="space-y-10">
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs">👤</div>
-                    <span className="text-xs font-black text-white uppercase italic tracking-tight">{p1}</span>
+                <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-[1.25rem] bg-white/5 border border-white/10 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">👤</div>
+                    <div className="space-y-0.5">
+                        <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block">OPERATOR</span>
+                        <span className="text-sm font-black text-white uppercase italic tracking-tighter">{p1}</span>
+                    </div>
                 </div>
-                <span className="text-[10px] font-mono text-gray-500">04.2</span>
+                <span className="text-xl font-black text-white italic tracking-tighter opacity-80">{score1}</span>
             </div>
 
-            <div className="relative h-px bg-white/5 flex items-center justify-center">
-                <div className="bg-gray-950 px-3 text-[8px] font-black text-gray-600 tracking-widest uppercase">vs</div>
+            <div className="relative h-1px bg-white/5 flex items-center justify-center">
+                <div className="bg-background px-4 text-[9px] font-black text-gray-700 tracking-[0.4em] uppercase font-display italic">VS</div>
             </div>
 
             <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-xs">👤</div>
-                    <span className="text-xs font-black text-white uppercase italic tracking-tight">{p2}</span>
+                <div className="flex items-center gap-5">
+                    <div className="w-12 h-12 rounded-[1.25rem] bg-white/5 border border-white/10 flex items-center justify-center text-xl shadow-inner group-hover:scale-110 transition-transform">👤</div>
+                    <div className="space-y-0.5">
+                        <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest block">OPERATOR</span>
+                        <span className="text-sm font-black text-white uppercase italic tracking-tighter">{p2}</span>
+                    </div>
                 </div>
-                <span className="text-[10px] font-mono text-gray-500">01.0</span>
+                <span className="text-xl font-black text-white italic tracking-tighter opacity-80">{score2}</span>
             </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
-            <div className="flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></div>
+        <div className="mt-10 flex items-center justify-between border-t border-white/5 pt-6 group/action cursor-pointer">
+            <div className="flex items-center gap-3">
+                <div className={cn("w-2 h-2 rounded-full", status === "LIVE" ? "bg-accent-rose animate-ping" : "bg-gray-700")} />
                 <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">{time}</span>
             </div>
-            <button className="text-[10px] font-black text-cyan-400 uppercase tracking-widest group-hover:scale-105 transition-transform">Enter_Portal</button>
+            <div className="flex items-center gap-2 group-hover:gap-4 transition-all">
+                <span className="text-[9px] font-black text-white uppercase italic tracking-[0.3em] group-hover:text-accent-cyan">ENTER_PORTAL</span>
+                <ChevronRight className="w-3.5 h-3.5 text-accent-cyan group-hover:scale-110 transition-transform" />
+            </div>
         </div>
     </div>
 );
@@ -53,94 +72,140 @@ const Tournaments = () => {
     const formatTime = (s) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`;
 
     return (
-        <div className="flex flex-col gap-8 pb-12 animate-in fade-in slide-in-from-bottom-5 duration-700">
-            {/* 1. Syndicate Cup Banner */}
-            <div className={`relative overflow-hidden rounded-[3rem] p-8 border transition-all duration-700 ${combatMode ? 'bg-red-950/40 border-red-500/40 shadow-[0_0_50px_rgba(239,68,68,0.2)]' : 'bg-gradient-to-br from-gray-900 to-black border-white/10 shadow-2xl'}`}>
-                {/* Visual Flair */}
-                <div className={`absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full transition-colors duration-700 ${combatMode ? 'bg-red-500/20' : 'bg-cyan-500/10'}`}></div>
-                <div className={`absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-${combatMode ? 'red' : 'cyan'}-500 to-transparent opacity-30`}></div>
+        <div className="space-y-16 pb-20 animate-slide-in font-display">
+            {/* Header / Active Banner */}
+            <div className={cn(
+                "relative overflow-hidden rounded-[4rem] p-12 md:p-20 border-2 transition-all duration-1000",
+                combatMode 
+                    ? "bg-accent-rose/[0.04] border-accent-rose/40 shadow-[0_0_80px_rgba(244,63,94,0.15)]" 
+                    : "bg-white/[0.01] border-white/5 shadow-2xl backdrop-blur-3xl"
+            )}>
+                <div className={cn(
+                    "absolute -top-32 -right-32 w-80 h-80 blur-[120px] rounded-full transition-all duration-1000",
+                    combatMode ? "bg-accent-rose/20 scale-150" : "bg-accent-cyan/10"
+                )} />
+                <div className="absolute inset-x-0 bottom-0 h-1px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-                <div className="relative z-10">
-                    <div className="flex flex-col md:flex-row justify-between items-start gap-6 mb-8">
-                        <div>
-                            <div className="flex items-center gap-3 mb-2">
-                                <span className={`text-[9px] font-black uppercase tracking-[0.4em] ${combatMode ? 'text-red-400' : 'text-cyan-400'}`}>Areni_Regional_Network</span>
-                                <div className={`w-2 h-[1px] ${combatMode ? 'bg-red-500' : 'bg-cyan-500'}`}></div>
+                <div className="relative z-10 space-y-12">
+                    <div className="flex flex-col md:flex-row justify-between items-start gap-12">
+                        <div className="space-y-6">
+                            <div className="flex items-center gap-4">
+                                <span className={cn("text-[10px] font-black uppercase tracking-[0.5em] italic", combatMode ? "text-accent-rose" : "text-accent-cyan")}>ARENI_GLOBAL_LINK</span>
+                                <Radio className={cn("w-4 h-4", combatMode ? "text-accent-rose animate-pulse" : "text-gray-700")} />
                             </div>
-                            <h2 className="text-4xl font-black italic text-white tracking-tighter uppercase leading-none">Syndicate_Cup_v8</h2>
+                            <h2 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">SYNDICATE <span className={combatMode ? "text-accent-rose" : "text-accent-cyan"}>CUP</span></h2>
+                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg italic">
+                                SEASONAL_ELITE_CHURN. HIGH-STAKES TACTICAL ENGAGEMENT DELEGATED BY THE ARENA ADVISORY NODE.
+                            </p>
                         </div>
-                        <div className="flex items-center gap-3">
-                            <div className="px-4 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black text-white/50 uppercase tracking-widest italic">Live_Broadcast</div>
+                        
+                        <div className="flex flex-col items-end gap-3 px-8 py-4 glass-panel border-white/10 bg-white/5">
+                            <div className="flex items-center gap-3">
+                                <Tv className="w-3.5 h-3.5 text-accent-rose" />
+                                <span className="text-[10px] font-black text-white uppercase italic tracking-[0.3em]">LIVE_SPECTATE_HUB</span>
+                            </div>
+                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">14.2K_WATCHING</span>
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap gap-4">
-                        <div className="bg-white/5 border border-white/10 px-5 py-3 rounded-2xl flex items-center gap-3 group/stat">
-                            <span className="text-lg">💎</span>
-                            <div>
-                                <div className="text-[8px] font-black text-gray-500 uppercase tracking-widest leading-none mb-1">Prize_Pool</div>
-                                <div className="text-xs font-black text-white tracking-widest leading-none uppercase italic">50,000 AXP</div>
-                            </div>
+                    <div className="flex flex-wrap items-center gap-10 pt-12 border-t border-white/5">
+                        <div className="flex items-center gap-6">
+                             <div className="w-14 h-14 rounded-2xl bg-axp-gold/10 border border-axp-gold/20 flex items-center justify-center shadow-xl">
+                                <Crown className="w-8 h-8 text-axp-gold" />
+                             </div>
+                             <div className="space-y-1">
+                                <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest leading-none">PRIZE_POOL_ALLOCATION</span>
+                                <div className="text-2xl font-black text-white italic tracking-widest leading-none uppercase">50,000 <span className="text-xs text-axp-gold">AXP</span></div>
+                             </div>
                         </div>
 
-                        <button
-                            onClick={() => setCombatMode(!combatMode)}
-                            className={`px-8 py-3 rounded-[1.5rem] text-[10px] font-black uppercase tracking-[0.3em] transition-all relative overflow-hidden group/btn ${combatMode
-                                ? 'bg-red-500 text-white shadow-[0_10px_30px_rgba(239,68,68,0.4)] hover:scale-105'
-                                : 'bg-white text-gray-900 hover:scale-105 active:scale-95 shadow-xl'
-                                }`}
-                        >
-                            <span className="relative z-10">{combatMode ? 'Abort_Sequence' : 'Engage_Combat'}</span>
-                            <div className={`absolute inset-0 translate-x-[-101%] group-hover/btn:translate-x-0 transition-transform duration-500 opacity-20 ${combatMode ? 'bg-white' : 'bg-cyan-500'}`}></div>
-                        </button>
+                        <div className="h-12 w-1px bg-white/5 hidden lg:block" />
+
+                        <div className="flex-1 flex justify-end gap-6">
+                             <Button
+                                onClick={() => setCombatMode(!combatMode)}
+                                className={cn(
+                                    "px-12 py-7 rounded-[2.5rem] text-[11px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden group/btn h-18",
+                                    combatMode
+                                        ? "bg-accent-rose text-white shadow-[0_20px_40px_rgba(244,63,94,0.3)]"
+                                        : "bg-white text-background hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
+                                )}
+                            >
+                                <span className="relative z-10 flex items-center gap-4">
+                                    {combatMode ? 'ABORT_SEQUENCE' : 'ENGAGE_COMBAT'}
+                                    <Swords className="w-5 h-5 group-hover/btn:rotate-12 transition-transform" />
+                                </span>
+                                <div className={cn("absolute inset-0 bg-white/20 transition-transform duration-500", combatMode ? "translate-x-0" : "-translate-x-full")} />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* 2. Combat Sequence HUD */}
+            {/* Combat Sequence HUD Overlay */}
             {combatMode && (
-                <div className="bg-black border border-red-500 p-6 rounded-[2.5rem] flex items-center justify-between relative overflow-hidden animate-in slide-in-from-top-4 duration-300">
-                    <div className="absolute inset-0 bg-red-500/5 animate-pulse"></div>
-                    <div className="flex items-center gap-5 relative z-10">
-                        <div className="w-12 h-12 bg-red-500/20 border border-red-500/50 rounded-full flex items-center justify-center text-red-500 text-xl font-black italic">!</div>
-                        <div>
-                            <div className="text-[10px] font-black text-red-400 uppercase tracking-[0.4em] mb-1 leading-none">Combat_Detected</div>
-                            <div className="text-sm font-black text-white uppercase italic tracking-tighter leading-none">Your match sequence is loading...</div>
+                <div className="bg-background border-2 border-accent-rose p-10 rounded-[3rem] shadow-[0_0_50px_rgba(244,63,94,0.1)] flex items-center justify-between relative overflow-hidden animate-in slide-in-from-top-4 duration-500">
+                    <div className="absolute inset-0 bg-accent-rose/5 animate-pulse" />
+                    <div className="flex items-center gap-10 relative z-10">
+                        <div className="w-20 h-20 bg-accent-rose/20 border border-accent-rose/40 rounded-3xl flex items-center justify-center text-accent-rose text-3xl font-black italic">!</div>
+                        <div className="space-y-2">
+                            <div className="text-xs font-black text-accent-rose uppercase tracking-[0.5em] mb-1 leading-none">COMBAT_DETECTED_SYNCING_NODE</div>
+                            <div className="text-2xl font-black text-white uppercase italic tracking-tighter leading-none">MATCH_SEQUENCE_INITIALIZING...</div>
                         </div>
                     </div>
-                    <div className="text-4xl font-black text-red-500 font-mono italic relative z-10 tracking-tighter">{formatTime(timeLeft)}</div>
+                    <div className="text-6xl font-black text-accent-rose font-mono italic relative z-10 tracking-tighter">{formatTime(timeLeft)}</div>
                 </div>
             )}
 
-            {/* 3. Bracket Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-6">
-                    <div className="flex items-center justify-between px-4">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Quarter_Finals</h3>
-                        <div className="text-[8px] font-black text-cyan-400 uppercase tracking-widest animate-pulse">2 Active</div>
+            {/* Bracket Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                <div className="space-y-10">
+                    <div className="flex items-center justify-between px-6">
+                        <div className="flex items-center gap-4">
+                             <Activity className="w-4 h-4 text-gray-500" />
+                             <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Quarter_Finals</h3>
+                        </div>
+                        <div className="px-4 py-1.5 glass-panel border-accent-cyan/20 bg-accent-cyan/5 text-[9px] font-black text-accent-cyan uppercase tracking-widest animate-pulse">2_ACTIVE_NODES</div>
                     </div>
-                    <MatchCard p1="SNIPER_GOD" p2="NEURAL_LINK" time="IN_PLAY" status="LIVE" />
-                    <MatchCard p1="GHOST_USER" p2="SILENT_AIM" time="T-MINUS 12M" status="UPCOMING" />
+                    <div className="grid grid-cols-1 gap-6">
+                        <MatchCard p1="SNIPER_GOD" p2="NEURAL_LINK" time="IN_PLAY" status="LIVE" score1="03.2" score2="01.0" />
+                        <MatchCard p1="GHOST_OPERATOR" p2="SILENT_AXIS" time="T-MINUS 12M" status="UPCOMING" />
+                    </div>
                 </div>
 
-                <div className="flex flex-col gap-6">
-                    <div className="flex items-center justify-between px-4">
-                        <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em]">Semi_Finals</h3>
+                <div className="space-y-10">
+                    <div className="flex items-center gap-4 px-6 h-9">
+                         <Activity className="w-4 h-4 text-gray-500" />
+                         <h3 className="text-[10px] font-black text-white uppercase tracking-[0.5em] italic">Semi_Finals</h3>
                     </div>
-                    <div className="h-full bg-gray-950/20 border-2 border-dashed border-white/5 rounded-[3rem] p-10 flex flex-col items-center justify-center text-center opacity-30 grayscale saturate-50 min-h-[220px]">
-                        <div className="w-16 h-16 rounded-full bg-white/5 mb-6 flex items-center justify-center text-3xl">⚔️</div>
-                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest max-w-[150px]">Awaiting bracket progression...</p>
-                    </div>
+                    <Card className="h-full border-2 border-dashed border-white/5 bg-white/[0.01] rounded-[3.5rem] p-16 flex flex-col items-center justify-center text-center opacity-30 group hover:opacity-100 transition-opacity min-h-[400px]">
+                        <div className="w-24 h-24 rounded-full bg-white/5 mb-8 flex items-center justify-center text-5xl group-hover:scale-110 transition-transform">⚔️</div>
+                        <div className="space-y-4">
+                           <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">VOID_BRACKET</h4>
+                           <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest max-w-[200px] leading-relaxed italic">AWAITING_QUARTER_FINAL_PROGRESSION_CYCLES...</p>
+                        </div>
+                    </Card>
                 </div>
             </div>
 
-            {/* 4. Rules Footer */}
-            <div className="bg-white/5 border border-white/5 p-6 rounded-3xl opacity-50 transition-opacity hover:opacity-100 group">
-                <div className="flex items-center gap-3 mb-2">
-                    <div className="w-3 h-[1px] bg-indigo-500"></div>
-                    <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em]">Engagement_Rules</span>
+            {/* Engagement Rules Footer */}
+            <div className="glass-panel border-white/5 bg-white/[0.01] p-10 opacity-50 hover:opacity-100 transition-all group">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-10">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                            <div className="w-5 h-1px bg-indigo-500" />
+                            <span className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.5em] italic">Rules_of_Engagement</span>
+                        </div>
+                        <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed max-w-2xl italic">
+                            BEST_OF_5_CYCLES • STANDARD_ARENA_SENS_PROTOCOL_ENFORCED • GLOBAL_NEURAL_SYNC_REQUIRED • HARDWARE_LATENCY_CHECK_ACTIVE.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-6 shrink-0">
+                         {[Users, Trophy, Zap].map((Icon, i) => (
+                            <Icon key={i} className="w-6 h-6 text-gray-700" />
+                         ))}
+                    </div>
                 </div>
-                <p className="text-[9px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed">Best of 5 rounds • Standard Arena Sens enforced • Global Neural Sync required • Latency check active.</p>
             </div>
         </div>
     );

@@ -450,6 +450,8 @@ async function run() {
   await ensureColumn('users', 'login_attempts', 'INT DEFAULT 0');
   await ensureColumn('users', 'lockout_until', 'DATETIME');
   await ensureColumn('users', 'last_protocol_date', 'DATE');
+  await ensureColumn('users', 'theme_preference', "VARCHAR(20) DEFAULT 'dark'");
+  await ensureColumn('users', 'ui_state', 'JSON NULL');
   await ensureColumn('axp_history', 'event_type', "VARCHAR(50) DEFAULT 'snapshot'");
   await ensureColumn('axp_history', 'source', "VARCHAR(100) DEFAULT 'system'");
   await ensureColumn('axp_history', 'metadata', 'JSON NULL');

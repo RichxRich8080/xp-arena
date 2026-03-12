@@ -5,37 +5,43 @@ import { useNotifications } from '../hooks/useNotifications';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Target, Zap, ChevronRight, Share2, Copy } from 'lucide-react';
+import { Target, Zap, ChevronRight, Share2, Copy, Shield, Cpu, Activity, Database, Check } from 'lucide-react';
 import { setupService } from '../services/api';
+import { cn } from '../utils/cn';
 
-// Reusable Slider Component
-const SensSlider = ({ label, field, formData, handleSensitivityChange, handleSliderChange }) => (
-    <div className="space-y-2 mb-4">
-        <div className="flex justify-between items-end">
-            <label className="text-sm font-bold text-gray-300 tracking-wider uppercase">{label}</label>
+// Reusable Technical Slider Component
+const TechSlider = ({ label, field, formData, handleSensitivityChange, handleSliderChange, code }) => (
+    <div className="group relative p-6 glass-panel border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden mb-4">
+        <div className="relative z-10 flex justify-between items-center mb-6">
+            <div className="flex items-center gap-4">
+                <div className="w-1.5 h-6 bg-accent-cyan rounded-full opacity-50 group-hover:opacity-100 transition-opacity" />
+                <div className="space-y-1">
+                    <span className="text-[9px] font-display font-black text-gray-500 uppercase tracking-[0.2em] block">{label}</span>
+                    <span className="text-[7px] font-display font-bold text-gray-600 uppercase tracking-widest">SYSTEM_PARAM_{code}</span>
+                </div>
+            </div>
             <input
                 type="number"
                 max="200"
                 min="0"
                 value={formData[field]}
                 onChange={(e) => handleSensitivityChange(e, field)}
-                className="bg-gray-800 border-b border-gray-600 w-16 text-center text-neon-cyan font-bold focus:outline-none focus:border-neon-cyan px-1 py-1"
+                className="bg-background/50 border border-white/10 rounded-lg w-20 text-center text-accent-cyan font-display font-black text-lg p-2 focus:outline-none focus:border-accent-cyan uppercase italic"
             />
         </div>
-        <div className="relative w-full h-8 flex items-center group">
+        <div className="relative h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <div
+                className="absolute left-0 top-0 h-full bg-accent-cyan transition-all duration-300"
+                style={{ width: `${(formData[field] / 200) * 100}%` }}
+            />
             <input
                 type="range"
                 min="0"
                 max="200"
                 value={formData[field]}
                 onChange={(e) => handleSliderChange(e, field)}
-                className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-neon-cyan"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
             />
-            {/* Fill track visual overlay */}
-            <div
-                className="absolute left-0 pointer-events-none h-2 bg-gradient-to-r from-primary-blue to-neon-cyan rounded-l-lg shadow-[0_0_10px_rgba(6,182,212,0.5)]"
-                style={{ width: `${(formData[field] / 200) * 100}%` }}
-            ></div>
         </div>
     </div>
 );
@@ -49,7 +55,6 @@ export default function SubmitSetup() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [shareCode, setShareCode] = useState(null);
 
-    // Form State
     const [formData, setFormData] = useState({
         device: '',
         ram: '',
@@ -62,7 +67,6 @@ export default function SubmitSetup() {
         comment: ''
     });
 
-    // Handlers
     const handleNext = () => setStep(2);
     const handleBack = () => setStep(1);
 
@@ -70,14 +74,13 @@ export default function SubmitSetup() {
         let val = parseInt(e.target.value, 10);
         if (isNaN(val)) val = 0;
         if (val < 0) val = 0;
-        if (val > 200) val = 200; // Enforce max 200
+        if (val > 200) val = 200;
         setFormData({ ...formData, [field]: val });
     };
 
     const handleSliderChange = (e, field) => {
         setFormData({ ...formData, [field]: parseInt(e.target.value, 10) });
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -107,165 +110,187 @@ export default function SubmitSetup() {
             setStep(3);
 
             addAXP(50);
-            addNotification('Setup Created!', `Unique share code: ${code}`, 'success');
-            addNotification('Earned AXP', 'You earned +50 AXP for submitting a setup.', 'axp');
+            addNotification('Setup Certified', `Neural signature registered: ${code}`, 'success');
         } catch (error) {
-            const message = error?.message || 'Failed to submit setup. Please try again.';
-            addNotification('Submission Failed', message, 'error');
+            addNotification('Registry Failed', 'Uplink unstable. Please retry transmission.', 'error');
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    const copyCode = () => {
-        navigator.clipboard.writeText(shareCode);
-        addNotification('Copied', 'Setup code copied to clipboard!', 'info');
-    };
-
     return (
-        <div className="max-w-xl mx-auto space-y-6 pb-6 animate-slide-in">
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-2xl font-black text-white uppercase tracking-wider">Submit Setup</h1>
-                    <p className="text-sm text-gray-400">Share your elite settings and earn AXP.</p>
+        <div className="space-y-12 pb-20 animate-slide-in font-display">
+            {/* Header */}
+            <div className="relative group overflow-hidden glass-panel p-8 md:p-12 border-white/5">
+                <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-black text-8xl italic select-none pointer-events-none uppercase text-accent-cyan">
+                    CONTRIB_DATA
                 </div>
-                <div className="w-12 h-12 bg-gray-900 border border-gray-800 rounded-xl flex items-center justify-center">
-                    <Target className="w-6 h-6 text-neon-cyan glow-cyan" />
+                
+                <div className="relative z-10">
+                    <div className="flex items-center gap-3 mb-4">
+                        <Database className="w-5 h-5 text-accent-cyan animate-pulse" />
+                        <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Neural_Archive_Entry</h2>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                        SUBMIT <span className="text-accent-cyan">SETUP</span>
+                    </h1>
+                    <p className="text-gray-400 font-bold text-sm mt-6 max-w-xl">
+                        Publish your combat coefficients to the global archive. Help other Arenis optimize their terminals.
+                    </p>
                 </div>
             </div>
 
             {step === 1 && (
-                <Card className="animate-in fade-in zoom-in-95 duration-300">
-                    <div className="mb-6 flex justify-between items-center pb-4 border-b border-gray-800">
-                        <h2 className="font-bold text-gray-200">Hardware Info</h2>
-                        <span className="text-xs font-bold bg-primary-blue/20 text-neon-cyan px-2 py-1 rounded">Step 1/2</span>
+                <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in zoom-in-95 duration-500">
+                    <div className="flex items-center gap-3 ml-4">
+                        <Cpu className="w-4 h-4 text-accent-cyan" />
+                        <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">HARDWARE_SIGNATURE_VERIFICATION</h3>
                     </div>
 
-                    <div className="space-y-4">
-                        <Input
-                            label="DEVICE NAME"
-                            placeholder="e.g. iPhone 13 Pro Max"
-                            value={formData.device}
-                            onChange={(e) => setFormData({ ...formData, device: e.target.value })}
-                        />
-                        <Input
-                            label="RAM (GB)"
-                            type="number"
-                            placeholder="e.g. 6"
-                            value={formData.ram}
-                            onChange={(e) => setFormData({ ...formData, ram: e.target.value })}
-                        />
+                    <Card className="p-10 space-y-10 border-white/5 bg-white/[0.02]">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">TERMINAL_CODENAME</label>
+                                <input
+                                    placeholder="E.G. IPHONE_15_PRO"
+                                    value={formData.device}
+                                    onChange={(e) => setFormData({ ...formData, device: e.target.value })}
+                                    className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-sm text-white focus:outline-none focus:border-accent-cyan transition-all italic uppercase"
+                                />
+                            </div>
+                            <div className="space-y-4">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">MEMORY_CLOCK (GB)</label>
+                                <input
+                                    type="number"
+                                    placeholder="E.G. 8"
+                                    value={formData.ram}
+                                    onChange={(e) => setFormData({ ...formData, ram: e.target.value })}
+                                    className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-sm text-white focus:outline-none focus:border-accent-cyan transition-all italic uppercase"
+                                />
+                            </div>
+                        </div>
 
-                        <div className="flex flex-col gap-1 w-full pt-2">
-                            <label className="text-sm font-medium text-gray-400">HAND TYPE</label>
-                            <div className="flex gap-2">
+                        <div className="space-y-6">
+                            <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">KINETIC_LINK_PROTOCOL</label>
+                            <div className="grid grid-cols-3 gap-3">
                                 {['Left', 'Right', 'Both'].map(type => (
                                     <button
                                         key={type}
                                         type="button"
                                         onClick={() => setFormData({ ...formData, handType: type })}
-                                        className={`flex-1 py-2 rounded-lg text-sm font-bold border transition-colors ${formData.handType === type
-                                            ? 'bg-primary-blue/20 border-primary-blue text-white'
-                                            : 'bg-gray-900 border-gray-700 text-gray-500 hover:bg-gray-800'
-                                            }`}
+                                        className={cn(
+                                            "py-4 rounded-xl border font-black text-[10px] uppercase transition-all italic tracking-widest",
+                                            formData.handType === type
+                                                ? "bg-accent-cyan/10 border-accent-cyan text-accent-cyan shadow-[0_0_20px_rgba(6,182,212,0.1)]"
+                                                : "bg-background border-white/5 text-gray-500 hover:border-white/20"
+                                        )}
                                     >
-                                        {type}
+                                        {type}_DOMINANT
                                     </button>
                                 ))}
                             </div>
                         </div>
 
                         <Button
-                            className="w-full mt-6 flex justify-between group"
+                            variant="primary"
+                            className="w-full py-6 flex justify-between group disabled:opacity-20"
                             onClick={handleNext}
                             disabled={!formData.device || !formData.ram}
                         >
-                            <span>Next: Sensitivities</span>
-                            <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            <span className="font-black italic uppercase tracking-[0.3em] text-[10px] ml-4">PROCEED_TO_COEFFICIENTS</span>
+                            <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform mr-4" />
                         </Button>
-                    </div>
-                </Card>
+                    </Card>
+                </div>
             )}
 
             {step === 2 && (
-                <Card className="animate-in fade-in slide-in-from-right-4 duration-300 border-t-4 border-t-neon-cyan">
-                    <div className="mb-6 flex justify-between items-center pb-4 border-b border-gray-800">
-                        <h2 className="font-bold text-gray-200">Sensitivities (Max 200)</h2>
-                        <span className="text-xs font-bold bg-primary-blue/20 text-neon-cyan px-2 py-1 rounded">Step 2/2</span>
+                <div className="max-w-3xl mx-auto space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+                    <div className="flex items-center gap-3 ml-4">
+                        <Activity className="w-4 h-4 text-accent-rose" />
+                        <h3 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">NEURAL_PARAMETER_ENCRYPTION</h3>
                     </div>
 
-                    <form onSubmit={handleSubmit}>
-                        <SensSlider label="General" field="general" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
-                        <SensSlider label="Red Dot" field="redDot" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
-                        <SensSlider label="2x Scope" field="scope2x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
-                        <SensSlider label="4x Scope" field="scope4x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
-                        <SensSlider label="8x Scope" field="scope8x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} />
-
-                        <div className="mt-6 mb-8">
-                            <label className="text-sm font-medium text-gray-400 mb-1 block">CREATOR COMMENT</label>
-                            <textarea
-                                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-3 text-text-default focus:outline-none focus:border-neon-cyan focus:ring-1 focus:ring-neon-cyan resize-none"
-                                rows="3"
-                                placeholder="Tips on how to use this setup..."
-                                value={formData.comment}
-                                onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
-                            ></textarea>
-                        </div>
-
-                        <div className="flex gap-3">
-                            <Button type="button" variant="secondary" onClick={handleBack} disabled={isSubmitting}>
-                                Back
-                            </Button>
-                            <Button
-                                type="submit"
-                                variant="neonCyan"
-                                className="flex-1 text-gray-900 shadow-[0_4px_15px_rgba(6,182,212,0.4)]"
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? 'GENERATING CODE...' : 'SUBMIT & EARN AXP'}
-                            </Button>
-                        </div>
-                    </form>
-                </Card>
-            )}
-
-            {step === 3 && (
-                <div className="space-y-4 animate-in zoom-in-95 duration-500">
-                    <Card className="text-center py-10 border-neon-green/30 bg-gradient-to-b from-[#0b1b16] to-gray-900">
-                        <div className="w-20 h-20 mx-auto bg-neon-green/20 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                            <Share2 className="w-10 h-10 text-neon-green" />
-                        </div>
-
-                        <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-wide">Setup Published!</h2>
-                        <p className="text-sm text-gray-400 mb-8 max-w-sm mx-auto">
-                            Your settings have been registered in the Arena. Share this code with other Arenis.
-                        </p>
-
-                        <div className="max-w-xs mx-auto mb-8">
-                            <p className="text-xs uppercase font-bold text-gray-500 mb-2">Share Code</p>
-                            <div
-                                onClick={copyCode}
-                                className="bg-gray-900 border-2 border-dashed border-gray-600 hover:border-neon-cyan rounded-xl p-4 flex items-center justify-between cursor-pointer group transition-colors"
-                            >
-                                <span className="text-2xl font-mono font-bold tracking-widest text-neon-cyan drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">
-                                    {shareCode}
-                                </span>
-                                <Copy className="w-5 h-5 text-gray-500 group-hover:text-white transition-colors" />
+                    <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <TechSlider label="GENERAL_BIAS" field="general" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} code="A01" />
+                            <TechSlider label="RED_DOT_ACQ" field="redDot" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} code="B04" />
+                            <TechSlider label="2X_OPTICAL" field="scope2x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} code="C09" />
+                            <TechSlider label="4X_ACOG_AXIS" field="scope4x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} code="D12" />
+                            <TechSlider label="8X_ELITE_SENS" field="scope8x" formData={formData} handleSensitivityChange={handleSensitivityChange} handleSliderChange={handleSliderChange} code="E15" />
+                            
+                            <div className="p-6 glass-panel border-white/5 bg-white/[0.02] flex flex-col justify-between">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block mb-4">TACTICAL_NOTES</label>
+                                <textarea
+                                    className="w-full h-full bg-background border border-white/5 rounded-xl p-4 font-bold text-xs text-white focus:outline-none focus:border-accent-cyan transition-all italic resize-none"
+                                    placeholder="TRANSMIT_ADDITIONAL_OP_TIPS..."
+                                    value={formData.comment}
+                                    onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
+                                />
                             </div>
                         </div>
 
-                        <div className="flex justify-center gap-2 items-center bg-yellow-500/10 text-axp-gold px-4 py-2 rounded-lg max-w-xs mx-auto border border-yellow-500/20">
-                            <Zap className="w-5 h-5" />
-                            <span className="font-bold">+50 AXP Rewarded</span>
+                        <div className="flex gap-4">
+                            <Button type="button" variant="ghost" className="px-10 border-white/10 hover:bg-white/5 uppercase italic font-black text-[10px] tracking-widest" onClick={handleBack} disabled={isSubmitting}>
+                                BACK_VERIFY
+                            </Button>
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                className="flex-1 py-6 shadow-[0_10px_30px_rgba(6,182,212,0.2)]"
+                                disabled={isSubmitting}
+                            >
+                                <span className="font-black italic uppercase tracking-[0.4em] text-[10px]">
+                                    {isSubmitting ? 'ENCRYPTING_TRANSMISSION...' : 'PUBLISH_TO_ARCHIVE_&_EARN_AXP'}
+                                </span>
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            )}
+
+            {step === 3 && (
+                <div className="max-w-2xl mx-auto space-y-8 animate-in zoom-in-95 duration-500">
+                    <Card className="relative p-16 flex flex-col items-center text-center border-accent-green/20 bg-accent-green/[0.02] overflow-hidden">
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-accent-green/10 blur-[100px] -translate-x-1/2 -translate-y-1/2" />
+                        
+                        <div className="w-24 h-24 bg-accent-green/10 rounded-[2.5rem] border border-accent-green/20 flex items-center justify-center mb-10 shadow-[0_0_50px_rgba(34,197,94,0.15)] relative z-10">
+                            <Share2 className="w-10 h-10 text-accent-green" />
+                        </div>
+
+                        <h2 className="text-3xl font-black text-white italic tracking-[0.2em] uppercase mb-4 relative z-10">ARCHIVE_SUCCESS</h2>
+                        <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-12 max-w-sm relative z-10">
+                            Your tactile coefficients have been verified and integrated into the global neural network.
+                        </p>
+
+                        <div className="w-full max-w-sm space-y-4 mb-12 relative z-10">
+                            <span className="text-[9px] font-black text-gray-600 tracking-[0.4em] uppercase">NEURAL_ACCESS_KEY</span>
+                            <div
+                                onClick={() => {
+                                    navigator.clipboard.writeText(shareCode);
+                                    addNotification('Secured', 'Link copied to terminal.', 'success');
+                                }}
+                                className="glass-panel border-white/10 bg-background/50 p-8 flex items-center justify-between cursor-pointer group hover:border-accent-cyan/30 transition-all border-dashed border-2"
+                            >
+                                <span className="text-4xl font-black italic tracking-[0.3em] text-accent-cyan uppercase">
+                                    {shareCode}
+                                </span>
+                                <Copy className="w-6 h-6 text-gray-600 group-hover:text-white transition-all group-hover:scale-110" />
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 bg-accent-green/10 px-8 py-4 rounded-2xl border border-accent-green/20 shadow-[0_10px_30px_rgba(34,197,94,0.1)]">
+                            <Zap className="w-5 h-5 text-accent-green fill-accent-green/20" />
+                            <span className="font-black text-white italic tracking-widest text-xs">+50_AXP_REWARDED</span>
                         </div>
                     </Card>
 
                     <Button
-                        variant="outline"
-                        className="w-full py-4 text-sm tracking-wider"
+                        variant="ghost"
+                        className="w-full py-6 text-[10px] font-black uppercase tracking-[0.5em] italic border-white/5 hover:bg-white/5"
                         onClick={() => navigate('/dashboard')}
                     >
-                        RETURN TO DASHBOARD
+                        RETURN_TO_COMMAND_CENTER
                     </Button>
                 </div>
             )}

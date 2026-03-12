@@ -1,85 +1,125 @@
 import React from 'react';
+import { Globe, Cpu, Zap, Activity, ShieldCheck, Database, Network, ChevronRight } from 'lucide-react';
+import { cn } from '../utils/cn';
+
+const NodeItem = ({ id, title, emoji, desc, color, glow }) => (
+    <div className={cn(
+        "group relative overflow-hidden glass-panel p-10 border-white/5 transition-all duration-700 bg-white/[0.01] hover:bg-white/[0.03]",
+        `hover:border-${color}/30`
+    )}>
+        <div className={cn("absolute -top-12 -right-12 w-48 h-48 blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity rounded-full", `bg-${color}`)} />
+        
+        <div className="flex flex-col md:flex-row items-start gap-10 relative z-10">
+            <div className={cn(
+                "w-16 h-16 rounded-[1.5rem] flex items-center justify-center text-3xl shadow-2xl transition-all duration-700 group-hover:scale-110 group-hover:rotate-6 border",
+                `bg-${color}/10 border-${color}/20`
+            )}>
+                {emoji}
+            </div>
+            <div className="flex-1 space-y-4">
+                <div className="flex items-center gap-4">
+                    <span className={cn("text-[8px] font-black uppercase tracking-[0.4em]", `text-${color}`)}>{id}</span>
+                    <div className={cn("w-2 h-2 rounded-full animate-ping", `bg-${color}`)} />
+                </div>
+                <h3 className={cn("text-2xl font-black italic text-white tracking-tighter uppercase font-display", glow)}>{title}</h3>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed max-w-xl italic">{desc}</p>
+            </div>
+        </div>
+
+        <div className="mt-10 flex items-center justify-between border-t border-white/5 pt-6 opacity-30 group-hover:opacity-70 transition-opacity">
+            <div className="flex items-center gap-3">
+                <Network className="w-3.5 h-3.5" />
+                <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Protocol: ACTIVE_V8.4</span>
+            </div>
+            <div className="flex items-center gap-2 group/link cursor-pointer">
+                <span className="text-[8px] font-black text-white uppercase italic tracking-[0.3em]">VERIFY_NODE_INTEGRITY</span>
+                <ChevronRight className="w-3 h-3 group-hover/link:translate-x-1 transition-transform" />
+            </div>
+        </div>
+    </div>
+);
 
 const Ecosystem = () => {
     return (
-        <div className="flex flex-col gap-8 pb-12 animate-in fade-in slide-in-from-right-5 duration-700">
-            {/* 1. Ecosystem Header */}
-            <div className="flex flex-col items-center text-center px-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <div className="w-4 h-[1px] bg-cyan-500"></div>
-                    <span className="text-[10px] font-black italic text-cyan-400 uppercase tracking-[0.4em]">Global_Areni_Network</span>
-                    <div className="w-4 h-[1px] bg-cyan-500"></div>
+        <div className="space-y-16 pb-20 animate-slide-in font-display">
+            {/* Ecosystem Header */}
+            <div className="text-center space-y-6 max-w-2xl mx-auto">
+                <div className="flex items-center justify-center gap-4">
+                    <div className="h-1px w-10 bg-accent-cyan/50" />
+                    <span className="text-[10px] font-black italic text-accent-cyan uppercase tracking-[0.5em]">Global_Areni_Network</span>
+                    <div className="h-1px w-10 bg-accent-cyan/50" />
                 </div>
-                <h2 className="text-4xl font-black italic text-white tracking-tighter uppercase leading-none mb-2">The_Arena_Ecosystem</h2>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest max-w-[300px]">Mapping your mechanical precision into universally accepted tokens and identity protocols.</p>
+                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
+                    ARENA <span className="text-accent-cyan">ECOSYSTEM</span>
+                </h1>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
+                    Mapping mechanical precision into universally accepted tokens and tactical identity protocols across the metaverse.
+                </p>
             </div>
 
-            {/* 2. Infrastructure Nodes */}
-            <div className="flex flex-col gap-6">
-                {[
-                    {
-                        id: "NODE_01",
-                        title: "AXP_Source_Core",
-                        emoji: "🪙",
-                        desc: "Earn AXP through daily objectives, top-tier leaderboard performance, and neural device synchronization.",
-                        color: "yellow",
-                        glow: "axp-shine"
-                    },
-                    {
-                        id: "NODE_02",
-                        title: "Universal_Identity_Sync",
-                        emoji: "🌐",
-                        desc: "Your tactical signature follows you across the entire network. Seamlessly display stats across supported titles.",
-                        color: "cyan",
-                        glow: "text-neon-cyan"
-                    },
-                    {
-                        id: "NODE_03",
-                        title: "Neural_Calibration_Hub",
-                        emoji: "📱",
-                        desc: "Access high-fidelity sensitivity tuning logic derived from hardware-level physics and professional gameplay data.",
-                        color: "indigo",
-                        glow: "text-indigo-400"
-                    }
-                ].map((node) => (
-                    <div
-                        key={node.id}
-                        className={`group relative overflow-hidden bg-gray-950/40 border border-white/5 p-8 rounded-[3rem] transition-all duration-500 hover:border-${node.color}-500/30 hover:bg-white/5`}
-                    >
-                        <div className={`absolute -top-12 -right-12 w-32 h-32 bg-${node.color}-500/10 blur-[60px] rounded-full transition-opacity opacity-50 group-hover:opacity-100`}></div>
+            {/* Infrastructure Nodes */}
+            <div className="space-y-8">
+                 <div className="flex items-center gap-4 ml-4">
+                    <Database className="w-4 h-4 text-gray-500" />
+                    <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">SYSTEM_NODES_FOUNDATION</h3>
+                </div>
 
-                        <div className="flex items-start gap-6 relative z-10">
-                            <div className={`w-14 h-14 rounded-2xl bg-${node.color}-500/10 border border-${node.color}-500/20 flex items-center justify-center text-2xl shadow-xl transition-transform group-hover:scale-110 group-hover:rotate-6`}>
-                                {node.emoji}
-                            </div>
-                            <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-1">
-                                    <span className={`text-[8px] font-black text-${node.color}-500 uppercase tracking-widest`}>{node.id}</span>
-                                    <div className={`w-1.5 h-1.5 rounded-full bg-${node.color}-500 animate-pulse`}></div>
-                                </div>
-                                <h3 className={`text-xl font-black italic text-white tracking-tighter uppercase mb-2 ${node.glow}`}>{node.title}</h3>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-tight leading-relaxed max-w-[90%]">{node.desc}</p>
-                            </div>
-                        </div>
+                <div className="grid grid-cols-1 gap-6">
+                    <NodeItem 
+                        id="NODE_01"
+                        title="AXP_SOURCE_CORE"
+                        emoji="🪙"
+                        desc="Generate AXP through daily objectives, top-tier leaderboard performance, and gold-level neural device synchronization."
+                        color="axp-gold"
+                        glow="text-glow-gold"
+                    />
+                    <NodeItem 
+                        id="NODE_02"
+                        title="UNIVERSAL_ID_SYNC"
+                        emoji="🌐"
+                        desc="Your tactical signature is immutable across the entire network. Seamlessly display cross-title statistics and achievements."
+                        color="accent-cyan"
+                        glow="text-glow-cyan"
+                    />
+                    <NodeItem 
+                        id="NODE_03"
+                        title="NEURAL_CALIBRATION_HUB"
+                        emoji="📱"
+                        desc="Access high-fidelity sensitivity tuning logic derived from hardware-level physics and professional-grade kinematics."
+                        color="accent-green"
+                        glow="text-glow-green"
+                    />
+                </div>
+            </div>
 
-                        <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4 opacity-50">
-                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">Protocol: Active_v8.4</span>
-                            <span className="text-[8px] font-black text-white uppercase italic tracking-widest">Verify_Node</span>
+            {/* Network Analytics HUD */}
+            <div className="glass-panel border-white/5 bg-white/[0.01] p-10 flex flex-col md:flex-row items-center justify-between gap-10 opacity-60 hover:opacity-100 transition-opacity">
+                <div className="flex gap-12 items-center">
+                    <div className="flex flex-col">
+                        <span className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] mb-2 leading-none">TOTAL_NETWORK_REACH</span>
+                        <div className="flex items-end gap-3">
+                            <span className="text-4xl font-black text-white italic tracking-tighter font-mono uppercase">142,500<span className="text-gray-600 text-xs tracking-widest">+</span></span>
+                            <span className="text-[8px] font-black text-accent-cyan uppercase mb-1">ARENIS_JOINED</span>
                         </div>
                     </div>
-                ))}
-            </div>
-
-            {/* 3. Global Stats HUD */}
-            <div className="bg-white/5 border border-white/10 p-6 rounded-3xl flex items-center justify-between opacity-50 contrast-125">
-                <div className="flex flex-col">
-                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Network_Reach</span>
-                    <span className="text-xl font-bold font-mono text-white tracking-tighter">142,500+</span>
+                    <div className="h-12 w-1px bg-white/5 hidden md:block" />
+                    <div className="flex flex-col">
+                        <span className="text-[9px] font-black text-gray-600 uppercase tracking-[0.3em] mb-2 leading-none">ACTIVE_INFRA_NODES</span>
+                        <div className="flex items-end gap-3">
+                             <span className="text-4xl font-black text-accent-cyan italic tracking-tighter font-mono uppercase">06_MAJOR</span>
+                             <span className="text-[8px] font-black text-accent-green uppercase mb-1">STABLE_UPTIME</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="h-8 w-[1px] bg-white/10"></div>
-                <div className="flex flex-col text-right">
-                    <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest">Active_Nodes</span>
-                    <span className="text-xl font-bold font-mono text-cyan-400 tracking-tighter">05_Major</span>
+
+                <div className="flex items-center gap-6">
+                    <div className="text-right hidden sm:block">
+                        <span className="text-[8px] font-black text-gray-500 tracking-[0.3em] uppercase block">SYSTEM_STATUS</span>
+                        <span className="text-[10px] font-black text-accent-green italic uppercase tracking-widest">NOMINAL_OPTIMIZED</span>
+                    </div>
+                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center">
+                        <ShieldCheck className="w-6 h-6 text-accent-green animate-pulse" />
+                    </div>
                 </div>
             </div>
         </div>

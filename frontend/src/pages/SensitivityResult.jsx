@@ -6,12 +6,31 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
-import { Download, Share2, Save, ArrowLeft, Zap, Smartphone, Target, User, Copy, Check, Sparkles as SparklesIcon } from 'lucide-react';
+import { Download, Share2, Save, ArrowLeft, Zap, Smartphone, Target, User, Copy, Check, Sparkles, Activity, ShieldAlert, Cpu } from 'lucide-react';
 import { saveSetup } from '../utils/storage';
 import { SFX } from '../utils/sfx';
-import { Sparkles, Burst } from '../components/ui/Particles';
+import { Burst } from '../components/ui/Particles';
 import { analyzeDifference } from '../utils/sensLogic';
 import { cn } from '../utils/cn';
+
+const DiagnosticItem = ({ label, value, color, description }) => (
+    <div className="group relative p-6 glass-panel border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all overflow-hidden">
+        <div className={cn("absolute top-0 right-0 w-16 h-16 blur-2xl opacity-[0.05] transition-opacity group-hover:opacity-[0.1]", color.replace('from-', 'bg-').split(' ')[0])} />
+        <div className="relative z-10 flex justify-between items-start mb-6">
+            <div className="space-y-1">
+                <span className="text-[9px] font-display font-black text-gray-500 uppercase tracking-[0.2em] block">{label}</span>
+                <span className="text-[8px] font-display font-bold text-gray-600 uppercase tracking-widest">{description}</span>
+            </div>
+            <span className="text-3xl font-display font-black text-white italic tracking-tighter opacity-80 group-hover:opacity-100 transition-opacity">{value}</span>
+        </div>
+        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+            <div 
+                className={cn("h-full bg-gradient-to-r transition-all duration-1000 delay-300", color)} 
+                style={{ width: `${(value / 200) * 100}%` }}
+            />
+        </div>
+    </div>
+);
 
 export default function SensitivityResult() {
     const location = useLocation();
@@ -21,7 +40,6 @@ export default function SensitivityResult() {
 
     const formData = location.state?.formData;
 
-    // Calculate settings
     const results = useMemo(() => {
         if (!formData) return null;
         const tier = getDeviceTier(formData.brand, formData.model, formData.ram);
@@ -47,134 +65,126 @@ export default function SensitivityResult() {
         if (!formData) {
             navigate('/generate-sensitivity');
         } else {
-            // Reward for generation
             addAXP(10);
-            addNotification('Optimization Complete', 'You earned +10 AXP for generating sensitivity.', 'axp');
-
-            // Play reveal sounds
+            addNotification('Optimization Verified', 'Coefficients exported to dossier.', 'success');
             SFX.play('reveal');
-            const timer = setTimeout(() => SFX.play('xp'), 800);
-            return () => clearTimeout(timer);
         }
     }, [formData, navigate, addAXP, addNotification]);
 
     useEffect(() => {
         const timer = setTimeout(() => setIsRevealed(true), 100);
+        setShareCode(`ARC-${Math.floor(Math.random() * 90000) + 10000}`);
         return () => clearTimeout(timer);
     }, []);
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setShareCode(`AXP-SENS-${Math.floor(Math.random() * 90000) + 10000}`);
-        }, 0);
-        return () => clearTimeout(timer);
-    }, []);
-
-    const sensItems = [
-        { key: 'general', label: 'General', color: 'from-blue-400 to-cyan-400' },
-        { key: 'redDot', label: 'Red Dot', color: 'from-orange-400 to-red-400' },
-        { key: 'scope2x', label: '2x Scope', color: 'from-green-400 to-emerald-400' },
-        { key: 'scope4x', label: '4x Scope', color: 'from-purple-400 to-indigo-400' },
-        { key: 'awmScope', label: 'AWM Scope', color: 'from-yellow-400 to-axp-gold' },
-        { key: 'freeLook', label: 'Free Look', color: 'from-gray-300 to-white' },
-    ];
 
     if (!results) return null;
 
+    const sensData = [
+        { key: 'general', label: 'GENERAL_PNT', color: 'from-accent-cyan to-accent-cyan/50', desc: 'CORE_LATENCY_BASE' },
+        { key: 'redDot', label: 'RDS_OPTIC', color: 'from-accent-rose to-accent-rose/50', desc: 'SHORT_RANGE_ACQ' },
+        { key: 'scope2x', label: '2X_ZOOM', color: 'from-accent-green to-accent-green/50', desc: 'MID_RANGE_PREC' },
+        { key: 'scope4x', label: '4X_ACOG', color: 'from-axp-gold to-axp-gold/50', desc: 'SQUAD_SUPPORT_AXIS' },
+        { key: 'awmScope', label: 'ELITE_SNIPER', color: 'from-accent-cyan to-accent-green', desc: 'EXTREME_ACURRACY' },
+        { key: 'freeLook', label: 'SITU_AWARE', color: 'from-gray-400 to-gray-600', desc: 'VISUAL_SWEEP_RESTART' },
+    ];
+
     return (
-        <div className="max-w-xl mx-auto space-y-8 pb-12 animate-slide-in">
-            {/* Navigation Header */}
+        <div className="space-y-12 pb-20 animate-slide-in font-display">
+            {/* Nav Header */}
             <div className="flex items-center justify-between">
                 <button
                     onClick={() => navigate('/generate-sensitivity')}
-                    className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group"
+                    className="flex items-center gap-4 text-gray-500 hover:text-white transition-all group"
                 >
-                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                    <span className="text-xs font-bold uppercase tracking-widest">Back to Forge</span>
+                    <ArrowLeft className="w-5 h-5 group-hover:-translate-x-2 transition-transform" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] italic">RECALIBRATE_FORGE</span>
                 </button>
-                <div className="flex items-center gap-2 bg-neon-green/10 border border-neon-green/30 px-3 py-1 rounded-full">
-                    <Zap className="w-3 h-3 text-neon-green" />
-                    <span className="text-[10px] font-black text-neon-green uppercase">+10 AXP EARNED</span>
+                <div className="flex items-center gap-4 px-6 py-2 glass-panel border-white/5 bg-accent-green/5">
+                    <Zap className="w-4 h-4 text-accent-green animate-pulse" />
+                    <span className="text-[10px] font-black text-accent-green tracking-[0.2em]">+10_AXP_ALLOCATED</span>
                 </div>
             </div>
 
-            {/* Main Result Card (High Fidelity) */}
-            <div id="sens-card" className={cn(
-                "relative group transition-all duration-1000",
-                isRevealed ? "translate-y-0 opacity-100 scale-100" : "translate-y-10 opacity-0 scale-95"
+            {/* Main Diagnostic Report */}
+            <div className={cn(
+                "relative transition-all duration-1000 space-y-8",
+                isRevealed ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
             )}>
                 <Burst active={isRevealed} />
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-blue via-neon-cyan to-neon-green rounded-3xl blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
+                
+                {/* DIAGNOSTIC HEADER */}
+                <div className="glass-panel p-10 md:p-12 border-white/5 relative overflow-hidden backdrop-blur-3xl">
+                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] font-black text-8xl italic select-none pointer-events-none uppercase">
+                        SENS_DATA
+                    </div>
 
-                <Card glass className="relative bg-[#0b0f1a]/80 border-gray-800 p-0 overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-3xl">
-                    <div className="scanline opacity-[0.03]"></div>
-                    <Sparkles count={15} color="bg-neon-cyan/20" />
-                    {/* Card Header Overlay */}
-                    <div className="bg-gradient-to-br from-gray-800 to-gray-900/40 p-6 border-b border-gray-800/50 relative">
-                        <div className="absolute top-0 right-0 p-6 opacity-5 font-black italic text-4xl">SENS-PRO</div>
+                    <div className="relative z-10 space-y-10">
+                        <div className="flex flex-col md:flex-row justify-between items-start gap-8">
+                            <div>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Activity className="w-5 h-5 text-accent-cyan" />
+                                    <h3 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Neural_Output_Report</h3>
+                                </div>
+                                <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none">
+                                    OPTIMIZED <span className="text-accent-cyan">RESULTS</span>
+                                </h1>
+                            </div>
 
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-black text-white italic tracking-tighter uppercase">
-                                Optimized <span className="text-neon-cyan">Settings</span>
-                            </h2>
+                            <div className="flex flex-col items-end gap-2 p-6 glass-panel border-white/5 bg-white/[0.02]">
+                                <span className="text-[8px] font-black text-gray-500 tracking-[0.3em] uppercase">VALIDATION_CODE</span>
+                                <span className="text-xl font-black text-accent-cyan italic tracking-[0.2em] uppercase">{shareCode}</span>
+                            </div>
+                        </div>
 
-                            <div className="flex flex-wrap gap-4 mt-2">
-                                <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest">
-                                    <Smartphone className="w-3.5 h-3.5 text-neon-cyan" />
-                                    {formData.brand} {formData.model}
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest border-l border-gray-700 pl-4">
-                                    <Target className="w-3.5 h-3.5 text-axp-gold" />
-                                    {formData.playStyle}
-                                </div>
-                                <div className="flex items-center gap-2 text-gray-400 text-[10px] font-black uppercase tracking-widest border-l border-gray-700 pl-4">
-                                    <User className="w-3.5 h-3.5 text-neon-green" />
-                                    {formData.handType}
-                                </div>
+                        <div className="flex flex-wrap gap-10 pt-10 border-t border-white/5">
+                            <div className="space-y-1">
+                                <span className="text-[8px] font-black text-gray-600 tracking-[0.3em] uppercase block">TERMINAL_SIGNATURE</span>
+                                <span className="text-[11px] font-black text-white italic uppercase tracking-widest flex items-center gap-2">
+                                    <Smartphone className="w-3 h-3 text-accent-cyan text-gray-500" /> {formData.brand} {formData.model}
+                                </span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[8px] font-black text-gray-600 tracking-[0.3em] uppercase block">COMBAT_TIER</span>
+                                <span className="text-[11px] font-black text-white italic uppercase tracking-widest flex items-center gap-2">
+                                    <Target className="w-3 h-3 text-accent-cyan text-gray-500" /> {formData.playStyle}
+                                </span>
+                            </div>
+                            <div className="space-y-1">
+                                <span className="text-[8px] font-black text-gray-600 tracking-[0.3em] uppercase block">KINETIC_LINK</span>
+                                <span className="text-[11px] font-black text-white italic uppercase tracking-widest flex items-center gap-2">
+                                    <User className="w-3 h-3 text-accent-cyan text-gray-500" /> {formData.handType}
+                                </span>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Values Grid */}
-                    <div className="p-6 grid grid-cols-2 gap-6 bg-gradient-to-b from-gray-900 to-black">
-                        {sensItems.map(item => (
-                            <div key={item.key} className="space-y-2 group/val">
-                                <div className="flex justify-between items-center px-1">
-                                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">{item.label}</span>
-                                    <span className="text-xl font-black text-white italic tracking-tighter glow-text">{results[item.key]}</span>
-                                </div>
-                                <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden p-0.5 border border-gray-700">
-                                    <div
-                                        className={`h-full bg-gradient-to-r ${item.color} rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(255,255,255,0.1)]`}
-                                        style={{ width: `${(results[item.key] / 200) * 100}%` }}
-                                    ></div>
-                                </div>
+                {/* VALUES GRID */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {sensData.map(item => (
+                        <DiagnosticItem 
+                            key={item.key} 
+                            label={item.label} 
+                            value={results[item.key]} 
+                            color={item.color} 
+                            description={item.desc} 
+                        />
+                    ))}
+                </div>
+
+                {/* AI ANALYSIS MODULE */}
+                <Card className="p-8 border-accent-cyan/10 bg-accent-cyan/[0.02] relative overflow-hidden group">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-accent-cyan shadow-[0_0_20px_rgba(6,182,212,0.5)]" />
+                    <div className="flex gap-8 items-start relative z-10">
+                        <div className="w-14 h-14 rounded-2xl bg-accent-cyan/10 flex items-center justify-center shrink-0 border border-accent-cyan/20 group-hover:scale-110 transition-transform">
+                            <Cpu className="w-6 h-6 text-accent-cyan" />
+                        </div>
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-3">
+                                <h4 className="text-[10px] font-black text-white tracking-[0.3em] uppercase">SYSTEM_ANALYSIS_SYNC</h4>
+                                <div className="h-1px flex-1 bg-white/5" />
                             </div>
-                        ))}
-                    </div>
-
-                    {/* Card Footer */}
-                    <div className="p-4 bg-gray-900/50 flex justify-between items-center border-t border-gray-800">
-                        <div className="space-y-1">
-                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest border-b border-gray-800 pb-1 mb-1 block">Share Code</span>
-                            <div className="text-xs font-mono font-bold text-neon-cyan tracking-widest">{shareCode}</div>
-                        </div>
-                        <div className="text-right">
-                            <span className="text-[8px] font-black text-gray-500 uppercase tracking-tighter">Generated by</span>
-                            <div className="text-[10px] font-bold text-white tracking-widest">XP ARENA ENGINE v2.0</div>
-                        </div>
-                    </div>
-                </Card>
-
-                {/* AI Optimization Analysis */}
-                <Card glass className="mt-6 bg-neon-cyan/5 border-neon-cyan/20">
-                    <div className="flex gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-neon-cyan/20 flex items-center justify-center shrink-0">
-                            <Zap className="w-5 h-5 text-neon-cyan" />
-                        </div>
-                        <div className="space-y-1">
-                            <h4 className="text-[10px] font-black text-white uppercase tracking-widest">Optimization Analysis</h4>
-                            <p className="text-xs text-gray-400 font-medium italic leading-relaxed">
+                            <p className="text-xs text-gray-400 font-bold italic leading-relaxed uppercase tracking-tighter">
                                 {whyAnalysis}
                             </p>
                         </div>
@@ -182,68 +192,67 @@ export default function SensitivityResult() {
                 </Card>
             </div>
 
-            {/* Action Buttons */}
-            <div className="grid grid-cols-3 gap-4">
+            {/* ACTION GRID */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <Button
-                    variant="secondary"
-                    className="flex flex-col gap-2 h-20 bg-gray-900/80 border-gray-800 hover:border-neon-cyan"
-                    onClick={() => {
-                        addNotification('Download', 'Generating high-res image...', 'info');
-                    }}
+                    variant="ghost"
+                    className="group flex flex-col items-center justify-center gap-6 h-32 border-white/5 bg-white/[0.02] hover:bg-accent-cyan/5 hover:border-accent-cyan/20 rounded-[2rem] transition-all"
+                    onClick={() => addNotification('Analysis', 'Exporting diagnostic image...', 'info')}
                 >
-                    <Download className="w-5 h-5 text-neon-cyan" />
-                    <span className="text-[10px] font-black tracking-widest border-t border-gray-800 pt-2 w-full uppercase">SAVE IMAGE</span>
+                    <Download className="w-6 h-6 text-accent-cyan transition-transform group-hover:-translate-y-1" />
+                    <span className="text-[9px] font-black tracking-[0.4em] uppercase text-gray-500 group-hover:text-white">EXPORT_REPORT</span>
                 </Button>
 
                 <Button
-                    variant="secondary"
+                    variant="ghost"
                     className={cn(
-                        "flex flex-col gap-2 h-20 bg-gray-900/80 border-gray-800 transition-all",
-                        isSaved ? "border-neon-green text-neon-green" : "hover:border-neon-green"
+                        "group flex flex-col items-center justify-center gap-6 h-32 border-white/5 bg-white/[0.02] rounded-[2rem] transition-all",
+                        isSaved ? "bg-accent-green/5 border-accent-green/20" : "hover:bg-accent-green/5 hover:border-accent-green/20"
                     )}
                     onClick={() => {
                         if (isSaved) return;
-                        saveSetup({
-                            formData,
-                            results,
-                            shareCode
-                        });
+                        saveSetup({ formData, results, shareCode });
                         setIsSaved(true);
                         addAXP(20);
-                        addNotification('Preset Saved', 'Earned +20 AXP! View it in your Profile.', 'success');
+                        addNotification('Core Updated', 'Allocated session data to local dossier.', 'success');
                     }}
                 >
-                    <Save className="w-5 h-5" />
-                    <span className="text-[10px] font-black tracking-widest border-t border-gray-800 pt-2 w-full uppercase">
-                        {isSaved ? 'SAVED' : 'SAVE PRESET'}
+                    <Save className={cn("w-6 h-6 transition-transform group-hover:-translate-y-1", isSaved ? "text-accent-green" : "text-gray-500 group-hover:text-white")} />
+                    <span className="text-[9px] font-black tracking-[0.4em] uppercase text-gray-500 group-hover:text-white">
+                        {isSaved ? 'DATALINK_SECURED' : 'SECURE_DOU_PRESET'}
                     </span>
                 </Button>
 
                 <Button
-                    variant="secondary"
+                    variant="ghost"
                     className={cn(
-                        "flex flex-col gap-2 h-20 bg-gray-900/80 border-gray-800 transition-all",
-                        isCopied ? "border-axp-gold text-axp-gold" : "hover:border-axp-gold"
+                        "group flex flex-col items-center justify-center gap-6 h-32 border-white/5 bg-white/[0.02] rounded-[2rem] transition-all",
+                        isCopied ? "bg-axp-gold/5 border-axp-gold/20" : "hover:bg-axp-gold/5 hover:border-axp-gold/20"
                     )}
                     onClick={() => {
-                        const copyText = `XP ARENA SENSITIVITY\nDevice: ${formData.brand} ${formData.model}\nStyle: ${formData.playStyle}\n\nGeneral: ${results.general}\nRed Dot: ${results.redDot}\n2x: ${results.scope2x}\n4x: ${results.scope4x}\nAWM: ${results.awmScope}\nFree Look: ${results.freeLook}\n\nCode: ${shareCode}`;
+                        const copyText = `XP ARENA GENESIS\nDEVICE: ${formData.brand} ${formData.model}\nVAL_CODE: ${shareCode}\n\nGEN: ${results.general}\nRDS: ${results.redDot}\n2X: ${results.scope2x}\n4X: ${results.scope4x}\nELT: ${results.awmScope}`;
                         navigator.clipboard.writeText(copyText);
                         setIsCopied(true);
-                        addNotification('Copied', 'Settings formatted and copied to clipboard!', 'info');
+                        addNotification('Sync Successful', 'Values mapped to tactical clipboard.', 'success');
                         setTimeout(() => setIsCopied(false), 2000);
                     }}
                 >
-                    {isCopied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                    <span className="text-[10px] font-black tracking-widest border-t border-gray-800 pt-2 w-full uppercase">
-                        {isCopied ? 'COPIED' : 'COPY TO GAME'}
+                    {isCopied ? <Check className="w-6 h-6 text-axp-gold" /> : <Copy className="w-6 h-6 text-gray-500 group-hover:text-white transition-transform group-hover:-translate-y-1" />}
+                    <span className="text-[9px] font-black tracking-[0.4em] uppercase text-gray-500 group-hover:text-white">
+                        {isCopied ? 'SYNCED_NODE' : 'COPY_COEFFICIENTS'}
                     </span>
                 </Button>
             </div>
 
-            {/* Disclaimer */}
-            <p className="text-center text-[10px] text-gray-500 font-medium px-8 italic">
-                Values are calculated based on your specific hardware signature. For best results, ensure your device screen is clean and you are using optimized graphic settings.
-            </p>
+            {/* Global Warning */}
+            <div className="flex justify-center px-12">
+                <div className="glass-panel border-accent-rose/10 bg-accent-rose/5 p-6 flex items-center gap-6 max-w-lg">
+                    <ShieldAlert className="w-6 h-6 text-accent-rose shrink-0" />
+                    <p className="text-[9px] text-accent-rose font-display font-black uppercase tracking-widest leading-relaxed">
+                        WARNING: Neural alignment is strictly calibrated to your specific terminal signature. Diverging hardware may result in combat latency or accuracy loss.
+                    </p>
+                </div>
+            </div>
         </div>
     );
 }

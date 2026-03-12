@@ -1,109 +1,164 @@
 import React, { useState } from 'react';
-import { useHUDDepth } from '../hooks/useHUDDepth';
-import { useNeuralHaptics } from '../hooks/useNeuralHaptics';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
+import { Upload, Film, FileText, Globe, ShieldCheck, Activity, Info, ChevronRight, Check } from 'lucide-react';
+import { Card } from '../components/ui/Card';
+import { Button } from '../components/ui/Button';
+import { cn } from '../utils/cn';
 
-const Submit = () => {
-    const depthRef = useHUDDepth(10);
-    const { triggerHeavyHaptic } = useNeuralHaptics();
-    const { showAreniAlert } = useAuth();
+export default function Submit() {
+    const { user } = useAuth();
+    const { addNotification } = useNotifications();
     const navigate = useNavigate();
     const [isUploading, setIsUploading] = useState(false);
+    const [isDone, setIsDone] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setIsUploading(true);
-        triggerHeavyHaptic();
 
         setTimeout(() => {
             setIsUploading(false);
-            showAreniAlert('Clip Submitted for Verification!', 'success');
-            navigate('/clips');
-        }, 2000);
+            setIsDone(true);
+            addNotification('Transmission Successful', 'High-fidelity highlight synced to global broadcast node.', 'success');
+            setTimeout(() => navigate('/dashboard'), 2000);
+        }, 3000);
     };
 
     return (
-        <div className="flex flex-col gap-8 pb-12 animate-in fade-in slide-in-from-right-5 duration-700">
+        <div className="space-y-16 pb-20 animate-slide-in font-display">
             {/* Header */}
-            <div className="flex flex-col items-center text-center px-4">
-                <div className="flex items-center gap-2 mb-2">
-                    <div className="w-4 h-[1px] bg-red-500"></div>
-                    <span className="text-[10px] font-black italic text-red-500 uppercase tracking-[0.4em]">Content_Submission_Node</span>
-                    <div className="w-4 h-[1px] bg-red-500"></div>
+            <div className="text-center space-y-6 max-w-2xl mx-auto">
+                <div className="flex items-center justify-center gap-4">
+                    <div className="h-1px w-10 bg-accent-rose/50" />
+                    <span className="text-[10px] font-black italic text-accent-rose uppercase tracking-[0.5em]">Content_Submission_Node</span>
+                    <div className="h-1px w-10 bg-accent-rose/50" />
                 </div>
-                <h2 className="text-4xl font-black italic text-white tracking-tighter uppercase leading-none mb-2">Submit_Highlight</h2>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest max-w-[250px]">Upload your mechanical highlights to earn AXP and global recognition.</p>
+                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
+                    SUBMIT <span className="text-accent-rose">HIGHLIGHT</span>
+                </h1>
+                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
+                    Transmit your mechanical masterclasses to the global syndicate broadcast and earn AXP rewards for elite performance.
+                </p>
             </div>
 
-            {/* Submission Form */}
-            <form
-                onSubmit={handleSubmit}
-                className="flex flex-col gap-6"
-            >
-                {/* Upload Area */}
-                <div
-                    ref={depthRef}
-                    className="hud-depth group relative overflow-hidden bg-gray-950/40 border-2 border-dashed border-white/5 p-12 rounded-[3.5rem] flex flex-col items-center justify-center text-center hover:border-red-500/30 transition-all cursor-pointer min-h-[240px]"
-                >
-                    <div className="absolute inset-0 bg-red-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-700"></div>
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-white/5 border border-white/10 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">📁</div>
-                    <h4 className="text-sm font-black text-white uppercase italic tracking-widest relative z-10">Select_Video_File</h4>
-                    <p className="text-[9px] text-gray-600 font-bold uppercase tracking-widest mt-2 relative z-10">MP4, MOV | Max 50MB | 1080p+ Preferred</p>
+            <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-10">
+                {/* Master Upload Zone */}
+                <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-r from-accent-rose/30 via-transparent to-accent-rose/30 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                    <Card className="relative p-20 border-2 border-dashed border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-accent-rose/30 transition-all cursor-pointer flex flex-col items-center justify-center text-center rounded-[4rem] min-h-[400px]">
+                        <div className={cn("absolute inset-x-0 bottom-0 h-1px bg-accent-rose/40 transition-all duration-[3000ms] ease-out", isUploading ? "w-full" : "w-0")} />
+                        
+                        <div className="relative z-10 space-y-8 flex flex-col items-center">
+                            <div className={cn(
+                                "w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-inner transition-all duration-700",
+                                isUploading ? "scale-90 animate-pulse border-accent-rose/50" : "group-hover:scale-110 group-hover:rotate-6"
+                            )}>
+                                {isDone ? <Check className="w-12 h-12 text-accent-green" /> : <Film className={cn("w-12 h-12", isUploading ? "text-accent-rose" : "text-white opacity-40")} />}
+                            </div>
+                            
+                            <div className="space-y-3">
+                                <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">
+                                    {isUploading ? 'DATA_TRANSMITTING...' : isDone ? 'SIGNAL_LOCKED' : 'ATTACH_MECHANICAL_LOG'}
+                                </h4>
+                                <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em] italic">
+                                    MP4_PACKET | MAX_50MB | 1080P_UHD_SPEC
+                                </p>
+                            </div>
+                            
+                            {!isUploading && !isDone && (
+                                <div className="pt-6">
+                                    <span className="px-8 py-3 bg-white/5 rounded-full text-[9px] font-black text-white/40 uppercase tracking-widest border border-white/5">SELECT_SOURCE_PACKAGE</span>
+                                </div>
+                            )}
+                        </div>
+                    </Card>
                 </div>
 
-                {/* Meta Inputs */}
-                <div className="grid grid-cols-1 gap-4">
-                    <div className="bg-gray-950/40 border border-white/5 p-6 rounded-[2rem] flex flex-col gap-4">
-                        <div className="flex flex-col gap-2">
-                            <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Clip_Title</label>
-                            <input
-                                type="text"
-                                placeholder="Enter_Catchy_Name"
-                                className="bg-white/5 border border-white/5 rounded-xl px-5 py-4 text-xs text-white uppercase font-black italic tracking-tighter placeholder:text-gray-700 outline-none focus:border-red-500/30 transition-all"
-                            />
-                        </div>
+                {/* Metadata Module */}
+                <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
+                    <div className="flex items-center gap-4 ml-6">
+                        <FileText className="w-4 h-4 text-gray-500" />
+                        <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">TRANSMISSION_METADATA</h3>
+                    </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Category</label>
-                                <select className="bg-white/5 border border-white/5 rounded-xl px-5 py-4 text-[10px] text-white uppercase font-black italic tracking-tighter outline-none appearance-none">
-                                    <option>Clutch</option>
-                                    <option>Headshot</option>
-                                    <option>Movement</option>
+                    <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] space-y-12">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">HIGHLIGHT_SIGNATURE (TITLE)</label>
+                                <input
+                                    type="text"
+                                    placeholder="ENTER_CATCHY_ID..."
+                                    required
+                                    className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-sm text-white focus:outline-none focus:border-accent-rose/50 transition-all italic uppercase"
+                                />
+                            </div>
+
+                            <div className="space-y-3">
+                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">TACTICAL_CATEGORY</label>
+                                <select className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-xs text-white focus:outline-none focus:border-accent-rose/50 transition-all italic uppercase appearance-none">
+                                    <option>CLUTCH_ENGAGEMENT</option>
+                                    <option>PRECISION_HEADSHOT</option>
+                                    <option>MECHANICAL_MOVEMENT</option>
+                                    <option>GUILD_WAR_RECORD</option>
                                 </select>
                             </div>
-                            <div className="flex flex-col gap-2">
-                                <label className="text-[8px] font-black text-gray-500 uppercase tracking-widest ml-1">Visibility</label>
-                                <div className="px-5 py-4 bg-white/5 border border-white/5 rounded-xl text-[10px] font-black text-indigo-400 italic">PUBLIC</div>
-                            </div>
                         </div>
+
+                        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 group-hover:opacity-100 transition-opacity">
+                             <div className="flex items-center gap-6">
+                                <Globe className="w-6 h-6 text-gray-600" />
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest block">BROADCAST_VISIBILITY</span>
+                                    <span className="text-[10px] font-black text-accent-cyan italic uppercase tracking-widest">PUBLIC_SYNDICATE_CHANNEL</span>
+                                </div>
+                             </div>
+                             <div className="flex items-center gap-6 text-right md:text-left">
+                                <ShieldCheck className="w-6 h-6 text-accent-green" />
+                                <div className="space-y-1">
+                                    <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest block">LEGAL_CLEARANCE</span>
+                                    <span className="text-[10px] font-black text-white italic uppercase tracking-widest">VERIFIED_FOR_AIR</span>
+                                </div>
+                             </div>
+                        </div>
+                    </Card>
+                </div>
+
+                {/* Submit Action */}
+                <div className="flex justify-center flex-col items-center gap-10">
+                    <Button
+                        type="submit"
+                        disabled={isUploading || isDone}
+                        className={cn(
+                            "px-20 py-8 rounded-[3rem] text-[12px] font-black uppercase tracking-[0.5em] transition-all relative overflow-hidden group shadow-[0_30px_60px_rgba(244,63,94,0.2)]",
+                            isDone ? "bg-accent-green text-background" : "bg-accent-rose text-white hover:scale-105"
+                        )}
+                    >
+                        <span className="relative z-10 flex items-center gap-6">
+                            {isUploading ? 'INITIATING_UPLINK...' : isDone ? 'DATA_SYNC_COMPLETE' : 'INITIALIZE_TRANSMISSION'}
+                            {!isUploading && !isDone && <Upload className="w-6 h-6 group-hover:-translate-y-2 transition-transform" />}
+                            {isDone && <Check className="w-6 h-6" />}
+                        </span>
+                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-700" />
+                    </Button>
+                    
+                    <div className="flex items-center gap-6 opacity-20">
+                        <Activity className="w-5 h-5 text-gray-500" />
+                        <div className="h-1px w-32 bg-white/10" />
+                        <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.5em] italic">SECURE_CONTENT_BIPPASS_v4.2</p>
                     </div>
                 </div>
-
-                <button
-                    type="submit"
-                    disabled={isUploading}
-                    className={`w-full py-6 rounded-[2.5rem] text-[11px] font-black uppercase tracking-[0.4em] transition-all relative overflow-hidden ${isUploading
-                            ? 'bg-gray-800 text-gray-500'
-                            : 'bg-white text-gray-950 hover:scale-105 active:scale-95 shadow-xl'
-                        }`}
-                >
-                    <span className="relative z-10">{isUploading ? 'Uploading_Bypass...' : 'Transmit_Data'}</span>
-                    <div className={`absolute inset-0 bg-red-500/10 transition-transform duration-[2000ms] ${isUploading ? 'translate-x-0' : 'translate-x-[-101%]'}`}></div>
-                </button>
             </form>
-
-            <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-2xl opacity-50">
-                <div className="flex items-center gap-3 mb-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
-                    <span className="text-[8px] font-black text-red-400 uppercase tracking-widest">Legal_Verification</span>
+            
+            <div className="flex justify-center">
+                <div className="glass-panel border-white/5 bg-white/[0.01] p-8 flex items-center gap-8 max-w-2xl opacity-40">
+                   <Info className="w-10 h-10 text-accent-rose shrink-0" />
+                   <p className="text-[10px] text-gray-500 font-display font-black uppercase tracking-widest leading-relaxed italic">
+                      TACTICAL_NOTICE: By initiating a transmission, you certify that the content is your own mechanical output. Use of "Aimbot" or "Speed-Hack" nodes will result in immediate terminal termination.
+                   </p>
                 </div>
-                <p className="text-[8px] text-gray-600 font-bold uppercase tracking-widest leading-relaxed">By submitting, you grant Areni Network universal rights to feature your gameplay in highlights and social broadcast modules.</p>
             </div>
         </div>
     );
-};
-
-export default Submit;
+}

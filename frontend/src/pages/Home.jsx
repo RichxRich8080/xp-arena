@@ -4,7 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Avatar } from '../components/ui/Avatar';
-import { Trophy, PlusSquare, Zap, ChevronRight } from 'lucide-react';
+import { Trophy, PlusSquare, Zap, ChevronRight, Target, Shield, Flame, Terminal } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export default function Home() {
     const { user } = useAuth();
@@ -19,115 +20,174 @@ export default function Home() {
 
     if (!user) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[70vh] text-center max-w-lg mx-auto p-4 space-y-8 animate-slide-in">
-                <div className="space-y-4 relative">
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary-blue/30 blur-[40px] rounded-full z-0"></div>
-                    <h1 className="text-4xl md:text-5xl font-black bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-500 relative z-10 leading-tight">
-                        THE ULTIMATE <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-green to-neon-cyan drop-shadow-[0_0_15px_rgba(34,197,94,0.4)]">
-                            ESPORTS HUB
-                        </span>
-                    </h1>
-                    <p className="text-gray-400 font-medium z-10 relative mt-2">
-                        Share perfect sensitivity setups, earn AXP, and dominate the Arena leaderboards.
-                    </p>
-                </div>
+            <div className="relative min-h-[90vh] flex flex-col items-center justify-center overflow-hidden py-12 px-6">
+                {/* Background Ambient Glows */}
+                <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent-cyan/10 blur-[120px] rounded-full animate-pulse" />
+                <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent-violet/10 blur-[120px] rounded-full animate-pulse-slow" />
+                
+                {/* Hero Content */}
+                <div className="relative z-10 w-full max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-16">
+                    <div className="flex-1 text-center lg:text-left space-y-8">
+                        <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass-panel border-white/5 animate-slide-in">
+                            <span className="w-2 h-2 rounded-full bg-accent-cyan animate-ping" />
+                            <span className="text-[10px] font-display font-black text-accent-cyan uppercase tracking-[0.3em]">System Online // v4.0.2</span>
+                        </div>
+                        
+                        <h1 className="text-6xl md:text-8xl lg:text-9xl font-display font-black text-white italic tracking-tighter uppercase leading-[0.8] animate-slide-in">
+                            LEVEL UP <br />
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-accent-violet to-accent-rose drop-shadow-[0_0_50px_rgba(6,182,212,0.6)]">
+                                THE ARENA
+                            </span>
+                        </h1>
+                        
+                        <p className="text-gray-400 font-display font-bold text-lg md:text-xl max-w-2xl mx-auto lg:mx-0 leading-relaxed animate-slide-in">
+                            Forge perfect sensitivity profiles, archive elite setups, and climb the global AXP rankings in the most advanced gamer headquarters ever built.
+                        </p>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto relative z-10">
-                    <Button variant="neonGreen" className="w-full sm:w-48 py-3" onClick={() => navigate('/signup')}>
-                        Join Arena
-                    </Button>
-                    <Button variant="outline" className="w-full sm:w-48 py-3" onClick={() => navigate('/login')}>
-                        Login
-                    </Button>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4 animate-slide-in">
+                            <Button variant="primary" size="lg" className="px-12 py-5 text-lg group" onClick={() => navigate('/signup')}>
+                                INITIALIZE_ACCOUNT
+                                <ChevronRight className="ml-2 w-5 h-5 group-hover:translate-x-2 transition-transform" />
+                            </Button>
+                            <Button variant="secondary" size="lg" className="px-12 py-5 text-lg" onClick={() => navigate('/login')}>
+                                ACCESS_PORTAL
+                            </Button>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-8 pt-12 border-t border-white/5 max-w-md mx-auto lg:mx-0 animate-slide-in">
+                            <div>
+                                <p className="text-2xl font-display font-black text-white tracking-widest">50K+</p>
+                                <p className="text-[10px] text-gray-500 font-display font-bold uppercase tracking-wider">Arenis Active</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-display font-black text-white tracking-widest">12K</p>
+                                <p className="text-[10px] text-gray-500 font-display font-bold uppercase tracking-wider">Presets Saved</p>
+                            </div>
+                            <div>
+                                <p className="text-2xl font-display font-black text-white tracking-widest">2MS</p>
+                                <p className="text-[10px] text-gray-500 font-display font-bold uppercase tracking-wider">Latency_Sync</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 relative animate-float">
+                        <div className="absolute inset-0 bg-accent-cyan/20 blur-[100px] rounded-full animate-pulse" />
+                        <img 
+                            src="/mascot.png" 
+                            alt="Pro Gamer Mascot" 
+                            className="relative z-10 w-full max-w-lg mx-auto drop-shadow-[0_0_50px_rgba(6,182,212,0.4)]"
+                        />
+                        {/* Decorative HUD elements */}
+                        <div className="absolute top-0 right-0 glass-panel p-4 border-white/10 rotate-12 hidden md:block">
+                            <Target className="w-8 h-8 text-accent-cyan" />
+                        </div>
+                        <div className="absolute bottom-10 left-0 glass-panel p-4 border-white/10 -rotate-12 hidden md:block">
+                            <Shield className="w-8 h-8 text-accent-violet" />
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6 pb-6 animate-slide-in">
-            {/* Welcome & Stats Row */}
-            <div className="flex items-center justify-between">
+        <div className="space-y-10 pb-20 animate-slide-in">
+            {/* AUTH HOME / LAUNCHPAD */}
+            <div className="flex flex-col md:flex-row items-end justify-between gap-6">
                 <div>
-                    <h2 className="text-sm font-medium text-gray-400 uppercase tracking-widest">Welcome Back</h2>
-                    <h1 className="text-2xl font-bold mt-1 text-gray-100">{user.username}</h1>
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
+                        <h2 className="text-xs font-display font-black text-gray-500 uppercase tracking-[0.3em]">Operational_Home</h2>
+                    </div>
+                    <h1 className="text-4xl md:text-5xl font-display font-black text-white italic tracking-tighter uppercase leading-none">
+                        Welcome, <span className="text-accent-cyan">{user.username}</span>
+                    </h1>
                 </div>
-                <div className="flex items-center gap-3 bg-gray-900/80 border border-gray-800 py-1.5 px-3 rounded-full">
-                    <Zap className="w-4 h-4 text-axp-gold glow-gold" />
-                    <span className="font-bold text-sm tracking-wide text-gray-200">{user.axp} AXP</span>
+                
+                <div className="glass-panel px-6 py-3 border-axp-gold/20 flex items-center gap-4 group">
+                    <Zap className="w-5 h-5 text-axp-gold group-hover:drop-shadow-[0_0_8px_rgba(251,191,36,0.6)] transition-all" />
+                    <div className="text-right">
+                        <p className="text-[10px] font-display font-black text-gray-500 uppercase tracking-widest leading-none mb-1">AXP BALANCE</p>
+                        <p className="font-display font-black text-white text-lg tracking-widest leading-none">{user.axp} <span className="text-axp-gold italic text-sm">CR</span></p>
+                    </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Quick Submit Card */}
-                <Card className="flex flex-col justify-between border border-neon-cyan/20 bg-gradient-to-br from-gray-900 to-[#0b1b2f]">
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <h3 className="font-bold text-lg text-neon-cyan tracking-wide">Submit Setup</h3>
-                            <PlusSquare className="w-5 h-5 text-neon-cyan opacity-80" />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Main Action Hub */}
+                <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card className="flex flex-col justify-between p-8 border-accent-cyan/20 bg-gradient-to-br from-accent-cyan/[0.05] to-transparent hover:border-accent-cyan/40 transition-all group overflow-hidden relative">
+                        <Terminal className="absolute -bottom-4 -right-4 w-32 h-32 text-accent-cyan opacity-[0.03] group-hover:scale-110 transition-transform" />
+                        <div className="relative z-10">
+                            <div className="bg-accent-cyan/10 w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border border-accent-cyan/20">
+                                <PlusSquare className="w-6 h-6 text-accent-cyan" />
+                            </div>
+                            <h3 className="text-2xl font-display font-black text-white italic uppercase tracking-widest mb-2">Initialize Forge</h3>
+                            <p className="text-sm text-gray-400 font-display font-bold leading-relaxed">Broadcast your elite configurations to the network. Gain +{user.level > 5 ? '100' : '50'} AXP per uplink.</p>
                         </div>
-                        <p className="text-xs text-gray-400 font-medium">Earn +50 AXP for sharing your elite settings.</p>
-                    </div>
-                    <Button
-                        variant="neonCyan"
-                        size="sm"
-                        className="mt-6 w-full text-sm font-bold tracking-widest shadow-[0_0_15px_rgba(6,182,212,0.3)]"
-                        onClick={() => navigate('/submit')}
-                    >
-                        CREATE NEW
-                    </Button>
-                </Card>
-
-                {/* Current Rank Card */}
-                <Card className="flex flex-col justify-between border-gray-800 bg-gray-900">
-                    <div className="flex items-start justify-between">
-                        <div>
-                            <p className="text-xs text-gray-500 uppercase font-bold tracking-widest">Current Rank</p>
-                            <h3 className="text-xl font-bold mt-1 bg-clip-text text-transparent bg-gradient-to-r from-axp-gold to-yellow-200 drop-shadow-[0_0_5px_rgba(251,191,36,0.3)]">
-                                {user.rank}
-                            </h3>
-                        </div>
-                        <Trophy className="w-8 h-8 text-axp-gold/50" />
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-800/50 flex justify-between items-center text-xs text-gray-400 font-medium">
-                        <span>{user.setups || 0} Setups Shared</span>
-                        <span className="text-neon-green">+20 AXP Daily Reward Available!</span>
-                    </div>
-                </Card>
-            </div>
-
-            {/* Leaderboard Preview */}
-            <div className="mt-8 space-y-3">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-gray-300 tracking-wider">Top Arenis</h3>
-                    <button
-                        onClick={() => navigate('/leaderboard')}
-                        className="text-xs font-medium text-primary-blue hover:text-neon-cyan transition-colors flex items-center"
-                    >
-                        View All <ChevronRight className="w-3 h-3 ml-1" />
-                    </button>
-                </div>
-
-                <div className="space-y-2">
-                    {topSetups.map((setup, index) => (
-                        <div
-                            key={setup.id}
-                            className="bg-gray-900 border border-gray-800/80 rounded-xl p-3 flex items-center justify-between hover:bg-gray-800/60 transition-colors"
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            className="mt-12 group/btn relative z-10"
+                            onClick={() => navigate('/submit')}
                         >
-                            <div className="flex items-center gap-3">
-                                <div className="w-6 text-center font-bold text-gray-500 text-sm">#{index + 1}</div>
-                                <Avatar size="sm" alt={setup.user} className="ring-1 ring-gray-700" />
-                                <div>
-                                    <p className="font-bold text-sm text-gray-200">{setup.user}</p>
-                                    <p className="text-[10px] text-axp-gold font-medium uppercase tracking-wider">{setup.rank}</p>
+                            CREATE_PRESET
+                            <ChevronRight className="ml-2 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                        </Button>
+                    </Card>
+
+                    <Card className="flex flex-col justify-between p-8 border-accent-violet/20 bg-gradient-to-br from-accent-violet/[0.05] to-transparent hover:border-accent-violet/40 transition-all group overflow-hidden relative">
+                        <Flame className="absolute -bottom-4 -right-4 w-32 h-32 text-accent-violet opacity-[0.03] group-hover:scale-110 transition-transform" />
+                        <div className="relative z-10">
+                            <div className="bg-accent-violet/10 w-12 h-12 rounded-2xl flex items-center justify-center mb-6 border border-accent-violet/20">
+                                <Trophy className="w-6 h-6 text-accent-violet" />
+                            </div>
+                            <h3 className="text-2xl font-display font-black text-white italic uppercase tracking-widest mb-2">Elite Ranking</h3>
+                            <p className="text-sm text-gray-400 font-display font-bold leading-relaxed">Current Tier: <span className="text-accent-violet">{user.rank}</span>. Reach 5,000 AXP to unlock LEGEND clearance.</p>
+                        </div>
+                        <Button
+                            variant="secondary"
+                            size="lg"
+                            className="mt-12 relative z-10 border-accent-violet/20"
+                            onClick={() => navigate('/leaderboard')}
+                        >
+                            VIEW_ARENA
+                        </Button>
+                    </Card>
+                </div>
+
+                {/* Sidebar Quick-Feed */}
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h3 className="font-display font-black text-white text-xs tracking-[0.2em] uppercase flex items-center gap-3">
+                            <div className="w-1.5 h-6 bg-accent-cyan rounded-full" />
+                            ARENA_TOP_TIER
+                        </h3>
+                    </div>
+
+                    <div className="space-y-3">
+                        {topSetups.map((setup, index) => (
+                            <div
+                                key={setup.id}
+                                className="glass-panel p-4 flex items-center justify-between hover:bg-white/[0.03] transition-all border-white/5 group"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center font-display font-black text-xs text-gray-500 border border-white/5 group-hover:text-accent-cyan group-hover:border-accent-cyan/30 transition-all">
+                                        0{index + 1}
+                                    </div>
+                                    <Avatar size="sm" alt={setup.user} className="ring-1 ring-white/10" />
+                                    <div>
+                                        <p className="font-display font-black text-sm text-white uppercase italic tracking-wider">{setup.user}</p>
+                                        <p className="text-[8px] text-accent-cyan font-display font-bold uppercase tracking-[0.2em]">{setup.rank}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="font-display font-black text-xs text-white tracking-widest">{setup.axp}</p>
+                                    <p className="text-[8px] text-gray-600 font-display font-bold uppercase tracking-widest">AXP</p>
                                 </div>
                             </div>
-                            <div className="font-bold text-sm text-gray-300">
-                                {setup.axp} <span className="text-xs text-gray-600 font-medium ml-0.5">AXP</span>
-                            </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,9 +4,10 @@ import { useNotifications } from '../hooks/useNotifications';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/ui/Avatar';
-import { Trophy, Zap, Target, TrendingUp, Sparkles, AlertCircle, Users } from 'lucide-react';
+import { Trophy, Zap, Target, TrendingUp, Sparkles, Activity, Shield, ChevronRight, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getLastGenerationDate } from '../utils/storage';
+import XPBar from '../components/XPBar';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -37,9 +38,9 @@ const Dashboard = () => {
     const todayStr = new Date().toISOString().split('T')[0];
     const hasGeneratedToday = lastGen === todayStr || (lastGen === new Date().toDateString());
 
-    // Progress logic based on real AXP if available
     const currentAXP = remoteStatus?.axp || user?.axp || 0;
-    const progress = Math.min(Math.floor((currentAXP % 1000) / 10), 100);
+    const currentLevel = user?.level || Math.floor(currentAXP / 1000) + 1;
+    const xpToNext = 1000 - (currentAXP % 1000);
 
     const handleDailyReward = async () => {
         try {
@@ -68,146 +69,142 @@ const Dashboard = () => {
         );
     }
 
+    // Mascot image path from earlier generation
+    const mascotImg = '/mascot.png';
+
     return (
-        <div className="flex flex-col gap-6 animate-slide-in">
-            {/* 1. Profile Header Hero */}
-            <div className="relative">
-                <div className="bg-gradient-to-br from-gray-900 to-black border border-gray-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden text-white group">
-                    <div className="scanline"></div>
-                    <div className="absolute top-0 right-0 p-8 opacity-5 font-black italic text-6xl select-none group-hover:opacity-10 transition-opacity">ARENI</div>
-
-                    <div className="flex flex-col md:flex-row items-center gap-6 relative z-10">
-                        <div className="relative">
-                            <Avatar size="lg" ring className="ring-neon-cyan shadow-[0_0_20px_rgba(6,182,212,0.3)]" />
-                            <div className="absolute -bottom-1 -right-1 bg-neon-green w-5 h-5 rounded-full border-2 border-gray-900 flex items-center justify-center text-[8px] shadow-lg">⚡</div>
-                        </div>
-
-                        <div className="flex-1 text-center md:text-left">
-                            <div className="flex flex-col md:flex-row md:items-center gap-2 mb-2">
-                                <h1 className="text-2xl font-black text-white uppercase tracking-tight">{user.username}</h1>
-                                <span className="inline-flex px-2 py-0.5 rounded bg-gray-800 border border-gray-700 text-[10px] font-bold text-neon-cyan uppercase self-center md:self-auto">
-                                    {user.rank}
-                                </span>
+        <div className="flex flex-col gap-10 animate-slide-in p-2 md:p-0">
+            {/* HER0 / INTEL SECTION */}
+            <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent-cyan/10 to-transparent blur-3xl opacity-50 group-hover:opacity-100 transition-opacity" />
+                
+                <div className="glass-panel overflow-hidden border-white/5 relative p-0">
+                    <div className="flex flex-col lg:flex-row min-h-[440px]">
+                        {/* Content Area */}
+                        <div className="flex-1 p-8 md:p-12 relative z-10 flex flex-col justify-center">
+                            <div className="inline-flex items-center gap-3 bg-accent-cyan/10 border border-accent-cyan/20 px-4 py-1.5 rounded-full mb-8 w-fit">
+                                <Activity className="w-3.5 h-3.5 text-accent-cyan animate-pulse" />
+                                <span className="text-[10px] font-display font-black text-accent-cyan uppercase tracking-[0.3em]">Neural Interface Active</span>
                             </div>
-
-                            <div className="flex items-center justify-center md:justify-start gap-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-                                <span className="text-axp-gold flex items-center gap-1">
-                                    {user.axp} <Zap className="w-3 h-3" />
+                            
+                            <h1 className="text-5xl md:text-7xl font-display font-black italic tracking-tighter leading-[0.85] text-white uppercase mb-6 group-hover:glow-cyan transition-all">
+                                Welcome Back, <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent-cyan via-white to-indigo-400 drop-shadow-[0_0_30px_rgba(6,182,212,0.4)]">
+                                    {user.username}
                                 </span>
-                                <span>•</span>
-                                <span>LVL {Math.floor(user.axp / 1000) + 1}</span>
-                            </div>
-
-                            {/* XP Progress Bar */}
-                            <div className="mt-4 max-w-xs mx-auto md:mx-0">
-                                <div className="flex justify-between text-[10px] font-black uppercase text-gray-500 mb-1 tracking-tighter">
-                                    <span>Progress to next Rank</span>
-                                    <span>{progress}%</span>
-                                </div>
-                                <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden border border-gray-700">
-                                    <div
-                                        className="h-full bg-gradient-to-r from-primary-blue to-neon-cyan shadow-[0_0_8px_rgba(6,182,212,0.6)]"
-                                        style={{ width: `${progress}%` }}
-                                    ></div>
-                                </div>
+                            </h1>
+                            
+                            <p className="text-gray-400 text-sm md:text-base font-medium max-w-lg mb-10 leading-relaxed">
+                                Your current status is <span className="text-white font-bold">OPTIMIZED</span>. You have <span className="text-accent-cyan font-bold">{user.axp} AXP</span> registered in the global vault.
+                            </p>
+                            
+                            <div className="flex flex-wrap gap-4">
+                                <Button size="lg" onClick={() => navigate('/generate-sensitivity')} className="min-w-[180px]">
+                                    LAUNCH_ARENA
+                                </Button>
+                                <Button variant="secondary" size="lg" onClick={handleDailyReward} className="min-w-[180px]">
+                                    CLAIM_REWARD
+                                </Button>
                             </div>
                         </div>
-
-                        <div className="flex flex-col gap-2">
-                            <Button variant="outline" size="sm" onClick={handleDailyReward} className="font-black text-[10px] tracking-[2px] uppercase">
-                                Daily Reward
-                            </Button>
+                        
+                        {/* Mascot Visual */}
+                        <div className="lg:w-[45%] bg-gradient-to-l from-white/5 to-transparent relative min-h-[300px] lg:min-h-auto overflow-hidden">
+                             <img 
+                                src={mascotImg} 
+                                alt="Pro Gamer Mascot" 
+                                className="absolute bottom-[-15%] right-[-15%] w-[130%] lg:w-[160%] max-w-none object-contain animate-float drop-shadow-[0_0_80px_rgba(6,182,212,0.4)] transition-transform duration-1000 group-hover:scale-110 group-hover:-rotate-3"
+                            />
+                            {/* Overlaying HUD elements */}
+                            <div className="absolute top-12 right-12 glass-panel p-4 py-2 border-white/10 animate-float" style={{ animationDelay: '1s' }}>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-accent-cyan animate-pulse" />
+                                    <span className="text-[9px] font-display font-black text-white/50 uppercase tracking-widest">Target_Sync</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Next Big Thing Section */}
-            {!hasGeneratedToday && (
-                <div className="relative group cursor-pointer overflow-hidden rounded-[2.5rem] border border-neon-cyan/30 bg-[#0b0f1a]/50 p-6 md:p-10 transition-all hover:border-neon-cyan shadow-2xl mb-2" onClick={() => navigate('/generate-sensitivity')}>
-                    <div className="scanline opacity-[0.05]"></div>
-                    <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                        <div className="space-y-4 text-center md:text-left">
-                            <div className="inline-flex items-center gap-2 bg-neon-cyan/20 border border-neon-cyan/30 px-3 py-1 rounded-full">
-                                <Zap className="w-3 h-3 text-neon-cyan animate-pulse" />
-                                <span className="text-[10px] font-black text-neon-cyan uppercase tracking-[2px]">Optimization Required</span>
-                            </div>
-                            <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter text-white uppercase leading-[0.9]">
-                                Your Next <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neon-cyan to-primary-blue glow-cyan">Big Thing</span>
-                            </h2>
-                            <p className="text-gray-400 text-sm font-medium italic max-w-sm">
-                                You haven't recalibrated your setup today. Hardware drift and network variance require a fresh forge.
-                            </p>
+            {/* KEY METRICS GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="flex flex-col justify-between group">
+                    <div>
+                        <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary transition-all duration-500">
+                            <Trophy className="w-6 h-6 text-primary group-hover:text-white" />
                         </div>
-                        <div className="shrink-0 flex items-center justify-center w-32 h-32 rounded-full border-4 border-neon-cyan/20 bg-neon-cyan/5 relative group-hover:scale-110 transition-transform duration-500">
-                            <div className="absolute inset-0 bg-neon-cyan/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <Target className="w-16 h-16 text-neon-cyan" />
+                        <h3 className="font-display font-black text-white text-sm tracking-widest uppercase mb-1">Global Rank</h3>
+                        <p className="text-[10px] text-accent-cyan font-bold uppercase tracking-widest group-hover:text-white transition-colors">{user.rank || 'PROTO_INIT'}</p>
+                    </div>
+                    <div className="mt-8 flex items-end justify-between">
+                        <span className="text-2xl font-display font-black text-white">#1.2k</span>
+                        <ChevronRight className="w-5 h-5 text-gray-600 group-hover:text-white transition-colors" />
+                    </div>
+                </Card>
+
+                <Card className="flex flex-col justify-between group">
+                    <div>
+                        <div className="w-12 h-12 rounded-2xl bg-accent-rose/10 flex items-center justify-center mb-6 group-hover:bg-accent-rose transition-all duration-500">
+                            <Activity className="w-6 h-6 text-accent-rose group-hover:text-white" />
                         </div>
+                        <h3 className="font-display font-black text-white text-sm tracking-widest uppercase mb-1">Precision</h3>
+                    </div>
+                    <div className="mt-8 flex items-end justify-between">
+                        <span className="text-2xl font-display font-black text-white">99.2%</span>
+                        <TrendingUp className="w-5 h-5 text-green-400" />
+                    </div>
+                </Card>
+
+                <Card className="flex flex-col justify-between group lg:col-span-2">
+                    <XPBar currentXP={currentAXP % 1000} maxXP={1000} level={currentLevel} />
+                    <div className="mt-6 p-3 bg-white/5 rounded-xl border border-white/5 flex items-center justify-between">
+                        <span className="text-[10px] font-display font-bold text-gray-500 uppercase tracking-widest">Next Tier Unlock</span>
+                        <span className="text-[10px] font-display font-bold text-accent-cyan uppercase tracking-widest">Elite Auditor {currentLevel + 1}</span>
+                    </div>
+                </Card>
+            </div>
+
+            {/* FAST ACCESS HUBS */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                    <h2 className="font-display font-black text-2xl text-white tracking-widest uppercase flex items-center gap-4">
+                        <Sparkles className="w-6 h-6 text-accent-cyan" />
+                        Available Forges
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <Card className="p-8 border-accent-cyan/10 hover:border-accent-cyan/40 bg-gradient-to-br from-white/[0.03] to-transparent cursor-pointer" onClick={() => navigate('/generate-sensitivity')}>
+                            <Target className="w-10 h-10 text-accent-cyan mb-6" />
+                            <h4 className="font-display font-black text-xl text-white uppercase mb-3">Recalibration</h4>
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed mb-6 italic">Generate fresh sensitivity settings for your current device and environment.</p>
+                            <Button variant="neon" size="sm" className="w-full">START_SYNC</Button>
+                        </Card>
+                        
+                        <Card className="p-8 border-accent-violet/10 hover:border-accent-violet/40 bg-gradient-to-br from-white/[0.03] to-transparent cursor-pointer" onClick={() => navigate('/submit')}>
+                            <Share2 className="w-10 h-10 text-accent-violet mb-6" />
+                            <h4 className="font-display font-black text-xl text-white uppercase mb-3">Public Dossier</h4>
+                            <p className="text-xs text-gray-500 font-medium leading-relaxed mb-6 italic">Upload your optimized settings to the global leaderboard and earn prestige.</p>
+                            <Button variant="secondary" size="sm" className="w-full">PUBLISH_DATA</Button>
+                        </Card>
                     </div>
                 </div>
-            )}
-
-            {/* 2. Grid Sections */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* NEW FEATURE: PERFECT SENSITIVITY */}
-                <Card
-                    glass
-                    className="flex flex-col justify-between border-neon-cyan/20 group overflow-hidden"
-                    onClick={() => navigate('/generate-sensitivity')}
-                >
-                    <div className="mb-4 relative z-10">
-                        <div className="w-10 h-10 rounded-lg bg-neon-cyan/10 flex items-center justify-center mb-3 group-hover:bg-neon-cyan transition-all duration-500 shadow-inner group-hover:shadow-[0_0_15px_rgba(6,182,212,0.5)]">
-                            <Sparkles className="w-5 h-5 text-neon-cyan group-hover:text-gray-900 transition-colors" />
-                        </div>
-                        <h3 className="text-lg font-bold text-white uppercase italic tracking-tighter group-hover:text-glow-cyan transition-all">Find Perfect Sens</h3>
-                        <p className="text-sm text-gray-500 mt-1">Get optimized Pro settings tailored for your device.</p>
-                    </div>
-                    <Button variant="neonCyan" size="sm" className="w-full relative z-10 shadow-[0_0_15px_rgba(6,182,212,0.3)] font-black">Launch Forge</Button>
-                    <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity group-hover:scale-110 duration-700">
-                        <Target className="w-32 h-32" />
-                    </div>
-                </Card>
-
-                <Card className="flex flex-col justify-between" onClick={() => navigate('/submit')}>
-                    <div className="mb-4">
-                        <div className="w-10 h-10 rounded-lg bg-neon-green/10 flex items-center justify-center mb-3">
-                            <Target className="w-5 h-5 text-neon-green" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-100">Submit New Setup</h3>
-                        <p className="text-sm text-gray-500 mt-1">Share your latest sensitivity settings and earn AXP rewards.</p>
-                    </div>
-                    <Button variant="neonGreen" size="sm" className="w-full">Get Started</Button>
-                </Card>
-
-                <Card className="flex flex-col justify-between" onClick={() => navigate('/leaderboard')}>
-                    <div className="mb-4">
-                        <div className="w-10 h-10 rounded-lg bg-axp-gold/10 flex items-center justify-center mb-3">
-                            <Trophy className="w-5 h-5 text-axp-gold" />
-                        </div>
-                        <h3 className="text-lg font-bold text-gray-100 uppercase tracking-tighter italic">Legends Hub</h3>
-                        <p className="text-sm text-gray-500 mt-1">See how you rank against the best Arenis in the world.</p>
-                    </div>
-                    <Button variant="primary" size="sm" className="w-full">View Rankings</Button>
-                </Card>
-
-                {/* SQUAD RECRUITMENT CTA */}
-                <Card
-                    glass
-                    className="flex flex-col justify-between border-neon-green/20 group relative overflow-hidden"
-                    onClick={() => navigate('/clans')}
-                >
-                    <div className="mb-4 relative z-10">
-                        <div className="w-10 h-10 rounded-lg bg-neon-green/10 flex items-center justify-center mb-3 group-hover:bg-neon-green transition-all duration-500 shadow-inner group-hover:shadow-[0_0_15px_rgba(34,197,94,0.5)]">
-                            <Users className="w-5 h-5 text-neon-green group-hover:text-gray-900 transition-colors" />
-                        </div>
-                        <h3 className="text-lg font-bold text-white uppercase italic tracking-tighter group-hover:text-neon-green transition-all">Squad Recruitment</h3>
-                        <p className="text-sm text-gray-500 mt-1">Join a faction, earn collective AXP, and dominate the Squad leaderboards.</p>
-                    </div>
-                    <Button variant="neonGreen" size="sm" className="w-full relative z-10 shadow-[0_0_15px_rgba(34,197,94,0.3)] font-black">Find a Squad</Button>
-                    <div className="absolute -bottom-4 -right-4 opacity-5 group-hover:opacity-10 transition-opacity group-hover:scale-110 duration-700">
-                        <Users className="w-32 h-32" />
-                    </div>
-                </Card>
+                
+                <aside className="space-y-8">
+                    <h2 className="font-display font-black text-2xl text-white tracking-widest uppercase">Global Intel</h2>
+                    <Card className="p-1 space-y-1">
+                        {[1, 2, 3, 4, 5].map((i) => (
+                            <div key={i} className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-xl transition-colors border border-transparent hover:border-white/5">
+                                <div className="w-2 h-2 rounded-full bg-accent-cyan shrink-0" />
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[10px] font-display font-bold text-white uppercase tracking-wider truncate">New Elite Setup Published</p>
+                                    <p className="text-[8px] font-display font-bold text-gray-500 uppercase tracking-widest mt-0.5">2m ago • user_fire_slayer</p>
+                                </div>
+                                <ChevronRight className="w-4 h-4 text-gray-700" />
+                            </div>
+                        ))}
+                    </Card>
+                </aside>
             </div>
         </div>
     );

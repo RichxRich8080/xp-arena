@@ -8,31 +8,33 @@ export function Button({
     className,
     ...props
 }) {
-    const baseStyles = "relative inline-flex items-center justify-center font-bold transition-all duration-300 rounded-xl overflow-hidden active:scale-95 disabled:opacity-50 disabled:pointer-events-none";
+    const baseStyles = "relative inline-flex items-center justify-center font-display font-black uppercase tracking-widest transition-all duration-300 rounded-xl overflow-hidden active:scale-95 disabled:opacity-50 disabled:pointer-events-none group";
 
     const variants = {
-        primary: "bg-primary-blue text-white hover:bg-opacity-80 shadow-[0_0_15px_rgba(30,58,138,0.4)]",
-        secondary: "bg-gray-800 text-gray-200 border border-gray-700 hover:bg-gray-700",
-        neonGreen: "bg-neon-green text-gray-900 shadow-[0_0_20px_rgba(34,197,94,0.5)] hover:shadow-[0_0_30px_rgba(34,197,94,0.7)]",
-        neonCyan: "bg-neon-cyan text-gray-900 shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(6,182,212,0.7)]",
-        outline: "bg-transparent border-2 border-primary-blue text-primary-blue hover:bg-primary-blue hover:text-white",
-        ghost: "bg-transparent text-gray-400 hover:text-white hover:bg-gray-800",
+        primary: "bg-gradient-to-r from-primary to-accent-cyan text-white shadow-[0_0_20px_rgba(59,130,246,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]",
+        secondary: "bg-white/5 text-gray-300 border border-white/10 hover:bg-white/10 hover:text-white",
+        neon: "bg-accent-cyan text-background shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:bg-white hover:shadow-[0_0_30px_rgba(6,182,212,0.8)]",
+        danger: "bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500 hover:text-white",
+        outline: "bg-transparent border-2 border-accent-cyan text-accent-cyan hover:bg-accent-cyan hover:text-background",
+        ghost: "bg-transparent text-gray-500 hover:text-white hover:bg-white/5",
     };
 
     const sizes = {
-        sm: "px-4 py-2 text-xs",
-        md: "px-6 py-3 text-sm",
-        lg: "px-8 py-4 text-base",
+        sm: "px-4 py-2 text-[10px]",
+        md: "px-6 py-3 text-xs",
+        lg: "px-8 py-4 text-sm",
     };
 
     return (
         <button
-            className={cn(baseStyles, variants[variant], sizes[size], "electric-hover", className)}
+            className={cn(baseStyles, variants[variant], sizes[size], className)}
             {...props}
         >
             <span className="relative z-10 flex items-center gap-2">{children}</span>
-            {/* Subtle inner scanline for buttons */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent h-1/2 w-full -translate-y-full group-hover:animate-scan pointer-events-none opacity-0 group-hover:opacity-100"></div>
+            {/* Glossy overlay */}
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+            {/* Animated scanline */}
+            <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
         </button>
     );
 }

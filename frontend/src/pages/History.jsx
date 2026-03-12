@@ -3,149 +3,142 @@ import { useNavigate } from 'react-router-dom';
 import { getSetups, deleteSetup } from '../utils/storage';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Clock, Trash2, Smartphone, Target, ChevronRight, Zap } from 'lucide-react';
+import { Clock, Trash2, Smartphone, Target, ChevronRight, Zap, Database, Search, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import { cn } from '../utils/cn';
 
 export default function History() {
     const navigate = useNavigate();
     const setups = getSetups();
 
     const handleDelete = (id) => {
-        if (confirm('Delete this record from Forge history?')) {
+        if (confirm('Permanently delete this tactical record from the archive?')) {
             deleteSetup(id);
             window.location.reload();
         }
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-8 pb-12 animate-slide-in">
-            <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-black italic text-white uppercase tracking-tighter">
-                    Forge <span className="text-neon-cyan">History</span>
-                </h1>
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-widest flex items-center gap-2">
-                    <Clock className="w-3 h-3 text-neon-cyan" />
-                    Reviewing your hardware-optimized signatures
-                </p>
+        <div className="space-y-12 pb-20 animate-slide-in font-display">
+            {/* Header Section */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div>
+                    <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+                        <Database className="w-5 h-5 text-accent-rose" />
+                        <h2 className="text-xs font-black text-gray-500 uppercase tracking-[0.3em]">Tactical_Archive_Storage</h2>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase leading-none text-center md:text-left">
+                        FORGE <span className="text-accent-rose">ARCHIVE</span>
+                    </h1>
+                </div>
+                <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl border border-white/5">
+                    <Search className="w-4 h-4 text-gray-600" />
+                    <input 
+                        placeholder="FILTER_RECORDS..." 
+                        className="bg-transparent border-none focus:outline-none text-[10px] font-black uppercase tracking-[0.2em] text-white w-32"
+                    />
+                </div>
             </div>
 
+            {/* History List */}
             <div className="space-y-4">
                 {setups.length > 0 ? (
                     setups.map((setup, index) => {
-                        // Calculate delta if there's a previous setup for the same device
-                        const previous = setups.slice(index + 1).find(s =>
-                            s.formData?.brand === setup.formData?.brand &&
-                            s.formData?.model === setup.formData?.model
-                        );
-
-                        const sensDelta = previous ? (setup.formData?.currentSens - previous.formData?.currentSens).toFixed(1) : null;
-                        const isImproved = sensDelta !== null && Math.abs(sensDelta) > 0;
-
+                        const setupId = setup.id.split('-')[1]?.slice(-4) || 'NULL';
+                        
                         return (
-                            <Card
+                            <div
                                 key={setup.id}
-                                glass
-                                className="bg-[#0b0f1a]/60 border-gray-800/50 hover:border-neon-cyan/30 transition-all p-0 overflow-hidden group shadow-2xl"
+                                className="group relative overflow-hidden glass-panel p-6 border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-white/10 transition-all duration-500"
                             >
-                                <div className="p-4 flex items-center justify-between gap-4">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-gray-900 rounded-xl flex items-center justify-center border border-gray-800 group-hover:border-neon-cyan/30 transition-colors">
-                                            <Smartphone className="w-6 h-6 text-neon-cyan" />
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                                    <div className="flex items-center gap-8">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest mb-1 italic">ENTRY</span>
+                                            <span className="text-sm font-black text-white italic tracking-widest uppercase">#{setupId}</span>
                                         </div>
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <h3 className="font-bold text-white text-sm uppercase tracking-tight">
+                                        <div className="h-10 w-1px bg-white/5 hidden md:block" />
+                                        
+                                        <div className="space-y-3">
+                                            <div className="flex items-center gap-3">
+                                                <Smartphone className="w-3.5 h-3.5 text-accent-cyan" />
+                                                <h3 className="font-black text-white text-base uppercase italic tracking-tighter">
                                                     {setup.formData?.brand} {setup.formData?.model}
                                                 </h3>
-                                                <span className="text-[10px] text-gray-500 font-mono uppercase">#{setup.id.split('-')[1].slice(-4)}</span>
                                             </div>
-                                            <div className="flex items-center gap-3 text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                                                <span className="flex items-center gap-1 text-axp-gold">
-                                                    <Target className="w-3 h-3" /> {setup.formData?.playStyle}
-                                                </span>
-                                                <span className="border-l border-gray-800 pl-3">
-                                                    {new Date(setup.timestamp).toLocaleDateString()}
-                                                </span>
-                                                {isImproved && (
-                                                    <span className="border-l border-gray-800 pl-3 text-neon-green flex items-center gap-1">
-                                                        <TrendingUp className="w-3 h-3" /> CALIBRATED
-                                                    </span>
-                                                )}
+                                            <div className="flex flex-wrap items-center gap-6">
+                                                <div className="flex items-center gap-2">
+                                                    <Target className="w-3 h-3 text-accent-cyan" />
+                                                    <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic">{setup.formData?.playStyle}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <Clock className="w-3 h-3 text-gray-600" />
+                                                    <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest">{new Date(setup.timestamp).toLocaleDateString()}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center justify-end gap-3 border-t border-white/5 pt-6 md:border-none md:pt-0">
                                         <Button
-                                            variant="secondary"
+                                            variant="ghost"
                                             size="sm"
-                                            className="bg-red-500/5 border-red-500/10 hover:bg-red-500/20 hover:border-red-500/40 text-red-500/50 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"
+                                            className="bg-accent-rose/5 border border-accent-rose/20 hover:bg-accent-rose/10 text-accent-rose uppercase p-3 opacity-0 group-hover:opacity-100 transition-all"
                                             onClick={() => handleDelete(setup.id)}
                                         >
                                             <Trash2 className="w-4 h-4" />
                                         </Button>
                                         <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            className="border-gray-800 hover:border-neon-cyan text-gray-400 hover:text-neon-cyan p-2"
+                                            variant="ghost"
+                                            className="px-8 border-white/10 hover:bg-white/5 uppercase italic font-black text-[10px] tracking-widest py-4 gap-3 group/btn"
                                             onClick={() => navigate('/sensitivity-result', { state: { formData: setup.formData } })}
                                         >
-                                            <ChevronRight className="w-4 h-4" />
+                                            RESTORE_PARAMS <ArrowUpRight className="w-4 h-4 text-accent-cyan group-hover/btn:translate-x-1 group-hover/btn:-translate-y-1 transition-transform" />
                                         </Button>
                                     </div>
                                 </div>
-
-                                {/* Delta Indicator */}
-                                {sensDelta && (
-                                    <div className="px-4 pb-3 flex items-center gap-2">
-                                        <div className="h-1 flex-1 bg-gray-950 rounded-full overflow-hidden">
-                                            <div className="h-full bg-neon-cyan/40 w-[60%] animate-pulse"></div>
-                                        </div>
-                                        <span className="text-[8px] font-black text-neon-cyan/60 uppercase">Optimization Delta Tracked</span>
-                                    </div>
-                                )}
-                            </Card>
+                                
+                                {/* Background Decorative Element */}
+                                <div className="absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-accent-cyan/5 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                            </div>
                         );
                     })
                 ) : (
-                    <div className="py-20 text-center space-y-4">
-                        <div className="w-20 h-20 bg-gray-900 rounded-full flex items-center justify-center mx-auto border border-gray-800 opacity-20">
-                            <Clock className="w-10 h-10 text-gray-400" />
+                    <div className="py-32 flex flex-col items-center justify-center text-center space-y-10 glass-panel border-white/5 bg-white/[0.01]">
+                        <div className="relative">
+                            <div className="absolute -inset-8 bg-accent-cyan/10 rounded-full blur-2xl animate-pulse" />
+                            <Database className="w-20 h-20 text-gray-800 relative z-10" />
                         </div>
-                        <div className="space-y-1">
-                            <p className="text-gray-400 font-bold uppercase tracking-widest">No forge records found</p>
-                            <p className="text-gray-600 text-[10px] uppercase font-medium">Head to the generator to create your first signature.</p>
+                        <div className="space-y-4">
+                            <h2 className="text-2xl font-black text-white italic tracking-[0.2em] uppercase">ARCHIVE_EMPTY</h2>
+                            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest max-w-xs">Initialize a new neural calibration cycle to generate persistent tactical records.</p>
                         </div>
                         <Button
-                            variant="neonCyan"
-                            className="mt-6"
+                            variant="primary"
+                            className="px-12 py-6 uppercase italic font-black text-[10px] tracking-widest"
                             onClick={() => navigate('/generate-sensitivity')}
                         >
-                            Start Generator
+                            INITIATE_CALIBRATION
                         </Button>
                     </div>
                 )}
             </div>
 
-            {/* Global Stats Highlight */}
+            {/* Archive Analytics */}
             {setups.length > 0 && (
-                <div className="grid grid-cols-2 gap-4 pt-4">
-                    <Card className="bg-neon-cyan/5 border-neon-cyan/20 p-4 relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-16 h-16 bg-neon-cyan/10 rounded-full blur-xl group-hover:scale-150 transition-transform"></div>
-                        <div className="flex items-center gap-2 mb-2 relative z-10">
-                            <Zap className="w-4 h-4 text-neon-cyan" />
-                            <span className="text-[10px] font-black text-neon-cyan uppercase tracking-widest">Forge Mastery</span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8">
+                    <Card className="p-10 border-white/5 bg-white/[0.01] flex items-center justify-between group overflow-hidden">
+                        <div className="space-y-2 relative z-10">
+                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-[0.3em] block">TOTAL_ARCHIVED_DATA</span>
+                            <p className="text-4xl font-black text-white italic tracking-tighter uppercase">{setups.length} <span className="text-gray-600 text-xs tracking-widest">ENTRIES</span></p>
                         </div>
-                        <p className="text-2xl font-black text-white italic relative z-10">LVL {Math.floor(setups.length / 3) + 1}</p>
-                        <p className="text-[8px] text-gray-500 uppercase font-bold relative z-10">{setups.length} Successful Calibrations</p>
+                        <ShieldCheck className="w-16 h-16 text-accent-cyan opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all absolute top-1/2 right-0 -translate-y-1/2" />
                     </Card>
-                    <Card className="bg-axp-gold/5 border-axp-gold/20 p-4 relative overflow-hidden group">
-                        <div className="absolute -right-4 -top-4 w-16 h-16 bg-axp-gold/10 rounded-full blur-xl group-hover:scale-150 transition-transform"></div>
-                        <div className="flex items-center gap-2 mb-2 relative z-10">
-                            <Target className="w-4 h-4 text-axp-gold" />
-                            <span className="text-[10px] font-black text-axp-gold uppercase tracking-widest">Consistency</span>
+                    <Card className="p-10 border-white/5 bg-white/[0.01] flex items-center justify-between group overflow-hidden">
+                        <div className="space-y-2 relative z-10">
+                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-[0.3em] block">AVG_OPT_SUCCESS_RATE</span>
+                            <p className="text-4xl font-black text-accent-cyan italic tracking-tighter uppercase">98.4<span className="text-gray-600 text-xs tracking-widest">%</span></p>
                         </div>
-                        <p className="text-2xl font-black text-white italic relative z-10">98.4%</p>
-                        <p className="text-[8px] text-gray-500 uppercase font-bold relative z-10">Accuracy Optimization Rate</p>
+                        <Zap className="w-16 h-16 text-axp-gold opacity-10 group-hover:scale-110 group-hover:opacity-20 transition-all absolute top-1/2 right-0 -translate-y-1/2" />
                     </Card>
                 </div>
             )}
