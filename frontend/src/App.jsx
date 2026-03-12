@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -12,14 +12,31 @@ import GenerateSensitivity from './pages/GenerateSensitivity';
 import Generating from './pages/Generating';
 import SensitivityResult from './pages/SensitivityResult';
 import History from './pages/History';
-import EliteForge from './pages/EliteForge';
-import EliteResult from './pages/EliteResult';
+import Guilds from './pages/Guilds';
+import Settings from './pages/Settings';
+import PlaceholderPage from './pages/PlaceholderPage';
 import { useAuth } from './hooks/useAuth';
+
+function RouteLoading() {
+  return (
+    <div className="min-h-[50vh] flex items-center justify-center">
+      <div className="text-center">
+        <div className="w-12 h-12 border-2 border-neon-cyan/20 border-t-neon-cyan rounded-full animate-spin mx-auto mb-3" />
+        <p className="text-sm text-gray-400">Checking session...</p>
+      </div>
+    </div>
+  );
+}
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
-  if (loading) return null;
-  return isAuthenticated ? children : <Navigate to="/login" />;
+  const location = useLocation();
+
+  if (loading) return <RouteLoading />;
+
+  return isAuthenticated
+    ? children
+    : <Navigate to="/login" replace state={{ from: location.pathname, reason: 'Please log in to continue.' }} />;
 }
 
 export default function App() {
@@ -34,15 +51,15 @@ export default function App() {
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/submit" element={<PrivateRoute><SubmitSetup /></PrivateRoute>} />
-
-        {/* Phase 2: Sensitivity Generator */}
         <Route path="/generate-sensitivity" element={<GenerateSensitivity />} />
         <Route path="/generating" element={<Generating />} />
         <Route path="/sensitivity-result" element={<SensitivityResult />} />
         <Route path="/history" element={<History />} />
-        <Route path="/elite-forge" element={<PrivateRoute><EliteForge /></PrivateRoute>} />
-        <Route path="/elite-result" element={<PrivateRoute><EliteResult /></PrivateRoute>} />
+        <Route path="/clans" element={<PrivateRoute><Guilds /></PrivateRoute>} />
+        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
       </Route>
+
+      <Route path="*" element={<PlaceholderPage />} />
     </Routes>
   );
 }

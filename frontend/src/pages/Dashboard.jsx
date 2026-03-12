@@ -194,7 +194,7 @@ const Dashboard = () => {
                 <Card
                     glass
                     className="flex flex-col justify-between border-neon-green/20 group relative overflow-hidden"
-                    onClick={() => navigate('/guilds')}
+                    onClick={() => navigate('/clans')}
                 >
                     <div className="mb-4 relative z-10">
                         <div className="w-10 h-10 rounded-lg bg-neon-green/10 flex items-center justify-center mb-3 group-hover:bg-neon-green transition-all duration-500 shadow-inner group-hover:shadow-[0_0_15px_rgba(34,197,94,0.5)]">

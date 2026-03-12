@@ -44,14 +44,14 @@ export default function GenerateSensitivity() {
                 <p className="text-gray-400 text-sm font-medium">Professional optimization based on your hardware and style.</p>
             </div>
 
-            {/* Elite Promo Banner */}
-            <Card glass className="border-axp-gold/30 bg-axp-gold/5 flex flex-col md:flex-row items-center justify-between gap-4 p-4 md:p-6 group cursor-pointer hover:border-axp-gold transition-all" onClick={() => navigate('/elite-forge')}>
+            {/* Community Promo Banner */}
+            <Card glass className="border-axp-gold/30 bg-axp-gold/5 flex flex-col md:flex-row items-center justify-between gap-4 p-4 md:p-6 group cursor-pointer hover:border-axp-gold transition-all" onClick={() => navigate('/submit')}>
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-axp-gold/20 flex items-center justify-center shadow-[0_0_15px_rgba(251,191,36,0.3)] group-hover:scale-110 transition-transform">
                         <Crown className="w-6 h-6 text-axp-gold fill-axp-gold/20" />
                     </div>
                     <div>
-                        <h3 className="text-sm font-black text-white uppercase tracking-widest italic group-hover:text-axp-gold transition-colors">Elite Sensitivity Audit</h3>
+                        <h3 className="text-sm font-black text-white uppercase tracking-widest italic group-hover:text-axp-gold transition-colors">Community Sensitivity Audit</h3>
                         <p className="text-[10px] text-gray-500 font-bold uppercase mt-0.5">Deep DPI & Chipset analysis with Recoil Tips</p>
                     </div>
                 </div>

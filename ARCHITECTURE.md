@@ -1,72 +1,49 @@
-# XP Arena - Project Architecture & Documentation
+# XP Arena - Architecture Notes
 
 ## Overview
-The `xp-arena` project has been completely overhauled from a vanilla HTML/JS monolith into a modern, decoupled **React (Vite) + Express** application. The UI has been transformed into an immersive **game-style dashboard** utilizing glowing neon effects, dark mode aesthetics, and modular components.
+XP Arena is a monorepo with an Express backend and a React + Vite frontend.
 
----
+## Project Structure
+- `server/`: Express API, middleware, services, and route modules.
+- `frontend/`: React SPA (Vite, Tailwind CSS, react-router-dom).
+- `tests/integration/`: Jest + Supertest integration tests against the Express app.
 
-## 🏗️ New Project Architecture
+## Frontend
+- Routing is handled with `react-router-dom` (current dependency v7).
+- Auth-gated pages use a `PrivateRoute` wrapper.
+- API communication is centralized in `frontend/src/services/api.js`.
+- Optional mock mode can be enabled with `VITE_USE_MOCK_API=true`.
 
-### Frontend (`/frontend`)
-Powered by **React + Vite**, **Tailwind CSS**, and **React Router v6**.
-- **`/src/pages/`**: 
-  - `Dashboard.jsx`: The main landing hub mimicking the `.html` files.
-  - `Tool.jsx`: The upgraded **Sensitivity Tool Engine** equipped with virtualization/debounce logic to support real-time searches across **11,900+ devices** without DOM lag.
-- **Routing & Performance**: We implemented `react-router-dom` using `<Suspense>` and `React.lazy()` to automatically code-split the application. Initial payloads are tiny, and paths `/` and `/tool` load seamlessly without hard refreshes.
-- **`/src/components/`**: Houses all our modular game UI elements (Navbar, XPBar, ErrorBoundary, GameCard).
-- **Environment**: A `.env.example` is provided; `VITE_API_URL` handles backend target resolution.
+## Backend
+- Entry point: `server/app.js`.
+- Common hardening: Helmet, CORS policy, compression, and API rate limiting.
+- Auth endpoints are mounted under `/api/auth` and include dedicated rate limits.
+- Database access is handled via a MySQL/TiDB connection pool in `server/config/db.js`.
 
-### Backend (`/`)
-The original robust **Express.js API** serves as the backend logic.
-- **`server.js`**: Core entry point, configured with rate-limiting, CORS, and Helmet for security.
-- **`tests/integration/`**: Newly added Jest + Supertest integration tests to ensure continuous stability without hanging connection leaks.
-- **Security Hardening**: All known vulnerabilities (e.g., outdated `nodemailer`) have been patched, and unused dependencies (`serverless-http`) purged.
-
----
-
-## 🚀 How to Run Locally
-
-### 1. Start the Backend API
-From the root directory (`/xp-arena/`):
+## Local Development
+### Install
 ```bash
 npm install
-npm run dev
+npm install --workspace frontend
 ```
-*The Express API will run on `http://localhost:3000`.*
 
-### 2. Start the Frontend Vite Server
-Open a new terminal, navigate to the frontend directory:
+### Run backend
 ```bash
-cd frontend
-npm install
 npm run dev
 ```
-*The React UI will run on `http://localhost:5173`. API requests are automatically proxied to the backend.*
 
----
+### Run frontend
+```bash
+npm run dev --workspace frontend
+```
 
-## 🧪 How to Run Tests
-
-### Integration Tests
-We've integrated a robust **Jest + Supertest** testing pipeline.
-From the root directory (`/xp-arena/`), run:
+## Testing
+Run integration tests from repository root:
 ```bash
 npm run test:integration
 ```
-This tests the API endpoints (e.g., `/health`) and ensures database connections are gracefully closed upon completion.
 
-### GitHub Actions (CI/CD)
-Whenever code is pushed to `main` or a Pull Request is opened, the automated workflow defined in `.github/workflows/ci.yml` will run the integration tests to prevent broken code from being merged.
-
----
-
-## 🚢 Deployment Strategy
-
-1. **Frontend**: Build the React app for production:
-   ```bash
-   cd frontend
-   npm run build
-   ```
-   *This outputs optimized, minified static files into `frontend/dist/`.*
-2. **Backend**: Keep running `server.js` via Node, but ensure `NODE_ENV=production`.
-3. **Serving**: You can deploy the `frontend/dist` folders to Vercel/Netlify, and host the Express API on Render/Heroku/AWS. Ensure `CORS` is updated with your production URLs domain.
+## Production Configuration
+- Do not commit real secrets.
+- Use deployment secret managers for DB credentials, JWT secrets, and VAPID keys.
+- TLS certificate verification is enabled by default for DB SSL.

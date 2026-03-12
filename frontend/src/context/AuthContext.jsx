@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './contexts';
-
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+import { authService } from '../services/api';
 
 const rankFromAXP = (axp = 0) => {
     if (axp >= 2000) return 'Champion';
@@ -41,21 +40,7 @@ export function AuthProvider({ children }) {
             }
 
             try {
-                const response = await fetch(`${API_BASE}/auth/verify`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Session expired');
-                }
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch {
-                    throw new Error('Invalid server response');
-                }
-
+                const { data } = await authService.verifySession();
                 if (!data?.success || !data?.user) {
                     throw new Error(data?.message || 'Session expired');
                 }
@@ -74,27 +59,15 @@ export function AuthProvider({ children }) {
 
         verifySession();
     }, []);
-
     const login = async (username, password) => {
-        let response;
-        try {
-            response = await fetch(`${API_BASE}/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-        } catch {
-            throw 'Network error. Please check your connection.';
-        }
-
         let data;
         try {
-            data = await response.json();
-        } catch {
-            throw 'Server returned an invalid response.';
+            ({ data } = await authService.login(username, password));
+        } catch (error) {
+            throw (error?.message || 'Network error. Please check your connection.');
         }
 
-        if (!response.ok || !data?.success || !data?.token) {
+        if (!data?.success || !data?.token) {
             throw (data?.message || 'Invalid username or password');
         }
 
@@ -104,31 +77,25 @@ export function AuthProvider({ children }) {
         setUser(normalized);
         return normalized;
     };
-
     const signup = async (username, email, password) => {
-        let response;
         try {
-            response = await fetch(`${API_BASE}/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password })
-            });
-        } catch {
-            throw 'Network error. Please check your connection.';
+            const { data } = await authService.signup(username, email, password);
+            if (!data?.success) {
+                throw new Error(data?.message || 'Registration failed');
+            }
+            return data;
+        } catch (error) {
+            throw (error?.message || 'Network error. Please check your connection.');
         }
+    };
 
-        let data;
-        try {
-            data = await response.json();
-        } catch {
-            throw 'Server returned an invalid response.';
-        }
 
-        if (!response.ok || !data?.success) {
-            throw (data?.message || 'Registration failed');
-        }
-
-        return data;
+    const updateUser = (patch) => {
+        if (!user) return null;
+        const merged = normalizeUser({ ...user, ...patch });
+        setUser(merged);
+        localStorage.setItem('xp_arena_user', JSON.stringify(merged));
+        return merged;
     };
 
     const logout = () => {
@@ -152,6 +119,7 @@ export function AuthProvider({ children }) {
         signup,
         logout,
         addAXP,
+        updateUser,
         isAuthenticated: !!user
     };
 

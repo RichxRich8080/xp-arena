@@ -40,7 +40,7 @@ export default function ActivityTicker() {
 
                 <div className="ml-auto flex items-center gap-1.5">
                     <div className="w-1.5 h-1.5 rounded-full bg-neon-green animate-pulse"></div>
-                    <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Live</span>
+                    <span className="text-[8px] font-bold text-gray-600 uppercase tracking-widest">Demo Feed</span>
                 </div>
             </div>
 
