@@ -13,6 +13,7 @@ export default function Settings() {
             compactCards: false,
             highContrast: false,
             reducedMotion: false,
+            tacticalMode: false,
             profileVisibility: 'public'
         };
     });
@@ -21,6 +22,12 @@ export default function Settings() {
         const next = { ...preferences, [key]: !preferences[key] };
         setPreferences(next);
         localStorage.setItem('xp_settings', JSON.stringify(next));
+        
+        // Handle global performance classes
+        if (key === 'tacticalMode') {
+            document.body.classList.toggle('tactical-mode', next.tacticalMode);
+        }
+        
         addNotification('Configuration Secure', `${key} parameter synchronized.`, 'success');
     };
 
@@ -66,6 +73,7 @@ export default function Settings() {
                             { key: 'compactCards', label: 'COMPACT_INTERFACE', desc: 'Squeeze terminal cards for high-density monitoring.', icon: Command },
                             { key: 'highContrast', label: 'ULTRA_CONTRAST', desc: 'Enhanced retinal clarity for low-light operations.', icon: Zap },
                             { key: 'reducedMotion', label: 'STABLE_AXIS', desc: 'Disables kinetic interface transitions.', icon: Shield },
+                            { key: 'tacticalMode', label: 'TACTICAL_MODE', desc: 'Performance focus. Disables heavy neural blur filters.', icon: Monitor },
                         ].map((item) => (
                             <div key={item.key} className="p-6 flex items-center justify-between group hover:bg-white/[0.02] transition-colors">
                                 <div className="flex items-center gap-6">

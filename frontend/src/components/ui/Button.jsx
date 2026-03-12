@@ -1,13 +1,18 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
+import { useAudioUI } from '../../hooks/useAudioUI';
 
 export function Button({
     children,
     variant = 'primary',
     size = 'md',
     className,
+    onClick,
+    onMouseEnter,
     ...props
 }) {
+    const { playClick, playHover } = useAudioUI();
+
     const baseStyles = "relative inline-flex items-center justify-center font-display font-black uppercase tracking-widest transition-all duration-300 rounded-xl overflow-hidden active:scale-95 disabled:opacity-50 disabled:pointer-events-none group";
 
     const variants = {
@@ -25,9 +30,21 @@ export function Button({
         lg: "px-8 py-4 text-sm",
     };
 
+    const handleClick = (e) => {
+        playClick();
+        if (onClick) onClick(e);
+    };
+
+    const handleMouseEnter = (e) => {
+        playHover();
+        if (onMouseEnter) onMouseEnter(e);
+    };
+
     return (
         <button
             className={cn(baseStyles, variants[variant], sizes[size], className)}
+            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
             {...props}
         >
             <span className="relative z-10 flex items-center gap-2">{children}</span>

@@ -22,7 +22,7 @@
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4, .font-display {
+  h1, h2, h3, h4, .font-display-group {
     @apply font-display tracking-wider uppercase;
   }
 }
@@ -145,4 +145,25 @@
 
 .animate-slide-in {
   animation: slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tactical Mode (Performance) Overrides */
+body.tactical-mode {
+  --glass-bg: rgba(0, 0, 0, 0.8);
+}
+
+body.tactical-mode .glass-panel,
+body.tactical-mode .glass-card,
+body.tactical-mode .backdrop-blur-xl,
+body.tactical-mode .backdrop-blur-md,
+body.tactical-mode .backdrop-blur-3xl {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background-color: rgba(10, 15, 24, 0.95);
+}
+
+body.tactical-mode .animate-float,
+body.tactical-mode .animate-pulse-slow,
+body.tactical-mode .animate-pulse {
+  animation: none !important;
 }
