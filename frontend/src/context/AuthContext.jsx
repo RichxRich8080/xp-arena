@@ -104,11 +104,17 @@ export function AuthProvider({ children }) {
         localStorage.removeItem('xp_arena_user');
     };
 
-    const addAXP = (amount) => {
-        if (user) {
-            const updatedUser = normalizeUser({ ...user, axp: (user.axp || 0) + amount });
-            setUser(updatedUser);
-            localStorage.setItem('xp_arena_user', JSON.stringify(updatedUser));
+    const syncUser = async () => {
+        if (!localStorage.getItem('token')) return;
+        try {
+            const user = await userService.syncProfile();
+            if (user) {
+                const normalized = normalizeUser(user);
+                setUser(normalized);
+                localStorage.setItem('xp_arena_user', JSON.stringify(normalized));
+            }
+        } catch (err) {
+            console.error('Failed to sync user data:', err);
         }
     };
 
@@ -118,7 +124,7 @@ export function AuthProvider({ children }) {
         login,
         signup,
         logout,
-        addAXP,
+        syncUser,
         updateUser,
         isAuthenticated: !!user
     };

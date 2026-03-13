@@ -19,7 +19,7 @@ const MultiSliderResult = ({ label, value, color, delay }) => (
         </div>
         <div className="h-2 bg-background border border-white/5 rounded-full overflow-hidden p-0.5">
             <div
-                className={cn("h-full rounded-full transition-all duration-[2000ms] ease-out shadow-[0_0_15px]", `bg-${color}-500 shadow-${color}-500/50`)}
+                className={cn("h-full rounded-full transition-all duration-[2000ms] ease-out shadow-[0_0_15px]", `bg-${color} shadow-${color}/50`)}
                 style={{ width: `${(value / 200) * 100}%` }}
             />
         </div>

@@ -16,6 +16,18 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('xp_arena_user');
+            window.location.href = '/login?reason=session_expired';
+        }
+        return Promise.reject(error);
+    }
+);
+
 const parseApiError = (error, fallbackMessage) => {
     if (error?.response?.data?.message) return error.response.data.message;
     if (error?.response?.data?.error) return error.response.data.error;
@@ -137,6 +149,26 @@ export const userService = {
             return await api.post('/user/socials', { socials });
         } catch (error) {
             throw new Error(parseApiError(error, 'Failed to update socials.'));
+        }
+    },
+
+    async syncProfile() {
+        try {
+            const { data } = await api.get('/user/profile');
+            return data.user;
+        } catch (error) {
+            console.warn('Profile sync failed:', error);
+            return null;
+        }
+    }
+};
+
+export const mysteryService = {
+    async decryptNode() {
+        try {
+            return await api.post('/mystery/open');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Decryption sequence failed.'));
         }
     }
 };

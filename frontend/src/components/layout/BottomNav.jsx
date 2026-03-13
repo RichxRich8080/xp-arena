@@ -20,13 +20,17 @@ export function BottomNav() {
                         key={item.label}
                         to={item.path}
                         className={({ isActive }) => cn(
-                            "flex flex-col items-center gap-1.5 transition-all duration-500 px-6 py-3 rounded-[2rem]",
+                            "flex flex-col items-center gap-1.5 transition-all duration-500 px-3 sm:px-6 py-3 rounded-[2rem]",
                             isActive ? "bg-accent-cyan/10 text-accent-cyan scale-110" : "text-gray-500 hover:text-white"
                         )}
                     >
-                        <item.icon className={cn("w-5 h-5", isActive ? "text-accent-cyan" : "text-current")} />
-                        <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
-                        {isActive && <div className="w-1 h-1 rounded-full bg-accent-cyan shadow-[0_0_10px_rgba(6,182,212,1)]" />}
+                        {({ isActive }) => (
+                            <>
+                                <item.icon className={cn("w-5 h-5", isActive ? "text-accent-cyan" : "text-current")} />
+                                <span className="text-[8px] font-black uppercase tracking-widest">{item.label}</span>
+                                {isActive && <div className="w-1 h-1 rounded-full bg-accent-cyan shadow-[0_0_10px_rgba(6,182,212,1)]" />}
+                            </>
+                        )}
                     </NavLink>
                 ))}
             </div>

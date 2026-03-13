@@ -90,7 +90,7 @@ export default function Tool() {
                             <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">STEP_01: HARDWARE_LINK_HANDSHAKE</h3>
                         </div>
 
-                        <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] relative overflow-hidden group">
+                        <Card className="p-6 md:p-16 border-white/5 bg-white/[0.01] relative overflow-hidden group">
                             <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-black text-8xl italic select-none pointer-events-none uppercase text-white">DEVICE</div>
                             
                             <div className="space-y-8 relative z-10">
@@ -103,11 +103,11 @@ export default function Tool() {
                                         placeholder="SEARCH_TERMINAL_MODEL..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="w-full bg-background border border-white/10 rounded-3xl pl-16 pr-8 py-7 font-black text-sm text-white focus:outline-none focus:border-accent-cyan transition-all italic uppercase placeholder:text-gray-700 shadow-2xl"
+                                        className="w-full bg-background border border-white/10 rounded-2xl pl-12 pr-6 py-5 md:pl-16 md:pr-8 md:py-7 font-black text-xs md:text-sm text-white focus:outline-none focus:border-accent-cyan transition-all italic uppercase placeholder:text-gray-700 shadow-2xl"
                                     />
                                     
                                     {filteredDevices.length > 0 && (
-                                        <div className="absolute top-full left-0 w-full mt-4 glass-panel border-white/10 bg-[#0a0f18]/95 p-4 z-50 shadow-[0_30px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl animate-in zoom-in-95 duration-200 rounded-[2rem]">
+                                        <div className="absolute top-full left-0 w-full mt-4 glass-panel border-white/10 bg-[#0a0f18]/95 p-2 z-[200] shadow-[0_30px_100px_rgba(0,0,0,0.8)] backdrop-blur-3xl animate-in zoom-in-95 duration-200 rounded-[1.5rem] md:rounded-[2rem]">
                                             <div className="grid grid-cols-1 gap-2">
                                                 {filteredDevices.map(device => (
                                                     <button
@@ -164,7 +164,7 @@ export default function Tool() {
                             </button>
                         </div>
 
-                        <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] space-y-16">
+                        <Card className="p-6 md:p-16 border-white/5 bg-white/[0.01] space-y-12 md:space-y-16">
                             {/* RAM PROFILE */}
                             <div className="space-y-6">
                                 <div className="flex items-center gap-4 justify-between px-1">

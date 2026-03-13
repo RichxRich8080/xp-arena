@@ -89,19 +89,20 @@ const adminRoutes = require('./routes/adminRoutes');
 const pushRoutes = require('./routes/pushRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const seasonRoutes = require('./routes/seasonRoutes');
+const mysteryRoutes = require('./routes/mysteryRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api', featureRoutes);
+app.use('/api/features', featureRoutes);
 app.use('/api/setups', setupRoutes);
 app.use('/api/guilds', guildRoutes);
-app.use('/api/guild', guildRoutes); // Alias for singular support
 app.use('/api/tournaments', tournamentRoutes);
 app.use('/api/creators', creatorRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/shop', shopRoutes);
-app.use('/api/season', seasonRoutes);
+app.use('/api/seasons', seasonRoutes);
+app.use('/api/mystery', mysteryRoutes);
 
 app.get('/health', (req, res) => {
     const status = dbReady ? 'ok' : 'degraded';
@@ -130,14 +131,17 @@ app.get('*', (req, res) => {
 });
 
 app.use((err, req, res, next) => {
-    console.error(`[ERROR] ${new Date().toISOString()}`);
-    console.error(`Method: ${req.method} | Path: ${req.url}`);
-    console.error(err.stack);
-
-    res.status(500).json({
+    // Audit log the error internally
+    console.error(`[INTERNAL_ERROR] ${err.message} | ${req.method} ${req.url}`);
+    
+    // Do not show stack traces in production
+    const isProd = process.env.NODE_ENV === 'production';
+    
+    res.status(err.status || 500).json({
         success: false,
-        code: 'INTERNAL_SERVER_ERROR',
-        message: process.env.NODE_ENV === 'production' ? 'An unexpected error occurred.' : err.message
+        code: err.code || 'INTERNAL_SERVER_ERROR',
+        message: isProd ? 'An unexpected error occurred. Technical details have been logged.' : err.message,
+        ...(isProd ? {} : { stack: err.stack })
     });
 });
 

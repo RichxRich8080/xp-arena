@@ -55,16 +55,16 @@ export function SideNav() {
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed top-24 left-6 z-[60] p-4 glass-panel border-accent-cyan/20 text-accent-cyan hover:scale-105 transition-all md:hidden shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                className="fixed top-24 left-6 z-[160] p-4 glass-panel border-accent-cyan/20 text-accent-cyan hover:scale-105 transition-all md:hidden shadow-[0_0_20px_rgba(6,182,212,0.2)]"
                 aria-label="Open menu"
             >
                 <Menu className="w-5 h-5" />
             </button>
 
-            {isOpen && <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[70] md:hidden" onClick={() => setIsOpen(false)} />}
+            {isOpen && <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[170] md:hidden" onClick={() => setIsOpen(false)} />}
 
             <aside className={cn(
-                'fixed md:static top-0 left-0 bottom-0 w-80 md:w-full bg-background/98 md:bg-transparent border-r border-white/5 z-[80] transform transition-transform duration-700 ease-in-out flex flex-col',
+                'fixed md:static top-0 left-0 bottom-0 w-80 md:w-full bg-background/98 md:bg-transparent border-r border-white/5 z-[180] transform transition-transform duration-700 ease-in-out flex flex-col',
                 isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
             )}>
                 {/* Profile Header */}
@@ -107,9 +107,13 @@ export function SideNav() {
                                                 : 'text-gray-500 hover:text-white hover:bg-white/[0.03] border border-transparent'
                                         )}
                                     >
-                                        <item.icon className={cn("w-4.5 h-4.5 transition-all group-hover:scale-110", isActive ? "text-accent-cyan" : "text-gray-600 group-hover:text-white")} />
-                                        <span className="relative z-10">{item.label}</span>
-                                        {isActive && <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
+                                        {({ isActive }) => (
+                                            <>
+                                                <item.icon className={cn("w-4.5 h-4.5 transition-all group-hover:scale-110", isActive ? "text-accent-cyan" : "text-gray-600 group-hover:text-white")} />
+                                                <span className="relative z-10">{item.label}</span>
+                                                {isActive && <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
+                                            </>
+                                        )}
                                     </NavLink>
                                 ))}
                             </div>

@@ -155,14 +155,6 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
         const monday = new Date(d);
         monday.setDate(d.getDate() + diffToMonday);
         const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
-        // Ensure weekly_bonus table exists
-        await db.run(`CREATE TABLE IF NOT EXISTS weekly_bonus (
-            user_id INT NOT NULL,
-            week_start DATE NOT NULL,
-            awarded TINYINT DEFAULT 1,
-            PRIMARY KEY (user_id, week_start)
-        )`);
-        const wb = await db.get('SELECT user_id FROM weekly_bonus WHERE user_id = ? AND week_start = ?', [req.user.id, weekStart]);
         if (!wb && streak >= 7) {
             const weekBonus = total; // 2× today by adding +total again
             await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
@@ -295,10 +287,26 @@ router.post('/avatar-url', authenticateToken, async (req, res) => {
         if (!u || !u.is_premium) return errorResponse(res, 403, 'USER_ROUTE_ERROR', 'Premium required');
         if (!url || !/^https?:\/\//i.test(url)) return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid URL');
 
-        // Basic SSRF Protection
-        const ssrfBlacklist = ['localhost', '127.0.0.1', '10.', '172.16.', '172.17.', '172.18.', '172.19.', '172.2', '172.3', '192.168.'];
-        if (ssrfBlacklist.some(b => url.includes(b))) {
-            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Restricted URL');
+        // Comprehensive SSRF / Restricted URL Protection
+        let urlObj;
+        try {
+            urlObj = new URL(url);
+        } catch {
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Invalid URL format');
+        }
+
+        const hostname = urlObj.hostname.toLowerCase();
+        const restrictedPatterns = [
+            'localhost', '127.0.0.1', '0.0.0.0', '::1',
+            '.local', 'internal', 'metadata.google.internal',
+            '169.254.169.254' // Cloud metadata
+        ];
+        
+        // Block private IP ranges (IPv4)
+        const isPrivateIp = /^(127\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|192\.168\.)/.test(hostname);
+        
+        if (isPrivateIp || restrictedPatterns.some(p => hostname === p || hostname.endsWith(p))) {
+            return errorResponse(res, 400, 'USER_ROUTE_ERROR', 'Restricted or internal URL detected');
         }
 
         await db.run('UPDATE users SET avatar = ? WHERE id = ?', [url, req.user.id]);

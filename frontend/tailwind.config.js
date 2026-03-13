@@ -17,15 +17,41 @@ export default {
           light: '#60a5fa',
           DEFAULT: '#3b82f6',
           dark: '#1d4ed8',
+          blue: '#3b82f6',
         },
         accent: {
-          cyan: '#06b6d4',
-          violet: '#8b5cf6',
-          rose: '#f43f5e',
+          cyan: {
+            400: '#22d3ee',
+            500: '#06b6d4',
+            DEFAULT: '#06b6d4',
+          },
+          violet: {
+            400: '#a78bfa',
+            500: '#8b5cf6',
+            DEFAULT: '#8b5cf6',
+          },
+          rose: {
+            400: '#fb7185',
+            500: '#f43f5e',
+            DEFAULT: '#f43f5e',
+          },
+          purple: {
+            400: '#c084fc',
+            500: '#a855f7',
+            DEFAULT: '#a855f7',
+          },
+          green: {
+            400: '#4ade80',
+            500: '#22c55e',
+            DEFAULT: '#22c55e',
+          }
         },
         neon: {
           green: '#22c55e',
           cyan: '#06b6d4',
+        },
+        axp: {
+          gold: '#fbbf24',
         }
       },
       fontFamily: {

@@ -10,7 +10,7 @@ import GlitchTransition from '../ui/GlitchTransition';
 
 export default function Layout() {
     return (
-        <div className="min-h-screen text-gray-200 relative overflow-x-hidden pt-24 pb-32 md:pb-12">
+        <div className="min-h-screen text-gray-200 relative overflow-x-hidden pt-32 pb-40 md:pb-12">
             {/* Background Effects */}
             <div className="fixed inset-0 pointer-events-none z-0">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[120px] animate-pulse-slow" />

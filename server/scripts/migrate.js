@@ -321,6 +321,29 @@ async function run() {
     )
   `);
 
+  await ensureTable('referrals', `
+    CREATE TABLE IF NOT EXISTS referrals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        referrer_id INT NOT NULL,
+        referred_id INT NOT NULL,
+        status ENUM('pending', 'completed') DEFAULT 'completed',
+        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (referred_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY uniq_referral (referred_id)
+    )
+  `);
+
+  await ensureTable('weekly_bonus', `
+    CREATE TABLE IF NOT EXISTS weekly_bonus (
+        user_id INT NOT NULL,
+        week_start DATE NOT NULL,
+        awarded TINYINT DEFAULT 1,
+        PRIMARY KEY (user_id, week_start),
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
   await ensureTable('shop_items', `
     CREATE TABLE IF NOT EXISTS shop_items (
         id INT AUTO_INCREMENT PRIMARY KEY,

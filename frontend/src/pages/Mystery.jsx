@@ -6,35 +6,39 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
 
+import { mysteryService } from '../services/api';
+
 export default function Mystery() {
-    const { axp, triggerAreniPulse, subtractAXP, addAXP } = useAuth();
+    const { user, syncUser } = useAuth();
+    const axp = user?.axp || 0;
     const { addNotification } = useNotifications();
     const [isOpening, setIsOpening] = useState(false);
     const [reward, setReward] = useState(null);
 
-    const handleOpen = () => {
+    const handleOpen = async () => {
         if (axp < 500) {
             addNotification('Access Denied', 'Insufficient AXP tokens for decryption.', 'error');
             return;
         }
         
         setIsOpening(true);
-        subtractAXP(500);
 
-        setTimeout(() => {
-            setIsOpening(false);
-            const rewards = [
-                { type: 'AXP', val: '1,200', name: 'NEURAL_OVERLOAD', rarity: 'RARE', color: 'text-accent-cyan' },
-                { type: 'AXP', val: '5,000', name: 'MATRIX_BREAKER', rarity: 'ELITE', color: 'text-axp-gold' },
-                { type: 'AXP', val: '600', name: 'SIGNAL_BOOST', rarity: 'COMMON', color: 'text-gray-400' }
-            ];
-            const result = rewards[Math.floor(Math.random() * rewards.length)];
-            setReward(result);
-            if (result.type === 'AXP') addAXP(parseInt(result.val.replace(',', '')));
+        try {
+            const { data } = await mysteryService.decryptNode();
             
-            addNotification('Decryption Successful', `${result.name} package acquired.`, 'success');
-            triggerAreniPulse();
-        }, 2500);
+            if (data.success) {
+                setTimeout(async () => {
+                    setIsOpening(false);
+                    setReward(data.reward);
+                    addNotification('Decryption Successful', `${data.reward.name} package acquired.`, 'success');
+                    // Sync user state from backend to show new AXP
+                    await syncUser();
+                }, 2500);
+            }
+        } catch (error) {
+            setIsOpening(false);
+            addNotification('Decryption Fault', error.message, 'error');
+        }
     };
 
     return (
