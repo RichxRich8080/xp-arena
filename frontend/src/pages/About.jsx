@@ -1,70 +1,71 @@
 import React from 'react';
-import { Shield, Target, Cpu, Network, Award, Activity, Globe, Zap, Info } from 'lucide-react';
+import { Shield, Target, Cpu, Network, Award, Activity, Globe, Zap, Info, Layers, Users } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { cn } from '../utils/cn';
 
 const SpecNode = ({ label, val, color }) => (
-    <div className="group relative overflow-hidden glass-panel border-white/5 bg-white/[0.01] p-8 hover:bg-white/[0.03] transition-all flex items-center justify-between">
-        <div className={cn("absolute top-0 right-0 w-24 h-24 blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity", `bg-${color}`)} />
-        <span className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] italic relative z-10">{label}</span>
-        <span className={cn("text-[11px] font-black uppercase italic tracking-widest font-mono relative z-10", `text-${color}`)}>{val}</span>
+    <div className="group relative overflow-hidden bg-slate-900 border border-white/5 p-8 hover:border-primary/20 transition-all flex items-center justify-between rounded-2xl shadow-lg">
+        <div className={cn("absolute top-0 right-0 w-24 h-24 blur-[80px] opacity-0 group-hover:opacity-10 transition-opacity", color)} />
+        <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest relative z-10">{label}</span>
+        <span className={cn("text-[11px] font-bold uppercase tracking-widest tabular-nums relative z-10", color.replace('bg-', 'text-'))}>{val}</span>
     </div>
 );
 
 const About = () => {
     return (
-        <div className="space-y-16 pb-20 animate-slide-in font-display">
+        <div className="space-y-16 pb-20 animate-fade-in font-sans">
             {/* Header */}
-            <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <div className="text-center space-y-6 max-w-2xl mx-auto px-4">
                 <div className="flex items-center justify-center gap-4">
-                    <div className="h-1px w-10 bg-accent-cyan/50" />
-                    <span className="text-[10px] font-black italic text-accent-cyan uppercase tracking-[0.5em]">Project_Protocol_Alpha</span>
-                    <div className="h-1px w-10 bg-accent-cyan/50" />
+                    <div className="h-px w-8 bg-primary/30" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Platform Overview</span>
+                    <div className="h-px w-8 bg-primary/30" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
-                    THE <span className="text-accent-cyan">MISSION</span>
+                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight uppercase leading-none">
+                    Our <span className="text-primary">Mission</span>
                 </h1>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
-                    Redefining the boundaries between mechanical precision and digital identity for the next generation of operators.
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-[0.1em] leading-relaxed max-w-lg mx-auto">
+                    Optimizing the synergy between player skill and digital settings for the next generation of competitive gaming.
                 </p>
             </div>
 
-            {/* Vision Dossier */}
-            <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-accent-cyan/20 to-accent-green/20 blur-2xl opacity-40 group-hover:opacity-60 transition-opacity" />
-                <Card className="relative p-12 md:p-20 border-white/5 bg-[#05070a] overflow-hidden text-center space-y-12">
-                     <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-black text-9xl italic select-none pointer-events-none uppercase text-white">
-                        ALPHA
+            {/* Content Section */}
+            <div className="relative group px-4">
+                <Card className="relative p-10 md:p-16 bg-slate-900 border-white/5 overflow-hidden text-center space-y-12 rounded-[2.5rem] shadow-2xl">
+                     <div className="absolute top-0 right-0 p-12 opacity-[0.02] font-bold text-9xl select-none pointer-events-none uppercase text-white">
+                        ABOUT
                     </div>
                     
                     <div className="space-y-8 relative z-10">
-                        <div className="inline-flex items-center gap-3 bg-white/5 border border-white/10 px-6 py-2 rounded-full">
-                            <Shield className="w-4 h-4 text-accent-cyan" />
-                            <span className="text-[10px] font-black text-accent-cyan uppercase tracking-[0.3em] italic">SYNDICATE_PROTOCOL</span>
+                        <div className="inline-flex items-center gap-3 bg-slate-950 border border-white/10 px-6 py-2 rounded-full">
+                            <Shield className="w-4 h-4 text-primary" />
+                            <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Professional Standards</span>
                         </div>
                         
-                        <h2 className="text-3xl md:text-4xl font-black text-white italic tracking-tighter uppercase leading-tight max-w-3xl mx-auto">
-                            XP ARENA IS A HIGH-FIDELITY <span className="text-accent-cyan">ECOSYSTEM</span> ENGINEERED FOR COMPETITIVE SUPREMACY.
+                        <h2 className="text-2xl md:text-4xl font-bold text-white tracking-tight uppercase leading-tight max-w-3xl mx-auto">
+                            XP Arena is a professional <span className="text-primary">Ecosystem</span> optimized for competitive performance.
                         </h2>
                         
-                        <div className="h-1px w-32 bg-white/10 mx-auto" />
+                        <div className="h-px w-24 bg-white/10 mx-auto" />
                         
-                        <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest leading-loose max-w-2xl mx-auto italic opacity-80 group-hover:opacity-100 transition-opacity">
-                            Our architecture utilizes hardware-level physics and deep kinematic learning to provide the most precise tactical calibration in the global arena. We map your mechanical precision into universally accepted tokens and persistent decentralized identity.
+                        <p className="text-xs text-slate-400 font-medium uppercase tracking-widest leading-loose max-w-2xl mx-auto opacity-80 decoration-slate-500">
+                            Our platform analyzes hardware configurations and player metrics to provide high-precision settings. We bridge the gap between technical setups and player performance, ensuring a consistent and competitive experience across all titles.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12 pt-16 border-t border-white/5">
                         {[
-                            { icon: Target, title: 'PRECISION', label: 'ATOMIC_CALIBRATION' },
-                            { icon: Network, title: 'IDENTITY', label: 'CROSS_TITLE_DOSSIER' },
-                            { icon: Award, title: 'RANKING', label: 'GLOBAL_ELITE_TIER' }
+                            { icon: Target, title: 'Precision', label: 'Sensitivity Tools' },
+                            { icon: Users, title: 'Network', label: 'Player Community' },
+                            { icon: Award, title: 'Ranking', label: 'Global Leaderboards' }
                         ].map((stat, i) => (
                             <div key={i} className="flex flex-col items-center gap-4">
-                                <stat.icon className="w-8 h-8 text-accent-cyan" />
+                                <div className="w-12 h-12 rounded-xl bg-slate-950 flex items-center justify-center border border-primary/20">
+                                    <stat.icon className="w-6 h-6 text-primary" />
+                                </div>
                                 <div className="space-y-1">
-                                    <h4 className="text-white font-black italic text-xl tracking-tighter uppercase">{stat.title}</h4>
-                                    <p className="text-[8px] text-gray-600 font-bold uppercase tracking-widest">{stat.label}</p>
+                                    <h4 className="text-white font-bold text-xl tracking-tight uppercase">{stat.title}</h4>
+                                    <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest">{stat.label}</p>
                                 </div>
                             </div>
                         ))}
@@ -72,39 +73,39 @@ const About = () => {
                 </Card>
             </div>
 
-            {/* Technical Hub */}
-            <div className="space-y-8">
-                 <div className="flex items-center gap-4 ml-4">
-                    <Cpu className="w-4 h-4 text-gray-500" />
-                    <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">SYSTEM_TECHNICAL_STACK</h3>
+            {/* Technical Overview */}
+            <div className="space-y-8 px-4">
+                 <div className="flex items-center gap-3 ml-2">
+                    <Cpu className="w-4 h-4 text-primary" />
+                    <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Platform Technical Specs</h3>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <SpecNode label="ENGINE_VERSION" val="V8.4.2-STABLE" color="accent-cyan" />
-                    <SpecNode label="NEURAL_LATENCY" val="0.002MS_TARGET" color="accent-green" />
-                    <SpecNode label="CALIBRATION_LOGIC" val="HARDWARE_ATOMIC" color="indigo-400" />
-                    <SpecNode label="SYNC_PROTOCOL" val="XPA_INFRA_PRO" color="accent-rose" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <SpecNode label="System Version" val="v4.2.0-stable" color="bg-primary" />
+                    <SpecNode label="Processing Delay" val="&lt; 1ms" color="bg-green-500" />
+                    <SpecNode label="Calibration Data" val="Hardware Sync" color="bg-indigo-400" />
+                    <SpecNode label="Global Server" val="United Nodes" color="bg-amber-500" />
                 </div>
             </div>
 
             {/* Footer Notice */}
-            <div className="flex flex-col items-center text-center space-y-8 opacity-30 pt-10">
-                <div className="flex items-center gap-12">
-                   <div className="flex flex-col gap-2">
-                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">ESTABLISHED_DATE</span>
-                       <span className="text-[10px] font-black text-white italic uppercase tracking-[0.3em]">2026_CYCLE_01</span>
+            <div className="flex flex-col items-center text-center space-y-8 pt-10 px-4">
+                <div className="flex items-center gap-8 md:gap-12">
+                   <div className="flex flex-col gap-1.5">
+                       <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Est. Since</span>
+                       <span className="text-[10px] font-bold text-white uppercase tracking-widest">2026 Q1</span>
                    </div>
-                   <div className="h-10 w-1px bg-white/10" />
-                   <div className="flex flex-col gap-2">
-                       <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">GLOBAL_REGION</span>
-                       <span className="text-[10px] font-black text-white italic uppercase tracking-[0.3em]">OMEGA_SECTOR</span>
+                   <div className="h-10 w-px bg-white/10" />
+                   <div className="flex flex-col gap-1.5">
+                       <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Current Status</span>
+                       <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
                    </div>
                 </div>
                 
-                <div className="glass-panel border-white/5 bg-white/[0.01] p-6 flex items-center gap-3">
-                   <Info className="w-4 h-4 text-gray-600" />
-                   <p className="text-[8px] text-gray-700 font-bold uppercase tracking-[0.4em] italic">
-                      PROPRIETARY TECHNOLOGY OF THE ARENI SYNDICATE GROUP. UNAUTHORIZED NEURAL LINKING IS STRICTLY MONITORED.
+                <div className="bg-slate-900 border border-white/5 p-6 flex items-center gap-3 rounded-2xl max-w-2xl">
+                   <Info className="w-4 h-4 text-slate-500 shrink-0" />
+                   <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest text-left">
+                      Proprietary technology developed by the XP Arena team. No part of this platform may be reproduced without explicit permission.
                    </p>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout';
+import ScrollToTop from './components/ui/ScrollToTop';
 
 // Core Pages
 import Home from './pages/Home';
@@ -45,8 +46,8 @@ function RouteLoading() {
   return (
     <div className="min-h-[50vh] flex items-center justify-center">
       <div className="text-center">
-        <div className="w-12 h-12 border-2 border-accent-cyan/20 border-t-accent-cyan rounded-full animate-spin mx-auto mb-3" />
-        <p className="text-sm font-black text-gray-400 uppercase tracking-widest italic">Syncing session...</p>
+        <div className="w-10 h-10 border-2 border-slate-700 border-t-primary rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-xs font-medium text-slate-500 uppercase tracking-widest">Loading...</p>
       </div>
     </div>
   );
@@ -65,52 +66,55 @@ function PrivateRoute({ children }) {
 
 export default function App() {
   return (
-    <Routes>
-      {/* Auth Entry Points */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
+    <>
+      <ScrollToTop />
+      <Routes>
+        {/* Auth Entry Points */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
-      {/* Main App Canvas */}
-      <Route element={<Layout />}>
-        {/* Core Dashboard & Profiling */}
-        <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-        <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-        
-        {/* Sensitivity & Calibration */}
-        <Route path="/tool" element={<Tool />} />
-        <Route path="/result" element={<Result />} />
-        <Route path="/generate-sensitivity" element={<GenerateSensitivity />} />
-        <Route path="/generating" element={<Generating />} />
-        <Route path="/sensitivity-result" element={<SensitivityResult />} />
-        <Route path="/elite-forge" element={<PrivateRoute><EliteForge /></PrivateRoute>} />
-        <Route path="/elite-result" element={<EliteResult />} />
-        
-        {/* Content & Submission */}
-        <Route path="/submit" element={<PrivateRoute><SubmitSetup /></PrivateRoute>} />
-        
-        {/* Progression & Social */}
-        <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
-        <Route path="/clans" element={<PrivateRoute><Guilds /></PrivateRoute>} />
-        <Route path="/leaderboard" element={<Leaderboard />} />
-        <Route path="/quests" element={<PrivateRoute><Quests /></PrivateRoute>} />
-        <Route path="/daily-login" element={<PrivateRoute><DailyLogin /></PrivateRoute>} />
-        <Route path="/mystery" element={<PrivateRoute><Mystery /></PrivateRoute>} />
-        <Route path="/tournaments" element={<Tournaments />} />
-        <Route path="/ecosystem" element={<Ecosystem />} />
-        
-        {/* Utility & Info */}
-        <Route path="/premium" element={<Premium />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/support" element={<Support />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/style-preview" element={<StylePreview />} />
-      </Route>
+        {/* Main App Canvas */}
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          {/* Core Dashboard & Profiling */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+          
+          {/* Sensitivity & Calibration */}
+          <Route path="/tool" element={<Tool />} />
+          <Route path="/result" element={<Result />} />
+          <Route path="/generate-sensitivity" element={<GenerateSensitivity />} />
+          <Route path="/generating" element={<Generating />} />
+          <Route path="/sensitivity-result" element={<SensitivityResult />} />
+          <Route path="/elite-forge" element={<PrivateRoute><EliteForge /></PrivateRoute>} />
+          <Route path="/elite-result" element={<EliteResult />} />
+          
+          {/* Content & Submission */}
+          <Route path="/submit" element={<PrivateRoute><SubmitSetup /></PrivateRoute>} />
+          
+          {/* Progression & Social */}
+          <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
+          <Route path="/clans" element={<PrivateRoute><Guilds /></PrivateRoute>} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/quests" element={<PrivateRoute><Quests /></PrivateRoute>} />
+          <Route path="/daily-login" element={<PrivateRoute><DailyLogin /></PrivateRoute>} />
+          <Route path="/mystery" element={<PrivateRoute><Mystery /></PrivateRoute>} />
+          <Route path="/tournaments" element={<Tournaments />} />
+          <Route path="/ecosystem" element={<Ecosystem />} />
+          
+          {/* Utility & Info */}
+          <Route path="/premium" element={<Premium />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/support" element={<Support />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/style-preview" element={<StylePreview />} />
+        </Route>
 
-      {/* Fallback */}
-      <Route path="*" element={<PlaceholderPage />} />
-    </Routes>
+        {/* Fallback */}
+        <Route path="*" element={<PlaceholderPage />} />
+      </Routes>
+    </>
   );
 }

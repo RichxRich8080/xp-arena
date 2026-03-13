@@ -7,56 +7,32 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#04070d',
+        background: '#0f172a', // Slate 900
+        foreground: '#f8fafc', // Slate 50
         surface: {
-          low: '#0a0f18',
-          default: '#111827',
-          high: '#1f2937',
+          low: '#020617', // Slate 950
+          default: '#1e293b', // Slate 800
+          high: '#334155', // Slate 700
         },
         primary: {
           light: '#60a5fa',
-          DEFAULT: '#3b82f6',
+          DEFAULT: '#2563eb', // Professional blue
           dark: '#1d4ed8',
-          blue: '#3b82f6',
+        },
+        secondary: {
+          DEFAULT: '#64748b', // Slate 500
+          dark: '#475569', // Slate 600
         },
         accent: {
-          cyan: {
-            400: '#22d3ee',
-            500: '#06b6d4',
-            DEFAULT: '#06b6d4',
-          },
-          violet: {
-            400: '#a78bfa',
-            500: '#8b5cf6',
-            DEFAULT: '#8b5cf6',
-          },
-          rose: {
-            400: '#fb7185',
-            500: '#f43f5e',
-            DEFAULT: '#f43f5e',
-          },
-          purple: {
-            400: '#c084fc',
-            500: '#a855f7',
-            DEFAULT: '#a855f7',
-          },
-          green: {
-            400: '#4ade80',
-            500: '#22c55e',
-            DEFAULT: '#22c55e',
-          }
+          blue: '#3b82f6',
+          indigo: '#6366f1',
+          emerald: '#10b981',
         },
-        neon: {
-          green: '#22c55e',
-          cyan: '#06b6d4',
-        },
-        axp: {
-          gold: '#fbbf24',
-        }
+        border: 'rgba(255, 255, 255, 0.1)',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
-        display: ['Orbitron', 'sans-serif'],
+        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['Inter', 'sans-serif'], // Professional apps often use the same font for both
       },
       animation: {
         'slide-in': 'slideIn 0.3s ease-out',

@@ -44,7 +44,7 @@ export const authService = {
                         resolve({
                             data: {
                                 success: true,
-                                user: { username, axp: 1250, rank: 'Elite' },
+                                user: { username, points: 1250, rank: 'Elite' },
                                 token: 'mock-jwt'
                             }
                         });
@@ -69,7 +69,7 @@ export const authService = {
                     resolve({
                         data: {
                             success: true,
-                            user: { username, email, axp: 0, rank: 'Rookie' },
+                            user: { username, email, points: 0, rank: 'Beginner' },
                             token: 'mock-jwt'
                         }
                     });
@@ -102,7 +102,7 @@ export const setupService = {
                         data: {
                             success: true,
                             id: Math.floor(Math.random() * 100000),
-                            code: `AXP-${Math.floor(Math.random() * 90000) + 10000}`
+                            code: `PTS-${Math.floor(Math.random() * 90000) + 10000}`
                         }
                     });
                 }, 800);

@@ -13,16 +13,16 @@ export function Avatar({ src, alt, size = 'md', className, ring = false }) {
     return (
         <div
             className={cn(
-                "rounded-full bg-gray-800 flex items-center justify-center overflow-hidden shrink-0",
+                "rounded-full bg-slate-800 flex items-center justify-center overflow-hidden shrink-0 border border-white/5",
                 sizes[size],
-                ring && "ring-2 ring-primary-blue ring-offset-2 ring-offset-background",
+                ring && "ring-2 ring-primary ring-offset-2 ring-offset-slate-900",
                 className
             )}
         >
             {src ? (
                 <img src={src} alt={alt || "Avatar"} className="w-full h-full object-cover" />
             ) : (
-                <User className={cn("text-gray-400", size === 'sm' ? 'w-4 h-4' : size === 'xl' ? 'w-12 h-12' : 'w-6 h-6')} />
+                <User className={cn("text-slate-500", size === 'sm' ? 'w-4 h-4' : size === 'xl' ? 'w-12 h-12' : 'w-6 h-6')} />
             )}
         </div>
     );

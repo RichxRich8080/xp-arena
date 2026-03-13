@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { ShieldAlert, Mail, ArrowLeft, Activity, Radio, ChevronRight, Lock, Check } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShieldAlert, Mail, ArrowLeft, Activity, Radio, ChevronRight, Lock, Check, Send } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
@@ -16,111 +16,104 @@ const ForgotPassword = () => {
         setTimeout(() => {
             setLoading(false);
             setSent(true);
-        }, 2000);
+        }, 1500);
     };
 
     return (
-        <div className="fixed inset-0 z-[200] bg-background flex flex-col items-center justify-center p-8 overflow-hidden font-display">
-            {/* Background Kinetic Effects */}
-            <div className="absolute top-0 right-0 w-[80%] h-[80%] bg-accent-rose/5 blur-[180px] rounded-full animate-pulse pointer-events-none" />
-            <div className="scanline" />
-            
-            <div className="w-full max-w-xl relative z-10 space-y-12 animate-in fade-in zoom-in duration-1000">
-                <div className="text-center space-y-6">
-                    <div className="flex items-center justify-center gap-4">
-                        <div className="h-1px w-10 bg-accent-rose/50" />
-                        <span className="text-[10px] font-black italic text-accent-rose uppercase tracking-[0.5em]">Recovery_Protocol_Initial</span>
-                        <div className="h-1px w-10 bg-accent-rose/50" />
+        <div className="min-h-[85vh] flex flex-col items-center justify-center p-4 animate-fade-in font-sans">
+            <div className="w-full max-w-lg space-y-8">
+                {/* Header */}
+                <div className="text-center space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-slate-900 border border-white/10 rounded-2xl flex items-center justify-center shadow-lg mb-6 group-hover:scale-105 transition-transform">
+                        <Lock className="w-8 h-8 text-primary" />
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
-                        NEURAL <span className="text-accent-rose text-glow-rose">BYPASS</span>
+                    <h1 className="text-4xl font-bold text-white tracking-tight uppercase">
+                        Credential <span className="text-primary">Recovery</span>
                     </h1>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
-                        Initiate credentials restoration sequence to establish a secure link with your global terminal identity.
+                    <p className="text-slate-500 text-sm font-medium">
+                        Initiate a secure recovery process by providing your registered email address.
                     </p>
                 </div>
 
-                <Card className="relative p-12 md:p-16 border-accent-rose/20 bg-accent-rose/[0.02] shadow-[0_0_80px_rgba(244,63,94,0.1)] rounded-[4rem] overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-1px bg-gradient-to-r from-transparent via-accent-rose/40 to-transparent" />
-                    
+                <Card className="p-8 md:p-12 border-white/5 bg-slate-900/50 rounded-[2.5rem] shadow-xl overflow-hidden">
                     {sent ? (
-                        <div className="text-center space-y-12 py-8 animate-in fade-in slide-in-from-bottom-10 duration-700">
-                            <div className="relative mx-auto w-32 h-32">
-                                <div className="absolute inset-0 bg-accent-rose/20 blur-3xl animate-pulse" />
-                                <div className="relative w-full h-full rounded-[2.5rem] bg-background border-2 border-accent-rose/30 flex items-center justify-center shadow-2xl">
-                                    <Radio className="w-16 h-16 text-accent-rose animate-ping" />
+                        <div className="text-center space-y-8 py-4 animate-fade-in">
+                            <div className="relative mx-auto w-24 h-24">
+                                <div className="absolute inset-0 bg-primary/20 blur-2xl animate-pulse rounded-full" />
+                                <div className="relative w-full h-full rounded-3xl bg-slate-900 border border-primary/30 flex items-center justify-center shadow-lg">
+                                    <Send className="w-10 h-10 text-primary animate-pulse" />
                                 </div>
                             </div>
                             
-                            <div className="space-y-4">
-                                <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">SIGNAL_TRANSMITTED</h3>
-                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest leading-relaxed italic max-w-xs mx-auto">
-                                   CHECK_YOUR_NEURAL_LINKED_EMAIL_FOR_THE_RESTORE_BYPASS_TOKEN.
+                            <div className="space-y-3">
+                                <h3 className="text-2xl font-bold text-white uppercase tracking-tight">Email Sent</h3>
+                                <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-xs mx-auto">
+                                   Please check your inbox for a password reset link. If you don't see it, check your spam folder.
                                 </p>
                             </div>
 
                             <Button
                                 onClick={() => navigate('/login')}
-                                className="w-full py-8 bg-white text-background font-black uppercase italic tracking-[0.4em] text-[11px] shadow-2xl hover:scale-105 transition-all"
+                                className="w-full py-6 rounded-xl font-bold text-xs uppercase tracking-widest bg-white text-slate-950 hover:bg-slate-200"
                             >
-                                RETURN_TO_TERMINAL_SYNC
+                                Return to Login
                             </Button>
                         </div>
                     ) : (
-                        <form onSubmit={handleRecover} className="space-y-10">
+                        <form onSubmit={handleRecover} className="space-y-8">
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between px-1">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.4em]">REGISTERED_OPERATOR_EMAIL</label>
-                                    <ShieldAlert className="w-3.5 h-3.5 text-accent-rose/50" />
+                                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Email Address</label>
+                                    <ShieldAlert className="w-4 h-4 text-slate-600" />
                                 </div>
-                                <div className="relative group/input">
-                                    <div className="absolute inset-y-0 left-6 flex items-center pointer-events-none">
-                                        <Mail className="w-5 h-5 text-gray-700 group-focus-within/input:text-accent-rose" />
+                                <div className="relative group">
+                                    <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+                                        <Mail className="w-5 h-5 text-slate-600 group-focus-within:text-primary transition-colors" />
                                     </div>
                                     <input
                                         type="email"
-                                        placeholder="ENTER_NEURAL_IDENTIFIER..."
+                                        placeholder="Enter your email"
                                         required
-                                        className="w-full bg-background border border-white/10 rounded-3xl pl-16 pr-8 py-7 font-black text-sm text-white focus:outline-none focus:border-accent-rose/50 transition-all italic uppercase placeholder:text-gray-800"
+                                        className="w-full bg-slate-800/50 border border-white/10 rounded-2xl pl-14 pr-6 py-5 text-sm text-white focus:outline-none focus:border-primary transition-all font-medium"
                                     />
                                 </div>
-                                <p className="text-[9px] text-gray-700 font-bold uppercase tracking-[0.3em] leading-relaxed italic pl-2">
-                                    A SECURE RESTORATION LINK WILL BE DISPATCHED TO THIS ENCRYPTED ADDRESS.
+                                <p className="text-[10px] text-slate-500 font-medium leading-relaxed pl-1 italic">
+                                    Security verification will be required to complete the restoration.
                                 </p>
                             </div>
 
                             <Button
                                 disabled={loading}
                                 type="submit"
-                                className="w-full py-8 bg-accent-rose hover:bg-white text-white hover:text-background font-black uppercase italic tracking-[0.5em] text-[12px] shadow-[0_25px_50px_rgba(244,63,94,0.2)] transition-all group relative overflow-hidden h-20"
+                                variant="primary"
+                                className="w-full py-6 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 group disabled:opacity-30 relative overflow-hidden"
                             >
-                                <span className="relative z-10 flex items-center justify-center gap-6">
-                                    {loading ? 'TRANSMITTING_SIGNAL...' : 'REQUEST_RESTORATION'}
-                                    {!loading && <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />}
+                                <span className="relative z-10 flex items-center justify-center gap-3">
+                                    {loading ? 'Processing...' : 'Send Reset Link'}
+                                    {!loading && <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
                                 </span>
-                                <div className={cn("absolute inset-0 bg-white/20 transition-transform duration-[2000ms] ease-out", loading ? "translate-x-0" : "-translate-x-full")} />
                             </Button>
 
-                            <div className="flex justify-center pt-4">
-                                <NavLink 
+                            <div className="flex justify-center pt-2">
+                                <Link 
                                     to="/login" 
-                                    className="flex items-center gap-4 text-[9px] font-black text-gray-700 hover:text-white uppercase tracking-[0.4em] transition-all group"
+                                    className="flex items-center gap-2 text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest transition-all group"
                                 >
-                                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-2 transition-transform" />
-                                    ABORT_RECOVERY_PROTOCOL
-                                </NavLink>
+                                    <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+                                    Back to Login
+                                </Link>
                             </div>
                         </form>
                     )}
                 </Card>
                 
-                <div className="flex justify-center flex-col items-center gap-6 opacity-30">
-                    <div className="flex items-center gap-8">
-                        <Lock className="w-5 h-5" />
-                        <div className="h-1px w-24 bg-white/10" />
-                        <Check className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-4 opacity-20">
+                    <div className="flex items-center gap-6">
+                        <Lock className="w-4 h-4 text-white" />
+                        <div className="h-px w-16 bg-white/20" />
+                        <Check className="w-4 h-4 text-white" />
                     </div>
-                    <p className="text-[8px] text-gray-700 font-bold uppercase tracking-[0.5em] italic">SECURE_BYPASS_LAYER_v4.2 // SYNC_STATUS_OFFLINE</p>
+                    <p className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.4em]">Secure Verification Active</p>
                 </div>
             </div>
         </div>

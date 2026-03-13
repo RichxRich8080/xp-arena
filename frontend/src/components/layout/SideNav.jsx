@@ -16,37 +16,36 @@ export function SideNav() {
 
     const sections = [
         {
-            title: 'CORE_OPERATIONS',
+            title: 'Platform',
             items: [
-                { icon: LayoutDashboard, label: 'COMMAND_CENTER', path: '/dashboard' },
-                { icon: User, label: 'PLAYER_DOSSIER', path: '/profile' },
-                { icon: Zap, label: 'SENS_CALIBRATION', path: '/tool' },
+                { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+                { icon: User, label: 'Profile', path: '/profile' },
+                { icon: Zap, label: 'Calibration', path: '/tool' },
             ]
         },
         {
-            title: 'ARENA_PROGRESSION',
+            title: 'Competition',
             items: [
-                { icon: Trophy, label: 'HALL_OF_FAME', path: '/leaderboard' },
-                { icon: Swords, label: 'SYNDICATE_CUP', path: '/tournaments' },
-                { icon: Users, label: 'GUILD_HUBS', path: '/clans' },
-                { icon: Gift, label: 'MYSTERY_VAULT', path: '/mystery' },
+                { icon: Trophy, label: 'Leaderboard', path: '/leaderboard' },
+                { icon: Swords, label: 'Tournaments', path: '/tournaments' },
+                { icon: Users, label: 'Guilds', path: '/clans' },
+                { icon: Gift, label: 'Rewards', path: '/mystery' },
             ]
         },
         {
-            title: 'INFRASTRUCTURE',
+            title: 'System',
             items: [
-                { icon: Crown, label: 'ELITE_ACCESS', path: '/premium' },
-                { icon: Globe, label: 'ARENA_ECOSYSTEM', path: '/ecosystem' },
-                { icon: Settings, label: 'SYSTEM_SETTINGS', path: '/settings' },
-                { icon: Eye, label: 'STYLE_PREVIEW', path: '/style-preview' },
+                { icon: Crown, label: 'Premium', path: '/premium' },
+                { icon: Globe, label: 'Ecosystem', path: '/ecosystem' },
+                { icon: Settings, label: 'Settings', path: '/settings' },
             ]
         },
         {
-            title: 'NETWORK_LINK',
+            title: 'Support',
             items: [
-                { icon: Info, label: 'ABOUT_MISSION', path: '/about' },
-                { icon: MessageSquare, label: 'SUPPORT_NODE', path: '/support' },
-                { icon: HeartHandshake, label: 'CONTACT_COMMAND', path: '/contact' },
+                { icon: Info, label: 'About', path: '/about' },
+                { icon: MessageSquare, label: 'Support', path: '/support' },
+                { icon: HeartHandshake, label: 'Contact', path: '/contact' },
             ]
         }
     ];
@@ -55,65 +54,46 @@ export function SideNav() {
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed top-24 left-6 z-[160] p-4 glass-panel border-accent-cyan/20 text-accent-cyan hover:scale-105 transition-all md:hidden shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                className="fixed bottom-6 right-6 z-[160] p-4 bg-primary text-white rounded-full shadow-lg md:hidden"
                 aria-label="Open menu"
             >
                 <Menu className="w-5 h-5" />
             </button>
 
-            {isOpen && <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[170] md:hidden" onClick={() => setIsOpen(false)} />}
+            {isOpen && <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[170] md:hidden" onClick={() => setIsOpen(false)} />}
 
             <aside className={cn(
-                'fixed md:static top-0 left-0 bottom-0 w-80 md:w-full bg-background/98 md:bg-transparent border-r border-white/5 z-[180] transform transition-transform duration-700 ease-in-out flex flex-col',
+                'fixed md:static top-0 left-0 bottom-0 w-72 md:w-full bg-slate-900 md:bg-transparent border-r border-white/5 z-[180] transform transition-transform duration-300 ease-in-out flex flex-col',
                 isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
             )}>
-                {/* Profile Header */}
-                <div className="p-8 border-b border-white/5 space-y-8">
-                    <div className="flex items-center justify-between">
-                        <div className="relative group cursor-pointer" onClick={() => navigate('/profile')}>
-                            <div className="absolute -inset-2 bg-accent-cyan/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <Avatar size="lg" ring className="relative z-10" />
-                        </div>
-                        <button onClick={() => setIsOpen(false)} className="md:hidden text-gray-500 hover:text-white p-2" aria-label="Close menu">
-                            <X className="w-6 h-6" />
-                        </button>
-                    </div>
-                    
-                    <div className="space-y-1">
-                        <p className="font-display font-black text-xl text-white tracking-widest uppercase truncate italic">{user?.username || 'GUEST_PROTO'}</p>
-                        <div className="flex items-center gap-3">
-                            <div className="px-2 py-0.5 bg-accent-cyan/10 border border-accent-cyan/20 rounded text-[8px] font-black text-accent-cyan uppercase tracking-widest">LVL_0{user?.level || 1}</div>
-                            <div className="h-1 w-1 rounded-full bg-white/20" />
-                            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.2em] italic">{user?.axp || 0}_AXP</span>
-                        </div>
-                    </div>
+                {/* Mobile Drawer Header */}
+                <div className="p-6 border-b border-white/5 flex items-center justify-between md:hidden">
+                    <span className="font-bold text-white">Arena Menu</span>
+                    <button onClick={() => setIsOpen(false)} className="text-slate-500 hover:text-white p-2">
+                        <X className="w-6 h-6" />
+                    </button>
                 </div>
 
                 {/* Navigation Sections */}
-                <div className="flex-1 p-6 space-y-10 overflow-y-auto custom-scrollbar">
+                <div className="flex-1 p-4 space-y-8 overflow-y-auto">
                     {sections.map((section) => (
-                        <div key={section.title} className="space-y-4">
-                            <h3 className="text-[9px] font-black text-gray-600 uppercase tracking-[0.4em] ml-2 italic">{section.title}</h3>
-                            <div className="space-y-2">
+                        <div key={section.title} className="space-y-1">
+                            <h3 className="px-4 text-[10px] font-semibold text-slate-500 uppercase tracking-wider mb-2">{section.title}</h3>
+                            <div className="space-y-0.5">
                                 {section.items.map((item) => (
                                     <NavLink
                                         key={item.label}
                                         to={item.path}
                                         onClick={() => setIsOpen(false)}
                                         className={({ isActive }) => cn(
-                                            'flex items-center gap-5 px-5 py-4 rounded-2xl text-[10px] font-display font-black uppercase tracking-[0.25em] transition-all duration-500 relative group overflow-hidden',
+                                            'flex items-center gap-3 px-4 py-2.5 rounded-md text-sm transition-colors duration-200 group',
                                             isActive 
-                                                ? 'bg-accent-cyan/10 text-accent-cyan border border-accent-cyan/20 shadow-[0_10px_30px_rgba(6,182,212,0.1)]' 
-                                                : 'text-gray-500 hover:text-white hover:bg-white/[0.03] border border-transparent'
+                                                ? 'bg-primary/10 text-primary font-medium' 
+                                                : 'text-slate-400 hover:text-white hover:bg-white/5'
                                         )}
                                     >
-                                        {({ isActive }) => (
-                                            <>
-                                                <item.icon className={cn("w-4.5 h-4.5 transition-all group-hover:scale-110", isActive ? "text-accent-cyan" : "text-gray-600 group-hover:text-white")} />
-                                                <span className="relative z-10">{item.label}</span>
-                                                {isActive && <div className="absolute right-4 w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse shadow-[0_0_10px_rgba(6,182,212,0.8)]" />}
-                                            </>
-                                        )}
+                                        <item.icon className={cn("w-4 h-4", isActive ? "text-primary" : "text-slate-500 group-hover:text-slate-300")} />
+                                        <span>{item.label}</span>
                                     </NavLink>
                                 ))}
                             </div>
@@ -122,20 +102,16 @@ export function SideNav() {
                 </div>
 
                 {/* Session Control */}
-                <div className="p-6 border-t border-white/5">
+                <div className="p-4 border-t border-white/5">
                     <button
                         onClick={() => { logout(); setIsOpen(false); navigate('/login'); }}
-                        className="w-full flex items-center justify-center gap-4 py-5 rounded-[1.5rem] text-[10px] font-display font-black uppercase tracking-[0.3em] text-accent-rose hover:bg-accent-rose/10 border border-transparent hover:border-accent-rose/20 transition-all group"
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-md text-sm font-medium text-red-400 hover:bg-red-400/10 transition-colors"
                     >
-                        <LogOut className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> 
-                        TERMINATE_SESSION
+                        <LogOut className="w-4 h-4" /> 
+                        Logout
                     </button>
-                    
-                    <div className="mt-6 flex justify-center">
-                        <div className="flex items-center gap-2 opacity-10">
-                            <Activity className="w-3 h-3 text-white" />
-                            <span className="text-[7px] font-black text-white uppercase tracking-[0.2em]">ARENA_SECURE_LINK_v8.4.2</span>
-                        </div>
+                    <div className="mt-4 px-4">
+                        <span className="text-[10px] text-slate-600 font-medium">v8.5.0 Stable Build</span>
                     </div>
                 </div>
             </aside>

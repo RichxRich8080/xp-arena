@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Send, Activity, ShieldCheck, Mail, MessageSquare, ChevronRight, Globe, Info } from 'lucide-react';
+import { Send, Activity, ShieldCheck, Mail, MessageSquare, ChevronRight, Globe, Info, Clock, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { Card } from '../components/ui/Card';
@@ -16,91 +16,94 @@ const Contact = () => {
         setSending(true);
         setTimeout(() => {
             setSending(false);
-            addNotification('Signal Transmitted', 'Direct link to Command established. Awaiting response cycle.', 'success');
-        }, 2000);
+            addNotification('Message Sent', 'Our team has received your inquiry and will respond soon.', 'success');
+        }, 1500);
     };
 
     return (
-        <div className="space-y-16 pb-20 animate-slide-in font-display">
+        <div className="space-y-12 pb-20 animate-fade-in font-sans">
             {/* Header */}
-            <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <div className="text-center space-y-6 max-w-3xl mx-auto px-4">
                 <div className="flex items-center justify-center gap-4">
-                    <div className="h-1px w-10 bg-indigo-500/50" />
-                    <span className="text-[10px] font-black italic text-indigo-400 uppercase tracking-[0.5em]">Neural_Dispatch_Link</span>
-                    <div className="h-1px w-10 bg-indigo-500/50" />
+                    <div className="h-px w-8 bg-primary/30" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Direct Contact Channel</span>
+                    <div className="h-px w-8 bg-primary/30" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
-                    CONTACT <span className="text-indigo-400">COMMAND</span>
+                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight uppercase leading-none">
+                    Contact <span className="text-primary">Support</span>
                 </h1>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
-                    Establish a direct communication channel with the lead architects of the Areni Syndicate.
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-widest leading-relaxed max-w-xl mx-auto">
+                    Have questions or feedback? Reach out to the XP Arena team for assistance.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-                {/* Tactical Form */}
-                <div className="lg:col-span-12 space-y-8">
-                     <div className="flex items-center gap-4 ml-4">
-                        <MessageSquare className="w-4 h-4 text-gray-500" />
-                        <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">DISPATCH_CONFIGURATION</h3>
+            <div className="max-w-4xl mx-auto px-4">
+                {/* Contact Form */}
+                <div className="space-y-8">
+                     <div className="flex items-center gap-3 ml-2">
+                        <MessageSquare className="w-4 h-4 text-primary" />
+                        <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Send a Message</h3>
                     </div>
 
                     <form onSubmit={handleSubmit} className="space-y-8">
-                        <Card className="p-12 border-white/5 bg-white/[0.01] relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none transition-opacity opacity-50 group-hover:opacity-100" />
+                        <Card className="p-8 md:p-12 bg-slate-900 border-white/5 relative overflow-hidden rounded-[2.5rem] shadow-2xl">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 blur-[100px] pointer-events-none transition-opacity opacity-50" />
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 relative z-10">
-                                <div className="space-y-3">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">OPERATOR_IDENTITY</label>
-                                    <input
-                                        type="text"
-                                        placeholder="ENTER_HANDLE..."
-                                        defaultValue={user?.username || ''}
-                                        required
-                                        className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all italic uppercase"
-                                    />
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                                <div className="space-y-2.5">
+                                    <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block ml-1">Your Name / Username</label>
+                                    <div className="relative">
+                                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                        <input
+                                            type="text"
+                                            placeholder="Enter your name"
+                                            defaultValue={user?.username || ''}
+                                            required
+                                            className="w-full bg-slate-950 border border-white/10 rounded-xl pl-11 pr-4 py-4 font-bold text-sm text-white focus:outline-none focus:border-primary transition-all uppercase placeholder:text-slate-700"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="space-y-3">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">COMMUNICATION_TOPIC_ID</label>
-                                    <select className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-xs text-white focus:outline-none focus:border-indigo-500/50 transition-all italic uppercase appearance-none">
-                                        <option>TECHNICAL_NODE_FEEDBACK</option>
-                                        <option>SYNDICATE_PARTNERSHIP</option>
-                                        <option>CREDENTIAL_ACCESS_SUPPORT</option>
-                                        <option>CRITICAL_SYSTEM_BUG</option>
+                                <div className="space-y-2.5">
+                                    <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block ml-1">Inquiry Subject</label>
+                                    <select className="w-full bg-slate-950 border border-white/10 rounded-xl p-4 font-bold text-xs text-white focus:outline-none focus:border-primary transition-all uppercase appearance-none cursor-pointer">
+                                        <option>Technical Support</option>
+                                        <option>Account Assistance</option>
+                                        <option>Partnership Inquiry</option>
+                                        <option>Bug Report</option>
+                                        <option>General Feedback</option>
                                     </select>
                                 </div>
 
-                                <div className="md:col-span-2 space-y-3">
-                                    <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">NEURAL_DATA_MESSAGE</label>
+                                <div className="md:col-span-2 space-y-2.5">
+                                    <label className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block ml-1">Message Details</label>
                                     <textarea
-                                        placeholder="COMPOSE_DISPATCH_LOG..."
+                                        placeholder="How can we help you?"
                                         required
-                                        rows={6}
-                                        className="w-full bg-background border border-white/10 rounded-3xl p-6 font-black text-sm text-white focus:outline-none focus:border-indigo-500/50 transition-all italic uppercase resize-none"
+                                        rows={5}
+                                        className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-sm text-white focus:outline-none focus:border-primary transition-all uppercase resize-none placeholder:text-slate-700"
                                     />
                                 </div>
                             </div>
                         </Card>
 
-                        <div className="flex flex-col md:flex-row items-center gap-8">
+                        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-6">
                             <Button
                                 type="submit"
                                 disabled={sending}
-                                className="flex-1 py-7 bg-indigo-500 hover:bg-white text-background font-black h-20 uppercase italic tracking-[0.4em] text-[11px] shadow-[0_20px_40px_rgba(129,140,248,0.15)] transition-all relative overflow-hidden group"
+                                className="flex-1 h-16 bg-primary hover:bg-white text-slate-950 font-bold uppercase tracking-[0.2em] text-[10px] shadow-xl transition-all relative overflow-hidden rounded-xl"
                             >
-                                <div className={cn("absolute inset-0 bg-white/20 transition-transform duration-[3000ms] ease-out", sending ? "translate-x-0" : "-translate-x-full")} />
                                 <span className="relative z-10 flex items-center justify-center gap-4">
-                                    {sending ? 'TRANSMITTING_UPLINK...' : 'DISPATCH_COMMUNICATION'}
-                                    <Send className="w-5 h-5 group-hover:translate-x-2 group-hover:-translate-y-2 transition-transform" />
+                                    {sending ? 'Sending Message...' : 'Submit Message'}
+                                    <Send className="w-4 h-4" />
                                 </span>
                             </Button>
 
-                            <div className="px-10 py-6 glass-panel border-white/5 bg-white/[0.01] flex items-center gap-6 opacity-40 hover:opacity-100 transition-opacity">
-                                <Activity className="w-6 h-6 text-indigo-400" />
+                            <div className="px-8 py-4 bg-slate-900 border border-white/5 flex items-center gap-5 rounded-xl">
+                                <Clock className="w-5 h-5 text-primary" />
                                 <div>
-                                    <span className="text-[8px] font-black text-gray-600 uppercase tracking-[0.3em] block">RESPONSE_CYCLE_TARGET</span>
-                                    <span className="text-[10px] font-black text-white italic uppercase tracking-[0.25em]">2.4_SOLAR_HOURS</span>
+                                    <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest block">Response Time</span>
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Within 24 Hours</span>
                                 </div>
                             </div>
                         </div>
@@ -109,27 +112,29 @@ const Contact = () => {
             </div>
 
             {/* Direct Channels */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-10 border-t border-white/5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-10 border-t border-white/5 px-4 max-w-5xl mx-auto">
                 {[
-                    { icon: Mail, label: 'CORE_EMAIL', val: 'COMMAND@XP-ARENA.COM' },
-                    { icon: Globe, label: 'SYNDICATE_HQ', val: 'ARENA_NODE_GLOBAL' },
-                    { icon: ShieldCheck, label: 'SECURITY_NODE', val: 'ENCRYPTED_SHA256' }
+                    { icon: Mail, label: 'Email Support', val: 'support@xp-arena.com' },
+                    { icon: Globe, label: 'Community Hub', val: 'Discord / Twitter' },
+                    { icon: ShieldCheck, label: 'Data Privacy', val: 'privacy@xp-arena.com' }
                 ].map((item, i) => (
-                    <div key={i} className="flex flex-col items-center gap-6 p-8 opacity-40 hover:opacity-100 transition-all hover:-translate-y-2">
-                        <item.icon className="w-8 h-8 text-indigo-400" />
-                        <div className="text-center space-y-2">
-                             <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest">{item.label}</span>
-                             <p className="text-[10px] font-black text-white italic uppercase tracking-tighter">{item.val}</p>
+                    <div key={i} className="flex flex-col items-center gap-4 p-6 rounded-2xl hover:bg-slate-900/50 transition-all border border-transparent hover:border-white/5">
+                        <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center border border-white/5">
+                            <item.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="text-center space-y-1">
+                             <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{item.label}</span>
+                             <p className="text-[10px] font-bold text-white uppercase tracking-tight">{item.val}</p>
                         </div>
                     </div>
                 ))}
             </div>
             
-            <div className="flex justify-center">
-                <div className="glass-panel border-white/5 bg-white/[0.01] p-6 flex items-center gap-6 max-w-lg opacity-30 text-center">
-                   <Info className="w-5 h-5 text-gray-600 shrink-0" />
-                   <p className="text-[8px] text-gray-700 font-bold uppercase tracking-[0.4em] leading-relaxed italic">
-                      SECURE_DISPATCH_PROTOCOL_V4. ALL COMMUNICATIONS ARE ENCRYPTED AND LOGGED FOR QUALITY_SYNCHRONIZATION.
+            <div className="flex justify-center px-4">
+                <div className="bg-slate-900 border border-white/5 p-6 flex items-center gap-4 max-w-lg opacity-30 text-center rounded-2xl">
+                   <Info className="w-4 h-4 text-slate-500 shrink-0" />
+                   <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                      All communications are handled securely. Your data is protected under our unified privacy standards.
                    </p>
                 </div>
             </div>

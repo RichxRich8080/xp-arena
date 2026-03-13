@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { AuthContext } from './contexts';
 import { authService } from '../services/api';
 
-const rankFromAXP = (axp = 0) => {
-    if (axp >= 2000) return 'Champion';
-    if (axp >= 1000) return 'Elite';
-    return 'Rookie';
+const rankFromPoints = (points = 0) => {
+    if (points >= 5000) return 'Elite';
+    if (points >= 2000) return 'Professional';
+    if (points >= 1000) return 'Advanced';
+    return 'Beginner';
 };
 
 const normalizeUser = (user) => {
@@ -13,7 +14,7 @@ const normalizeUser = (user) => {
     return {
         ...user,
         axp,
-        rank: user?.rank || rankFromAXP(axp)
+        rank: user?.rank || rankFromPoints(axp)
     };
 };
 
@@ -104,6 +105,17 @@ export function AuthProvider({ children }) {
         localStorage.removeItem('xp_arena_user');
     };
 
+    const addPoints = (amount) => {
+        if (!user) return;
+        const nextPoints = (user.axp || 0) + amount;
+        updateUser({ axp: nextPoints });
+    };
+
+    const triggerSystemPulse = () => {
+        // Standard system pulse logic
+        console.log('System pulse synchronized');
+    };
+
     const syncUser = async () => {
         if (!localStorage.getItem('token')) return;
         try {
@@ -126,6 +138,8 @@ export function AuthProvider({ children }) {
         logout,
         syncUser,
         updateUser,
+        addPoints,
+        triggerSystemPulse,
         isAuthenticated: !!user
     };
 

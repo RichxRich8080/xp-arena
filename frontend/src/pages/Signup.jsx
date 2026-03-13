@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { Button } from '../components/ui/Button';
-import { UserPlus, ChevronRight, Activity, ShieldCheck, Fingerprint } from 'lucide-react';
+import { Card } from '../components/ui/Card';
+import { UserPlus, ChevronRight, Activity, ShieldCheck, Mail, Lock, User } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export default function Signup() {
@@ -25,14 +26,14 @@ export default function Signup() {
         setError('');
 
         if (formData.password !== formData.confirmPassword) {
-            setError("COEFFICIENTS_NOT_SYNCED");
-            addNotification('Sync Error', 'Passwords must match.', 'error');
+            setError("Confirmation Mismatch");
+            addNotification('Error', 'Passwords do not match.', 'error');
             return;
         }
 
         if (formData.password.length < 6) {
-            setError("KEY_STRENGTH_INSUFFICIENT");
-            addNotification('Security Error', 'Password requires min 6 chars.', 'error');
+            setError("Password Too Short");
+            addNotification('Error', 'Password must be at least 6 characters.', 'error');
             return;
         }
 
@@ -40,126 +41,133 @@ export default function Signup() {
 
         try {
             await signup(formData.username, formData.email, formData.password);
-            addNotification('Profile Initialized', 'Credential registry successful. Redirecting to uplink.', 'success');
+            addNotification('Account Created', 'Registration successful. You can now sign in.', 'success');
             navigate('/login');
         } catch (err) {
             const msg = typeof err === 'string' ? err : (err?.message || 'Registration failure.');
             setError(msg);
-            addNotification('Registry Error', msg, 'error');
+            addNotification('Error', msg, 'error');
         } finally {
             setIsLoading(false);
         }
     };
 
     return (
-        <div className="min-h-[85vh] flex flex-col items-center justify-center p-6 space-y-12 font-display animate-slide-in">
-            {/* Header */}
-            <div className="text-center space-y-4 max-w-sm">
-                <div className="relative group mx-auto w-20 h-20 mb-8">
-                    <div className="absolute -inset-4 bg-accent-green/20 rounded-3xl blur-xl group-hover:bg-accent-green/30 transition-all animate-pulse" />
-                    <div className="relative w-full h-full bg-background border-2 border-accent-green/50 rounded-3xl flex items-center justify-center shadow-[0_0_30px_rgba(34,197,94,0.3)]">
-                        <UserPlus className="w-10 h-10 text-accent-green" />
-                    </div>
-                </div>
-                <h1 className="text-4xl font-black italic text-white tracking-tighter uppercase leading-none">
-                    PROFILE <span className="text-accent-green">MANIFEST</span>
-                </h1>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed italic">
-                    Register your tactical identifier on the XP Arena global ledger.
-                </p>
-            </div>
-
+        <div className="min-h-[85vh] flex flex-col items-center justify-center p-4 animate-fade-in font-sans">
             <div className="w-full max-w-md space-y-8">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    <div className="space-y-6 glass-panel p-10 border-white/5 bg-white/[0.02]">
+                {/* Header */}
+                <div className="text-center space-y-4">
+                    <div className="mx-auto w-16 h-16 bg-slate-900 border border-white/10 rounded-2xl flex items-center justify-center shadow-lg mb-6 hover:scale-105 transition-transform">
+                        <UserPlus className="w-8 h-8 text-primary" />
+                    </div>
+                    <h1 className="text-4xl font-bold text-white tracking-tight uppercase">
+                        System <span className="text-primary">Registration</span>
+                    </h1>
+                    <p className="text-slate-500 text-sm font-medium">
+                        Initialize your profile to begin your performance optimization journey.
+                    </p>
+                </div>
+
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <Card className="p-8 border-white/5 bg-slate-900/50 space-y-6 rounded-3xl">
                         {error && (
-                            <div className="bg-accent-rose/5 border border-accent-rose/20 p-4 mb-4 flex items-center gap-3">
-                                <Activity className="w-4 h-4 text-accent-rose shrink-0" />
-                                <span className="text-[9px] font-black text-accent-rose uppercase tracking-widest">{error}</span>
+                            <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex items-center gap-3">
+                                <Activity className="w-4 h-4 text-red-500 shrink-0" />
+                                <span className="text-xs font-bold text-red-500 uppercase tracking-widest">{error}</span>
                             </div>
                         )}
 
-                        <div className="space-y-3">
-                            <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">CODENAME_TAG</label>
-                            <input
-                                type="text"
-                                placeholder="ARENI_X_123..."
-                                value={formData.username}
-                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                required
-                                className="w-full bg-background border border-white/10 rounded-2xl p-4 font-black text-sm text-white focus:outline-none focus:border-accent-green transition-all italic uppercase"
-                            />
-                        </div>
-
-                        <div className="space-y-3">
-                            <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">COMM_ADDR (EMAIL)</label>
-                            <input
-                                type="email"
-                                placeholder="UPLINK@MAIL.COM"
-                                value={formData.email}
-                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                required
-                                className="w-full bg-background border border-white/10 rounded-2xl p-4 font-black text-sm text-white focus:outline-none focus:border-accent-green transition-all italic uppercase"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">NEW_KEY</label>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Username</label>
+                            <div className="relative">
+                                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                 <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={formData.password}
-                                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                    type="text"
+                                    placeholder="Choose a username"
+                                    value={formData.username}
+                                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     required
-                                    className="w-full bg-background border border-white/10 rounded-2xl p-4 font-black text-sm text-white focus:outline-none focus:border-accent-green transition-all"
+                                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl p-4 pl-12 text-sm text-white focus:outline-none focus:border-primary transition-all"
                                 />
                             </div>
-                            <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">CONFIRM</label>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+                            <div className="relative">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                                 <input
-                                    type="password"
-                                    placeholder="••••••••"
-                                    value={formData.confirmPassword}
-                                    onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    value={formData.email}
+                                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                     required
-                                    className="w-full bg-background border border-white/10 rounded-2xl p-4 font-black text-sm text-white focus:outline-none focus:border-accent-green transition-all"
+                                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl p-4 pl-12 text-sm text-white focus:outline-none focus:border-primary transition-all"
                                 />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Password</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                    <input
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={formData.password}
+                                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                        required
+                                        className="w-full bg-slate-800/50 border border-white/10 rounded-xl p-4 pl-12 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Confirm</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                                    <input
+                                        type="password"
+                                        placeholder="••••••••"
+                                        value={formData.confirmPassword}
+                                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                                        required
+                                        className="w-full bg-slate-800/50 border border-white/10 rounded-xl p-4 pl-12 text-sm text-white focus:outline-none focus:border-primary transition-all"
+                                    />
+                                </div>
                             </div>
                         </div>
 
                         <Button
                             type="submit"
                             variant="primary"
-                            className="w-full py-6 mt-4 group disabled:opacity-20 shadow-[0_15px_30px_rgba(34,197,94,0.1)]"
+                            className="w-full py-6 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-3 group disabled:opacity-30"
                             disabled={isLoading}
                         >
-                            <span className="font-black italic uppercase tracking-[0.4em] text-[11px] flex items-center justify-center gap-4 text-accent-green">
-                                {isLoading ? 'INITIALIZING_MANIFEST...' : 'CREATE_ARENI_PROFILE'}
-                                <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
-                            </span>
+                            {isLoading ? 'Creating Account...' : 'Sign Up'}
+                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
-                    </div>
+                    </Card>
                 </form>
 
                 <div className="text-center space-y-6">
-                    <div className="flex items-center gap-4 justify-center">
-                        <div className="h-1px flex-1 bg-white/5" />
-                        <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest leading-none">ALREADY_LINKED?</span>
-                        <div className="h-1px flex-1 bg-white/5" />
+                    <div className="flex items-center gap-4">
+                        <div className="h-px flex-1 bg-white/5" />
+                        <span className="text-[10px] font-bold text-slate-600 uppercase tracking-[0.2em]">Already a member?</span>
+                        <div className="h-px flex-1 bg-white/5" />
                     </div>
                     
                     <button
                         onClick={() => navigate('/login')}
-                        className="text-[10px] font-black text-accent-green uppercase tracking-[0.3em] italic hover:text-white transition-colors"
+                        className="text-[10px] font-bold text-primary uppercase tracking-[0.3em] hover:text-white transition-colors border border-primary/20 hover:border-white/20 px-8 py-3 rounded-full"
                     >
-                        RESTORE_TERMINAL_ACCESS
+                        Return to Authentication
                     </button>
                     
                     <div className="flex items-center justify-center gap-3 pt-8 opacity-20">
                         <ShieldCheck className="w-4 h-4 text-white" />
-                        <p className="text-[8px] text-white font-bold uppercase tracking-widest">
-                            SECURE_LEDGER_AUTH_V4
+                        <p className="text-[8px] text-white font-bold uppercase tracking-[0.5em] leading-none">
+                            Identity Verified System
                         </p>
                     </div>
                 </div>

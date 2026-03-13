@@ -3,183 +3,89 @@
 @tailwind utilities;
 
 :root {
-  --bg-deep: #04070d;
-  --bg-surface: #0a0f18;
-  --accent-cyan: #06b6d4;
-  --accent-white: #ffffff;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.06);
+  --bg-deep: #020617;
+  --bg-surface: #0f172a;
+  --primary: #2563eb;
+  --border: rgba(255, 255, 255, 0.08);
 }
 
 @layer base {
   body {
-    @apply bg-background text-gray-200 font-sans antialiased;
-    background-image: 
-      radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%),
-      radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
-    background-attachment: fixed;
+    @apply bg-background text-slate-200 font-sans antialiased;
+    background: radial-gradient(circle at top right, #1e293b, #0f172a);
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4, .font-display-group {
-    @apply font-display tracking-wider uppercase;
+  h1, h2, h3, h4 {
+    @apply font-sans font-bold tracking-tight;
   }
 }
 
 @layer components {
   .glass-panel {
-    @apply bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    @apply bg-slate-900/50 backdrop-blur-md border border-white/5 rounded-xl;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   }
 
   .glass-card {
-    @apply bg-white/[0.02] backdrop-blur-md border border-white/[0.05] rounded-xl transition-all duration-300;
+    @apply bg-slate-800/40 border border-white/5 rounded-lg transition-all duration-200;
   }
 
   .glass-card:hover {
-    @apply bg-white/[0.04] border-white/10 scale-[1.02];
-    box-shadow: 0 0 20px rgba(6, 182, 212, 0.1);
+    @apply bg-slate-800/60 border-white/10;
+  }
+
+  .btn-base {
+    @apply px-4 py-2 rounded-md font-medium text-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply relative overflow-hidden px-6 py-2.5 rounded-lg font-display text-sm font-bold tracking-widest uppercase transition-all duration-300;
-    background: linear-gradient(90deg, #3b82f6, #06b6d4);
+    @apply btn-base bg-primary hover:bg-primary-dark text-white shadow-sm;
   }
 
-  .btn-primary:hover {
-    @apply scale-105 brightness-110;
-    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+  .btn-secondary {
+    @apply btn-base bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/5;
   }
 
-  .neon-text {
-    @apply text-accent-cyan;
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
-  }
-
-  .neon-border {
-    @apply border border-accent-cyan/30;
-    box-shadow: inset 0 0 10px rgba(6, 182, 212, 0.1), 0 0 10px rgba(6, 182, 212, 0.1);
-  }
-
-  .text-glow-cyan {
-    text-shadow: 0 0 20px rgba(6, 182, 212, 0.4);
-  }
-
-  .text-glow-purple {
-    text-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
-  }
-
-  .text-glow-rose {
-    text-shadow: 0 0 20px rgba(244, 63, 94, 0.4);
-  }
-
-  .text-glow-gold {
-    text-shadow: 0 0 20px rgba(251, 191, 36, 0.4);
-  }
-
-  .glow-cyan {
-    filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.5));
-  }
-
-  .glow-gold {
-    filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.5));
-  }
-
-  .glow-violet {
-    filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.5));
-  }
-
-  .scanline {
-    width: 100%;
-    height: 100px;
-    z-index: 10;
-    background: linear-gradient(0deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(0, 0, 0, 0) 100%);
-    opacity: 0.1;
-    position: absolute;
-    bottom: 100%;
-    animation: scanline 6s linear infinite;
-    pointer-events: none;
+  .btn-ghost {
+    @apply btn-base bg-transparent hover:bg-white/5 text-slate-400 hover:text-white;
   }
 }
 
-/* Custom Scrollbar */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
+/* Minimal Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+::-webkit-scrollbar-thumb {
+  background: #334155;
   border-radius: 10px;
 }
 
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.2);
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
 }
 
-/* Hero Animations */
-@keyframes scanline {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(100vh); }
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-15px) rotate(1deg); }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-.animate-spin-slow {
-  animation: spin-slow 12s linear infinite;
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 4s ease-in-out infinite;
-}
-
-@keyframes slide-in {
-  from { opacity: 0; transform: translateY(20px); }
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-.animate-slide-in {
-  animation: slide-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
 }
 
-/* Tactical Mode (Performance) Overrides */
-body.tactical-mode {
-  --glass-bg: rgba(0, 0, 0, 0.8);
-}
-
-body.tactical-mode .glass-panel,
-body.tactical-mode .glass-card,
-body.tactical-mode .backdrop-blur-xl,
-body.tactical-mode .backdrop-blur-md,
-body.tactical-mode .backdrop-blur-3xl {
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  background-color: rgba(10, 15, 24, 0.95);
-}
-
-body.tactical-mode .animate-float,
-body.tactical-mode .animate-pulse-slow,
-body.tactical-mode .animate-pulse {
-  animation: none !important;
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

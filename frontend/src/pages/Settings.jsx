@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { useNotifications } from '../hooks/useNotifications';
-import { Shield, Fingerprint, Eye, EyeOff, Monitor, Zap, Command, Lock, Globe } from 'lucide-react';
+import { Shield, Fingerprint, Eye, EyeOff, Monitor, Zap, Command, Lock, Globe, Settings as SettingsIcon, AppWindow, Bell, ShieldCheck } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export default function Settings() {
@@ -28,73 +28,76 @@ export default function Settings() {
             document.body.classList.toggle('tactical-mode', next.tacticalMode);
         }
         
-        addNotification('Configuration Secure', `${key} parameter synchronized.`, 'success');
+        addNotification('Settings Updated', 'Preferences have been synchronized successfully.', 'success');
     };
 
     const onVisibility = (value) => {
         const next = { ...preferences, profileVisibility: value };
         setPreferences(next);
         localStorage.setItem('xp_settings', JSON.stringify(next));
-        addNotification('Security Updated', `Profile visibility protocols set to ${value}.`, 'success');
+        addNotification('Privacy Updated', `Profile visibility is now set to ${value}.`, 'success');
     };
 
     return (
-        <div className="space-y-12 pb-20 animate-slide-in">
-            {/* VAULT HEADER */}
-            <div className="relative group overflow-hidden glass-panel p-8 md:p-12 border-white/5">
-                <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-display font-black text-8xl italic select-none pointer-events-none uppercase">
-                    VAULT_SECURE
+        <div className="space-y-8 pb-12 animate-fade-in font-sans">
+            {/* Header */}
+            <div className="relative overflow-hidden rounded-2xl bg-slate-900 border border-white/5 shadow-sm">
+                <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none select-none">
+                    <SettingsIcon className="w-64 h-64" />
                 </div>
                 
-                <div className="relative z-10">
-                    <div className="flex items-center gap-3 mb-4">
-                        <Lock className="w-5 h-5 text-accent-rose animate-pulse" />
-                        <h2 className="text-xs font-display font-black text-gray-500 uppercase tracking-[0.3em]">System_Infrastructure</h2>
+                <div className="relative p-8 md:p-12 space-y-6">
+                    <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 w-fit">
+                        <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+                        <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Security Verified</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl font-display font-black text-white italic tracking-tighter uppercase leading-none">
-                        SECURE <span className="text-accent-rose">VAULT</span>
-                    </h1>
-                    <p className="text-gray-400 font-display font-bold text-sm mt-6 max-w-xl">
-                        Calibrate terminal protocols and interface preferences. All changes are synchronized to the local neural-link.
-                    </p>
+                    
+                    <div className="space-y-2">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight leading-none uppercase">
+                            System <span className="text-primary">Settings</span>
+                        </h1>
+                        <p className="text-slate-400 text-sm md:text-base max-w-xl leading-relaxed font-medium">
+                            Manage your account preferences, interface options, and privacy controls. All changes take effect immediately.
+                        </p>
+                    </div>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Interface Calibration */}
-                <div className="space-y-6">
-                    <h3 className="font-display font-black text-white text-xs tracking-[0.2em] uppercase flex items-center gap-3 ml-4">
-                        <Monitor className="w-4 h-4 text-accent-cyan" />
-                        INTERFACE_CALIBRATION
+                {/* Interface Settings */}
+                <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-slate-500 tracking-[0.2em] uppercase flex items-center gap-2 ml-1">
+                        <AppWindow className="w-4 h-4 text-primary" />
+                        Preferences
                     </h3>
                     
-                    <Card className="p-2 border-white/5 bg-white/[0.02] divide-y divide-white/5">
+                    <Card className="border-white/5 bg-slate-900/50 overflow-hidden divide-y divide-white/5">
                         {[
-                            { key: 'compactCards', label: 'COMPACT_INTERFACE', desc: 'Squeeze terminal cards for high-density monitoring.', icon: Command },
-                            { key: 'highContrast', label: 'ULTRA_CONTRAST', desc: 'Enhanced retinal clarity for low-light operations.', icon: Zap },
-                            { key: 'reducedMotion', label: 'STABLE_AXIS', desc: 'Disables kinetic interface transitions.', icon: Shield },
-                            { key: 'tacticalMode', label: 'TACTICAL_MODE', desc: 'Performance focus. Disables heavy neural blur filters.', icon: Monitor },
+                            { key: 'compactCards', label: 'Compact Interface', desc: 'Squeeze layout cards for high-density information viewing.', icon: Command },
+                            { key: 'highContrast', label: 'High Contrast', desc: 'Increase element visibility for better visual clarity.', icon: Zap },
+                            { key: 'reducedMotion', label: 'Reduced Motion', desc: 'Disables animations for a more stable interface experience.', icon: Shield },
+                            { key: 'tacticalMode', label: 'Performance Mode', desc: 'Optimizes rendering by disabling blur effects and shadows.', icon: Monitor },
                         ].map((item) => (
-                            <div key={item.key} className="p-6 flex items-center justify-between group hover:bg-white/[0.02] transition-colors">
-                                <div className="flex items-center gap-6">
-                                    <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center border border-white/5 group-hover:border-accent-cyan/30 transition-all">
-                                        <item.icon className="w-5 h-5 text-gray-500 group-hover:text-accent-cyan" />
+                            <div key={item.key} className="p-6 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center border border-white/5 transition-all">
+                                        <item.icon className="w-4 h-4 text-slate-400" />
                                     </div>
                                     <div>
-                                        <p className="font-display font-black text-white text-[10px] tracking-widest uppercase mb-1">{item.label}</p>
-                                        <p className="text-[10px] text-gray-500 font-display font-bold tracking-wider">{item.desc}</p>
+                                        <p className="font-bold text-white text-sm">{item.label}</p>
+                                        <p className="text-[10px] text-slate-500 font-medium tracking-tight leading-tight">{item.desc}</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={() => onToggle(item.key)}
                                     className={cn(
-                                        "w-14 h-7 rounded-full transition-all relative",
-                                        preferences[item.key] ? 'bg-accent-cyan' : 'bg-white/10'
+                                        "w-12 h-6 rounded-full transition-all relative",
+                                        preferences[item.key] ? 'bg-primary' : 'bg-slate-700'
                                     )}
                                 >
                                     <div className={cn(
-                                        "absolute top-1 left-1 h-5 w-5 bg-white rounded-full transition-all duration-300 shadow-xl",
-                                        preferences[item.key] ? 'translate-x-7' : 'translate-x-0'
+                                        "absolute top-1 left-1 h-4 w-4 bg-white rounded-full transition-all duration-300",
+                                        preferences[item.key] ? 'translate-x-6' : 'translate-x-0'
                                     )} />
                                 </button>
                             </div>
@@ -102,44 +105,45 @@ export default function Settings() {
                     </Card>
                 </div>
 
-                {/* Security Protocols */}
-                <div className="space-y-6">
-                    <h3 className="font-display font-black text-white text-xs tracking-[0.2em] uppercase flex items-center gap-3 ml-4">
-                        <Fingerprint className="w-4 h-4 text-accent-rose" />
-                        SECURITY_PROTOCOLS
+                {/* Privacy & Security */}
+                <div className="space-y-4">
+                    <h3 className="text-xs font-bold text-slate-500 tracking-[0.2em] uppercase flex items-center gap-2 ml-1">
+                        <Fingerprint className="w-4 h-4 text-primary" />
+                        Privacy & Security
                     </h3>
 
-                    <Card className="p-8 border-white/5 bg-white/[0.02] space-y-8">
+                    <Card className="p-8 border-white/5 bg-slate-900/50 space-y-8">
                         <div>
-                            <p className="font-display font-black text-white text-[10px] tracking-widest uppercase mb-2">DOSSIER_VISIBILITY</p>
-                            <p className="text-[10px] text-gray-500 font-display font-bold tracking-wider mb-6">Determines how your dossier appears on public frequency scans.</p>
+                            <p className="text-[10px] font-bold text-slate-500 tracking-widest uppercase mb-2">Profile Visibility</p>
+                            <p className="text-xs text-slate-400 font-medium mb-6">Determines who can see your profile and performance statistics.</p>
                             
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                                 {[
-                                    { id: 'public', label: 'GLOBAL', icon: Globe },
-                                    { id: 'friends', label: 'SQUAD-ONLY', icon: Fingerprint },
-                                    { id: 'private', label: 'DARK_MODE', icon: Lock }
+                                    { id: 'public', label: 'Public', icon: Globe },
+                                    { id: 'friends', label: 'Private', icon: Shield },
+                                    { id: 'private', label: 'Hidden', icon: Lock }
                                 ].map((level) => (
                                     <button
                                         key={level.id}
                                         onClick={() => onVisibility(level.id)}
                                         className={cn(
-                                            "flex flex-col items-center justify-center gap-4 p-6 rounded-2xl border transition-all group",
+                                            "flex flex-col items-center justify-center gap-3 p-6 rounded-2xl border transition-all",
                                             preferences.profileVisibility === level.id 
-                                                ? 'bg-accent-rose/10 border-accent-rose/30 text-accent-rose' 
-                                                : 'bg-white/5 border-white/5 text-gray-500 hover:border-white/20 hover:text-white'
+                                                ? 'bg-primary/10 border-primary text-primary shadow-sm' 
+                                                : 'bg-slate-800/50 border-white/5 text-slate-500 hover:border-white/20 hover:text-white'
                                         )}
                                     >
                                         <level.icon className="w-5 h-5" />
-                                        <span className="font-display font-black text-[9px] tracking-[.3em]">{level.label}</span>
+                                        <span className="text-[10px] font-bold uppercase tracking-widest">{level.label}</span>
                                     </button>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="pt-8 border-t border-white/5">
-                            <Button variant="ghost" className="w-full text-accent-rose border-accent-rose/20 hover:bg-accent-rose/10 uppercase tracking-widest font-black text-[10px] py-4">
-                                INITIALIZE_FACTORY_RESET
+                        <div className="pt-8 border-t border-white/5 space-y-4">
+                            <p className="text-[10px] font-bold text-slate-500 tracking-widest uppercase block">Account Management</p>
+                            <Button variant="ghost" className="w-full text-red-500 border border-red-500/20 hover:bg-red-500/10 uppercase tracking-widest font-bold text-[10px] py-4 rounded-xl">
+                                Reset All Preferences
                             </Button>
                         </div>
                     </Card>

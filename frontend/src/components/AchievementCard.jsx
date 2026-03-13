@@ -3,27 +3,27 @@ import React from 'react';
 const AchievementCard = ({ title, date, icon, unlocked = true }) => {
     return (
         <div className={cn(
-            "glass-panel p-5 relative overflow-hidden transition-all duration-500 group border-white/5",
+            "p-5 relative overflow-hidden transition-all duration-500 group border bg-slate-900/50 rounded-2xl",
             unlocked 
-                ? 'hover:border-accent-cyan/30' 
-                : 'opacity-50 grayscale contrast-75'
+                ? 'border-white/5 hover:border-primary/30' 
+                : 'border-white/5 opacity-50 grayscale'
         )}>
             <div className="flex items-center gap-5">
                 {/* Badge Icon Container */}
                 <div className={cn(
-                    "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 relative transition-transform duration-500 group-hover:scale-110",
+                    "w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 relative transition-transform duration-500 group-hover:scale-105",
                     unlocked 
-                        ? 'bg-gradient-to-br from-primary via-accent-cyan to-accent-violet p-[1px]' 
+                        ? 'bg-gradient-to-br from-primary to-primary/50 p-[1px]' 
                         : 'bg-white/5 border border-white/10'
                 )}>
-                    <div className="w-full h-full rounded-2xl bg-background flex items-center justify-center">
-                        <span className="text-2xl drop-shadow-[0_0_8px_rgba(6,182,212,0.5)]">{icon || '🏆'}</span>
+                    <div className="w-full h-full rounded-2xl bg-slate-900 flex items-center justify-center">
+                        <span className="text-2xl drop-shadow-md">{icon || '🏆'}</span>
                     </div>
 
                     {unlocked && (
                         <>
-                            <div className="absolute inset-0 bg-accent-cyan blur-2xl opacity-20" />
-                            <div className="absolute inset-1 border border-white/20 rounded-2xl" />
+                            <div className="absolute inset-0 bg-primary blur-2xl opacity-10" />
+                            <div className="absolute inset-1 border border-white/10 rounded-2xl" />
                         </>
                     )}
                 </div>
@@ -31,13 +31,13 @@ const AchievementCard = ({ title, date, icon, unlocked = true }) => {
                 {/* Details */}
                 <div className="flex-1 min-w-0">
                     <h4 className={cn(
-                        "font-display font-black text-sm tracking-wider uppercase truncate",
-                        unlocked ? 'text-white' : 'text-gray-500'
+                        "font-bold text-sm tracking-wider uppercase truncate",
+                        unlocked ? 'text-white' : 'text-slate-500'
                     )}>
                         {title}
                     </h4>
-                    <p className="text-[9px] font-display font-bold text-accent-cyan/80 uppercase tracking-[0.2em] mt-1">
-                        {unlocked ? `Unlocked // ${date}` : 'Status // Classified'}
+                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">
+                        {unlocked ? `Unlocked // ${date}` : 'Status // Locked'}
                     </p>
                 </div>
             </div>

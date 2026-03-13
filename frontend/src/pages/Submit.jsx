@@ -31,45 +31,45 @@ export default function Submit() {
             {/* Header */}
             <div className="text-center space-y-6 max-w-2xl mx-auto">
                 <div className="flex items-center justify-center gap-4">
-                    <div className="h-1px w-10 bg-accent-rose/50" />
-                    <span className="text-[10px] font-black italic text-accent-rose uppercase tracking-[0.5em]">Content_Submission_Node</span>
-                    <div className="h-1px w-10 bg-accent-rose/50" />
+                    <div className="h-px w-10 bg-primary/50" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.5em]">Upload Center</span>
+                    <div className="h-px w-10 bg-primary/50" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
-                    SUBMIT <span className="text-accent-rose">HIGHLIGHT</span>
+                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter uppercase leading-none">
+                    Upload <span className="text-primary">Performance</span>
                 </h1>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
-                    Transmit your mechanical masterclasses to the global syndicate broadcast and earn AXP rewards for elite performance.
+                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto">
+                    Share your performance records with the community and earn Points for verified activity.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-10">
                 {/* Master Upload Zone */}
                 <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-accent-rose/30 via-transparent to-accent-rose/30 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
-                    <Card className="relative p-20 border-2 border-dashed border-white/5 bg-white/[0.01] hover:bg-white/[0.03] hover:border-accent-rose/30 transition-all cursor-pointer flex flex-col items-center justify-center text-center rounded-[4rem] min-h-[400px]">
-                        <div className={cn("absolute inset-x-0 bottom-0 h-1px bg-accent-rose/40 transition-all duration-[3000ms] ease-out", isUploading ? "w-full" : "w-0")} />
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-transparent to-primary/30 blur-2xl opacity-20 group-hover:opacity-40 transition-opacity" />
+                    <Card className="relative p-20 border-2 border-dashed border-white/5 bg-slate-900/50 hover:bg-slate-800 hover:border-primary/30 transition-all cursor-pointer flex flex-col items-center justify-center text-center rounded-[4rem] min-h-[400px]">
+                        <div className={cn("absolute inset-x-0 bottom-0 h-1 bg-primary/40 transition-all duration-[3000ms] ease-out", isUploading ? "w-full" : "w-0")} />
                         
                         <div className="relative z-10 space-y-8 flex flex-col items-center">
                             <div className={cn(
-                                "w-24 h-24 rounded-[2.5rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-inner transition-all duration-700",
-                                isUploading ? "scale-90 animate-pulse border-accent-rose/50" : "group-hover:scale-110 group-hover:rotate-6"
+                                "w-24 h-24 rounded-[2.5rem] bg-slate-800 border border-white/10 flex items-center justify-center shadow-inner transition-all duration-700",
+                                isUploading ? "scale-90 animate-pulse border-primary/50" : "group-hover:scale-110"
                             )}>
-                                {isDone ? <Check className="w-12 h-12 text-accent-green" /> : <Film className={cn("w-12 h-12", isUploading ? "text-accent-rose" : "text-white opacity-40")} />}
+                                {isDone ? <Check className="w-12 h-12 text-green-500" /> : <Film className={cn("w-12 h-12", isUploading ? "text-primary" : "text-slate-400 opacity-40")} />}
                             </div>
                             
                             <div className="space-y-3">
-                                <h4 className="text-2xl font-black text-white italic tracking-tighter uppercase">
-                                    {isUploading ? 'DATA_TRANSMITTING...' : isDone ? 'SIGNAL_LOCKED' : 'ATTACH_MECHANICAL_LOG'}
+                                <h4 className="text-2xl font-bold text-white tracking-tighter uppercase">
+                                    {isUploading ? 'Transferring Data...' : isDone ? 'Upload Complete' : 'Attach Performance File'}
                                 </h4>
-                                <p className="text-[10px] text-gray-600 font-black uppercase tracking-[0.3em] italic">
-                                    MP4_PACKET | MAX_50MB | 1080P_UHD_SPEC
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.3em]">
+                                    MP4 FORMAT | MAX 50MB | 1080P SPEC
                                 </p>
                             </div>
                             
                             {!isUploading && !isDone && (
                                 <div className="pt-6">
-                                    <span className="px-8 py-3 bg-white/5 rounded-full text-[9px] font-black text-white/40 uppercase tracking-widest border border-white/5">SELECT_SOURCE_PACKAGE</span>
+                                    <span className="px-8 py-3 bg-slate-800 rounded-full text-[9px] font-bold text-slate-400 uppercase tracking-widest border border-white/5">Select Media Package</span>
                                 </div>
                             )}
                         </div>
@@ -79,46 +79,46 @@ export default function Submit() {
                 {/* Metadata Module */}
                 <div className="grid grid-cols-1 md:grid-cols-1 gap-8">
                     <div className="flex items-center gap-4 ml-6">
-                        <FileText className="w-4 h-4 text-gray-500" />
-                        <h3 className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">TRANSMISSION_METADATA</h3>
+                        <FileText className="w-4 h-4 text-slate-500" />
+                        <h3 className="text-[10px] font-bold text-slate-500 tracking-[0.4em] uppercase">Metadata Details</h3>
                     </div>
 
-                    <Card className="p-10 md:p-16 border-white/5 bg-white/[0.01] space-y-12">
+                    <Card className="p-10 md:p-16 border-white/5 bg-slate-900/50 space-y-12">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">HIGHLIGHT_SIGNATURE (TITLE)</label>
+                                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.3em] block ml-1">Performance Title</label>
                                 <input
                                     type="text"
-                                    placeholder="ENTER_CATCHY_ID..."
+                                    placeholder="Enter descriptive title..."
                                     required
-                                    className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-sm text-white focus:outline-none focus:border-accent-rose/50 transition-all italic uppercase"
+                                    className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-sm text-white focus:outline-none focus:border-primary/50 transition-all uppercase"
                                 />
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[9px] font-black text-gray-500 uppercase tracking-[0.3em] block ml-1">TACTICAL_CATEGORY</label>
-                                <select className="w-full bg-background border border-white/10 rounded-2xl p-5 font-black text-xs text-white focus:outline-none focus:border-accent-rose/50 transition-all italic uppercase appearance-none">
-                                    <option>CLUTCH_ENGAGEMENT</option>
-                                    <option>PRECISION_HEADSHOT</option>
-                                    <option>MECHANICAL_MOVEMENT</option>
-                                    <option>GUILD_WAR_RECORD</option>
+                                <label className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.3em] block ml-1">Category</label>
+                                <select className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-xs text-white focus:outline-none focus:border-primary/50 transition-all uppercase appearance-none">
+                                    <option>Standard Engagement</option>
+                                    <option>Precision Performance</option>
+                                    <option>Advanced Movement</option>
+                                    <option>Team Competition</option>
                                 </select>
                             </div>
                         </div>
 
                         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 group-hover:opacity-100 transition-opacity">
                              <div className="flex items-center gap-6">
-                                <Globe className="w-6 h-6 text-gray-600" />
+                                <Globe className="w-6 h-6 text-slate-600" />
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest block">BROADCAST_VISIBILITY</span>
-                                    <span className="text-[10px] font-black text-accent-cyan italic uppercase tracking-widest">PUBLIC_SYNDICATE_CHANNEL</span>
+                                    <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest block">Broadcast Visibility</span>
+                                    <span className="text-[10px] font-bold text-primary uppercase tracking-widest">Public Community Channel</span>
                                 </div>
                              </div>
                              <div className="flex items-center gap-6 text-right md:text-left">
-                                <ShieldCheck className="w-6 h-6 text-accent-green" />
+                                <ShieldCheck className="w-6 h-6 text-green-500" />
                                 <div className="space-y-1">
-                                    <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest block">LEGAL_CLEARANCE</span>
-                                    <span className="text-[10px] font-black text-white italic uppercase tracking-widest">VERIFIED_FOR_AIR</span>
+                                    <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest block">Verification Status</span>
+                                    <span className="text-[10px] font-bold text-white uppercase tracking-widest">Certified Record</span>
                                 </div>
                              </div>
                         </div>
@@ -131,12 +131,12 @@ export default function Submit() {
                         type="submit"
                         disabled={isUploading || isDone}
                         className={cn(
-                            "px-20 py-8 rounded-[3rem] text-[12px] font-black uppercase tracking-[0.5em] transition-all relative overflow-hidden group shadow-[0_30px_60px_rgba(244,63,94,0.2)]",
-                            isDone ? "bg-accent-green text-background" : "bg-accent-rose text-white hover:scale-105"
+                            "px-20 py-8 rounded-[3rem] text-[12px] font-bold uppercase tracking-[0.5em] transition-all relative overflow-hidden group shadow-[0_20px_40px_rgba(var(--primary),0.1)]",
+                            isDone ? "bg-green-500 text-slate-950" : "bg-primary text-slate-950 hover:scale-105"
                         )}
                     >
                         <span className="relative z-10 flex items-center gap-6">
-                            {isUploading ? 'INITIATING_UPLINK...' : isDone ? 'DATA_SYNC_COMPLETE' : 'INITIALIZE_TRANSMISSION'}
+                            {isUploading ? 'Initializing Transfer...' : isDone ? 'Upload Successful' : 'Submit Performance'}
                             {!isUploading && !isDone && <Upload className="w-6 h-6 group-hover:-translate-y-2 transition-transform" />}
                             {isDone && <Check className="w-6 h-6" />}
                         </span>
@@ -144,18 +144,18 @@ export default function Submit() {
                     </Button>
                     
                     <div className="flex items-center gap-6 opacity-20">
-                        <Activity className="w-5 h-5 text-gray-500" />
-                        <div className="h-1px w-32 bg-white/10" />
-                        <p className="text-[8px] text-gray-500 font-bold uppercase tracking-[0.5em] italic">SECURE_CONTENT_BIPPASS_v4.2</p>
+                        <Activity className="w-5 h-5 text-slate-500" />
+                        <div className="h-px w-32 bg-white/10" />
+                        <p className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.5em]">Secure Protocol v4.2</p>
                     </div>
                 </div>
             </form>
             
             <div className="flex justify-center">
-                <div className="glass-panel border-white/5 bg-white/[0.01] p-8 flex items-center gap-8 max-w-2xl opacity-40">
-                   <Info className="w-10 h-10 text-accent-rose shrink-0" />
-                   <p className="text-[10px] text-gray-500 font-display font-black uppercase tracking-widest leading-relaxed italic">
-                      TACTICAL_NOTICE: By initiating a transmission, you certify that the content is your own mechanical output. Use of "Aimbot" or "Speed-Hack" nodes will result in immediate terminal termination.
+                <div className="bg-slate-900/50 border border-white/5 p-8 flex items-center gap-8 max-w-2xl opacity-40 rounded-2xl">
+                   <Info className="w-10 h-10 text-primary shrink-0" />
+                   <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">
+                      Notice: By initiating an upload, you certify that the content is your own performance record. Any use of unauthorized software or third-party tools will result in immediate account suspension.
                    </p>
                 </div>
             </div>

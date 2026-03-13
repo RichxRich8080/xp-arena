@@ -1,145 +1,148 @@
 import React from 'react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Activity, Shield, Zap, Globe, Cpu, Sliders, Layout, MousePointer2, Settings, Sparkles, ChevronRight } from 'lucide-react';
+import { Activity, Shield, Zap, Globe, Cpu, Sliders, Layout, MousePointer2, Settings, Sparkles, ChevronRight, Type, Palette, Component, Lock } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 const StylePreview = () => {
     return (
-        <div className="space-y-20 pb-32 animate-slide-in font-display">
+        <div className="space-y-16 pb-32 animate-fade-in font-sans px-4 max-w-6xl mx-auto">
             {/* Header */}
-            <div className="text-center space-y-6 max-w-2xl mx-auto">
+            <div className="text-center space-y-6 max-w-3xl mx-auto">
                 <div className="flex items-center justify-center gap-4">
-                    <div className="h-1px w-10 bg-indigo-500/50" />
-                    <span className="text-[10px] font-black italic text-indigo-400 uppercase tracking-[0.5em]">Design_Protocol_v8.4</span>
-                    <div className="h-1px w-10 bg-indigo-500/50" />
+                    <div className="h-px w-8 bg-primary/30" />
+                    <span className="text-[10px] font-bold text-primary uppercase tracking-[0.3em]">Design Infrastructure</span>
+                    <div className="h-px w-8 bg-primary/30" />
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black italic text-white tracking-tighter uppercase leading-none">
-                    ARENI <span className="text-indigo-400">UI_KIT</span>
+                <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight uppercase leading-none">
+                    Platform <span className="text-primary">Design System</span>
                 </h1>
-                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] leading-relaxed max-w-lg mx-auto italic">
-                    Tactical design tokens and high-fidelity component architectures defining the global Arena aesthetic.
+                <p className="text-xs text-slate-500 font-medium uppercase tracking-widest leading-relaxed max-w-xl mx-auto">
+                    A comprehensive library of design tokens and components engineered for consistency and performance.
                 </p>
             </div>
 
             {/* Typography Section */}
-            <section className="space-y-10">
-                <div className="flex items-center gap-4 ml-4">
-                    <span className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">01_TYPOGRAPHY_PROTOCOL</span>
+            <section className="space-y-8">
+                <div className="flex items-center gap-3 ml-2">
+                    <Type className="w-4 h-4 text-primary" />
+                    <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">01 Typography</h3>
                 </div>
-                <Card className="p-16 border-white/5 bg-white/[0.01] space-y-12 backdrop-blur-3xl overflow-hidden relative">
-                    <div className="absolute top-0 right-0 p-12 opacity-[0.03] font-black text-9xl italic select-none pointer-events-none uppercase text-white">TYPE</div>
+                <Card className="p-10 md:p-16 border-white/5 bg-slate-900 space-y-12 overflow-hidden relative rounded-[3rem] shadow-2xl">
+                    <div className="absolute top-0 right-0 p-10 opacity-[0.02] font-bold text-9xl select-none pointer-events-none uppercase text-white pointer-events-none">TYPE</div>
                     
-                    <div className="space-y-16 relative z-10">
+                    <div className="space-y-12 relative z-10">
                         <div className="space-y-2">
-                            <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic block">DISPLAY_MAIN_CONDENSED</span>
-                            <h2 className="text-6xl md:text-8xl font-black italic text-white tracking-tighter uppercase leading-none">NEURAL_TERMINAL</h2>
+                            <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest block">Display Extra Bold</span>
+                            <h2 className="text-5xl md:text-7xl font-bold text-white tracking-tight uppercase leading-none">Modern Interface</h2>
                         </div>
                         
                         <div className="space-y-2">
-                             <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic block">SUB_HEADER_ACCENT</span>
-                             <h3 className="text-3xl font-black italic text-accent-cyan tracking-widest uppercase">TACTICAL_NODE_IDENTITY</h3>
+                             <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest block">Section Header</span>
+                             <h3 className="text-3xl font-bold text-primary tracking-tight uppercase">High Performance Logic</h3>
                         </div>
 
                         <div className="space-y-4 max-w-2xl">
-                             <span className="text-[9px] font-black text-gray-600 uppercase tracking-widest italic block">BODY_SYSTEM_MONO</span>
-                             <p className="text-[12px] text-gray-400 font-bold uppercase tracking-[0.25em] leading-[2.2] italic">
-                                PRECISE MECHANICAL CALIBRATION THROUGH HARDWARE-ATOMIC LOGIC AND KINEMATIC SIMULATION CYCLES DRIVEN BY USER TELEMETRY.
+                             <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest block">Body Text Mono</span>
+                             <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest leading-[2] border-l-2 border-primary/20 pl-6">
+                                Precise mechanical calibration powered by advanced algorithms and hardware-level performance metrics.
                              </p>
                         </div>
                     </div>
                 </Card>
             </section>
 
-            {/* Neural Colors Section */}
-            <section className="space-y-10">
-                <div className="flex items-center gap-4 ml-4">
-                    <span className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">02_NEURAL_COLOR_TOKENS</span>
+            {/* Colors Section */}
+            <section className="space-y-8">
+                <div className="flex items-center gap-3 ml-2">
+                    <Palette className="w-4 h-4 text-indigo-400" />
+                    <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">02 Color Palette</h3>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     {[
-                        { name: "CYAN_CORE_ACCENT", color: "bg-accent-cyan", hex: "#06B6D4", shadow: "shadow-accent-cyan/20" },
-                        { name: "INDIGO_NODE_LINK", color: "bg-indigo-500", hex: "#6366F1", shadow: "shadow-indigo-500/20" },
-                        { name: "ROSE_ALERT_ALPHA", color: "bg-accent-rose", hex: "#F43F5E", shadow: "shadow-accent-rose/20" },
-                        { name: "GOLD_AXP_ELITE", color: "bg-axp-gold", hex: "#FBBF24", shadow: "shadow-axp-gold/20" }
+                        { name: "Primary Cyan", color: "bg-primary", hex: "#06B6D4" },
+                        { name: "Indigo Modern", color: "bg-indigo-500", hex: "#6366F1" },
+                        { name: "Status Alert", color: "bg-rose-500", hex: "#F43F5E" },
+                        { name: "Elite Gold", color: "bg-amber-500", hex: "#FBBF24" }
                     ].map((token, i) => (
-                        <Card key={i} className="p-8 border-white/5 bg-white/[0.01] flex flex-col items-center group hover:border-white/20 transition-all cursor-crosshair">
-                            <div className={cn("w-20 h-20 rounded-3xl mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform shadow-2xl", token.color, token.shadow)} />
-                            <div className="text-center space-y-2">
-                                <span className="text-[9px] font-black text-white uppercase italic tracking-tighter block">{token.name}</span>
-                                <span className="text-[10px] font-black text-gray-600 uppercase font-mono tracking-widest">{token.hex}</span>
+                        <Card key={i} className="p-6 bg-slate-900 border-white/5 flex flex-col items-center group hover:border-white/10 transition-all rounded-[2rem] shadow-xl">
+                            <div className={cn("w-16 h-16 rounded-2xl mb-6 group-hover:scale-110 transition-transform shadow-lg", token.color)} />
+                            <div className="text-center space-y-1">
+                                <span className="text-[9px] font-bold text-white uppercase tracking-widest block">{token.name}</span>
+                                <span className="text-[10px] font-bold text-slate-600 uppercase tabular-nums">{token.hex}</span>
                             </div>
                         </Card>
                     ))}
                 </div>
             </section>
 
-            {/* HUD Components Section */}
-            <section className="space-y-10">
-                <div className="flex items-center gap-4 ml-4">
-                    <span className="text-[10px] font-black text-gray-500 tracking-[0.4em] uppercase">03_HUD_PRIMITIVES</span>
+            {/* Components Section */}
+            <section className="space-y-8">
+                <div className="flex items-center gap-3 ml-2">
+                    <Component className="w-4 h-4 text-emerald-500" />
+                    <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">03 UI Components</h3>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                    {/* Interactive Button Preview */}
-                    <Card className="p-12 border-white/5 bg-white/[0.01] space-y-10">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Buttons */}
+                    <Card className="p-10 bg-slate-900 border-white/5 space-y-8 rounded-[2.5rem] shadow-xl">
                         <div className="space-y-1">
-                             <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest italic block">INTERACTIVE_ELEMENTS</span>
-                             <h4 className="text-xl font-black italic text-white tracking-tighter uppercase">BUTTON_ARCHITECTURE</h4>
+                             <span className="text-[9px] font-bold text-slate-600 uppercase tracking-widest block">Control Elements</span>
+                             <h4 className="text-lg font-bold text-white tracking-tight uppercase">Action Buttons</h4>
                         </div>
-                        <div className="flex flex-col gap-6">
-                            <Button className="w-full py-8 bg-accent-cyan font-black uppercase italic tracking-[0.5em] text-[10px] shadow-2xl">PRIMARY_UPLINK</Button>
-                            <Button variant="outline" className="w-full py-8 border-accent-cyan/50 text-accent-cyan font-black uppercase italic tracking-[0.5em] text-[10px]">GHOST_NODE_OUTLINE</Button>
-                            <Button variant="ghost" className="w-full py-6 text-gray-600 font-black uppercase italic tracking-[0.4em] text-[9px] hover:text-white transition-colors">DESTRUCTIVE_BYPASS</Button>
+                        <div className="flex flex-col gap-4">
+                            <Button className="w-full h-14 bg-primary text-slate-950 font-bold uppercase tracking-widest text-[9px] shadow-lg rounded-xl">Primary Action</Button>
+                            <Button variant="outline" className="w-full h-14 border-white/10 text-white font-bold uppercase tracking-widest text-[9px] rounded-xl hover:bg-white/5">Outline Variant</Button>
+                            <Button variant="ghost" className="w-full h-12 text-slate-500 font-bold uppercase tracking-widest text-[8px] hover:text-white transition-colors">Ghost System</Button>
                         </div>
                     </Card>
 
-                    {/* Glassmorphic Node Preview */}
-                    <Card className="p-12 border-indigo-500/20 bg-indigo-500/[0.03] space-y-10 relative overflow-hidden group">
-                        <div className="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/10 blur-[80px] rounded-full group-hover:scale-150 transition-transform duration-1000" />
+                    {/* Cards */}
+                    <Card className="p-10 bg-slate-900 border-indigo-500/20 space-y-8 relative overflow-hidden group rounded-[2.5rem] shadow-xl">
+                        <div className="absolute top-0 right-0 p-8 opacity-[0.02] font-bold text-7xl select-none pointer-events-none uppercase text-white pointer-events-none">CARD</div>
                         <div className="space-y-4 relative z-10">
-                             <div className="flex items-center gap-3">
-                                <Settings className="w-4 h-4 text-indigo-400 animate-spin-slow" />
-                                <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.5em] italic">DYNAMICS_SYNERGY</span>
+                             <div className="flex items-center gap-2.5">
+                                <Settings className="w-4 h-4 text-indigo-400" />
+                                <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Interactive State</span>
                              </div>
-                             <h4 className="text-2xl font-black italic text-white tracking-tighter uppercase">GLASS_BYPASS_HUD_v2</h4>
-                             <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest leading-loose italic max-w-xs">
-                                MULTI-LAYERED_GLASS_PRIMITIVES_WITH_BACKDROP_ADAPTIVE_DENSITY.
+                             <h4 className="text-2xl font-bold text-white tracking-tight uppercase">Glass Container</h4>
+                             <p className="text-[10px] text-slate-500 font-medium uppercase tracking-widest leading-relaxed max-w-xs">
+                                Refined surfaces with subtle depth and adaptive backdrop effects.
                              </p>
                         </div>
-                        <div className="pt-6 relative z-10">
+                        <div className="pt-4 relative z-10">
                             <div className="flex items-center gap-6">
-                                <div className="h-2 w-full bg-background rounded-full overflow-hidden p-0.5 border border-white/5">
-                                    <div className="h-full w-2/3 bg-indigo-500 rounded-full shadow-[0_0_15px_rgba(99,102,241,0.5)]" />
+                                <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden border border-white/5">
+                                    <div className="h-full w-2/3 bg-indigo-500 rounded-full shadow-lg" />
                                 </div>
-                                <span className="text-[11px] font-black text-white italic tracking-tighter">66%</span>
+                                <span className="text-[10px] font-bold text-white tabular-nums">66%</span>
                             </div>
                         </div>
                     </Card>
                 </div>
             </section>
 
-            {/* Footer Specifications */}
-            <section className="pt-20 border-t border-white/5">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-12 opacity-30 grayscale hover:opacity-100 hover:grayscale-0 transition-all duration-1000">
-                    <div className="flex items-center gap-10">
-                        <Shield className="w-8 h-8 text-indigo-400" />
+            {/* Footer */}
+            <section className="pt-16 border-t border-white/5">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 grayscale hover:opacity-100 transition-all duration-700">
+                    <div className="flex items-center gap-8">
+                        <Lock className="w-7 h-7 text-slate-500" />
                         <div className="space-y-1">
-                            <span className="text-[8px] font-black text-gray-600 uppercase tracking-widest block">SECURITY_CLEARANCE</span>
-                            <span className="text-[10px] font-black text-white italic uppercase tracking-widest">ENCRYPTED_DESIGN_LINK</span>
+                            <span className="text-[8px] font-bold text-slate-600 uppercase tracking-widest block">System Integrity</span>
+                            <span className="text-[9px] font-bold text-white uppercase tracking-widest">Secure Design Assets</span>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-12">
+                    <div className="flex items-center gap-10">
                          {[Globe, Cpu, Zap, Activity].map((Icon, i) => (
-                            <Icon key={i} className="w-6 h-6 text-gray-700 hover:text-white transition-colors cursor-help" />
+                            <Icon key={i} className="w-5 h-5 text-slate-500 hover:text-white transition-colors cursor-help" />
                          ))}
                     </div>
                 </div>
                 
-                <div className="text-center pt-16">
-                     <p className="text-[8px] text-gray-800 font-black uppercase tracking-[0.8em] italic">
-                        ARENI_SYNDICATE_IDENTITY_GUIDELINES_STABLE_v8.4.2
+                <div className="text-center pt-12">
+                     <p className="text-[8px] text-slate-700 font-bold uppercase tracking-[0.6em]">
+                        Design System Guidelines v4.0.2
                      </p>
                 </div>
             </section>

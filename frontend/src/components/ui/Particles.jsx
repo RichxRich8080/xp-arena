@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
  * Sparkles component.
  * Uses useEffect to generate random data to ensure the render function remains pure.
  */
-export const Sparkles = ({ count = 20, color = "bg-neon-cyan" }) => {
+export const Sparkles = ({ count = 20, color = "bg-primary" }) => {
     const [particles, setParticles] = useState([]);
 
     useEffect(() => {
@@ -53,7 +53,7 @@ export const Burst = ({ active }) => {
             {[...Array(12)].map((_, i) => (
                 <div
                     key={i}
-                    className="absolute top-1/2 left-1/2 w-1 h-32 bg-gradient-to-t from-transparent via-neon-cyan/40 to-transparent -translate-x-1/2 -translate-y-1/2 opacity-0 animate-ping"
+                    className="absolute top-1/2 left-1/2 w-1 h-32 bg-gradient-to-t from-transparent via-primary/40 to-transparent -translate-x-1/2 -translate-y-1/2 opacity-0 animate-ping"
                     style={{
                         transform: `translate(-50%, -50%) rotate(${i * 30}deg)`,
                         animationDelay: `${i * 0.05}s`,
