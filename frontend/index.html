@@ -3,13 +3,93 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>XP Arena | Pro Sensitivity Tools</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0a0a0f" />
+    <meta name="description" content="XP Arena - The ultimate mobile gaming platform. AI-powered sensitivity calibration, competitive tournaments, guilds, and rewards for mobile gamers." />
+    <meta name="keywords" content="mobile gaming, sensitivity settings, gaming tournaments, esports, gaming community, XP Arena" />
+    <meta name="author" content="XP Arena" />
+    
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="XP Arena | Elite Mobile Gaming Platform" />
+    <meta property="og:description" content="AI-powered sensitivity calibration, competitive tournaments, guilds, and rewards. Level up your mobile gaming." />
+    <meta property="og:image" content="/og-image.png" />
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XP Arena | Elite Mobile Gaming Platform" />
+    <meta name="twitter:description" content="AI-powered sensitivity calibration, competitive tournaments, guilds, and rewards." />
+    
+    <!-- PWA -->
     <link rel="manifest" href="/manifest.json" />
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <title>XP Arena | Elite Mobile Gaming Platform</title>
+    
+    <style>
+      /* Critical CSS for faster initial paint */
+      body {
+        margin: 0;
+        background-color: #0a0a0f;
+        color: #fafafa;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      
+      #root {
+        min-height: 100vh;
+      }
+      
+      /* Loading spinner */
+      .app-loader {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(180deg, #050507 0%, #0a0a0f 50%, #0f0f17 100%);
+        z-index: 9999;
+      }
+      
+      .loader-content {
+        text-align: center;
+      }
+      
+      .loader-spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(0, 180, 216, 0.1);
+        border-top-color: #00b4d8;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin: 0 auto 16px;
+      }
+      
+      .loader-text {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        background: linear-gradient(90deg, #00b4d8, #00f5ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-loader">
+        <div class="loader-content">
+          <div class="loader-spinner"></div>
+          <div class="loader-text">XP Arena</div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
