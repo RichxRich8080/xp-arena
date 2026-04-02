@@ -1,6 +1,6 @@
 import React from 'react';
 
-const GameCard = ({ title, description, image, glowColor = 'indigo' }) => {
+const GameCard = ({ title, description, image }) => {
     return (
         <div className="border border-white/5 bg-slate-900/50 rounded-2xl flex flex-col items-center justify-between text-center overflow-hidden h-80 hover:border-primary/20 group relative transition-colors">
             {/* Background Image / Gradient */}

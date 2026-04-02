@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AuthContext } from './contexts';
-import { authService } from '../services/api';
+import { authService, userService } from '../services/api';
 
 const rankFromPoints = (points = 0) => {
     if (points >= 5000) return 'Elite';

@@ -8,7 +8,7 @@ import { cn } from '../utils/cn';
 
 import { mysteryService } from '../services/api';
 
-const RewardTier = ({ name, rate, color, rewards, icon: Icon }) => (
+const RewardTier = ({ name, rate, color, rewards, icon }) => (
     <div className={cn("card-gaming p-6 relative overflow-hidden group", color)}>
         <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -16,10 +16,12 @@ const RewardTier = ({ name, rate, color, rewards, icon: Icon }) => (
                     name === 'Legendary' ? "bg-amber-500/20" : 
                     name === 'Epic' ? "bg-purple-500/20" : "bg-slate-500/20"
                 )}>
-                    <Icon className={cn("w-5 h-5",
-                        name === 'Legendary' ? "text-amber-500" : 
-                        name === 'Epic' ? "text-purple-400" : "text-slate-400"
-                    )} />
+                    {React.createElement(icon, {
+                        className: cn("w-5 h-5",
+                            name === 'Legendary' ? "text-amber-500" :
+                            name === 'Epic' ? "text-purple-400" : "text-slate-400"
+                        )
+                    })}
                 </div>
                 <div>
                     <h3 className="font-display font-bold text-white">{name}</h3>

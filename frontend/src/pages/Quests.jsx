@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { Target, Zap, Shield, Trophy, Activity, ChevronRight, Lock, CheckCircle2, Star, Globe, TrendingUp, LayoutGrid, Clock, Gift, Flame, Crown, Sparkles, Calendar } from 'lucide-react';
 import { Card } from '../components/ui/Card';

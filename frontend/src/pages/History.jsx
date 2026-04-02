@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getSetups, deleteSetup } from '../utils/storage';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { Clock, Trash2, Smartphone, Target, ChevronRight, Zap, Database, Search, ArrowUpRight, ShieldCheck, History as HistoryIcon, Sliders } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { Clock, Trash2, Smartphone, Target, Database, Search, ArrowUpRight, History as HistoryIcon } from 'lucide-react';
 
 export default function History() {
     const navigate = useNavigate();
@@ -54,7 +53,7 @@ export default function History() {
             {/* History List */}
             <div className="space-y-4">
                 {setups.length > 0 ? (
-                    setups.map((setup, index) => {
+                    setups.map((setup) => {
                         const setupId = setup.id.split('-')[1]?.slice(-4) || 'NULL';
                         
                         return (

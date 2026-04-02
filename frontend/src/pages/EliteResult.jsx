@@ -3,7 +3,6 @@ import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { analyzeDifference, calculateEliteSensitivities, getRecoilTips } from '../utils/sensLogic';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import {
     Download, ArrowLeft, Zap, Target, Cpu, Wifi,
@@ -36,7 +35,6 @@ const EliteDiagnosticCard = ({ label, value, description, color }) => (
 export default function EliteResult() {
     const location = useLocation();
     const navigate = useNavigate();
-    const { user, addAXP } = useAuth();
     const { addNotification } = useNotifications();
     const [isRevealed, setIsRevealed] = useState(false);
     const [isSaved, setIsSaved] = useState(false);

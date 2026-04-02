@@ -1,29 +1,38 @@
 import React, { useState } from 'react';
-import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
 import { Upload, Film, FileText, Globe, ShieldCheck, Activity, Info, ChevronRight, Check } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
+import { userService } from '../services/api';
 
 export default function Submit() {
-    const { user } = useAuth();
     const { addNotification } = useNotifications();
     const navigate = useNavigate();
     const [isUploading, setIsUploading] = useState(false);
     const [isDone, setIsDone] = useState(false);
+    const [title, setTitle] = useState('');
+    const [device, setDevice] = useState('Standard Engagement');
+    const [clipUrl, setClipUrl] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setIsUploading(true);
-
-        setTimeout(() => {
+        try {
+            await userService.submitClip({
+                title,
+                device,
+                url: clipUrl || 'https://example.com/clip'
+            });
             setIsUploading(false);
             setIsDone(true);
-            addNotification('Transmission Successful', 'High-fidelity highlight synced to global broadcast node.', 'success');
+            addNotification('Transmission Successful', 'Your clip has been saved to your profile activity.', 'success');
             setTimeout(() => navigate('/dashboard'), 2000);
-        }, 3000);
+        } catch (error) {
+            setIsUploading(false);
+            addNotification('Upload failed', error.message || 'Could not save clip.', 'error');
+        }
     };
 
     return (
@@ -91,19 +100,32 @@ export default function Submit() {
                                     type="text"
                                     placeholder="Enter descriptive title..."
                                     required
+                                    value={title}
+                                    onChange={(e) => setTitle(e.target.value)}
                                     className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-sm text-white focus:outline-none focus:border-primary/50 transition-all uppercase"
                                 />
                             </div>
 
                             <div className="space-y-3">
                                 <label className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.3em] block ml-1">Category</label>
-                                <select className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-xs text-white focus:outline-none focus:border-primary/50 transition-all uppercase appearance-none">
+                                <select value={device} onChange={(e) => setDevice(e.target.value)} className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-xs text-white focus:outline-none focus:border-primary/50 transition-all uppercase appearance-none">
                                     <option>Standard Engagement</option>
                                     <option>Precision Performance</option>
                                     <option>Advanced Movement</option>
                                     <option>Team Competition</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div className="space-y-3">
+                            <label className="text-[9px] font-bold text-slate-500 uppercase tracking-[0.3em] block ml-1">Clip URL (Optional)</label>
+                            <input
+                                type="url"
+                                value={clipUrl}
+                                onChange={(e) => setClipUrl(e.target.value)}
+                                placeholder="https://..."
+                                className="w-full bg-slate-950 border border-white/10 rounded-2xl p-5 font-bold text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
+                            />
                         </div>
 
                         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-10 opacity-30 group-hover:opacity-100 transition-opacity">

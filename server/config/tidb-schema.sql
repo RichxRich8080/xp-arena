@@ -46,6 +46,15 @@ CREATE TABLE IF NOT EXISTS axp_history (
     UNIQUE KEY user_date_uniq (user_id, date),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS weekly_bonus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    week_start DATE NOT NULL,
+    awarded TINYINT(1) NOT NULL DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uniq_user_week (user_id, week_start),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 CREATE TABLE IF NOT EXISTS economy_events (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NULL,

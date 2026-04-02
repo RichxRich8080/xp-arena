@@ -155,6 +155,7 @@ router.post('/daily-login', authenticateToken, rewardClaimLimiter, async (req, r
         const monday = new Date(d);
         monday.setDate(d.getDate() + diffToMonday);
         const weekStart = `${monday.getFullYear()}-${monday.getMonth() + 1}-${monday.getDate()}`;
+        const wb = await db.get('SELECT id FROM weekly_bonus WHERE user_id = ? AND week_start = ? AND awarded = 1', [req.user.id, weekStart]);
         if (!wb && streak >= 7) {
             const weekBonus = total; // 2× today by adding +total again
             await db.run('UPDATE users SET axp = axp + ? WHERE id = ?', [weekBonus, req.user.id]);
@@ -452,7 +453,7 @@ router.post('/easter-egg', authenticateToken, rewardClaimLimiter, async (req, re
 
         await db.run('INSERT INTO user_achievements (user_id, achievement_id) VALUES (?, ?)', [req.user.id, achievementId]);
         await db.run('UPDATE users SET axp = axp + 500 WHERE id = ?', [req.user.id]);
-        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Secret Server Hack Exploited (+500 AXP)']);
+        await db.run('INSERT INTO activity (user_id, text) VALUES (?, ?)', [req.user.id, 'Hidden protocol reward claimed (+500 AXP)']);
 
         res.json({ success: true, axp: 500 });
     } catch (err) {

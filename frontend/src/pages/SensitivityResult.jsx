@@ -51,7 +51,7 @@ export default function SensitivityResult() {
         });
     }, [formData]);
 
-    const [shareCode, setShareCode] = useState('');
+    const [shareCode] = useState(() => `RES-${Math.floor(Math.random() * 90000) + 10000}`);
     const [isCopied, setIsCopied] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [isRevealed, setIsRevealed] = useState(false);
@@ -73,7 +73,6 @@ export default function SensitivityResult() {
 
     useEffect(() => {
         const timer = setTimeout(() => setIsRevealed(true), 100);
-        setShareCode(`RES-${Math.floor(Math.random() * 90000) + 10000}`);
         return () => clearTimeout(timer);
     }, []);
 

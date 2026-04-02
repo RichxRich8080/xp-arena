@@ -93,7 +93,7 @@ router.post('/register', authLimiter, validateRequest([
     }
 });
 
-// Verify Email — any code is accepted (verification is effectively disabled)
+// Verify Email using matching verification token and expiry
 router.post('/verify-email', strictLimiter, validateRequest([{ field: 'username', required: true }, { field: 'code', required: true }]), async (req, res) => {
     const { username, code } = req.body;
 

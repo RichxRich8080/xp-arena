@@ -110,7 +110,8 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok' });
+    const status = dbReady ? 'ok' : 'degraded';
+    res.status(dbReady ? 200 : 503).json({ status, checks: { database: dbReady ? 'ok' : 'down' } });
 });
 
 app.get('/api/ready', (req, res) => {
@@ -161,6 +162,10 @@ async function refreshDatabaseReadiness() {
 
 if (require.main === module) {
     (async () => {
+        if (process.env.NODE_ENV !== 'test' && !process.env.JWT_SECRET) {
+            console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Refusing to boot to avoid invalid auth state.');
+            process.exit(1);
+        }
         await refreshDatabaseReadiness();
         if (process.env.REQUIRE_DB_ON_BOOT === 'true' && !dbReady) {
             console.error('[Startup] REQUIRE_DB_ON_BOOT=true and database is unreachable. Exiting.');

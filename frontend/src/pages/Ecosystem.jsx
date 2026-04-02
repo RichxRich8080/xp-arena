@@ -3,7 +3,7 @@ import { Globe, Cpu, Zap, Activity, ShieldCheck, Database, Network, ChevronRight
 import { Card } from '../components/ui/Card';
 import { cn } from '../utils/cn';
 
-const NodeItem = ({ id, title, icon: Icon, desc, color }) => (
+const NodeItem = ({ id, title, icon, desc, color }) => (
     <Card className="group relative overflow-hidden bg-slate-900 border-white/5 p-8 md:p-10 transition-all duration-500 hover:border-primary/30 rounded-[2.5rem] shadow-2xl">
         <div className={cn("absolute -top-12 -right-12 w-48 h-48 blur-[100px] opacity-10 group-hover:opacity-20 transition-opacity rounded-full", color.replace('text-', 'bg-'))} />
         
@@ -13,7 +13,7 @@ const NodeItem = ({ id, title, icon: Icon, desc, color }) => (
                 color.replace('text-', 'bg-') + "/10",
                 color.replace('text-', 'border-') + "/20"
             )}>
-                <Icon className={cn("w-8 h-8", color)} />
+                {React.createElement(icon, { className: cn("w-8 h-8", color) })}
             </div>
             <div className="flex-1 space-y-3">
                 <div className="flex items-center justify-center md:justify-start gap-4">

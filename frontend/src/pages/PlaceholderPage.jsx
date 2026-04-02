@@ -1,9 +1,8 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Hammer, ArrowLeft, Construction, Activity, Cpu, ShieldAlert, ChevronRight, Zap } from 'lucide-react';
+import { Hammer, ArrowLeft, Activity, Cpu, Zap } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
-import { cn } from '../utils/cn';
 
 const PlaceholderPage = () => {
     const navigate = useNavigate();

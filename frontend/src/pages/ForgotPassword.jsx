@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShieldAlert, Mail, ArrowLeft, Activity, Radio, ChevronRight, Lock, Check, Send } from 'lucide-react';
+import { ShieldAlert, Mail, ArrowLeft, ChevronRight, Lock, Check, Send } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { cn } from '../utils/cn';
+import { authService } from '../services/api';
+import { useNotifications } from '../hooks/useNotifications';
 
 const ForgotPassword = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [sent, setSent] = useState(false);
+    const [email, setEmail] = useState('');
+    const { addNotification } = useNotifications();
 
-    const handleRecover = (e) => {
+    const handleRecover = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
+        try {
+            await authService.forgotPassword(email);
             setSent(true);
-        }, 1500);
+            addNotification('Recovery initiated', 'Check your inbox for a reset code.', 'success');
+        } catch (error) {
+            addNotification('Recovery failed', error.message || 'Unable to process recovery request.', 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -74,6 +82,8 @@ const ForgotPassword = () => {
                                         type="email"
                                         placeholder="Enter your email"
                                         required
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="w-full bg-slate-800/50 border border-white/10 rounded-2xl pl-14 pr-6 py-5 text-sm text-white focus:outline-none focus:border-primary transition-all font-medium"
                                     />
                                 </div>

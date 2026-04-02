@@ -90,6 +90,14 @@ export const authService = {
         } catch (error) {
             throw new Error(parseApiError(error, 'Session expired'));
         }
+    },
+
+    async forgotPassword(email) {
+        try {
+            return await api.post('/auth/forgot-password', { email });
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to start password recovery'));
+        }
     }
 };
 
@@ -159,6 +167,14 @@ export const userService = {
         } catch (error) {
             console.warn('Profile sync failed:', error);
             return null;
+        }
+    },
+
+    async submitClip(payload) {
+        try {
+            return await api.post('/user/clip', payload);
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to submit clip'));
         }
     }
 };
