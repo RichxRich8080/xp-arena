@@ -96,7 +96,8 @@ export default function App() {
           
           {/* Progression & Social */}
           <Route path="/history" element={<PrivateRoute><History /></PrivateRoute>} />
-          <Route path="/clans" element={<PrivateRoute><Guilds /></PrivateRoute>} />
+          <Route path="/guilds" element={<PrivateRoute><Guilds /></PrivateRoute>} />
+          <Route path="/clans" element={<Navigate to="/guilds" replace />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/quests" element={<PrivateRoute><Quests /></PrivateRoute>} />
           <Route path="/daily-login" element={<PrivateRoute><DailyLogin /></PrivateRoute>} />

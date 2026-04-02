@@ -1,6 +1,6 @@
-import React, { createContext, useRef, useCallback } from 'react';
-
-export const AudioContext = createContext(null);
+import React, { useRef, useCallback } from 'react';
+import { AudioContext } from './contexts';
+export { AudioContext };
 
 export function AudioProvider({ children }) {
     const audioCtx = useRef(null);

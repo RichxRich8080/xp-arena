@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { Send, Activity, ShieldCheck, Mail, MessageSquare, ChevronRight, Globe, Info, Clock, User } from 'lucide-react';
+import { Send, ShieldCheck, Mail, MessageSquare, Globe, Info, Clock, User } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
-import { cn } from '../utils/cn';
 
 const Contact = () => {
     const { user } = useAuth();

@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '../utils/cn';
 
 const AchievementCard = ({ title, date, icon, unlocked = true }) => {
     return (

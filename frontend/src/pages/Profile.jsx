@@ -36,6 +36,7 @@ export default function Profile() {
     const [isEditing, setIsEditing] = useState(false);
     const [copied, setCopied] = useState(false);
     const [profileForm, setProfileForm] = useState({ username: '', avatar: '', likes: 0, wins: 0 });
+    const avatarOptions = ['👤', '😎', '🎯', '🔥', '👑', '🛡️', '⚡', '🎮', '🤖', '🦅'];
 
     useEffect(() => {
         let mounted = true;
@@ -248,6 +249,25 @@ export default function Profile() {
                                 onChange={(e) => setProfileForm({ ...profileForm, avatar: e.target.value })} 
                                 placeholder="https://..." 
                             />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-slate-400">Quick Avatar Icons</label>
+                        <div className="flex flex-wrap gap-2">
+                            {avatarOptions.map((option) => (
+                                <button
+                                    key={option}
+                                    type="button"
+                                    onClick={() => setProfileForm({ ...profileForm, avatar: option })}
+                                    className={cn(
+                                        "w-10 h-10 rounded-xl border border-white/[0.08] bg-surface-low hover:border-primary/40 transition-colors text-lg",
+                                        profileForm.avatar === option && "border-primary bg-primary/10"
+                                    )}
+                                >
+                                    {option}
+                                </button>
+                            ))}
                         </div>
                     </div>
                     

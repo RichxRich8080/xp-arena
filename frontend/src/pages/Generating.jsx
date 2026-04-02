@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Cpu, ShieldCheck, Zap, Activity, Fingerprint, Database, Network, Loader2, Lock } from 'lucide-react';
-import { cn } from '../utils/cn';
+import { Cpu, ShieldCheck, Zap, Loader2 } from 'lucide-react';
 
 export default function Generating() {
     const navigate = useNavigate();

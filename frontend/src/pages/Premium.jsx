@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Target, Shield, Zap, Award, Check, ChevronRight, Star, Gem, CreditCard, Activity, Cpu, ArrowRight, Lock, Crown, Sparkles, Users, Trophy, Gift, Flame, Infinity } from 'lucide-react';
+import { Target, Shield, Zap, Award, Check, ChevronRight, Star, Gem, CreditCard, Activity, Cpu, ArrowRight, Lock, Crown, Sparkles, Users, Trophy, Gift, Flame, Infinity as InfinityIcon } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
 
-const PlanCard = ({ name, price, period, features, highlighted, icon: Icon, color, onSelect }) => (
+const PlanCard = ({ name, price, period, features, highlighted, icon, onSelect }) => (
     <div className={cn(
         "card-gaming p-8 relative overflow-hidden group",
         highlighted && "border-amber-500/30 shadow-[0_0_60px_rgba(245,158,11,0.1)]"
@@ -26,7 +26,7 @@ const PlanCard = ({ name, price, period, features, highlighted, icon: Icon, colo
             "w-16 h-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110",
             highlighted ? "bg-gradient-to-br from-amber-500 to-orange-500 shadow-glow-amber" : "bg-surface-elevated border border-white/[0.06]"
         )}>
-            <Icon className={cn("w-8 h-8", highlighted ? "text-background" : "text-slate-400")} />
+            {React.createElement(icon, { className: cn("w-8 h-8", highlighted ? "text-background" : "text-slate-400") })}
         </div>
         
         {/* Plan Info */}
@@ -118,7 +118,7 @@ const Premium = () => {
     const proFeatures = [
         { icon: Sparkles, title: "AI Sensitivity Engine", desc: "Advanced algorithms for perfect aim calibration" },
         { icon: Zap, title: "20% XP Boost", desc: "Level up faster with permanent XP bonus" },
-        { icon: Infinity, title: "Unlimited Presets", desc: "Save and share unlimited configurations" },
+        { icon: InfinityIcon, title: "Unlimited Presets", desc: "Save and share unlimited configurations" },
         { icon: Trophy, title: "Tournament Priority", desc: "Early access to exclusive tournaments" },
         { icon: Gift, title: "Monthly Rewards", desc: "Exclusive mystery boxes every month" },
         { icon: Flame, title: "Premium Badge", desc: "Stand out with exclusive profile flair" },

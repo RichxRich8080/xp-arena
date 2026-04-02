@@ -109,7 +109,7 @@ export default function SubmitSetup() {
 
             addPoints(50);
             addNotification('Setup Posted', `Your configuration is live: ${code}`, 'success');
-        } catch (error) {
+        } catch {
             addNotification('Submission Failed', 'Connection unstable. Please try again.', 'error');
         } finally {
             setIsSubmitting(false);

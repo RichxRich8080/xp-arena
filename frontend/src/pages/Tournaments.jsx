@@ -81,7 +81,7 @@ const MatchCard = ({ p1, p2, time, status = "UPCOMING", score1 = "0", score2 = "
     </div>
 );
 
-const TournamentCard = ({ name, prize, participants, startDate, status, image }) => (
+const TournamentCard = ({ name, prize, participants, startDate, status }) => (
     <div className="card-gaming overflow-hidden group cursor-pointer">
         {/* Header Image */}
         <div className="relative h-32 bg-gradient-to-br from-primary/20 to-accent-cyan/10 overflow-hidden">
