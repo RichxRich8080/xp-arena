@@ -5,19 +5,25 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Search, Tablet, Cpu, Zap, Activity, ChevronRight, Laptop, MousePointer2, Settings, Sparkles, SlidersHorizontal, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { cn } from '../utils/cn';
+import { calculateSensitivities } from '../utils/sensLogic';
+import { setupService } from '../services/api';
+import { useAuth } from '../hooks/useAuth';
 
 export default function Tool() {
     const navigate = useNavigate();
+    const { isAuthenticated } = useAuth();
     const [step, setStep] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [selectedDevice, setSelectedDevice] = useState(null);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     // Hardware & Style State
     const [hardware, setHardware] = useState({
         ram: '8GB',
-        hand: 'Normal',
-        style: 'Fast'
+        hand: 'Normal Grip',
+        style: 'Balanced',
+        screenSize: 6.1
     });
 
     useEffect(() => {
@@ -27,8 +33,8 @@ export default function Tool() {
 
     const filteredDevices = useMemo(() => {
         if (!debouncedSearch) return [];
-        return devicesData.devices
-            .filter(d => `${d.brand} ${d.model}`.toLowerCase().includes(debouncedSearch.toLowerCase()))
+        return devicesData
+            .filter(d => `${d.brand} ${d.name}`.toLowerCase().includes(debouncedSearch.toLowerCase()))
             .slice(0, 8);
     }, [debouncedSearch]);
 
@@ -37,16 +43,61 @@ export default function Tool() {
         setStep(2);
     };
 
-    const calculateSens = () => {
-        // Mock results
-        const results = {
-            general: 90,
-            redDot: 100,
-            scope2x: 82,
-            scope4x: 75,
-            sniper: 32
+    const calculateSens = async () => {
+        setIsGenerating(true);
+        
+        // Map hardware to sensLogic parameters
+        const tier = selectedDevice.score > 90 ? "Flagship" : 
+                     selectedDevice.score > 80 ? "High-end" : 
+                     selectedDevice.score > 70 ? "Mid-range" : "Low-end";
+        
+        const playStyle = hardware.style === 'High Speed' ? 'Rusher' : 
+                          hardware.style === 'Precision' ? 'Sniper' : 'Aggressive';
+        
+        const handType = hardware.hand === 'Steady Grip' ? 'Four Fingers' : 
+                         hardware.hand === 'Pro Sleeve' ? 'Three Fingers' : 'Two Fingers';
+
+        const results = calculateSensitivities({
+            tier,
+            playStyle,
+            handType,
+            screenSize: hardware.screenSize
+        });
+
+        const calculationResults = {
+            general: results.general,
+            reddot: results.redDot,
+            scope2x: results.scope2x,
+            scope4x: results.scope4x,
+            scope8x: results.awmScope, // mapping awmScope to scope8x
+            freeLook: results.freeLook
         };
-        navigate('/result', { state: { calculation: results, device: selectedDevice, hardware } });
+
+        if (isAuthenticated) {
+            try {
+                await setupService.submitSetup({
+                    mode: 'auto',
+                    ...calculationResults,
+                    comment: `Auto-generated for ${selectedDevice.brand} ${selectedDevice.name} (${tier} tier, ${playStyle} style).`,
+                    is_private: false,
+                    screen_size: hardware.screenSize
+                });
+            } catch (err) {
+                console.error('Failed to save setup:', err);
+            }
+        }
+
+        setTimeout(() => {
+            navigate('/result', { 
+                state: { 
+                    calculation: calculationResults, 
+                    device: selectedDevice, 
+                    hardware,
+                    tier 
+                } 
+            });
+            setIsGenerating(false);
+        }, 1500);
     };
 
     return (
@@ -153,7 +204,7 @@ export default function Tool() {
                                     <h3 className="text-[10px] font-bold text-slate-500 tracking-widest uppercase">Hardware Configuration</h3>
                                 </div>
                                 <div className="text-2xl font-bold text-white uppercase tracking-tight">
-                                    {selectedDevice?.brand} <span className="text-primary">{selectedDevice?.model}</span> Selected
+                                    {selectedDevice?.brand} <span className="text-primary">{selectedDevice?.name}</span> Selected
                                 </div>
                             </div>
                             <button 
@@ -186,6 +237,29 @@ export default function Tool() {
                                             {val}
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+
+                            {/* SCREEN SIZE */}
+                            <div className="space-y-5">
+                                <div className="flex items-center gap-4 justify-between px-1">
+                                    <label className="text-[9px] font-bold text-accent-cyan uppercase tracking-widest">Screen Size (PPI Adjust)</label>
+                                    <span className="text-[8px] font-bold text-white uppercase tracking-widest">{hardware.screenSize}" Diagonal</span>
+                                </div>
+                                <input 
+                                    type="range" 
+                                    min="4" 
+                                    max="13" 
+                                    step="0.1" 
+                                    value={hardware.screenSize} 
+                                    onChange={(e) => setHardware({...hardware, screenSize: parseFloat(e.target.value)})}
+                                    className="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary"
+                                />
+                                <div className="flex justify-between text-[8px] font-bold text-slate-600 uppercase tracking-widest px-1">
+                                    <span>Compact</span>
+                                    <span>Standard Phone</span>
+                                    <span>Pro Max</span>
+                                    <span>Tablet</span>
                                 </div>
                             </div>
 
@@ -240,11 +314,15 @@ export default function Tool() {
 
                             <Button
                                 onClick={calculateSens}
-                                className="w-full h-20 bg-primary hover:bg-white text-slate-950 font-bold uppercase tracking-[0.3em] text-[10px] shadow-2xl transition-all group/run relative overflow-hidden rounded-2xl"
+                                disabled={isGenerating}
+                                className={cn(
+                                    "w-full h-20 bg-primary hover:bg-white text-slate-950 font-bold uppercase tracking-[0.3em] text-[10px] shadow-2xl transition-all group/run relative overflow-hidden rounded-2xl",
+                                    isGenerating && "opacity-80 cursor-wait"
+                                )}
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-4">
-                                    Generate Calibration
-                                    <Sparkles className="w-5 h-5 group-hover/run:scale-110 transition-transform" />
+                                    {isGenerating ? 'Running Neural Sync...' : 'Generate Calibration'}
+                                    <Sparkles className={cn("w-5 h-5 transition-transform", isGenerating ? "animate-spin" : "group-hover/run:scale-110")} />
                                 </span>
                                 <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover/run:translate-x-0 transition-transform duration-700" />
                             </Button>

@@ -90,6 +90,7 @@ const pushRoutes = require('./routes/pushRoutes');
 const shopRoutes = require('./routes/shopRoutes');
 const seasonRoutes = require('./routes/seasonRoutes');
 const mysteryRoutes = require('./routes/mysteryRoutes');
+const { router: questRoutes } = require('./routes/questRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
@@ -103,6 +104,7 @@ app.use('/api/push', pushRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/seasons', seasonRoutes);
 app.use('/api/mystery', mysteryRoutes);
+app.use('/api/quests', questRoutes);
 
 app.get('/health', (req, res) => {
     const status = dbReady ? 'ok' : 'degraded';

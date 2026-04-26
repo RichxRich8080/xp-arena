@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { Shield, Users, Trophy, Zap, Activity, Plus, ChevronRight, MessageSquare, Target, RefreshCw, UserPlus, Clock, Crown, Star, Flame, Globe, TrendingUp, Settings, Copy, Check, Search } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Shield, Users, Trophy, Zap, Activity, Plus, ChevronRight, MessageSquare, Target, RefreshCw, UserPlus, Clock, Crown, Star, Flame, Globe, TrendingUp, Settings, Copy, Check, Search, LogOut } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Avatar } from '../components/ui/Avatar';
 import { Button } from '../components/ui/Button';
 import { cn } from '../utils/cn';
+import { guildService } from '../services/api';
+import { useNotifications } from '../hooks/useNotifications';
 
 const MemberCard = ({ name, rank, axp, status = "OFFLINE", isLeader = false }) => (
     <div className={cn(
@@ -84,31 +86,123 @@ const GuildCard = ({ name, tag, members, totalXP, rank, isOpen = true }) => (
 );
 
 const Guilds = () => {
+    const { addNotification } = useNotifications();
     const [activeTab, setActiveTab] = useState('my-guild');
     const [copied, setCopied] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [myGuild, setMyGuild] = useState(null);
+    const [members, setMembers] = useState([]);
+    const [browseGuilds, setBrowseGuilds] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [newGuildName, setNewGuildName] = useState('');
     
-    const inviteCode = "XPA-OMEGA-2026";
+    const inviteCode = myGuild ? `XPA-${myGuild.name.replace(/\s+/g, '-').toUpperCase()}-${myGuild.id}` : "XPA-NONE";
     
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const myGuildRes = await guildService.getMyGuild();
+            if (myGuildRes.data.success && myGuildRes.data.guild) {
+                setMyGuild(myGuildRes.data.guild);
+                const membersRes = await guildService.getMembers(myGuildRes.data.guild.id);
+                setMembers(membersRes.data.map(m => ({
+                    name: m.username,
+                    rank: m.role.toUpperCase(),
+                    axp: m.axp,
+                    status: "OFFLINE" // We could add real-time status later
+                })));
+            } else {
+                setMyGuild(null);
+                setActiveTab('browse');
+            }
+
+            const browseRes = await guildService.getBrowseGuilds();
+            setBrowseGuilds(browseRes.data.map((g, i) => ({
+                id: g.id,
+                name: g.name,
+                tag: g.badge || "XPA",
+                members: g.members,
+                totalXP: g.axp,
+                rank: i + 1,
+                isOpen: true
+            })));
+        } catch (error) {
+            console.error(error);
+            addNotification('Error', 'Failed to load guild data', 'error');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, []);
+
     const handleCopy = () => {
+        if (!myGuild) return;
         navigator.clipboard.writeText(inviteCode);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };
 
-    const members = [
-        { name: "Neural_V", rank: "LEADER", axp: 42900, status: "ONLINE" },
-        { name: "Sniper_King", rank: "OFFICER", axp: 15402, status: "ONLINE" },
-        { name: "Shadow_Rage", rank: "KNIGHT", axp: 12300, status: "AWAY" },
-        { name: "Ghost_Walker", rank: "SCOUT", axp: 8200, status: "OFFLINE" },
-        { name: "Silent_Echo", rank: "SCOUT", axp: 4500, status: "ONLINE" },
-    ];
+    const handleCreateGuild = async () => {
+        if (!newGuildName || newGuildName.length < 3) {
+            addNotification('Invalid Name', 'Guild name must be at least 3 characters', 'warning');
+            return;
+        }
+        try {
+            const res = await guildService.createGuild(newGuildName);
+            if (res.data.success) {
+                addNotification('Success', 'Guild created successfully!', 'success');
+                fetchData();
+                setActiveTab('my-guild');
+            }
+        } catch (error) {
+            addNotification('Error', error.message, 'error');
+        }
+    };
 
-    const browseGuilds = [
-        { name: "Vanguard Elite", tag: "VNG", members: 42, totalXP: 125400, rank: 1, isOpen: false },
-        { name: "Apex Shadows", tag: "APX", members: 38, totalXP: 98200, rank: 2, isOpen: true },
-        { name: "Neural Hunters", tag: "NRL", members: 25, totalXP: 75600, rank: 3, isOpen: true },
-        { name: "Zero Lag Syndicate", tag: "ZLS", members: 30, totalXP: 62000, rank: 4, isOpen: false },
-    ];
+    const handleJoinGuild = async (guildId) => {
+        try {
+            const res = await guildService.joinGuild(guildId);
+            if (res.data.success) {
+                addNotification('Success', 'Joined guild!', 'success');
+                fetchData();
+                setActiveTab('my-guild');
+            }
+        } catch (error) {
+            addNotification('Error', error.message, 'error');
+        }
+    };
+
+    const handleLeaveGuild = async () => {
+        if (!window.confirm('Are you sure you want to leave your guild?')) return;
+        try {
+            const res = await guildService.leaveGuild();
+            if (res.data.success) {
+                addNotification('Success', 'Left guild', 'success');
+                fetchData();
+                setActiveTab('browse');
+            }
+        } catch (error) {
+            addNotification('Error', error.message, 'error');
+        }
+    };
+
+    const filteredBrowseGuilds = browseGuilds.filter(g => 
+        g.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (loading) {
+        return (
+            <div className="min-h-[60vh] flex items-center justify-center">
+                <div className="text-center space-y-4">
+                    <RefreshCw className="w-10 h-10 text-primary animate-spin mx-auto" />
+                    <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Syncing Guild Nodes...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-10 pb-20 animate-fade-in">
@@ -122,76 +216,103 @@ const Guilds = () => {
                 </div>
                 
                 <div className="relative z-10">
-                    <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
-                        <div className="flex gap-6 items-start">
-                            <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-accent-cyan/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-glow-sm relative">
-                                <Shield className="w-10 h-10 text-primary" />
+                    {myGuild ? (
+                        <div className="flex flex-col lg:flex-row justify-between items-start gap-8">
+                            <div className="flex gap-6 items-start">
+                                <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-accent-cyan/10 rounded-2xl flex items-center justify-center border border-primary/20 shadow-glow-sm relative">
+                                    <Shield className="w-10 h-10 text-primary" />
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-bold text-primary uppercase tracking-widest">Your Guild</span>
+                                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                    </div>
+                                    <h1 className="text-3xl md:text-4xl font-display font-black text-white tracking-tight">
+                                        {myGuild.name}
+                                    </h1>
+                                    <p className="text-slate-400 text-sm">Founded {new Date(myGuild.created_at).toLocaleDateString()} - {myGuild.owner_name}'s Guild</p>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap gap-3">
+                                <Button variant="secondary" size="sm" onClick={handleCopy}>
+                                    {copied ? <Check className="w-4 h-4 mr-2 text-emerald-400" /> : <Copy className="w-4 h-4 mr-2" />}
+                                    {copied ? "Copied!" : inviteCode}
+                                </Button>
+                                <Button variant="secondary" size="sm" onClick={handleLeaveGuild} className="text-rose-400 hover:text-rose-300">
+                                    <LogOut className="w-4 h-4 mr-2" />
+                                    Leave
+                                </Button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center space-y-6 py-10">
+                            <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto border border-white/5">
+                                <Shield className="w-10 h-10 text-slate-600" />
                             </div>
                             <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-xs font-bold text-primary uppercase tracking-widest">Your Guild</span>
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <h1 className="text-3xl font-display font-black text-white">Join the Community</h1>
+                                <p className="text-slate-400 max-w-md mx-auto">You are not currently in a guild. Join one to participate in wars and earn massive rewards.</p>
+                            </div>
+                            <div className="flex items-center justify-center gap-4">
+                                <Button onClick={() => setActiveTab('browse')}>Browse Guilds</Button>
+                                <span className="text-slate-600 font-bold uppercase text-[10px]">OR</span>
+                                <div className="flex gap-2">
+                                    <input 
+                                        type="text" 
+                                        placeholder="New Guild Name"
+                                        value={newGuildName}
+                                        onChange={(e) => setNewGuildName(e.target.value)}
+                                        className="bg-surface-low border border-white/10 rounded-xl px-4 text-sm text-white focus:outline-none focus:border-primary"
+                                    />
+                                    <Button variant="secondary" onClick={handleCreateGuild}>Create</Button>
                                 </div>
-                                <h1 className="text-3xl md:text-4xl font-display font-black text-white tracking-tight">
-                                    Omega <span className="text-gradient">Strategy</span>
-                                </h1>
-                                <p className="text-slate-400 text-sm">Founded March 2025 - Competitive Gaming Guild</p>
                             </div>
                         </div>
+                    )}
 
-                        <div className="flex flex-wrap gap-3">
-                            <Button variant="secondary" size="sm" onClick={handleCopy}>
-                                {copied ? <Check className="w-4 h-4 mr-2 text-emerald-400" /> : <Copy className="w-4 h-4 mr-2" />}
-                                {copied ? "Copied!" : inviteCode}
-                            </Button>
-                            <Button variant="secondary" size="sm">
-                                <Settings className="w-4 h-4 mr-2" />
-                                Settings
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* Stats Row */}
-                    <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="stat-card !p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Globe className="w-4 h-4 text-primary" />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Global Rank</span>
+                    {myGuild && (
+                        <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="stat-card !p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Globe className="w-4 h-4 text-primary" />
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Global Rank</span>
+                                </div>
+                                <p className="font-display font-bold text-2xl text-white">#{myGuild.rank}</p>
                             </div>
-                            <p className="font-display font-bold text-2xl text-white">#4</p>
-                        </div>
-                        <div className="stat-card !p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Users className="w-4 h-4 text-primary" />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Members</span>
+                            <div className="stat-card !p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Users className="w-4 h-4 text-primary" />
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Members</span>
+                                </div>
+                                <p className="font-display font-bold text-2xl text-white">{myGuild.member_count}<span className="text-slate-500 text-sm">/50</span></p>
                             </div>
-                            <p className="font-display font-bold text-2xl text-white">15<span className="text-slate-500 text-sm">/50</span></p>
-                        </div>
-                        <div className="stat-card !p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Zap className="w-4 h-4 text-amber-500" />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total XP</span>
+                            <div className="stat-card !p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Zap className="w-4 h-4 text-amber-500" />
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Total XP</span>
+                                </div>
+                                <p className="font-display font-bold text-2xl text-gradient">{(myGuild.total_axp / 1000).toFixed(1)}K</p>
                             </div>
-                            <p className="font-display font-bold text-2xl text-gradient">1.24M</p>
-                        </div>
-                        <div className="stat-card !p-4">
-                            <div className="flex items-center gap-2 mb-2">
-                                <Flame className="w-4 h-4 text-rose-500" />
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Win Streak</span>
+                            <div className="stat-card !p-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Flame className="w-4 h-4 text-rose-500" />
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status</span>
+                                </div>
+                                <p className="font-display font-bold text-2xl text-white">{myGuild.premium_only ? 'PREMIUM' : 'OPEN'}</p>
                             </div>
-                            <p className="font-display font-bold text-2xl text-white">12</p>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
             {/* Tabs */}
             <div className="flex items-center gap-2 p-1.5 bg-surface-elevated/60 border border-white/[0.06] rounded-2xl w-fit">
                 {[
-                    { id: 'my-guild', label: 'My Guild', icon: Shield },
+                    { id: 'my-guild', label: 'My Guild', icon: Shield, hidden: !myGuild },
                     { id: 'browse', label: 'Browse Guilds', icon: Search },
-                    { id: 'chat', label: 'Guild Chat', icon: MessageSquare },
-                ].map((tab) => (
+                    { id: 'chat', label: 'Guild Chat', icon: MessageSquare, hidden: !myGuild },
+                ].filter(t => !t.hidden).map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
@@ -209,7 +330,7 @@ const Guilds = () => {
             </div>
 
             {/* My Guild Content */}
-            {activeTab === 'my-guild' && (
+            {activeTab === 'my-guild' && myGuild && (
                 <div className="space-y-8">
                     {/* Members Section */}
                     <div className="space-y-6">
@@ -218,12 +339,6 @@ const Guilds = () => {
                                 <Users className="w-5 h-5 text-primary" />
                                 Guild Members
                             </h2>
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                                    <span className="text-xs text-slate-500">3 Online</span>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -231,53 +346,9 @@ const Guilds = () => {
                                 <MemberCard 
                                     key={i} 
                                     {...member} 
-                                    isLeader={member.rank === 'LEADER'} 
+                                    isLeader={member.rank === 'OWNER'} 
                                 />
                             ))}
-                        </div>
-                    </div>
-
-                    {/* Actions Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Invite Card */}
-                        <div 
-                            className="card-gaming p-8 flex flex-col items-center justify-center text-center cursor-pointer group border-dashed border-white/10 hover:border-primary/30"
-                            onClick={handleCopy}
-                        >
-                            <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                <UserPlus className="w-8 h-8 text-primary" />
-                            </div>
-                            <h3 className="font-display font-bold text-white text-xl mb-2">Invite Players</h3>
-                            <p className="text-sm text-slate-500 mb-4">Share your invite code to grow the guild</p>
-                            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface-low border border-white/[0.06]">
-                                <code className="text-primary font-mono font-bold">{inviteCode}</code>
-                                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-slate-500" />}
-                            </div>
-                        </div>
-
-                        {/* Recent Activity */}
-                        <div className="card-gaming p-6">
-                            <h3 className="font-display font-bold text-white mb-4 flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-primary" />
-                                Recent Activity
-                            </h3>
-                            <div className="space-y-3">
-                                {[
-                                    { user: "Neural_V", action: "won a tournament match", time: "2m ago" },
-                                    { user: "Sniper_King", action: "earned 500 XP from quests", time: "15m ago" },
-                                    { user: "Shadow_Rage", action: "joined the guild", time: "1h ago" },
-                                ].map((activity, i) => (
-                                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-surface-low/50">
-                                        <Avatar size="sm" />
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm text-white truncate">
-                                                <span className="font-semibold text-primary">{activity.user}</span> {activity.action}
-                                            </p>
-                                            <p className="text-[10px] text-slate-500">{activity.time}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -292,51 +363,19 @@ const Guilds = () => {
                             <input 
                                 type="text"
                                 placeholder="Search guilds..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-12 pr-4 py-3 rounded-xl bg-surface-elevated border border-white/[0.06] text-white placeholder:text-slate-500 focus:border-primary/50 focus:outline-none transition-colors"
                             />
                         </div>
-                        <Button variant="secondary">
-                            <Plus className="w-4 h-4 mr-2" />
-                            Create Guild
-                        </Button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {browseGuilds.map((guild, i) => (
-                            <GuildCard key={i} {...guild} />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Guild Chat */}
-            {activeTab === 'chat' && (
-                <div className="card-gaming p-6 min-h-[400px] flex flex-col">
-                    <div className="flex-1 space-y-4 mb-4">
-                        {[
-                            { user: "Neural_V", message: "Anyone up for ranked matches tonight?", time: "2:34 PM" },
-                            { user: "Sniper_King", message: "I'm in! Let's get that win streak going", time: "2:35 PM" },
-                            { user: "Shadow_Rage", message: "Count me in too", time: "2:36 PM" },
-                        ].map((msg, i) => (
-                            <div key={i} className="flex items-start gap-3">
-                                <Avatar size="sm" />
-                                <div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-white text-sm">{msg.user}</span>
-                                        <span className="text-[10px] text-slate-500">{msg.time}</span>
-                                    </div>
-                                    <p className="text-sm text-slate-300 mt-0.5">{msg.message}</p>
-                                </div>
+                        {filteredBrowseGuilds.map((guild, i) => (
+                            <div key={i} onClick={() => handleJoinGuild(guild.id)}>
+                                <GuildCard {...guild} />
                             </div>
                         ))}
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <input 
-                            type="text"
-                            placeholder="Type a message..."
-                            className="flex-1 px-4 py-3 rounded-xl bg-surface-low border border-white/[0.06] text-white placeholder:text-slate-500 focus:border-primary/50 focus:outline-none transition-colors"
-                        />
-                        <Button className="btn-gaming px-6">Send</Button>
                     </div>
                 </div>
             )}

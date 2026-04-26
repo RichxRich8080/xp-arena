@@ -125,6 +125,82 @@ export const setupService = {
     }
 };
 
+export const guildService = {
+    async getMyGuild() {
+        try {
+            return await api.get('/guilds/my-guild');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to fetch guild details'));
+        }
+    },
+
+    async getMembers(guildId) {
+        try {
+            return await api.get(`/guilds/members?guild_id=${guildId}`);
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to fetch guild members'));
+        }
+    },
+
+    async getBrowseGuilds() {
+        try {
+            return await api.get('/guilds/leaderboard');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to browse guilds'));
+        }
+    },
+
+    async createGuild(name) {
+        try {
+            return await api.post('/guilds/create', { name });
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Guild creation failed'));
+        }
+    },
+
+    async joinGuild(guildId) {
+        try {
+            return await api.post('/guilds/join', { guild_id: guildId });
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to join guild'));
+        }
+    },
+
+    async leaveGuild() {
+        try {
+            return await api.post('/guilds/leave');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to leave guild'));
+        }
+    }
+};
+
+export const questService = {
+    async getQuests() {
+        try {
+            return await api.get('/quests');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to fetch quests'));
+        }
+    },
+
+    async claimReward(questId) {
+        try {
+            return await api.post(`/quests/claim/${questId}`);
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to claim reward'));
+        }
+    },
+
+    async claimDailyLogin() {
+        try {
+            return await api.post('/user/daily-login');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to claim daily login'));
+        }
+    }
+};
+
 
 
 export const userService = {

@@ -121,6 +121,28 @@ CREATE TABLE IF NOT EXISTS user_achievements (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_user_ach (user_id, achievement_id)
 );
+-- Quests System
+CREATE TABLE IF NOT EXISTS quests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    reward_axp INT DEFAULT 0,
+    target_value INT DEFAULT 1,
+    quest_type ENUM('daily', 'weekly', 'seasonal') DEFAULT 'daily',
+    category ENUM('social', 'tool', 'combat', 'economy') DEFAULT 'tool',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS user_quests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    quest_id INT NOT NULL,
+    current_value INT DEFAULT 0,
+    status ENUM('active', 'completed', 'claimed') DEFAULT 'active',
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (quest_id) REFERENCES quests(id) ON DELETE CASCADE,
+    UNIQUE KEY uniq_user_quest (user_id, quest_id)
+);
 -- Sensitivity Setups
 CREATE TABLE IF NOT EXISTS setups (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -187,6 +209,13 @@ CREATE TABLE IF NOT EXISTS guild_war_applications (
     guild_id INT NOT NULL,
     note VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE
+);
+-- Guild Rules (Criteria)
+CREATE TABLE IF NOT EXISTS guild_rules (
+    guild_id INT PRIMARY KEY,
+    min_level INT DEFAULT 0,
+    min_axp INT DEFAULT 0,
     FOREIGN KEY (guild_id) REFERENCES guilds(id) ON DELETE CASCADE
 );
 -- Tournaments

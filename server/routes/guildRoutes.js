@@ -55,11 +55,6 @@ router.post('/filters', authenticateToken, validateRequest([
     if (g.owner_user_id !== req.user.id) return res.status(403).json({ error: 'Not allowed' });
     if (!g) return errorResponse(res, 404, 'GUILD_NOT_FOUND', 'Not found');
     if (g.owner_user_id !== req.user.id) return errorResponse(res, 403, 'FORBIDDEN', 'Not allowed');
-    await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
-      guild_id INT PRIMARY KEY,
-      min_level INT DEFAULT 0,
-      min_axp INT DEFAULT 0
-    )`);
     const ml = Math.max(0, parseInt(min_level || 0, 10));
     const ma = Math.max(0, parseInt(min_axp || 0, 10));
     const exists = await db.get('SELECT guild_id FROM guild_rules WHERE guild_id = ?', [gid]);
@@ -82,13 +77,6 @@ router.post('/join', authenticateToken, validateRequest([
     const g = await db.get('SELECT id FROM guilds WHERE id = ?', [gid]);
     if (!g) return res.status(404).json({ error: 'Not found' });
     if (!g) return errorResponse(res, 404, 'GUILD_NOT_FOUND', 'Not found');
-    try {
-      await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
-        guild_id INT PRIMARY KEY,
-        min_level INT DEFAULT 0,
-        min_axp INT DEFAULT 0
-      )`);
-    } catch { }
     const rules = await db.get('SELECT min_level, min_axp FROM guild_rules WHERE guild_id = ?', [gid]);
     if (rules) {
       const u = await db.get('SELECT axp FROM users WHERE id = ?', [req.user.id]);
@@ -119,6 +107,46 @@ router.post('/leave', authenticateToken, async (req, res) => {
     res.json({ success: true });
   } catch (e) {
     errorResponse(res, 500, 'GUILD_LEAVE_FAILED', 'Server error');
+  }
+});
+
+router.get('/my-guild', authenticateToken, async (req, res) => {
+  try {
+    const user = await db.get('SELECT guild_id FROM users WHERE id = ?', [req.user.id]);
+    if (!user || !user.guild_id) return res.json({ success: true, guild: null });
+    
+    const guild = await db.get(`
+      SELECT g.*, 
+             u.username as owner_name,
+             (SELECT COUNT(*) FROM guild_members WHERE guild_id = g.id) as member_count,
+             (SELECT SUM(u2.axp) FROM guild_members gm2 JOIN users u2 ON gm2.user_id = u2.id WHERE gm2.guild_id = g.id) as total_axp
+      FROM guilds g
+      JOIN users u ON g.owner_user_id = u.id
+      WHERE g.id = ?
+    `, [user.guild_id]);
+    
+    const rankRow = await db.get(`
+      SELECT position FROM (
+        SELECT id, RANK() OVER (ORDER BY axp DESC) as position FROM (
+          SELECT g.id, COALESCE(SUM(u.axp),0) as axp 
+          FROM guilds g 
+          LEFT JOIN guild_members m ON g.id = m.guild_id 
+          LEFT JOIN users u ON m.user_id = u.id 
+          GROUP BY g.id
+        ) as guild_scores
+      ) as ranked_guilds WHERE id = ?
+    `, [user.guild_id]);
+
+    res.json({ 
+      success: true, 
+      guild: { 
+        ...guild, 
+        rank: rankRow ? rankRow.position : 'N/A' 
+      } 
+    });
+  } catch (e) {
+    console.error(e);
+    errorResponse(res, 500, 'GUILD_DETAILS_FAILED', 'Server error');
   }
 });
 
@@ -164,13 +192,6 @@ router.get('/filters', validateRequest([
 ]), async (req, res) => {
   try {
     const gid = parseInt(req.query.guild_id, 10);
-    try {
-      await db.run(`CREATE TABLE IF NOT EXISTS guild_rules (
-        guild_id INT PRIMARY KEY,
-        min_level INT DEFAULT 0,
-        min_axp INT DEFAULT 0
-      )`);
-    } catch { }
     const rules = await db.get('SELECT min_level, min_axp FROM guild_rules WHERE guild_id = ?', [gid]);
     res.json({ guild_id: gid, min_level: (rules && rules.min_level) || 0, min_axp: (rules && rules.min_axp) || 0 });
   } catch (e) {
