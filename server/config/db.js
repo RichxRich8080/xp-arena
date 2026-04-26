@@ -2,13 +2,16 @@ const fs = require('fs');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
+// TiDB Cloud requires SSL/TLS connections
 const shouldUseSsl = process.env.DB_SSL !== 'false';
 const allowInsecureTls = process.env.DB_SSL_INSECURE === 'true';
 const sslCaPath = process.env.DB_SSL_CA_PATH;
 
 const sslConfig = shouldUseSsl
     ? {
+        // TiDB Cloud uses AWS certificates - allow connection with Amazon RDS certs
         rejectUnauthorized: !allowInsecureTls,
+        minVersion: 'TLSv1.2',
         ...(sslCaPath ? { ca: fs.readFileSync(sslCaPath, 'utf8') } : {})
     }
     : undefined;
