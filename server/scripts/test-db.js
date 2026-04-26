@@ -1,4 +1,4 @@
-const { db, pool } = require('./db');
+const { db, pool } = require('../config/db');
 
 async function testConnection() {
     console.log('Testing DB helper...');

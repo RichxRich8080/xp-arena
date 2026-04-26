@@ -13,8 +13,22 @@ const PORT = process.env.PORT || 3001;
 
 let dbReady = false;
 
-if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) {
-    console.error('⚠️ [CRITICAL] JWT_SECRET is missing. Authentication node will return errors.');
+// Validate critical environment variables on startup
+const validateEnvironment = () => {
+    const requiredVars = ['JWT_SECRET', 'DB_HOST', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
+    const missing = requiredVars.filter(v => !process.env[v]);
+    
+    if (missing.length > 0) {
+        console.error(`⚠️ [CRITICAL] Missing environment variables: ${missing.join(', ')}`);
+        if (process.env.NODE_ENV === 'production') {
+            console.error('Refusing to boot in production without required config.');
+            process.exit(1);
+        }
+    }
+};
+
+if (process.env.NODE_ENV !== 'test') {
+    validateEnvironment();
 }
 app.set('trust proxy', 1);
 
@@ -155,10 +169,16 @@ process.on('unhandledRejection', (reason) => {
 async function refreshDatabaseReadiness() {
     try {
         await checkDatabaseConnection();
+        if (!dbReady) {
+            console.log('✅ [Database] Connection established and verified');
+        }
         dbReady = true;
     } catch (error) {
+        if (dbReady) {
+            console.warn('⚠️ [Database] Connection lost - switching to degraded mode');
+        }
         dbReady = false;
-        console.error('[Readiness] Database connectivity check failed:', error.code || error.message);
+        console.error('[Database Error]', error.code || error.message);
     }
 }
 

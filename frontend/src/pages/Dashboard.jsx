@@ -24,12 +24,16 @@ const Dashboard = () => {
                 const res = await fetch('/api/user/status', {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-                const data = await res.json();
-                if (data && !data.error) {
-                    setRemoteStatus(data);
+                if (!res.ok) {
+                    console.warn('[Dashboard] Status fetch failed:', res.status);
+                    return;
                 }
-            } catch {
-                console.error('Failed to sync dashboard status');
+                const data = await res.json();
+                if (data?.user || data?.success) {
+                    setRemoteStatus(data.user || data);
+                }
+            } catch (err) {
+                console.warn('[Dashboard] Failed to sync dashboard status:', err.message);
             }
         };
         fetchStatus();
