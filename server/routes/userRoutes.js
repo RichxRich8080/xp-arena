@@ -73,6 +73,32 @@ router.post('/nickname', authenticateToken, validateRequest([{ field: 'newUserna
     }
 });
 
+router.get('/status', authenticateToken, async (req, res) => {
+    try {
+        const user = await db.get('SELECT id, username, axp, level, streak, avatar, last_login, is_premium FROM users WHERE id = ?', [req.user.id]);
+        if (!user) return errorResponse(res, 404, 'USER_ROUTE_ERROR', 'User not found');
+        
+        res.json({
+            success: true,
+            user: {
+                id: user.id,
+                username: user.username,
+                axp: user.axp,
+                level: user.level,
+                streak: user.streak,
+                avatar: user.avatar,
+                last_login: user.last_login,
+                is_premium: user.is_premium,
+                points: user.axp,
+                last_generation_date: user.last_login ? new Date(user.last_login).toISOString().split('T')[0] : null
+            }
+        });
+    } catch (err) {
+        console.error('[User Status Error]', err);
+        errorResponse(res, 500, 'USER_SERVER_ERROR', 'Server error');
+    }
+});
+
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const user = await db.get('SELECT * FROM users WHERE id = ?', [req.user.id]);

@@ -13,17 +13,48 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
+    // Log requests in development for debugging
+    if (import.meta.env.DEV) {
+        console.log(`[API] ${config.method.toUpperCase()} ${config.url}`);
+    }
     return config;
 });
 
+// Request retry logic for transient errors
+let retryCount = 0;
+const MAX_RETRIES = 3;
+
 api.interceptors.response.use(
-    (response) => response,
-    (error) => {
+    (response) => {
+        retryCount = 0;
+        return response;
+    },
+    async (error) => {
+        const config = error.config;
+        
+        // Handle 401 - session expired
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('xp_arena_user');
             window.location.href = '/login?reason=session_expired';
+            return Promise.reject(error);
         }
+        
+        // Retry transient errors (5xx, network errors, timeouts)
+        const isTransientError = !error.response || error.response.status >= 500 || error.code === 'ECONNABORTED';
+        
+        if (isTransientError && retryCount < MAX_RETRIES && config && !config.retried) {
+            retryCount++;
+            config.retried = true;
+            
+            // Exponential backoff: 1s, 2s, 4s
+            const delay = Math.pow(2, retryCount - 1) * 1000;
+            await new Promise(resolve => setTimeout(resolve, delay));
+            
+            console.warn(`[API] Retrying request (attempt ${retryCount}/${MAX_RETRIES})`, config.url);
+            return api(config);
+        }
+        
         return Promise.reject(error);
     }
 );
@@ -204,6 +235,14 @@ export const questService = {
 
 
 export const userService = {
+    async getStatus() {
+        try {
+            return await api.get('/user/status');
+        } catch (error) {
+            throw new Error(parseApiError(error, 'Failed to load user status.'));
+        }
+    },
+
     async getProfile() {
         try {
             return await api.get('/user/profile');

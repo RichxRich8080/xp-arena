@@ -12,8 +12,10 @@
   "scripts": {
     "start": "node server/app.js",
     "dev": "node server/app.js",
+    "dev:all": "npm run dev --workspace=frontend & npm run dev",
     "build": "npm run build --workspace=frontend",
     "migrate": "node server/scripts/migrate.js",
+    "db:test": "node server/scripts/test-db.js",
     "test:integration": "jest --runInBand tests/integration/health.test.js"
   },
   "dependencies": {
